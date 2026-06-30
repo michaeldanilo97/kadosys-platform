@@ -1,0 +1,28 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Kadosys Platform - CLI Entrypoint
+ *
+ * Uso: php kadosys <comando> [argumentos]
+ * Exemplos:
+ *   php kadosys migrate
+ *   php kadosys make:app crm
+ *   php kadosys make:controller MembrosController
+ *   php kadosys make:model Membro
+ *   php kadosys make:migration create_membros_table
+ */
+
+use Kadosys\Core\Console\Kernel;
+use Kadosys\Core\Core\Application;
+
+require __DIR__ . '/vendor/autoload.php';
+
+Application::bootstrap(__DIR__);
+
+$kernel = new Kernel();
+$exitCode = $kernel->handle($argv);
+
+exit($exitCode);

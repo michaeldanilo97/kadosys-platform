@@ -1,0 +1,59 @@
+[30-Jun-2026 14:35:06 America/Sao_Paulo] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: NO) in /home/kadosys1/public_html/core/Database/Connection.php:41
+Stack trace:
+#0 /home/kadosys1/public_html/core/Database/Connection.php(41): PDO->__construct('mysql:host=127....', 'root', '', Array)
+#1 /home/kadosys1/public_html/core/Database/Connection.php(53): Kadosys\Core\Database\Connection->__construct()
+#2 /home/kadosys1/public_html/core/Database/MigrationRunner.php(20): Kadosys\Core\Database\Connection::getInstance()
+#3 /home/kadosys1/public_html/core/Console/MigrateCommand.php(21): Kadosys\Core\Database\MigrationRunner->__construct('/home/kadosys1/...')
+#4 /home/kadosys1/public_html/core/Console/Kernel.php(43): Kadosys\Core\Console\MigrateCommand->execute(Array)
+#5 /home/kadosys1/public_html/kadosys(26): Kadosys\Core\Console\Kernel->handle(Array)
+#6 {main}
+
+Next RuntimeException: Falha ao conectar ao banco de dados: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: NO) in /home/kadosys1/public_html/core/Database/Connection.php:46
+Stack trace:
+#0 /home/kadosys1/public_html/core/Database/Connection.php(53): Kadosys\Core\Database\Connection->__construct()
+#1 /home/kadosys1/public_html/core/Database/MigrationRunner.php(20): Kadosys\Core\Database\Connection::getInstance()
+#2 /home/kadosys1/public_html/core/Console/MigrateCommand.php(21): Kadosys\Core\Database\MigrationRunner->__construct('/home/kadosys1/...')
+#3 /home/kadosys1/public_html/core/Console/Kernel.php(43): Kadosys\Core\Console\MigrateCommand->execute(Array)
+#4 /home/kadosys1/public_html/kadosys(26): Kadosys\Core\Console\Kernel->handle(Array)
+#5 {main}
+  thrown in /home/kadosys1/public_html/core/Database/Connection.php on line 46
+[30-Jun-2026 14:35:44 America/Sao_Paulo] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: NO) in /home/kadosys1/public_html/core/Database/Connection.php:41
+Stack trace:
+#0 /home/kadosys1/public_html/core/Database/Connection.php(41): PDO->__construct('mysql:host=127....', 'root', '', Array)
+#1 /home/kadosys1/public_html/core/Database/Connection.php(53): Kadosys\Core\Database\Connection->__construct()
+#2 /home/kadosys1/public_html/core/Database/MigrationRunner.php(20): Kadosys\Core\Database\Connection::getInstance()
+#3 /home/kadosys1/public_html/core/Console/MigrateCommand.php(21): Kadosys\Core\Database\MigrationRunner->__construct('/home/kadosys1/...')
+#4 /home/kadosys1/public_html/core/Console/Kernel.php(43): Kadosys\Core\Console\MigrateCommand->execute(Array)
+#5 /home/kadosys1/public_html/kadosys(26): Kadosys\Core\Console\Kernel->handle(Array)
+#6 {main}
+
+Next RuntimeException: Falha ao conectar ao banco de dados: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: NO) in /home/kadosys1/public_html/core/Database/Connection.php:46
+Stack trace:
+#0 /home/kadosys1/public_html/core/Database/Connection.php(53): Kadosys\Core\Database\Connection->__construct()
+#1 /home/kadosys1/public_html/core/Database/MigrationRunner.php(20): Kadosys\Core\Database\Connection::getInstance()
+#2 /home/kadosys1/public_html/core/Console/MigrateCommand.php(21): Kadosys\Core\Database\MigrationRunner->__construct('/home/kadosys1/...')
+#3 /home/kadosys1/public_html/core/Console/Kernel.php(43): Kadosys\Core\Console\MigrateCommand->execute(Array)
+#4 /home/kadosys1/public_html/kadosys(26): Kadosys\Core\Console\Kernel->handle(Array)
+#5 {main}
+  thrown in /home/kadosys1/public_html/core/Database/Connection.php on line 46
+[30-Jun-2026 14:45:50 America/Sao_Paulo] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: NO) in /home/kadosys1/public_html/core/Database/Connection.php:41
+Stack trace:
+#0 /home/kadosys1/public_html/core/Database/Connection.php(41): PDO->__construct('mysql:host=127....', 'root', '', Array)
+#1 /home/kadosys1/public_html/core/Database/Connection.php(53): Kadosys\Core\Database\Connection->__construct()
+#2 /home/kadosys1/public_html/core/Database/MigrationRunner.php(20): Kadosys\Core\Database\Connection::getInstance()
+#3 /home/kadosys1/public_html/core/Console/MigrateCommand.php(20): Kadosys\Core\Database\MigrationRunner->__construct('/home/kadosys1/...')
+#4 /home/kadosys1/public_html/core/Console/Kernel.php(43): Kadosys\Core\Console\MigrateCommand->execute(Array)
+#5 /home/kadosys1/public_html/kadosys(26): Kadosys\Core\Console\Kernel->handle(Array)
+#6 {main}
+
+Next RuntimeException: Falha ao conectar ao banco de dados: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: NO) in /home/kadosys1/public_html/core/Database/Connection.php:46
+Stack trace:
+#0 /home/kadosys1/public_html/core/Database/Connection.php(53): Kadosys\Core\Database\Connection->__construct()
+#1 /home/kadosys1/public_html/core/Database/MigrationRunner.php(20): Kadosys\Core\Database\Connection::getInstance()
+#2 /home/kadosys1/public_html/core/Console/MigrateCommand.php(20): Kadosys\Core\Database\MigrationRunner->__construct('/home/kadosys1/...')
+#3 /home/kadosys1/public_html/core/Console/Kernel.php(43): Kadosys\Core\Console\MigrateCommand->execute(Array)
+#4 /home/kadosys1/public_html/kadosys(26): Kadosys\Core\Console\Kernel->handle(Array)
+#5 {main}
+  thrown in /home/kadosys1/public_html/core/Database/Connection.php on line 46
+[30-Jun-2026 14:48:27 America/Sao_Paulo] PHP Parse error:  syntax error, unexpected token "..." in /home/kadosys1/public_html/core/Database/Connection.php on line 44
+[30-Jun-2026 14:50:41 America/Sao_Paulo] PHP Parse error:  syntax error, unexpected token "..." in /home/kadosys1/public_html/core/Database/Connection.php on line 44
