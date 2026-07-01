@@ -151,7 +151,7 @@
                             </div>
                             <h3 class="h4 fw-bold mb-3">Kadosys<sup class="brand-tm">TM</sup> Igrejas</h3>
                             <p class="text-gray-400 mb-4">Gestão completa para igrejas, projeção, membros e ministérios.</p>
-                            <a href="app/igrejas/index.php" class="btn btn-link text-primary p-0 text-decoration-none fw-semibold">Conhecer <i class="fas fa-arrow-right ms-2"></i></a>
+                            <a href="apps/igrejas/public/index.php" class="btn btn-link text-primary p-0 text-decoration-none fw-semibold">Conhecer <i class="fas fa-arrow-right ms-2"></i></a>
                         </div>
                     </div>
                     <!-- Sistema 2 -->
