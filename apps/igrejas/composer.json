@@ -1,0 +1,20 @@
+{
+    "name": "kadosys/igrejas",
+    "description": "KADOSYS Igrejas - Plataforma de gestao eclesiastica",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Igrejas\\Core\\": "src/Core/",
+            "Igrejas\\Controllers\\": "src/Controllers/",
+            "Igrejas\\Models\\": "src/Models/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}

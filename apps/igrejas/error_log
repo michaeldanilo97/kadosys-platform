@@ -1,0 +1,49 @@
+[30-Jun-2026 17:19:44 America/Sao_Paulo] PHP Warning:  copy(): https:// wrapper is disabled in the server configuration by allow_url_fopen=0 in Command line code on line 1
+[30-Jun-2026 17:19:44 America/Sao_Paulo] PHP Warning:  copy(https://getcomposer.org/installer): Failed to open stream: no suitable wrapper could be found in Command line code on line 1
+[30-Jun-2026 17:20:25 America/Sao_Paulo] PHP Warning:  copy(): https:// wrapper is disabled in the server configuration by allow_url_fopen=0 in Command line code on line 1
+[30-Jun-2026 17:20:25 America/Sao_Paulo] PHP Warning:  copy(https://getcomposer.org/installer): Failed to open stream: no suitable wrapper could be found in Command line code on line 1
+[30-Jun-2026 17:29:28 America/Sao_Paulo] PHP Warning:  copy(): https:// wrapper is disabled in the server configuration by allow_url_fopen=0 in Command line code on line 1
+[30-Jun-2026 17:29:28 America/Sao_Paulo] PHP Warning:  copy(https://getcomposer.org/installer): Failed to open stream: no suitable wrapper could be found in Command line code on line 1
+[30-Jun-2026 17:36:56 America/Sao_Paulo] PHP Fatal error:  Uncaught PDOException: SQLSTATE[28000] [1045] Access denied for user 'kadosys1_michael'@'localhost' (using password: YES) in /home/kadosys1/public_html/apps/igrejas/src/Core/Database.php:38
+Stack trace:
+#0 /home/kadosys1/public_html/apps/igrejas/src/Core/Database.php(38): PDO->__construct()
+#1 /home/kadosys1/public_html/apps/igrejas/database/seed_admin.php(41): Igrejas\Core\Database::connection()
+#2 {main}
+
+Next RuntimeException: Nao foi possivel conectar ao banco de dados. Verifique config/database.php. in /home/kadosys1/public_html/apps/igrejas/src/Core/Database.php:44
+Stack trace:
+#0 /home/kadosys1/public_html/apps/igrejas/database/seed_admin.php(41): Igrejas\Core\Database::connection()
+#1 {main}
+  thrown in /home/kadosys1/public_html/apps/igrejas/src/Core/Database.php on line 44
+[30-Jun-2026 17:39:51 America/Sao_Paulo] PHP Fatal error:  Uncaught PDOException: SQLSTATE[28000] [1045] Access denied for user 'kadosys1_michael'@'localhost' (using password: YES) in /home/kadosys1/public_html/apps/igrejas/src/Core/Database.php:38
+Stack trace:
+#0 /home/kadosys1/public_html/apps/igrejas/src/Core/Database.php(38): PDO->__construct()
+#1 /home/kadosys1/public_html/apps/igrejas/database/seed_admin.php(41): Igrejas\Core\Database::connection()
+#2 {main}
+
+Next RuntimeException: Nao foi possivel conectar ao banco de dados. Verifique config/database.php. in /home/kadosys1/public_html/apps/igrejas/src/Core/Database.php:44
+Stack trace:
+#0 /home/kadosys1/public_html/apps/igrejas/database/seed_admin.php(41): Igrejas\Core\Database::connection()
+#1 {main}
+  thrown in /home/kadosys1/public_html/apps/igrejas/src/Core/Database.php on line 44
+[30-Jun-2026 17:41:02 America/Sao_Paulo] PHP Fatal error:  Uncaught PDOException: SQLSTATE[28000] [1045] Access denied for user 'kadosys1_michael'@'localhost' (using password: YES) in /home/kadosys1/public_html/apps/igrejas/src/Core/Database.php:38
+Stack trace:
+#0 /home/kadosys1/public_html/apps/igrejas/src/Core/Database.php(38): PDO->__construct()
+#1 /home/kadosys1/public_html/apps/igrejas/database/seed_admin.php(41): Igrejas\Core\Database::connection()
+#2 {main}
+
+Next RuntimeException: Nao foi possivel conectar ao banco de dados. Verifique config/database.php. in /home/kadosys1/public_html/apps/igrejas/src/Core/Database.php:44
+Stack trace:
+#0 /home/kadosys1/public_html/apps/igrejas/database/seed_admin.php(41): Igrejas\Core\Database::connection()
+#1 {main}
+  thrown in /home/kadosys1/public_html/apps/igrejas/src/Core/Database.php on line 44
+[30-Jun-2026 17:43:58 America/Sao_Paulo] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in /home/kadosys1/public_html/apps/igrejas/database/seed_admin.php:49
+Stack trace:
+#0 /home/kadosys1/public_html/apps/igrejas/database/seed_admin.php(49): PDOStatement->execute()
+#1 {main}
+  thrown in /home/kadosys1/public_html/apps/igrejas/database/seed_admin.php on line 49
+[30-Jun-2026 17:44:24 America/Sao_Paulo] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in /home/kadosys1/public_html/apps/igrejas/database/seed_admin.php:49
+Stack trace:
+#0 /home/kadosys1/public_html/apps/igrejas/database/seed_admin.php(49): PDOStatement->execute()
+#1 {main}
+  thrown in /home/kadosys1/public_html/apps/igrejas/database/seed_admin.php on line 49
