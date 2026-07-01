@@ -433,7 +433,7 @@
                 </div>
                 <div class="modal-body p-4">
                     <div class="list-group list-group-flush bg-transparent">
-                        <a href="app/igrejas/index.php" class="list-group-item list-group-item-action bg-transparent text-white border-secondary border-opacity-25 py-3 d-flex justify-content-between align-items-center">
+                        <a href="apps/igrejas/public/index.php" class="list-group-item list-group-item-action bg-transparent text-white border-secondary border-opacity-25 py-3 d-flex justify-content-between align-items-center">
                             <div>
                                 <i class="fas fa-church text-primary me-3"></i>
                                 <span>Kadosys<sup class="brand-tm">TM</sup> Igrejas</span>
@@ -488,7 +488,7 @@
                 <div class="col-lg-3 col-md-4">
                     <h5 class="fw-bold mb-4">Nossos Sistemas</h5>
                     <ul class="list-unstyled footer-links">
-                        <li><a href="igrejas/index.html">Kadosys<sup class="brand-tm">TM</sup> Igrejas</a></li>
+                        <li><a href="apps/igrejas/public/index.php">Kadosys<sup class="brand-tm">TM</sup> Igrejas</a></li>
                         <li><a href="#">Kadosys<sup class="brand-tm">TM</sup> CRM</a></li>
                         <li><a href="#">Kadosys<sup class="brand-tm">TM</sup> Financeiro</a></li>
                         <li><a href="#">Kadosys<sup class="brand-tm">TM</sup> Frota</a></li>
