@@ -403,6 +403,15 @@ html, body {
   min-height: 0;
 }
 
+/* Modo foco (botao "Tela cheia"): esconde o topo e a previa "A seguir"
+   para sobrar mais espaco pro palco, funcionando por CSS mesmo quando a
+   Fullscreen API nativa do navegador e bloqueada pelo aparelho/navegador
+   (o que fazia o botao parecer "nao fazer nada" em alguns tablets). */
+.preletor-shell.modo-foco .preletor-topbar,
+.preletor-shell.modo-foco .preletor-preview {
+  display: none;
+}
+
 .preletor-picker {
   display: flex;
   flex-wrap: wrap;
@@ -559,6 +568,31 @@ html, body {
   background: linear-gradient(135deg, var(--telao-accent-2), var(--telao-accent));
 }
 
+/* Bolinha extra no botao da caneta: alem da troca de cor/fundo, um
+   indicador tipo "sinal" (mesmo padrao do "ao vivo" no topo) deixa o
+   estado ligado/desligado dificil de passar despercebido. */
+.preletor-picker .preletor-nav-btn[data-tool-pen] {
+  position: relative;
+}
+
+.preletor-picker .preletor-nav-btn[data-tool-pen]::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #64748b;
+  border: 2px solid var(--telao-bg);
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.preletor-picker .preletor-nav-btn[data-tool-pen].active::after {
+  background: #34d399;
+  box-shadow: 0 0 6px #34d399;
+}
+
 .preletor-preview {
   display: flex;
   align-items: baseline;
@@ -598,9 +632,27 @@ html, body {
 }
 
 .preletor-stage {
-  background: var(--telao-bg);
-  border-radius: 6px;
-  box-shadow: 0 0 0 1px rgba(245, 247, 250, 0.08);
+  background: #0c0f18;
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px rgba(245, 247, 250, 0.16), 0 14px 34px rgba(0, 0, 0, 0.4);
+}
+
+/* Selo no canto do palco: deixa claro que aquele quadrado e a previa
+   exata do que aparece no telao (fora do texto em si, que ja tem seu
+   proprio estilo). */
+.preletor-stage::before {
+  content: 'PREVIA DO TELAO';
+  position: absolute;
+  top: 0.6rem;
+  left: 0.7rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--telao-accent);
+  opacity: 0.7;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .preletor-canvas {
@@ -622,6 +674,68 @@ html, body {
   color: var(--telao-muted);
   text-align: center;
   font-size: 0.92rem;
+}
+
+/* ---- Ajuda (legenda dos icones) ------------------------------------------ */
+
+.preletor-ajuda-popup {
+  position: fixed;
+  right: 1rem;
+  bottom: max(90px, calc(24px + env(safe-area-inset-bottom, 0px)));
+  width: min(280px, calc(100vw - 2rem));
+  background: #0b0d14;
+  border: 1px solid rgba(245, 247, 250, 0.16);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+  padding: 0.9rem 1rem;
+  z-index: 40;
+}
+
+.preletor-ajuda-popup[hidden] {
+  display: none;
+}
+
+.preletor-ajuda-popup strong {
+  display: block;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.78rem;
+  margin-bottom: 0.6rem;
+  padding-right: 1.6rem;
+}
+
+.preletor-ajuda-popup ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.preletor-ajuda-popup li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--telao-muted);
+}
+
+.preletor-ajuda-popup li i {
+  color: var(--telao-accent);
+  flex-shrink: 0;
+}
+
+.preletor-ajuda-fechar {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  border: none;
+  background: none;
+  color: var(--telao-muted);
+  cursor: pointer;
+  padding: 0.2rem;
+  line-height: 1;
 }
 
 /* ---- Responsivo --------------------------------------------------------------- */

@@ -84,17 +84,34 @@ $basePath = $config['base_path'] ?? '';
                     <i class="bi bi-arrow-right"></i>
                 </button>
                 <span class="preletor-actions-divisor"></span>
-                <button type="button" class="preletor-nav-btn" data-tool-pen aria-label="Ativar caneta" title="Caneta">
+                <button type="button" class="preletor-nav-btn" data-tool-pen aria-label="Ativar caneta" aria-pressed="false" title="Caneta">
                     <i class="bi bi-pencil-fill"></i>
                 </button>
                 <button type="button" class="preletor-nav-btn" data-tool-clear aria-label="Apagar marcacao" title="Apagar marcacao">
                     <i class="bi bi-eraser-fill"></i>
                 </button>
-                <button type="button" class="preletor-nav-btn" data-tool-fullscreen aria-label="Tela cheia" title="Tela cheia">
+                <button type="button" class="preletor-nav-btn" data-tool-fullscreen aria-label="Tela cheia" aria-pressed="false" title="Tela cheia">
                     <i class="bi bi-arrows-fullscreen"></i>
+                </button>
+                <button type="button" class="preletor-nav-btn" data-tool-ajuda aria-label="Ajuda sobre os botoes" title="O que cada botao faz">
+                    <i class="bi bi-question-lg"></i>
                 </button>
             </div>
         </form>
+
+        <div class="preletor-ajuda-popup" data-preletor-ajuda-popup hidden>
+            <button type="button" class="preletor-ajuda-fechar" data-preletor-ajuda-fechar aria-label="Fechar ajuda">
+                <i class="bi bi-x-lg"></i>
+            </button>
+            <strong>O que cada botao faz</strong>
+            <ul>
+                <li><i class="bi bi-broadcast"></i> <strong>Projetar</strong> &middot; envia a referencia escolhida para o telao</li>
+                <li><i class="bi bi-arrow-left"></i><i class="bi bi-arrow-right"></i> <strong>Setas</strong> &middot; versiculo anterior / proximo (ja projeta direto)</li>
+                <li><i class="bi bi-pencil-fill"></i> <strong>Caneta</strong> &middot; ativa/desativa a marcacao a lapis sobre o texto (aparece tambem no telao)</li>
+                <li><i class="bi bi-eraser-fill"></i> <strong>Apagar</strong> &middot; limpa a marcacao atual</li>
+                <li><i class="bi bi-arrows-fullscreen"></i> <strong>Tela cheia</strong> &middot; modo foco, esconde menus para caber mais texto</li>
+            </ul>
+        </div>
 
         <div class="preletor-preview" data-nav-preview hidden>
             <span class="label"><i class="bi bi-skip-forward"></i> A seguir</span>

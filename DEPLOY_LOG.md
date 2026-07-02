@@ -17,6 +17,28 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 8 - 2026-07-02
+
+**Tela cheia com modo foco de reserva, estado da caneta mais visivel, botao de ajuda e palco redesenhado no preletor**
+
+- Tela cheia: alem de tentar a Fullscreen API nativa do navegador (que em
+  alguns tablets/navegadores e bloqueada silenciosamente, fazendo o botao
+  "nao fazer nada"), agora existe tambem um "modo foco" por CSS que
+  esconde a barra de topo e o aviso "A seguir", sobrando mais espaco pro
+  palco - esse modo sempre funciona, independente do navegador permitir
+  ou nao a API nativa.
+- Caneta: o botao ativo agora ganhou uma bolinha extra (igual o
+  indicador "ao vivo" do topo) que acende em verde quando a marcacao
+  esta ligada e fica cinza quando desligada, alem da cor de fundo que ja
+  existia - fica bem mais dificil de nao perceber o estado.
+- Novo botao de ajuda ("?") ao lado dos outros: abre um quadro no canto
+  da tela explicando o que cada icone faz (Projetar, setas, caneta,
+  apagar, tela cheia).
+- O quadro onde o texto da biblia aparece (previa do que esta no telao)
+  ganhou um fundo levemente diferente do resto da pagina, borda mais
+  visivel e uma etiqueta "PREVIA DO TELAO" no canto, pra ficar claro que
+  aquele quadrado e uma previa e nao so o texto solto na tela.
+
 ## Ajuste 7 - 2026-07-02
 
 **Botoes de caneta/apagar movidos para o topo, botao de tela cheia, versao auto-reprojeta no preletor**

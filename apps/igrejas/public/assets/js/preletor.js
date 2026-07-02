@@ -21,6 +21,9 @@
   var toolPenBtn = root.querySelector('[data-tool-pen]');
   var toolClearBtn = root.querySelector('[data-tool-clear]');
   var toolFullscreenBtn = root.querySelector('[data-tool-fullscreen]');
+  var toolAjudaBtn = root.querySelector('[data-tool-ajuda]');
+  var ajudaPopup = root.querySelector('[data-preletor-ajuda-popup]');
+  var ajudaFechar = root.querySelector('[data-preletor-ajuda-fechar]');
   var form = root.querySelector('[data-preletor-form]');
   var livroSelect = form.querySelector('[data-campo="livro_id"]');
   var capituloSelect = form.querySelector('[data-campo="capitulo"]');
@@ -115,6 +118,8 @@
     caneteAtiva = !caneteAtiva;
     canvas.style.pointerEvents = caneteAtiva ? 'auto' : 'none';
     toolPenBtn.classList.toggle('active', caneteAtiva);
+    toolPenBtn.setAttribute('aria-pressed', caneteAtiva ? 'true' : 'false');
+    toolPenBtn.title = caneteAtiva ? 'Caneta ativada (toque para desativar)' : 'Caneta desativada (toque para ativar)';
   }
 
   function posicaoRelativa(evento) {
@@ -394,17 +399,40 @@
     }
   }
 
+  // "Modo foco" (troca de classe CSS) e o mecanismo principal do botao de
+  // tela cheia: esconde o topo e a previa, sobrando mais espaco pro
+  // palco. A Fullscreen API nativa do navegador e so um bonus por cima
+  // (esconde tambem a barra de enderecos) - em alguns tablets/navegadores
+  // ela e bloqueada silenciosamente, e sem o modo foco por CSS o botao
+  // parecia "nao fazer nada" nesses aparelhos.
+  var telaCheiaAtiva = false;
+
+  function definirIconeTelaCheia(ativo) {
+    var icone = toolFullscreenBtn.querySelector('i');
+
+    toolFullscreenBtn.classList.toggle('active', ativo);
+    toolFullscreenBtn.setAttribute('aria-pressed', ativo ? 'true' : 'false');
+    toolFullscreenBtn.title = ativo ? 'Sair da tela cheia' : 'Tela cheia';
+
+    if (icone) {
+      icone.className = ativo ? 'bi bi-fullscreen-exit' : 'bi bi-arrows-fullscreen';
+    }
+  }
+
   function alternarTelaCheia() {
-    var elementoFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
+    telaCheiaAtiva = !telaCheiaAtiva;
+    root.classList.toggle('modo-foco', telaCheiaAtiva);
+    definirIconeTelaCheia(telaCheiaAtiva);
+    ajustarCanvas();
 
     try {
-      if (!elementoFullscreen) {
+      if (telaCheiaAtiva) {
         var pedido = document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen;
 
         if (pedido) {
           chamarSePromise(pedido.call(document.documentElement));
         }
-      } else {
+      } else if (document.fullscreenElement || document.webkitFullscreenElement) {
         var saida = document.exitFullscreen || document.webkitExitFullscreen;
 
         if (saida) {
@@ -412,28 +440,52 @@
         }
       }
     } catch (erro) {
-      // Navegador sem suporte a fullscreen ou chamada bloqueada; ignora.
+      // Navegador sem suporte a Fullscreen API ou chamada bloqueada; o
+      // modo foco (CSS) acima ja garante o efeito principal mesmo assim.
     }
   }
 
   if (toolFullscreenBtn) {
     toolFullscreenBtn.addEventListener('click', alternarTelaCheia);
 
-    // Tela cheia costuma esconder tambem a barra de enderecos do
-    // navegador (e, em alguns tablets, ate a propria barra de sistema do
-    // Android) - ganha espaco extra alem de so evitar a distracao do
-    // navegador em volta do texto.
+    // Sincroniza o modo foco se o usuario sair da tela cheia nativa por
+    // fora do botao (tecla ESC, gesto de voltar do Android, etc.).
     document.addEventListener('fullscreenchange', function () {
       var emTelaCheia = !!(document.fullscreenElement || document.webkitFullscreenElement);
-      var icone = toolFullscreenBtn.querySelector('i');
 
-      toolFullscreenBtn.classList.toggle('active', emTelaCheia);
-
-      if (icone) {
-        icone.className = emTelaCheia ? 'bi bi-fullscreen-exit' : 'bi bi-arrows-fullscreen';
+      if (!emTelaCheia && telaCheiaAtiva) {
+        telaCheiaAtiva = false;
+        root.classList.remove('modo-foco');
+        definirIconeTelaCheia(false);
+        ajustarCanvas();
       }
     });
   }
+
+  if (toolAjudaBtn && ajudaPopup) {
+    toolAjudaBtn.addEventListener('click', function (evento) {
+      evento.stopPropagation();
+      ajudaPopup.hidden = !ajudaPopup.hidden;
+    });
+  }
+
+  if (ajudaFechar) {
+    ajudaFechar.addEventListener('click', function () {
+      ajudaPopup.hidden = true;
+    });
+  }
+
+  document.addEventListener('click', function (evento) {
+    if (!ajudaPopup || ajudaPopup.hidden) {
+      return;
+    }
+
+    if (ajudaPopup.contains(evento.target)) {
+      return;
+    }
+
+    ajudaPopup.hidden = true;
+  });
 
   canvas.addEventListener('pointerdown', iniciarTraco);
   canvas.addEventListener('pointermove', continuarTraco);
