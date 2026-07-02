@@ -52,6 +52,11 @@ final class DashboardController extends Controller
                 'icon' => 'bi-calendar2-week',
                 'description' => 'Programacao, escalas e registro de frequencia dos cultos.',
             ],
+            'projecao' => [
+                'title' => 'Projecao',
+                'icon' => 'bi-easel2',
+                'description' => 'Telao do culto: biblia, videos e controle do preletor em tempo real.',
+            ],
             'agenda' => [
                 'title' => 'Agenda',
                 'icon' => 'bi-calendar3',

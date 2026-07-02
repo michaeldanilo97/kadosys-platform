@@ -54,6 +54,26 @@ Terceiro modulo de negocio implementado (v2 do roadmap):
 - Listagem com busca por titulo/local e paginacao.
 - KPI "Proximo culto" no dashboard, com o proximo culto agendado.
 
+## Sprint 5 - Modulo Projecao/Telao
+
+Sistema de projecao ao vivo para o culto, com 3 telas sincronizadas por
+polling (sem WebSocket, por rodar em hospedagem compartilhada):
+
+- **Painel do operador** (`/dashboard/projecao`, autenticado): inicia/
+  encerra a sessao de projecao, seleciona a referencia biblica, cola o
+  link de um video do YouTube e controla play/pause/fadeout.
+- **Telao** (`/telao/{token}`, publico): tela cheia para o projetor,
+  acessada por link direto com token. Exibe biblia, video ou a logo da
+  igreja (no fadeout).
+- **Preletor** (`/preletor`, publico, PIN de 6 digitos): tela do tablet
+  do pastor, espelha o texto do telao, permite trocar a referencia
+  biblica e marcar o texto a lapis (anotacao temporaria, por versiculo).
+- Schema da Biblia com os 66 livros ja cadastrados; texto dos versiculos
+  importado via `database/seed_biblia.php` (formato documentado no
+  proprio script).
+- Upload da logo da igreja em Configuracoes (`/dashboard/configuracoes`),
+  usada no fadeout do video.
+
 ## Tecnologias
 
 - PHP 8.3+
@@ -86,12 +106,18 @@ apps/igrejas/
 │   │   └── Middleware/        # GuestMiddleware, AuthMiddleware
 │   ├── Controllers/           # LandingController, AuthController,
 │   │                            DashboardController, MembroController,
-│   │                            MinisterioController, CultoController
-│   └── Models/                # User, Membro, Ministerio, Culto
+│   │                            MinisterioController, CultoController,
+│   │                            ConfiguracaoController, ProjecaoController,
+│   │                            ProjecaoEstadoController, TelaoController,
+│   │                            PreletorController
+│   └── Models/                # User, Membro, Ministerio, Culto,
+│                                 ConfiguracaoIgreja, BibliaLivro,
+│                                 BibliaVersiculo, ProjecaoSessao,
+│                                 ProjecaoEstado
 ├── resources/
 │   └── views/
-│       ├── layouts/           # landing, auth, dashboard
-│       ├── landing/, auth/, dashboard/, errors/
+│       ├── layouts/           # landing, auth, dashboard, telao
+│       ├── landing/, auth/, dashboard/, errors/, telao/
 ├── config/
 │   ├── config.php             # configuracao geral (base_path automatico)
 │   └── database.php           # credenciais via variaveis de ambiente
@@ -101,6 +127,8 @@ apps/igrejas/
 │   ├── migrations/002_create_membros_table.sql
 │   ├── migrations/003_create_ministerios_tables.sql
 │   ├── migrations/004_create_cultos_tables.sql
+│   ├── migrations/005_create_projecao_tables.sql
+│   ├── seed_biblia.php        # importa o texto biblico (ver cabecalho do arquivo)
 │   └── seed_admin.php         # cria/atualiza o usuario administrador
 └── storage/
     └── logs/
@@ -122,6 +150,7 @@ apps/igrejas/
    mysql -u usuario -p nome_do_banco < database/migrations/002_create_membros_table.sql
    mysql -u usuario -p nome_do_banco < database/migrations/003_create_ministerios_tables.sql
    mysql -u usuario -p nome_do_banco < database/migrations/004_create_cultos_tables.sql
+   mysql -u usuario -p nome_do_banco < database/migrations/005_create_projecao_tables.sql
    ```
    A cada novo modulo implementado, uma nova migracao numerada e criada em
    `database/migrations/` e `database/install.sql` e atualizado para
@@ -171,8 +200,25 @@ apps/igrejas/
 | `POST /dashboard/cultos/{id}/excluir`  | Remove culto                        | AuthMiddleware   |
 | `POST /dashboard/cultos/{id}/presencas` | Registra presenca                  | AuthMiddleware   |
 | `POST /dashboard/cultos/{id}/presencas/{membroId}/remover` | Remove presenca     | AuthMiddleware   |
+| `/dashboard/projecao`                  | Painel do operador (biblia/video)   | AuthMiddleware   |
+| `POST /dashboard/projecao/iniciar`     | Inicia sessao de projecao           | AuthMiddleware   |
+| `POST /dashboard/projecao/encerrar`    | Encerra sessao de projecao          | AuthMiddleware   |
+| `/dashboard/configuracoes`             | Configuracoes (logo da igreja)      | AuthMiddleware   |
+| `POST /dashboard/configuracoes/logo`   | Envia/atualiza a logo               | AuthMiddleware   |
+| `POST /dashboard/configuracoes/logo/remover` | Remove a logo                 | AuthMiddleware   |
 | `/dashboard/{slug}`                    | Estrutura dos demais modulos do menu | AuthMiddleware  |
 | `POST /logout`                         | Encerra a sessao                    | AuthMiddleware   |
+| `/telao/{token}`                       | Telao (tela cheia do projetor)      | Publica (token)  |
+| `/preletor`                            | Entrada por PIN (tablet do pastor)  | Publica          |
+| `POST /preletor`                       | Autentica o PIN                     | Publica          |
+| `/preletor/painel`                     | Painel do preletor                  | Dispositivo autorizado |
+| `POST /preletor/sair`                  | Encerra o acesso do dispositivo     | Publica          |
+| `GET /projecao/{token}/estado`         | Estado atual (JSON, polling)        | Publica (token)  |
+| `POST /projecao/{token}/biblia`        | Define a referencia biblica exibida | Publica (token)  |
+| `POST /projecao/{token}/video`         | Define o video exibido              | Publica (token)  |
+| `POST /projecao/{token}/video/estado`  | Play/pausa/fadeout do video         | Publica (token)  |
+| `POST /projecao/{token}/logo`          | Exibe a logo da igreja              | Publica (token)  |
+| `POST /projecao/{token}/limpar`        | Limpa a tela (fica em branco)       | Publica (token)  |
 
 ## Padroes seguidos
 
