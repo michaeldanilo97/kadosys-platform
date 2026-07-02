@@ -8,7 +8,7 @@
 $basePath = $config['base_path'] ?? '';
 ?>
 
-<div class="preletor-shell" data-preletor data-poll-url="<?= $basePath ?>/projecao/<?= urlencode($token) ?>/estado" data-biblia-url="<?= $basePath ?>/projecao/<?= urlencode($token) ?>/biblia">
+<div class="preletor-shell" data-preletor data-poll-url="<?= $basePath ?>/projecao/<?= urlencode($token) ?>/estado" data-biblia-url="<?= $basePath ?>/projecao/<?= urlencode($token) ?>/biblia" data-navegar-url="<?= $basePath ?>/projecao/<?= urlencode($token) ?>/biblia/navegar">
     <header class="preletor-topbar">
         <span class="brand"><span class="dot"></span> Preletor &middot; ao vivo</span>
         <form method="POST" action="<?= $basePath ?>/preletor/sair">
@@ -37,7 +37,19 @@ $basePath = $config['base_path'] ?? '';
             <input type="number" name="versiculo_inicio" data-campo="versiculo_inicio" placeholder="Vers." min="1" required>
             <input type="number" name="versiculo_fim" data-campo="versiculo_fim" placeholder="Ate (opcional)" min="1">
             <button type="submit" data-preletor-projetar><i class="bi bi-broadcast"></i> Projetar</button>
+            <button type="button" class="preletor-nav-btn" data-nav-acao="anterior" aria-label="Versiculo anterior">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+            <button type="button" class="preletor-nav-btn" data-nav-acao="proximo" aria-label="Proximo versiculo">
+                <i class="bi bi-arrow-right"></i>
+            </button>
         </form>
+
+        <div class="preletor-preview" data-nav-preview hidden>
+            <span class="label"><i class="bi bi-skip-forward"></i> A seguir</span>
+            <strong data-nav-preview-ref></strong>
+            <span data-nav-preview-texto></span>
+        </div>
 
         <div class="preletor-canvas-wrap">
             <div class="preletor-texto" data-preletor-texto>

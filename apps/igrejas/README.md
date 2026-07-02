@@ -93,6 +93,12 @@ varias traducoes da Biblia consultadas pelo operador e pelo preletor:
 - `database/seed_biblia.php` aceita `<versao> <arquivo-ou-url>` e importa
   diretamente do formato do thiagobodruk/biblia (ordem dos livros no
   arquivo = ordem canonica 1-66, sem depender de abreviacao).
+- Navegacao estilo software de projecao (Holyrics e similares): botoes
+  "Anterior"/"Proximo" e atalhos de teclado (setas esquerda/direita, fora
+  de campos de formulario) avancam ou retrocedem um versiculo por vez,
+  cruzando capitulos e livros automaticamente. Uma previa do proximo
+  versiculo fica visivel no painel do operador e no painel do preletor,
+  para o operador nao precisar reabrir o formulario a cada versiculo.
 
 ## Tecnologias
 
@@ -249,6 +255,7 @@ apps/igrejas/
 | `POST /preletor/sair`                  | Encerra o acesso do dispositivo     | Publica          |
 | `GET /projecao/{token}/estado`         | Estado atual (JSON, polling)        | Publica (token)  |
 | `POST /projecao/{token}/biblia`        | Define a referencia biblica exibida | Publica (token)  |
+| `POST /projecao/{token}/biblia/navegar` | Avanca/retrocede um versiculo      | Publica (token)  |
 | `POST /projecao/{token}/video`         | Define o video exibido              | Publica (token)  |
 | `POST /projecao/{token}/video/estado`  | Play/pausa/fadeout do video         | Publica (token)  |
 | `POST /projecao/{token}/logo`          | Exibe a logo da igreja              | Publica (token)  |

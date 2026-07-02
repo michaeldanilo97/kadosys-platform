@@ -124,6 +124,7 @@ final class ProjecaoEstado
     public function paraJson(): array
     {
         $versiculos = [];
+        $proximaPreview = null;
 
         if ($this->modo === 'biblia' && $this->livroId !== null && $this->capitulo !== null && $this->bibliaVersao !== null) {
             $versiculos = array_map(
@@ -136,6 +137,8 @@ final class ProjecaoEstado
                     $this->versiculoFim ?? $this->versiculoInicio ?? 1
                 )
             );
+
+            $proximaPreview = $this->calcularPreview();
         }
 
         return [
@@ -151,11 +154,49 @@ final class ProjecaoEstado
                 'versiculoInicio' => $this->versiculoInicio,
                 'versiculoFim' => $this->versiculoFim,
                 'versiculos' => $versiculos,
+                'proximaPreview' => $proximaPreview,
             ],
             'video' => [
                 'url' => $this->videoUrl,
                 'estado' => $this->videoEstado,
             ],
+        ];
+    }
+
+    /**
+     * Previa do proximo versiculo (estilo "next slide" de softwares de
+     * projecao como o Holyrics), calculada a partir do fim do intervalo
+     * atualmente exibido. Usada pelo operador e pelo preletor para saber
+     * o que vem a seguir antes de avancar.
+     *
+     * @return array{livroNome: ?string, capitulo: int, versiculo: int, texto: ?string}|null
+     */
+    private function calcularPreview(): ?array
+    {
+        if ($this->livroId === null || $this->capitulo === null || $this->bibliaVersao === null) {
+            return null;
+        }
+
+        $posicaoAtual = $this->versiculoFim ?? $this->versiculoInicio ?? 1;
+        $proxima = BibliaVersiculo::proximaReferencia($this->bibliaVersao, $this->livroId, $this->capitulo, $posicaoAtual);
+
+        if ($proxima === null) {
+            return null;
+        }
+
+        $versiculos = BibliaVersiculo::doIntervalo(
+            $this->bibliaVersao,
+            $proxima['livro_id'],
+            $proxima['capitulo'],
+            $proxima['versiculo'],
+            $proxima['versiculo']
+        );
+
+        return [
+            'livroNome' => BibliaLivro::find($proxima['livro_id'])?->nome,
+            'capitulo' => $proxima['capitulo'],
+            'versiculo' => $proxima['versiculo'],
+            'texto' => $versiculos[0]->texto ?? null,
         ];
     }
 

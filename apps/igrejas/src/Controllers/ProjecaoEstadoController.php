@@ -6,6 +6,7 @@ namespace Igrejas\Controllers;
 
 use Igrejas\Core\Controller;
 use Igrejas\Models\BibliaVersao;
+use Igrejas\Models\BibliaVersiculo;
 use Igrejas\Models\ProjecaoEstado;
 use Igrejas\Models\ProjecaoSessao;
 
@@ -49,7 +50,45 @@ final class ProjecaoEstadoController extends Controller
         }
 
         ProjecaoEstado::definirBiblia($sessao->id, $bibliaVersao, $livroId, $capitulo, $inicio, $fim);
-        $this->jsonResponse(['ok' => true]);
+        $this->jsonResponse(['ok' => true] + (ProjecaoEstado::atual($sessao->id)?->paraJson() ?? []));
+    }
+
+    /**
+     * Avanca ou retrocede um versiculo a partir da referencia biblica
+     * atualmente projetada (navegacao por teclado do operador/preletor,
+     * sem precisar reabrir o formulario a cada versiculo).
+     */
+    public function navegarBiblia(string $token): void
+    {
+        $sessao = $this->sessaoOuErro($token);
+        $direcao = (string) $this->request->input('direcao', 'proximo');
+
+        $estadoAtual = ProjecaoEstado::atual($sessao->id);
+
+        if (!$estadoAtual || $estadoAtual->modo !== 'biblia' || $estadoAtual->livroId === null || $estadoAtual->capitulo === null || $estadoAtual->bibliaVersao === null) {
+            $this->jsonResponse(['erro' => 'Nenhuma referencia biblica em projecao no momento.'], 422);
+        }
+
+        $posicaoAtual = $estadoAtual->versiculoFim ?? $estadoAtual->versiculoInicio ?? 1;
+
+        $nova = $direcao === 'anterior'
+            ? BibliaVersiculo::referenciaAnterior($estadoAtual->bibliaVersao, $estadoAtual->livroId, $estadoAtual->capitulo, $posicaoAtual)
+            : BibliaVersiculo::proximaReferencia($estadoAtual->bibliaVersao, $estadoAtual->livroId, $estadoAtual->capitulo, $posicaoAtual);
+
+        if ($nova === null) {
+            $this->jsonResponse(['erro' => 'Limite da biblia atingido.'], 422);
+        }
+
+        ProjecaoEstado::definirBiblia(
+            $sessao->id,
+            $estadoAtual->bibliaVersao,
+            $nova['livro_id'],
+            $nova['capitulo'],
+            $nova['versiculo'],
+            $nova['versiculo']
+        );
+
+        $this->jsonResponse(['ok' => true] + (ProjecaoEstado::atual($sessao->id)?->paraJson() ?? []));
     }
 
     public function definirVideo(string $token): void

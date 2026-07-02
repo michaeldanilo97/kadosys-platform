@@ -15,12 +15,69 @@
   var botaoLogo = document.querySelector('[data-acao-logo]');
   var botaoLimpar = document.querySelector('[data-acao-limpar]');
 
+  var navBox = root.querySelector('[data-projecao-nav]');
+  var navAtualRef = root.querySelector('[data-nav-atual-ref]');
+  var navPreviewBox = root.querySelector('[data-nav-preview]');
+  var navPreviewRef = root.querySelector('[data-nav-preview-ref]');
+  var navPreviewTexto = root.querySelector('[data-nav-preview-texto]');
+  var botoesNav = root.querySelectorAll('[data-nav-acao]');
+
+  var lastVersao = null;
+
   function enviar(caminho, corpo) {
     return fetch(baseUrl + caminho, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: corpo ? corpo.toString() : '',
     });
+  }
+
+  function aplicarEstado(dados) {
+    if (!dados || dados.modo !== 'biblia' || !dados.biblia || !dados.biblia.livroId) {
+      if (navBox) {
+        navBox.hidden = true;
+      }
+      return;
+    }
+
+    var biblia = dados.biblia;
+    var referencia = biblia.livroNome + ' ' + biblia.capitulo + ':' + biblia.versiculoInicio;
+
+    if (biblia.versiculoFim && biblia.versiculoFim !== biblia.versiculoInicio) {
+      referencia += '-' + biblia.versiculoFim;
+    }
+
+    if (navBox) {
+      navBox.hidden = false;
+    }
+
+    if (navAtualRef) {
+      navAtualRef.textContent = referencia;
+    }
+
+    if (biblia.proximaPreview && navPreviewBox) {
+      navPreviewBox.hidden = false;
+      navPreviewRef.textContent = biblia.proximaPreview.livroNome + ' ' + biblia.proximaPreview.capitulo + ':' + biblia.proximaPreview.versiculo;
+      navPreviewTexto.textContent = biblia.proximaPreview.texto || '';
+    } else if (navPreviewBox) {
+      navPreviewBox.hidden = true;
+    }
+  }
+
+  function poll() {
+    fetch(pollUrl, { cache: 'no-store' })
+      .then(function (resposta) {
+        return resposta.json();
+      })
+      .then(function (dados) {
+        if (dados.versao === lastVersao) {
+          return;
+        }
+
+        lastVersao = dados.versao;
+        aplicarEstado(dados);
+      })
+      .catch(function () {});
   }
 
   if (formBiblia) {
@@ -50,9 +107,53 @@
         dados.set('versiculo_fim', fim);
       }
 
-      enviar('/biblia', dados);
+      enviar('/biblia', dados).then(function (resposta) {
+        return resposta.json();
+      }).then(function (dadosResposta) {
+        lastVersao = dadosResposta.versao;
+        aplicarEstado(dadosResposta);
+      }).catch(function () {});
     });
   }
+
+  function navegar(direcao) {
+    var dados = new URLSearchParams();
+    dados.set('direcao', direcao);
+
+    enviar('/biblia/navegar', dados).then(function (resposta) {
+      return resposta.json();
+    }).then(function (dadosResposta) {
+      if (dadosResposta.erro) {
+        return;
+      }
+
+      lastVersao = dadosResposta.versao;
+      aplicarEstado(dadosResposta);
+    }).catch(function () {});
+  }
+
+  botoesNav.forEach(function (botao) {
+    botao.addEventListener('click', function () {
+      navegar(botao.getAttribute('data-nav-acao'));
+    });
+  });
+
+  document.addEventListener('keydown', function (evento) {
+    var alvo = evento.target;
+    var estaDigitando = alvo.tagName === 'INPUT' || alvo.tagName === 'SELECT' || alvo.tagName === 'TEXTAREA';
+
+    if (estaDigitando || navBox === null || navBox.hidden) {
+      return;
+    }
+
+    if (evento.key === 'ArrowRight') {
+      evento.preventDefault();
+      navegar('proximo');
+    } else if (evento.key === 'ArrowLeft') {
+      evento.preventDefault();
+      navegar('anterior');
+    }
+  });
 
   if (formVideo) {
     formVideo.addEventListener('submit', function (evento) {
@@ -91,4 +192,7 @@
       enviar('/limpar');
     });
   }
+
+  setInterval(poll, 1500);
+  poll();
 })();

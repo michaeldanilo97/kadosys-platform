@@ -111,6 +111,27 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                     <button type="submit" class="btn-k btn-k-grad"><i class="bi bi-broadcast"></i> Projetar no telao</button>
                 </div>
             </form>
+
+            <div class="projecao-nav" data-projecao-nav hidden>
+                <div class="projecao-nav-atual">
+                    <span class="label">Exibindo agora</span>
+                    <strong data-nav-atual-ref>&mdash;</strong>
+                </div>
+                <div class="projecao-nav-botoes">
+                    <button type="button" class="btn-k btn-k-ghost" data-nav-acao="anterior">
+                        <i class="bi bi-arrow-left"></i> Anterior
+                    </button>
+                    <button type="button" class="btn-k btn-k-ghost" data-nav-acao="proximo">
+                        Proximo <i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
+                <div class="projecao-nav-preview" data-nav-preview hidden>
+                    <span class="label"><i class="bi bi-skip-forward"></i> A seguir</span>
+                    <strong data-nav-preview-ref></strong>
+                    <p data-nav-preview-texto></p>
+                </div>
+                <p class="projecao-nav-dica">Atalhos: <kbd>&larr;</kbd> anterior &middot; <kbd>&rarr;</kbd> proximo (fora dos campos do formulario)</p>
+            </div>
         </div>
 
         <div class="dash-panel">

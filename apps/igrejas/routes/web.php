@@ -96,6 +96,7 @@ $router->post('/preletor/sair', [PreletorController::class, 'sair']);
 // sessao, usadas via polling pelas 3 telas (operador, telao, preletor).
 $router->get('/projecao/{token}/estado', [ProjecaoEstadoController::class, 'estado']);
 $router->post('/projecao/{token}/biblia', [ProjecaoEstadoController::class, 'definirBiblia']);
+$router->post('/projecao/{token}/biblia/navegar', [ProjecaoEstadoController::class, 'navegarBiblia']);
 $router->post('/projecao/{token}/video', [ProjecaoEstadoController::class, 'definirVideo']);
 $router->post('/projecao/{token}/video/estado', [ProjecaoEstadoController::class, 'definirEstadoVideo']);
 $router->post('/projecao/{token}/logo', [ProjecaoEstadoController::class, 'mostrarLogo']);
