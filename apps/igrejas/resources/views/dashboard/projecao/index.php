@@ -70,63 +70,65 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
         <div class="dash-panel">
             <div class="dash-panel-head">
                 <h2><i class="bi bi-book"></i> Biblia</h2>
+                <span class="panel-badge"><i class="bi bi-lightning-charge-fill"></i> projeta ao clicar</span>
             </div>
-            <form class="crud-form" data-form-biblia onsubmit="return false;">
-                <div class="crud-form-grid">
-                    <div class="crud-field crud-field-full">
-                        <label for="biblia_versao">Versao</label>
-                        <select id="biblia_versao" data-campo="biblia_versao" required>
-                            <?php foreach ($versoes as $codigo => $nome): ?>
-                                <option value="<?= htmlspecialchars($codigo, ENT_QUOTES, 'UTF-8') ?>">
-                                    <?= htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
+
+            <div class="biblia-picker" data-form-biblia data-biblia-picker>
+                <div>
+                    <div class="biblia-secao-label">Versao</div>
+                    <div class="biblia-versoes" data-versao-pills>
+                        <input type="hidden" data-campo="biblia_versao" required>
+                        <?php foreach ($versoes as $codigo => $nome): ?>
+                            <button type="button" class="biblia-pill" data-versao-pill data-valor="<?= htmlspecialchars($codigo, ENT_QUOTES, 'UTF-8') ?>" title="<?= htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') ?>">
+                                <?= strtoupper(htmlspecialchars($codigo, ENT_QUOTES, 'UTF-8')) ?>
+                            </button>
+                        <?php endforeach; ?>
                     </div>
-                    <div class="crud-field crud-field-full">
-                        <label for="livro_id_busca">Livro</label>
-                        <div class="livro-combo" data-livro-combo>
-                            <input type="text" id="livro_id_busca" class="livro-combo-input" data-livro-combo-input placeholder="Buscar livro..." autocomplete="off" aria-expanded="false">
-                            <input type="hidden" data-campo="livro_id" required>
-                            <div class="livro-combo-lista" data-livro-combo-lista hidden>
-                                <?php foreach ($livros as $livro): ?>
-                                    <button type="button" class="livro-combo-item" data-livro-combo-item data-livro-id="<?= $livro->id ?>" data-nome="<?= htmlspecialchars($livro->nome, ENT_QUOTES, 'UTF-8') ?>" data-total-capitulos="<?= $livro->totalCapitulos ?>">
-                                        <?= htmlspecialchars($livro->nome, ENT_QUOTES, 'UTF-8') ?>
-                                    </button>
-                                <?php endforeach; ?>
-                            </div>
+                </div>
+
+                <div class="biblia-livro-field">
+                    <div class="biblia-secao-label">Livro</div>
+                    <div class="livro-combo" data-livro-combo>
+                        <i class="bi bi-search"></i>
+                        <input type="text" class="livro-combo-input" data-livro-combo-input placeholder="Buscar livro (ex.: joao, salmos, gn)..." autocomplete="off" aria-expanded="false">
+                        <input type="hidden" data-campo="livro_id" required>
+                        <div class="livro-combo-lista" data-livro-combo-lista hidden>
+                            <?php $testamentoAtual = null; ?>
+                            <?php foreach ($livros as $livro): ?>
+                                <?php if ($livro->testamento !== $testamentoAtual): $testamentoAtual = $livro->testamento; ?>
+                                    <div class="livro-combo-grupo" data-livro-combo-grupo><?= $testamentoAtual === 'antigo' ? 'Antigo Testamento' : 'Novo Testamento' ?></div>
+                                <?php endif; ?>
+                                <button type="button" class="livro-combo-item" data-livro-combo-item data-livro-id="<?= $livro->id ?>" data-nome="<?= htmlspecialchars($livro->nome, ENT_QUOTES, 'UTF-8') ?>" data-total-capitulos="<?= $livro->totalCapitulos ?>">
+                                    <?= htmlspecialchars($livro->nome, ENT_QUOTES, 'UTF-8') ?>
+                                </button>
+                            <?php endforeach; ?>
                         </div>
                     </div>
-                    <div class="crud-field">
-                        <label for="capitulo">Capitulo</label>
-                        <select id="capitulo" data-campo="capitulo" required>
-                            <option value="" selected disabled>Cap...</option>
-                        </select>
-                    </div>
-                    <div class="crud-field">
-                        <label for="versiculo_inicio">Versiculo</label>
-                        <select id="versiculo_inicio" data-campo="versiculo_inicio" required>
-                            <option value="" selected disabled>Vers...</option>
-                        </select>
-                    </div>
-                    <div class="crud-field crud-field-full">
-                        <label for="versiculo_fim">Ate o versiculo (opcional)</label>
-                        <select id="versiculo_fim" data-campo="versiculo_fim">
-                            <option value="">Ate (opcional)</option>
-                        </select>
-                    </div>
                 </div>
-                <div class="crud-form-actions" style="justify-content: flex-start;">
-                    <button type="submit" class="btn-k btn-k-grad"><i class="bi bi-broadcast"></i> Projetar no telao</button>
-                </div>
-            </form>
 
-            <div class="projecao-nav" data-projecao-nav hidden>
-                <div class="projecao-nav-atual">
-                    <span class="label">Exibindo agora</span>
-                    <strong data-nav-atual-ref>&mdash;</strong>
+                <div class="biblia-secao" data-secao-capitulo>
+                    <div class="biblia-secao-label"><i class="bi bi-bookmark"></i> Capitulo</div>
+                    <input type="hidden" data-campo="capitulo" required>
+                    <div class="biblia-chips" data-capitulo-chips></div>
                 </div>
-                <div class="projecao-nav-botoes">
+
+                <div class="biblia-secao" data-secao-versiculo>
+                    <div class="biblia-secao-label"><i class="bi bi-text-paragraph"></i> Versiculo <span class="hint">(shift+clique seleciona um intervalo)</span></div>
+                    <input type="hidden" data-campo="versiculo_inicio" required>
+                    <input type="hidden" data-campo="versiculo_fim">
+                    <div class="biblia-chips" data-versiculo-chips></div>
+                </div>
+
+                <div class="biblia-preview-live" data-preview-live>
+                    <div class="ref" data-preview-ref><i class="bi bi-broadcast"></i> Nada em projecao</div>
+                    <div class="texto" data-preview-texto><span class="vazio">Escolha versao, livro, capitulo e versiculo acima para comecar.</span></div>
+                    <div class="biblia-preview-proximo" data-preview-proximo hidden>
+                        <div class="label"><i class="bi bi-skip-forward"></i> A seguir</div>
+                        <div data-preview-proximo-texto></div>
+                    </div>
+                </div>
+
+                <div class="biblia-nav-row" data-projecao-nav hidden>
                     <button type="button" class="btn-k btn-k-ghost" data-nav-acao="anterior">
                         <i class="bi bi-arrow-left"></i> Anterior
                     </button>
@@ -134,12 +136,7 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                         Proximo <i class="bi bi-arrow-right"></i>
                     </button>
                 </div>
-                <div class="projecao-nav-preview" data-nav-preview hidden>
-                    <span class="label"><i class="bi bi-skip-forward"></i> A seguir</span>
-                    <strong data-nav-preview-ref></strong>
-                    <p data-nav-preview-texto></p>
-                </div>
-                <p class="projecao-nav-dica">Atalhos: <kbd>&larr;</kbd> anterior &middot; <kbd>&rarr;</kbd> proximo (fora dos campos do formulario)</p>
+                <p class="projecao-nav-dica">Atalhos: <kbd>&larr;</kbd> anterior &middot; <kbd>&rarr;</kbd> proximo (fora dos campos de busca)</p>
             </div>
         </div>
 

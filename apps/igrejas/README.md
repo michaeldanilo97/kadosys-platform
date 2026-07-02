@@ -128,6 +128,27 @@ Migracao 007 (incremental, roda depois da 006):
   16:9, entao a marcacao cai no mesmo lugar visual nas duas telas. A
   marcacao e zerada automaticamente sempre que a referencia biblica muda.
 
+## Sprint 8 - Seletor de biblia do operador redesenhado (estilo Holyrics)
+
+O painel "Biblia" do operador (`/dashboard/projecao`) foi refeito com um
+fluxo inspirado em softwares de projecao como o Holyrics, na mesma
+linguagem visual futurista do resto do dashboard:
+
+- **Versao em pills**: segmented control em vez de select simples.
+- **Busca de livro agrupada**: o combobox agora agrupa os resultados por
+  Antigo/Novo Testamento.
+- **Capitulo e versiculo em grade (chips)**: clique direto no numero em
+  vez de abrir um select; shift+clique em dois versiculos seleciona um
+  intervalo (`KadosysBiblia.montarCapituloChips`/`montarVersiculoChips`).
+- **Projeta ao clicar**: nao existe mais botao "Projetar" - clicar num
+  versiculo ja manda para o telao na hora.
+- **Previa ao vivo com texto real**: o card de previa mostra o texto
+  completo do que esta em projecao (nao so a referencia) e a previa do
+  proximo versiculo, com um leve efeito de brilho/gradiente.
+- O painel se resincroniza sozinho com o estado atual (versao, livro,
+  capitulo, versiculo em destaque) sempre que o operador navega por
+  seta/poll, sem reenviar o mesmo estado de volta ao servidor.
+
 ## Tecnologias
 
 - PHP 8.3+

@@ -17,13 +17,21 @@
   var botaoLimpar = document.querySelector('[data-acao-limpar]');
 
   var navBox = root.querySelector('[data-projecao-nav]');
-  var navAtualRef = root.querySelector('[data-nav-atual-ref]');
-  var navPreviewBox = root.querySelector('[data-nav-preview]');
-  var navPreviewRef = root.querySelector('[data-nav-preview-ref]');
-  var navPreviewTexto = root.querySelector('[data-nav-preview-texto]');
+  var previewRef = root.querySelector('[data-preview-ref]');
+  var previewTexto = root.querySelector('[data-preview-texto]');
+  var previewProximo = root.querySelector('[data-preview-proximo]');
+  var previewProximoTexto = root.querySelector('[data-preview-proximo-texto]');
   var botoesNav = root.querySelectorAll('[data-nav-acao]');
 
   var lastVersao = null;
+  var sincronizando = false;
+
+  function escapeHtml(value) {
+    var div = document.createElement('div');
+    div.textContent = value;
+
+    return div.innerHTML;
+  }
 
   function enviar(caminho, corpo) {
     return fetch(baseUrl + caminho, {
@@ -33,69 +41,30 @@
     });
   }
 
-  function aplicarEstado(dados) {
-    if (!dados || dados.modo !== 'biblia' || !dados.biblia || !dados.biblia.livroId) {
-      if (navBox) {
-        navBox.hidden = true;
-      }
-      return;
-    }
-
-    var biblia = dados.biblia;
-    var referencia = biblia.livroNome + ' ' + biblia.capitulo + ':' + biblia.versiculoInicio;
-
-    if (biblia.versiculoFim && biblia.versiculoFim !== biblia.versiculoInicio) {
-      referencia += '-' + biblia.versiculoFim;
-    }
-
-    if (navBox) {
-      navBox.hidden = false;
-    }
-
-    if (navAtualRef) {
-      navAtualRef.textContent = referencia;
-    }
-
-    if (biblia.proximaPreview && navPreviewBox) {
-      navPreviewBox.hidden = false;
-      navPreviewRef.textContent = biblia.proximaPreview.livroNome + ' ' + biblia.proximaPreview.capitulo + ':' + biblia.proximaPreview.versiculo;
-      navPreviewTexto.textContent = biblia.proximaPreview.texto || '';
-    } else if (navPreviewBox) {
-      navPreviewBox.hidden = true;
-    }
-  }
-
-  function poll() {
-    fetch(pollUrl, { cache: 'no-store' })
-      .then(function (resposta) {
-        return resposta.json();
-      })
-      .then(function (dados) {
-        if (dados.versao === lastVersao) {
-          return;
-        }
-
-        lastVersao = dados.versao;
-        aplicarEstado(dados);
-      })
-      .catch(function () {});
-  }
+  var apiVersao = null;
+  var apiLivro = null;
+  var apiCapitulo = null;
+  var apiVersiculo = null;
+  var livroSelect = null;
+  var capituloInput = null;
+  var versiculoInicioSelect = null;
+  var versiculoFimSelect = null;
 
   if (formBiblia) {
-    var livroSelect = formBiblia.querySelector('[data-campo="livro_id"]');
-    var capituloInput = formBiblia.querySelector('[data-campo="capitulo"]');
+    livroSelect = formBiblia.querySelector('[data-campo="livro_id"]');
+    capituloInput = formBiblia.querySelector('[data-campo="capitulo"]');
+    versiculoInicioSelect = formBiblia.querySelector('[data-campo="versiculo_inicio"]');
+    versiculoFimSelect = formBiblia.querySelector('[data-campo="versiculo_fim"]');
 
     if (window.KadosysBiblia) {
-      window.KadosysBiblia.montarComboLivro(formBiblia.querySelector('[data-livro-combo]'));
-      window.KadosysBiblia.montarCapitulo(formBiblia);
-      window.KadosysBiblia.montarVersiculos(formBiblia, capituloInfoUrl);
+      apiVersao = window.KadosysBiblia.montarVersaoPills(formBiblia.querySelector('[data-versao-pills]'));
+      apiLivro = window.KadosysBiblia.montarComboLivro(formBiblia.querySelector('[data-livro-combo]'));
+      apiCapitulo = window.KadosysBiblia.montarCapituloChips(formBiblia);
+      apiVersiculo = window.KadosysBiblia.montarVersiculoChips(formBiblia, capituloInfoUrl);
     }
 
-    var versiculoInicioSelect = formBiblia.querySelector('[data-campo="versiculo_inicio"]');
-    var versiculoFimSelect = formBiblia.querySelector('[data-campo="versiculo_fim"]');
-
-    function projetar() {
-      if (!livroSelect.value || !capituloInput.value || !versiculoInicioSelect.value) {
+    var projetar = function () {
+      if (sincronizando || !livroSelect.value || !capituloInput.value || !versiculoInicioSelect.value) {
         return;
       }
 
@@ -115,17 +84,104 @@
         lastVersao = dadosResposta.versao;
         aplicarEstado(dadosResposta);
       }).catch(function () {});
-    }
+    };
 
-    formBiblia.addEventListener('submit', function (evento) {
-      evento.preventDefault();
-      projetar();
-    });
-
-    // Trocar o versiculo (inicio/fim) ja projeta direto no telao, sem
-    // precisar clicar em "Projetar no telao" de novo a cada verso.
+    // Clicar num chip de versiculo ja projeta direto no telao, sem
+    // precisar de um botao "Projetar" separado (estilo Holyrics).
     versiculoInicioSelect.addEventListener('change', projetar);
     versiculoFimSelect.addEventListener('change', projetar);
+  }
+
+  function sincronizarPicker(biblia) {
+    if (!apiVersao || !apiLivro || !apiCapitulo || !apiVersiculo || !biblia.livroId) {
+      return;
+    }
+
+    sincronizando = true;
+    apiVersao.definir(biblia.bibliaVersao);
+    apiLivro.definir(biblia.livroId, biblia.livroNome);
+    apiCapitulo.definir(biblia.capitulo);
+    apiVersiculo.definir(biblia.versiculoInicio, biblia.versiculoFim).then(function () {
+      sincronizando = false;
+    }).catch(function () {
+      sincronizando = false;
+    });
+  }
+
+  function aplicarEstado(dados) {
+    if (!dados || dados.modo !== 'biblia' || !dados.biblia || !dados.biblia.livroId) {
+      if (navBox) {
+        navBox.hidden = true;
+      }
+
+      if (previewRef) {
+        previewRef.innerHTML = '<i class="bi bi-broadcast"></i> Nada em projecao';
+      }
+
+      if (previewTexto) {
+        previewTexto.innerHTML = '<span class="vazio">Escolha versao, livro, capitulo e versiculo acima para comecar.</span>';
+      }
+
+      if (previewProximo) {
+        previewProximo.hidden = true;
+      }
+
+      return;
+    }
+
+    var biblia = dados.biblia;
+    var referencia = biblia.livroNome + ' ' + biblia.capitulo + ':' + biblia.versiculoInicio;
+
+    if (biblia.versiculoFim && biblia.versiculoFim !== biblia.versiculoInicio) {
+      referencia += '-' + biblia.versiculoFim;
+    }
+
+    if (biblia.bibliaVersao) {
+      referencia += ' · ' + biblia.bibliaVersao.toUpperCase();
+    }
+
+    if (navBox) {
+      navBox.hidden = false;
+    }
+
+    if (previewRef) {
+      previewRef.innerHTML = '<i class="bi bi-broadcast"></i> ' + escapeHtml(referencia);
+    }
+
+    if (previewTexto) {
+      if (biblia.versiculos && biblia.versiculos.length) {
+        previewTexto.innerHTML = biblia.versiculos.map(function (versiculo) {
+          return '<span class="numero">' + versiculo.numero + '</span> ' + escapeHtml(versiculo.texto) + ' ';
+        }).join('');
+      } else {
+        previewTexto.innerHTML = '<span class="vazio">Texto ainda nao importado para esta versao.</span>';
+      }
+    }
+
+    if (biblia.proximaPreview && previewProximo) {
+      previewProximo.hidden = false;
+      previewProximoTexto.textContent = biblia.proximaPreview.livroNome + ' ' + biblia.proximaPreview.capitulo + ':' + biblia.proximaPreview.versiculo + ' — ' + (biblia.proximaPreview.texto || '');
+    } else if (previewProximo) {
+      previewProximo.hidden = true;
+    }
+
+    sincronizarPicker(biblia);
+  }
+
+  function poll() {
+    fetch(pollUrl, { cache: 'no-store' })
+      .then(function (resposta) {
+        return resposta.json();
+      })
+      .then(function (dados) {
+        if (dados.versao === lastVersao) {
+          return;
+        }
+
+        lastVersao = dados.versao;
+        aplicarEstado(dados);
+      })
+      .catch(function () {});
   }
 
   function navegar(direcao) {

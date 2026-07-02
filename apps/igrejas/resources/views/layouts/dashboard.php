@@ -29,6 +29,7 @@ $userInitial = mb_strtoupper(mb_substr($userName, 0, 1));
     <link rel="stylesheet" href="<?= $basePath ?>/assets/css/app.css">
     <link rel="stylesheet" href="<?= $basePath ?>/assets/css/dashboard.css">
     <link rel="stylesheet" href="<?= $basePath ?>/assets/css/crud.css">
+    <link rel="stylesheet" href="<?= $basePath ?>/assets/css/biblia-picker.css">
 </head>
 <body class="dashboard-body">
 
