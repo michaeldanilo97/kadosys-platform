@@ -20,6 +20,7 @@
   var ctx = canvas.getContext('2d');
   var toolPenBtn = root.querySelector('[data-tool-pen]');
   var toolClearBtn = root.querySelector('[data-tool-clear]');
+  var toolFullscreenBtn = root.querySelector('[data-tool-fullscreen]');
   var form = root.querySelector('[data-preletor-form]');
   var livroSelect = form.querySelector('[data-campo="livro_id"]');
   var capituloSelect = form.querySelector('[data-campo="capitulo"]');
@@ -386,6 +387,53 @@
   toolClearBtn.addEventListener('click', function () {
     limparCanvas(false);
   });
+
+  function chamarSePromise(resultado) {
+    if (resultado && typeof resultado.catch === 'function') {
+      resultado.catch(function () {});
+    }
+  }
+
+  function alternarTelaCheia() {
+    var elementoFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
+
+    try {
+      if (!elementoFullscreen) {
+        var pedido = document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen;
+
+        if (pedido) {
+          chamarSePromise(pedido.call(document.documentElement));
+        }
+      } else {
+        var saida = document.exitFullscreen || document.webkitExitFullscreen;
+
+        if (saida) {
+          chamarSePromise(saida.call(document));
+        }
+      }
+    } catch (erro) {
+      // Navegador sem suporte a fullscreen ou chamada bloqueada; ignora.
+    }
+  }
+
+  if (toolFullscreenBtn) {
+    toolFullscreenBtn.addEventListener('click', alternarTelaCheia);
+
+    // Tela cheia costuma esconder tambem a barra de enderecos do
+    // navegador (e, em alguns tablets, ate a propria barra de sistema do
+    // Android) - ganha espaco extra alem de so evitar a distracao do
+    // navegador em volta do texto.
+    document.addEventListener('fullscreenchange', function () {
+      var emTelaCheia = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      var icone = toolFullscreenBtn.querySelector('i');
+
+      toolFullscreenBtn.classList.toggle('active', emTelaCheia);
+
+      if (icone) {
+        icone.className = emTelaCheia ? 'bi bi-fullscreen-exit' : 'bi bi-arrows-fullscreen';
+      }
+    });
+  }
 
   canvas.addEventListener('pointerdown', iniciarTraco);
   canvas.addEventListener('pointermove', continuarTraco);

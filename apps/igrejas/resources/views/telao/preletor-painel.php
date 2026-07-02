@@ -83,6 +83,16 @@ $basePath = $config['base_path'] ?? '';
                 <button type="button" class="preletor-nav-btn" data-nav-acao="proximo" aria-label="Proximo versiculo">
                     <i class="bi bi-arrow-right"></i>
                 </button>
+                <span class="preletor-actions-divisor"></span>
+                <button type="button" class="preletor-nav-btn" data-tool-pen aria-label="Ativar caneta" title="Caneta">
+                    <i class="bi bi-pencil-fill"></i>
+                </button>
+                <button type="button" class="preletor-nav-btn" data-tool-clear aria-label="Apagar marcacao" title="Apagar marcacao">
+                    <i class="bi bi-eraser-fill"></i>
+                </button>
+                <button type="button" class="preletor-nav-btn" data-tool-fullscreen aria-label="Tela cheia" title="Tela cheia">
+                    <i class="bi bi-arrows-fullscreen"></i>
+                </button>
             </div>
         </form>
 
@@ -102,15 +112,6 @@ $basePath = $config['base_path'] ?? '';
                 </div>
                 <canvas class="preletor-canvas stage-marcacao" data-preletor-canvas></canvas>
             </div>
-        </div>
-
-        <div class="preletor-toolbar">
-            <button type="button" class="preletor-tool-btn-wide" data-tool-pen aria-label="Ativar caneta">
-                <i class="bi bi-pencil-fill"></i> Caneta
-            </button>
-            <button type="button" class="preletor-tool-btn-wide" data-tool-clear aria-label="Apagar marcacao">
-                <i class="bi bi-eraser-fill"></i> Apagar marcacao
-            </button>
         </div>
     </div>
 </div>

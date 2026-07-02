@@ -17,6 +17,23 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 7 - 2026-07-02
+
+**Botoes de caneta/apagar movidos para o topo, botao de tela cheia, versao auto-reprojeta no preletor**
+
+- Caneta/Apagar marcacao e um novo botao de Tela cheia foram movidos
+  para a barra de cima do preletor, ao lado de "Projetar" e das setas
+  de navegacao - a barra de baixo foi removida de vez, ja que dependia
+  de espaco disponivel na tela (o que causou o problema da barra de
+  sistema do tablet cobrindo os botoes). No topo, isso nunca acontece.
+- Botao de Tela cheia: entra/sai do modo tela cheia do navegador, o que
+  tambem ajuda a ganhar espaco extra (esconde a barra de enderecos e,
+  em alguns tablets, ate a barra de sistema do Android).
+- Corrigido tambem no preletor: trocar a versao/traducao da biblia
+  agora reprojeta automaticamente com o mesmo capitulo/versiculo, sem
+  precisar reclicar em nada (mesmo bug corrigido antes so no painel do
+  operador).
+
 ## Ajuste 6 - 2026-07-02
 
 **Causa real identificada: barra de sistema (Taskbar) do tablet cobrindo os botoes**

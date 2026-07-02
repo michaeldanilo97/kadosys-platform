@@ -90,7 +90,7 @@
         if (fimSelect) {
           popularSelect(fimSelect, 0, 'Ate (opcional)');
         }
-        return;
+        return Promise.resolve();
       }
 
       var url = capituloInfoUrl
@@ -98,7 +98,7 @@
         + '&capitulo=' + encodeURIComponent(capitulo)
         + '&versao=' + encodeURIComponent(versao);
 
-      fetch(url, { cache: 'no-store' })
+      return fetch(url, { cache: 'no-store' })
         .then(function (resposta) {
           return resposta.json();
         })
@@ -112,10 +112,27 @@
         .catch(function () {});
     }
 
-    oculto.addEventListener('change', atualizar);
-    capituloSelect.addEventListener('change', atualizar);
+    oculto.addEventListener('change', function () {
+      atualizar();
+    });
+    capituloSelect.addEventListener('change', function () {
+      atualizar();
+    });
+
     if (versaoSelect) {
-      versaoSelect.addEventListener('change', atualizar);
+      // Trocar a versao/traducao mantem o mesmo versiculo que ja estava
+      // selecionado (so busca o texto na nova traducao) e reprojeta
+      // automaticamente - sem isso, trocar a versao no preletor nao
+      // tinha nenhum efeito ate o usuario reclicar em um versiculo.
+      versaoSelect.addEventListener('change', function () {
+        var inicioAtual = inicioSelect.value;
+
+        atualizar().then(function () {
+          if (inicioAtual) {
+            dispararChange(inicioSelect);
+          }
+        });
+      });
     }
   }
 
