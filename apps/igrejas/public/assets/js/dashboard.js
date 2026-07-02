@@ -21,8 +21,8 @@
       storedTheme = null;
     }
 
-    // O tema padrao do painel e o escuro (visual Tech/IA).
-    var theme = storedTheme === 'light' ? 'light' : 'dark';
+    // O tema padrao do painel e o claro.
+    var theme = storedTheme === 'dark' ? 'dark' : 'light';
     applyTheme(body, theme);
 
     if (!toggleBtn) {

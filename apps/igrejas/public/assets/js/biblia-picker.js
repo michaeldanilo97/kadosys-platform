@@ -261,6 +261,11 @@
     }
 
     return {
+      // Usado para sincronizar com o estado do servidor (poll/navegacao):
+      // so ajusta o valor e o destaque visual, sem disparar 'change' -
+      // quem chama isso (sincronizarPicker) ja encadeia a atualizacao do
+      // capitulo/versiculo explicitamente. Disparar 'change' aqui tambem
+      // correria o risco de reprojetar de volta o que acabou de chegar.
       definir: function (codigo) {
         if (!codigo || oculto.value === codigo) {
           return;
@@ -268,7 +273,6 @@
 
         oculto.value = codigo;
         marcarAtiva(codigo);
-        dispararChange(oculto);
       },
     };
   }
@@ -443,8 +447,19 @@
       popular(null, null);
     });
     if (versaoOculto) {
+      // Trocar a versao/traducao mantem o mesmo capitulo/versiculo que ja
+      // estava selecionado (so busca o texto na nova traducao) e reprojeta
+      // automaticamente - sem isso, o clique na pill de versao nao tinha
+      // nenhum efeito ate o usuario reclicar em um versiculo.
       versaoOculto.addEventListener('change', function () {
-        popular(inicioOculto.value ? Number(inicioOculto.value) : null, fimOculto.value ? Number(fimOculto.value) : null);
+        var inicioAtual = inicioOculto.value ? Number(inicioOculto.value) : null;
+        var fimAtual = fimOculto.value ? Number(fimOculto.value) : null;
+
+        popular(inicioAtual, fimAtual).then(function () {
+          if (inicioAtual) {
+            dispararChange(inicioOculto);
+          }
+        });
       });
     }
 
