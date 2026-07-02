@@ -149,6 +149,36 @@ linguagem visual futurista do resto do dashboard:
   capitulo, versiculo em destaque) sempre que o operador navega por
   seta/poll, sem reenviar o mesmo estado de volta ao servidor.
 
+## Sprint 9 - Correcoes de video, tela cheia e sincronizacao de versao
+
+Migracao 008 (incremental, roda depois da 007):
+
+- **Bug corrigido: video as vezes nao iniciava e play/pause nao tinham
+  efeito**. Causa raiz: o callback global `onYouTubeIframeAPIReady`
+  podia nunca disparar (rede lenta, cache, extensoes de navegador
+  bloqueando o script), deixando o player do YouTube nunca ser criado -
+  so um hard-refresh "resolvia" por acaso. `telao.js` agora tem uma
+  salvaguarda: tenta periodicamente detectar a API por conta propria
+  (`window.YT.Player`) e, se nada funcionar em ~5s, reinjeta o script.
+- **Trocar a versao da biblia sem reprojetar**: corrigido tambem no
+  fluxo dos chips (ver Sprint 8) - clicar na pill de versao agora sempre
+  reprojeta com o capitulo/versiculo que ja estava selecionado.
+- **Tela cheia no telao**: duplo clique em qualquer ponto entra em tela
+  cheia; duplo clique de novo sai.
+- **Video sem interacao direta no telao**: uma camada transparente sobre
+  o iframe do YouTube bloqueia clique/toque nele - todo comando
+  (play/pausa/fadeout) precisa vir do painel do operador.
+- **Progresso do video no operador**: o telao reporta tempo atual/
+  duracao a cada 2s (`POST /projecao/{token}/video/tempo`, sem
+  incrementar a revisao geral do estado); o operador exibe uma barra de
+  progresso com o tempo exato (`mm:ss / mm:ss`), atualizada a cada poll
+  mesmo quando nada mais mudou.
+- Placeholder da versao no preletor agora mostra o codigo em maiusculas
+  (NVI/ACF/AA, como no operador) e a lista de livros tambem agrupa por
+  Antigo/Novo Testamento.
+- Tema claro passou a ser o padrao do dashboard (Sprint 8 tambem incluiu
+  essa mudanca).
+
 ## Tecnologias
 
 - PHP 8.3+

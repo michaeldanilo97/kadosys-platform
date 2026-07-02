@@ -46,11 +46,11 @@ Entregue nesta versao:
       token e tela do preletor por PIN, sincronizados por polling;
       biblia com os 66 livros em 3 traducoes - NVI, ACF, AA, importadas
       de thiagobodruk/biblia via seed_biblia.php -, busca de livro e
-      selects dependentes de capitulo/versiculo, navegacao estilo
-      Holyrics com previa do proximo versiculo, video do YouTube com
-      play/pausa/fadeout, upload de logo em Configuracoes, marcacao a
-      lapis do preletor sincronizada em tempo real com o telao via palco
-      16:9 compartilhado)
+      grade de capitulo/versiculo estilo Holyrics, navegacao com previa
+      do proximo versiculo, video do YouTube com play/pausa/fadeout e
+      progresso exato no operador, tela cheia por duplo clique no telao,
+      upload de logo em Configuracoes, marcacao a lapis do preletor
+      sincronizada em tempo real com o telao via palco 16:9 compartilhado)
 
 Ainda **nao implementados**, conforme escopo definido:
 

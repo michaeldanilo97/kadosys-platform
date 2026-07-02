@@ -300,3 +300,36 @@
     #0F172A;
   border-color: rgba(139, 92, 246, 0.2);
 }
+
+/* ---- Progresso do video (o operador nao ve o telao, so o tempo
+   reportado por ele) ---------------------------------------------------- */
+
+.video-progresso {
+  margin-top: 0.9rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.video-progresso[hidden] {
+  display: none;
+}
+
+.video-progresso-barra {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--glass-border-strong);
+  overflow: hidden;
+}
+
+.video-progresso-preenchido {
+  height: 100%;
+  width: 0%;
+  background: var(--gradient);
+  transition: width 0.4s linear;
+}
+
+.video-progresso-tempo {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}

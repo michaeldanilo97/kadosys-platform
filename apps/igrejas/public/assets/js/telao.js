@@ -8,6 +8,7 @@
   }
 
   var pollUrl = root.getAttribute('data-poll-url');
+  var tempoVideoUrl = pollUrl.replace(/\/estado$/, '/video/tempo');
   var layers = {
     blank: root.querySelector('[data-telao-layer="blank"]'),
     video: root.querySelector('[data-telao-layer="video"]'),
@@ -169,12 +170,17 @@
     }
   }
 
+  var modoAtual = null;
+
   function aplicarEstado(estado) {
     if (!estado || estado.ativo === false) {
+      modoAtual = null;
       mostrarSomente(['blank']);
 
       return;
     }
+
+    modoAtual = estado.modo;
 
     if (estado.modo === 'blank') {
       mostrarSomente(['blank']);
@@ -197,7 +203,36 @@
     }
   }
 
-  window.onYouTubeIframeAPIReady = function () {
+  /**
+   * Reporta o progresso da reproducao (tempo atual/duracao) para o
+   * servidor periodicamente - o operador nao tem acesso direto ao
+   * player (que so existe aqui, no telao), entao esse e o unico jeito
+   * dele ver o andamento exato do video.
+   */
+  function reportarTempoVideo() {
+    if (modoAtual !== 'video' || !player || typeof player.getCurrentTime !== 'function') {
+      return;
+    }
+
+    var tempoAtual = Math.floor(player.getCurrentTime() || 0);
+    var duracao = Math.floor(player.getDuration() || 0);
+
+    var dados = new URLSearchParams();
+    dados.set('tempo_atual', String(tempoAtual));
+    dados.set('duracao', String(duracao));
+
+    fetch(tempoVideoUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: dados.toString(),
+    }).catch(function () {});
+  }
+
+  function criarPlayer() {
+    if (player || !window.YT || !window.YT.Player) {
+      return;
+    }
+
     ytReady = true;
 
     player = new YT.Player('telao-player', {
@@ -207,6 +242,7 @@
         modestbranding: 1,
         rel: 0,
         playsinline: 1,
+        disablekb: 1,
       },
       videoId: pendingVideoId || undefined,
       events: {
@@ -222,7 +258,40 @@
         },
       },
     });
-  };
+  }
+
+  window.onYouTubeIframeAPIReady = criarPlayer;
+
+  // Salvaguarda: em rede lenta, cache quebrado ou o script do YouTube
+  // sendo bloqueado por algum motivo, o callback global as vezes nao
+  // dispara e o player nunca chega a ser criado - fazendo o video nunca
+  // iniciar e os botoes de play/pause do operador nao terem efeito
+  // nenhum, so resolvendo com um hard-refresh. Aqui, tenta periodicamente
+  // por conta propria enquanto o player nao existir, e como ultimo
+  // recurso reinjeta o script apos alguns segundos sem sucesso.
+  var tentativasPlayer = 0;
+  var intervaloPlayer = setInterval(function () {
+    if (player) {
+      clearInterval(intervaloPlayer);
+
+      return;
+    }
+
+    tentativasPlayer++;
+    criarPlayer();
+
+    if (!player && tentativasPlayer === 6) {
+      var scriptAntigo = document.querySelector('script[src*="youtube.com/iframe_api"]');
+
+      if (scriptAntigo) {
+        scriptAntigo.parentNode.removeChild(scriptAntigo);
+      }
+
+      var novoScript = document.createElement('script');
+      novoScript.src = 'https://www.youtube.com/iframe_api';
+      document.body.appendChild(novoScript);
+    }
+  }, 800);
 
   function poll() {
     fetch(pollUrl, { cache: 'no-store' })
@@ -265,6 +334,37 @@
 
   ajustarStage();
 
+  // Tela cheia com duplo clique em qualquer ponto do telao; duplo clique
+  // de novo sai da tela cheia.
+  function chamarSePromise(resultado) {
+    if (resultado && typeof resultado.catch === 'function') {
+      resultado.catch(function () {});
+    }
+  }
+
+  document.addEventListener('dblclick', function () {
+    var elementoFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
+
+    try {
+      if (!elementoFullscreen) {
+        var pedido = document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen;
+
+        if (pedido) {
+          chamarSePromise(pedido.call(document.documentElement));
+        }
+      } else {
+        var saida = document.exitFullscreen || document.webkitExitFullscreen;
+
+        if (saida) {
+          chamarSePromise(saida.call(document));
+        }
+      }
+    } catch (erro) {
+      // Navegador sem suporte a fullscreen ou chamada bloqueada; ignora.
+    }
+  });
+
   setInterval(poll, 1500);
+  setInterval(reportarTempoVideo, 2000);
   poll();
 })();

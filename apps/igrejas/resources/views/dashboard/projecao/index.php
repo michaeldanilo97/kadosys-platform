@@ -166,6 +166,13 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                     <button type="button" class="btn-k btn-k-ghost" data-video-acao="pausado"><i class="bi bi-pause-fill"></i> Pausar</button>
                     <button type="button" class="btn-k btn-k-ghost" data-video-acao="fadeout"><i class="bi bi-moon-fill"></i> Fadeout</button>
                 </div>
+
+                <div class="video-progresso" data-video-progresso hidden>
+                    <div class="video-progresso-barra">
+                        <div class="video-progresso-preenchido" data-video-progresso-preenchido></div>
+                    </div>
+                    <span class="video-progresso-tempo" data-video-progresso-tempo>00:00 / 00:00</span>
+                </div>
             </div>
 
             <div class="dash-panel">

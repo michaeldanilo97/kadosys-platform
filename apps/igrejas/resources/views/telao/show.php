@@ -19,6 +19,7 @@ $logoUrl = $logoPath ? $basePath . '/' . $logoPath : null;
 
     <div class="telao-layer telao-video" data-telao-layer="video">
         <div id="telao-player"></div>
+        <div class="telao-video-overlay" data-telao-video-overlay></div>
     </div>
 
     <div class="telao-layer telao-biblia" data-telao-layer="biblia">

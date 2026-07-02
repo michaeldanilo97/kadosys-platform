@@ -30,8 +30,8 @@ $basePath = $config['base_path'] ?? '';
                 <label for="preletor_versao">Versao</label>
                 <select id="preletor_versao" name="biblia_versao" data-campo="biblia_versao" required>
                     <?php foreach ($versoes as $codigo => $nome): ?>
-                        <option value="<?= htmlspecialchars($codigo, ENT_QUOTES, 'UTF-8') ?>">
-                            <?= htmlspecialchars($codigo, ENT_QUOTES, 'UTF-8') ?>
+                        <option value="<?= htmlspecialchars($codigo, ENT_QUOTES, 'UTF-8') ?>" title="<?= htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') ?>">
+                            <?= strtoupper(htmlspecialchars($codigo, ENT_QUOTES, 'UTF-8')) ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
@@ -43,7 +43,11 @@ $basePath = $config['base_path'] ?? '';
                     <input type="text" id="preletor_livro_busca" class="livro-combo-input" data-livro-combo-input placeholder="Buscar livro..." autocomplete="off" aria-expanded="false">
                     <input type="hidden" data-campo="livro_id" required>
                     <div class="livro-combo-lista" data-livro-combo-lista hidden>
+                        <?php $testamentoAtual = null; ?>
                         <?php foreach ($livros as $livro): ?>
+                            <?php if ($livro->testamento !== $testamentoAtual): $testamentoAtual = $livro->testamento; ?>
+                                <div class="livro-combo-grupo" data-livro-combo-grupo><?= $testamentoAtual === 'antigo' ? 'Antigo Testamento' : 'Novo Testamento' ?></div>
+                            <?php endif; ?>
                             <button type="button" class="livro-combo-item" data-livro-combo-item data-livro-id="<?= $livro->id ?>" data-nome="<?= htmlspecialchars($livro->nome, ENT_QUOTES, 'UTF-8') ?>" data-total-capitulos="<?= $livro->totalCapitulos ?>">
                                 <?= htmlspecialchars($livro->nome, ENT_QUOTES, 'UTF-8') ?>
                             </button>

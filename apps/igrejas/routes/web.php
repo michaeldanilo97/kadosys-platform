@@ -101,5 +101,6 @@ $router->get('/projecao/{token}/biblia/capitulo', [ProjecaoEstadoController::cla
 $router->post('/projecao/{token}/biblia/marcacao', [ProjecaoEstadoController::class, 'definirMarcacao']);
 $router->post('/projecao/{token}/video', [ProjecaoEstadoController::class, 'definirVideo']);
 $router->post('/projecao/{token}/video/estado', [ProjecaoEstadoController::class, 'definirEstadoVideo']);
+$router->post('/projecao/{token}/video/tempo', [ProjecaoEstadoController::class, 'atualizarTempoVideo']);
 $router->post('/projecao/{token}/logo', [ProjecaoEstadoController::class, 'mostrarLogo']);
 $router->post('/projecao/{token}/limpar', [ProjecaoEstadoController::class, 'limpar']);

@@ -172,6 +172,25 @@ final class ProjecaoEstadoController extends Controller
         $this->jsonResponse(['ok' => true]);
     }
 
+    /**
+     * Progresso de reproducao (tempo atual/duracao) reportado
+     * periodicamente pelo telao, para o operador ver o andamento exato
+     * do video sem precisar olhar para o projetor.
+     */
+    public function atualizarTempoVideo(string $token): void
+    {
+        $sessao = $this->sessaoOuErro($token);
+        $tempoAtual = (int) $this->request->input('tempo_atual', -1);
+        $duracao = (int) $this->request->input('duracao', -1);
+
+        if ($tempoAtual < 0 || $duracao < 0) {
+            $this->jsonResponse(['erro' => 'Dados invalidos.'], 422);
+        }
+
+        ProjecaoEstado::atualizarTempoVideo($sessao->id, $tempoAtual, $duracao);
+        $this->jsonResponse(['ok' => true]);
+    }
+
     public function mostrarLogo(string $token): void
     {
         $sessao = $this->sessaoOuErro($token);

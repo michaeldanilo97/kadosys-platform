@@ -68,6 +68,16 @@ html, body {
   height: 100%;
 }
 
+/* Bloqueia clique/toque direto no video: todo comando (play, pausa,
+   fadeout) deve vir do painel do operador, nao de alguem tocando na
+   tela do projetor. */
+.telao-video-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  cursor: default;
+}
+
 .telao-biblia {
   z-index: 3;
 }
@@ -427,6 +437,16 @@ html, body {
 
 .livro-combo-item[hidden] {
   display: none;
+}
+
+.livro-combo-grupo {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--telao-accent);
+  padding: 0.5rem 0.6rem 0.25rem;
 }
 
 .livro-combo-lista .livro-combo-item:hover,

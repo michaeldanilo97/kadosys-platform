@@ -301,6 +301,8 @@ CREATE TABLE IF NOT EXISTS projecao_estados (
     versiculo_fim SMALLINT UNSIGNED NULL,
     video_url VARCHAR(255) NULL,
     video_estado ENUM('parado', 'tocando', 'pausado', 'fadeout') NOT NULL DEFAULT 'parado',
+    video_tempo_atual SMALLINT UNSIGNED NULL,
+    video_duracao SMALLINT UNSIGNED NULL,
     versao INT UNSIGNED NOT NULL DEFAULT 1,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT projecao_estados_sessao_id_foreign

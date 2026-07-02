@@ -23,6 +23,10 @@
   var previewProximoTexto = root.querySelector('[data-preview-proximo-texto]');
   var botoesNav = root.querySelectorAll('[data-nav-acao]');
 
+  var videoProgresso = root.querySelector('[data-video-progresso]');
+  var videoProgressoPreenchido = root.querySelector('[data-video-progresso-preenchido]');
+  var videoProgressoTempo = root.querySelector('[data-video-progresso-tempo]');
+
   var lastVersao = null;
   var sincronizando = false;
 
@@ -168,12 +172,45 @@
     sincronizarPicker(biblia);
   }
 
+  function formatarTempo(segundos) {
+    var s = Math.max(0, Math.floor(segundos || 0));
+    var minutos = Math.floor(s / 60);
+    var resto = s % 60;
+
+    return (minutos < 10 ? '0' : '') + minutos + ':' + (resto < 10 ? '0' : '') + resto;
+  }
+
+  function atualizarProgressoVideo(dados) {
+    if (!videoProgresso) {
+      return;
+    }
+
+    if (!dados || dados.modo !== 'video' || !dados.video || !dados.video.duracao) {
+      videoProgresso.hidden = true;
+
+      return;
+    }
+
+    var atual = dados.video.tempoAtual || 0;
+    var duracao = dados.video.duracao;
+
+    videoProgresso.hidden = false;
+    videoProgressoPreenchido.style.width = Math.min(100, (atual / duracao) * 100) + '%';
+    videoProgressoTempo.textContent = formatarTempo(atual) + ' / ' + formatarTempo(duracao);
+  }
+
   function poll() {
     fetch(pollUrl, { cache: 'no-store' })
       .then(function (resposta) {
         return resposta.json();
       })
       .then(function (dados) {
+        // O progresso do video (tempo atual/duracao) e atualizado a
+        // cada poll mesmo sem a "versao" ter mudado - o telao reporta
+        // o tempo por um canal separado que nao bate a revisao geral
+        // do estado, de proposito (ver ProjecaoEstado::atualizarTempoVideo).
+        atualizarProgressoVideo(dados);
+
         if (dados.versao === lastVersao) {
           return;
         }

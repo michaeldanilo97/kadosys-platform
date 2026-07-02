@@ -32,6 +32,8 @@ final class ProjecaoEstado
         public readonly ?int $versiculoFim,
         public readonly ?string $videoUrl,
         public readonly string $videoEstado,
+        public readonly ?int $videoTempoAtual,
+        public readonly ?int $videoDuracao,
         public readonly int $versao,
         public readonly string $updatedAt,
     ) {
@@ -104,10 +106,28 @@ final class ProjecaoEstado
         $stmt = Database::connection()->prepare(
             'UPDATE projecao_estados SET
                 modo = "video", video_url = :video_url, video_estado = "tocando",
+                video_tempo_atual = NULL, video_duracao = NULL,
                 versao = versao + 1, updated_at = NOW()
              WHERE sessao_id = :sessao_id'
         );
         $stmt->execute(['sessao_id' => $sessaoId, 'video_url' => $url]);
+    }
+
+    /**
+     * Progresso de reproducao do video (tempo atual/duracao, em
+     * segundos), reportado periodicamente pelo telao - que e o unico
+     * lugar onde o player realmente existe. Nao incrementa "versao" de
+     * proposito: o tempo muda a cada poucos segundos e nao deve disparar
+     * o re-render completo do estado nas outras telas (so o operador le
+     * esses dois campos, para mostrar o progresso do video).
+     */
+    public static function atualizarTempoVideo(int $sessaoId, int $tempoAtual, int $duracao): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE projecao_estados SET video_tempo_atual = :tempo, video_duracao = :duracao
+             WHERE sessao_id = :sessao_id AND modo = "video"'
+        );
+        $stmt->execute(['sessao_id' => $sessaoId, 'tempo' => $tempoAtual, 'duracao' => $duracao]);
     }
 
     public static function definirEstadoVideo(int $sessaoId, string $estado): void
@@ -183,6 +203,8 @@ final class ProjecaoEstado
             'video' => [
                 'url' => $this->videoUrl,
                 'estado' => $this->videoEstado,
+                'tempoAtual' => $this->videoTempoAtual,
+                'duracao' => $this->videoDuracao,
             ],
         ];
     }
@@ -241,6 +263,8 @@ final class ProjecaoEstado
             versiculoFim: $row['versiculo_fim'] !== null ? (int) $row['versiculo_fim'] : null,
             videoUrl: $row['video_url'] ?? null,
             videoEstado: (string) $row['video_estado'],
+            videoTempoAtual: $row['video_tempo_atual'] !== null ? (int) $row['video_tempo_atual'] : null,
+            videoDuracao: $row['video_duracao'] !== null ? (int) $row['video_duracao'] : null,
             versao: (int) $row['versao'],
             updatedAt: (string) $row['updated_at'],
         );
