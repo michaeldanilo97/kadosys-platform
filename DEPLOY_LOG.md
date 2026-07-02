@@ -17,6 +17,21 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 3 - 2026-07-02
+
+**Botoes de caneta/apagar inacessiveis no preletor em telas curtas**
+
+- Causa raiz encontrada: `overflow: hidden` estava aplicado em
+  `html, body`, regra compartilhada entre o telao (projetor) e o
+  preletor (tablet). Isso e correto para o telao (nunca deve rolar),
+  mas no preletor, se o conteudo (formulario + previa + palco + barra
+  de ferramentas) ficasse mais alto que a tela do tablet, a barra com
+  os botoes "Caneta"/"Apagar marcacao" ficava fora da area visivel
+  **sem nenhum jeito de rolar ate ela** - nao era cache, o navegador
+  simplesmente nao deixava rolar a pagina. Corrigido: o bloqueio de
+  rolagem agora fica só no palco do telao, e o preletor pode rolar
+  normalmente quando precisar.
+
 ## Ajuste 2 - 2026-07-02
 
 **Video do YouTube nao tocava, cores invisiveis no tema claro**

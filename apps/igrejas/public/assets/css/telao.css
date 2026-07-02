@@ -25,14 +25,19 @@ html, body {
   background: var(--telao-bg);
   color: var(--telao-text);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  overflow: hidden;
 }
 
 /* ---- Palco de projecao --------------------------------------------------- */
 
+/* overflow:hidden fica so no palco do telao (nao em html/body, que sao
+   compartilhados com a tela do preletor) - o preletor precisa poder
+   rolar quando o conteudo (formulario + palco + barra de ferramentas)
+   e mais alto que a tela do tablet, senao a barra de caneta/apagar fica
+   inacessivel sem nenhum jeito de chegar nela. */
 .telao {
   position: fixed;
   inset: 0;
+  overflow: hidden;
   background: var(--telao-bg);
 }
 
