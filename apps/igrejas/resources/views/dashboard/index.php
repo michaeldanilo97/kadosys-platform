@@ -5,6 +5,7 @@
  * @var array $modules
  * @var int $membrosAtivos
  * @var int $novosMembros
+ * @var int $ministeriosAtivos
  */
 $basePath = $config['base_path'] ?? '';
 $firstName = explode(' ', trim($user?->name ?? 'Usuario'))[0];
@@ -38,11 +39,11 @@ $firstName = explode(' ', trim($user?->name ?? 'Usuario'))[0];
     <div class="kpi-card">
         <div class="kpi-top">
             <div class="kpi-icon violet"><i class="bi bi-diagram-3"></i></div>
-            <span class="kpi-trend neutral"><i class="bi bi-dash"></i> aguardando dados</span>
+            <span class="kpi-trend neutral"><i class="bi bi-diagram-3"></i> ativos</span>
         </div>
-        <div class="value">--</div>
+        <div class="value"><?= $ministeriosAtivos ?></div>
         <div class="label">Ministerios</div>
-        <div class="delta">Disponivel no modulo Ministerios</div>
+        <div class="delta"><a href="<?= $basePath ?>/dashboard/ministerios">Ver todos os ministerios</a></div>
     </div>
     <div class="kpi-card">
         <div class="kpi-top">

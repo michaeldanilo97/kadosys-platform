@@ -88,6 +88,23 @@ final class Membro
     }
 
     /**
+     * Lista enxuta de membros ativos (id + nome), ordenada por nome.
+     * Usada em selects de outros modulos (ex.: lider/voluntarios de
+     * ministerios), sem o custo de paginacao completa.
+     *
+     * @return array<int, self>
+     */
+    public static function allActive(): array
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT * FROM membros WHERE status = 'ativo' ORDER BY nome ASC"
+        );
+        $stmt->execute();
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /**
      * @param array<string, mixed> $data
      */
     public static function create(array $data): int
@@ -178,7 +195,12 @@ final class Membro
         return $value === '' ? null : $value;
     }
 
-    private static function fromRow(array $row): self
+    /**
+     * Hidrata uma instancia a partir de uma linha bruta do banco. Publico
+     * para permitir reaproveitamento por outros models que fazem JOIN com
+     * a tabela membros (ex.: Ministerio::voluntarios()).
+     */
+    public static function fromRow(array $row): self
     {
         return new self(
             id: (int) $row['id'],

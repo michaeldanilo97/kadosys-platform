@@ -37,6 +37,9 @@ Entregue nesta versao:
 
 - [x] Modulo Membros (cadastro, listagem com busca e paginacao, edicao e
       remocao; KPI de membros ativos no dashboard)
+- [x] Modulo Ministerios (cadastro, lider, gestao de voluntarios,
+      listagem com busca e paginacao; KPI de ministerios ativos no
+      dashboard)
 
 Ainda **nao implementados**, conforme escopo definido:
 

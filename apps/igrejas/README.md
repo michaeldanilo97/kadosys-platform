@@ -32,6 +32,17 @@ Primeiro modulo de negocio implementado (v2 do roadmap):
 - Edicao e remocao, com validacao e mensagens de sucesso/erro.
 - KPI "Membros ativos" no dashboard, com contagem de novos membros no mes.
 
+## Sprint 3 - Modulo Ministerios
+
+Segundo modulo de negocio implementado (v2 do roadmap):
+
+- Cadastro de ministerios (nome, descricao, lider e status).
+- Lider selecionado entre os membros ativos.
+- Gestao de voluntarios: adicionar/remover membros vinculados a cada
+  ministerio (relacao muitos-para-muitos).
+- Listagem com busca por nome e paginacao.
+- KPI "Ministerios" no dashboard, com contagem de ministerios ativos.
+
 ## Tecnologias
 
 - PHP 8.3+
@@ -63,8 +74,9 @@ apps/igrejas/
 │   │                            View, Database, Session, Csrf, Auth, Request)
 │   │   └── Middleware/        # GuestMiddleware, AuthMiddleware
 │   ├── Controllers/           # LandingController, AuthController,
-│   │                            DashboardController
-│   └── Models/                # User
+│   │                            DashboardController, MembroController,
+│   │                            MinisterioController
+│   └── Models/                # User, Membro, Ministerio
 ├── resources/
 │   └── views/
 │       ├── layouts/           # landing, auth, dashboard
@@ -76,6 +88,7 @@ apps/igrejas/
 │   ├── install.sql             # instalacao completa (todas as migracoes)
 │   ├── migrations/001_create_tables.sql
 │   ├── migrations/002_create_membros_table.sql
+│   ├── migrations/003_create_ministerios_tables.sql
 │   └── seed_admin.php         # cria/atualiza o usuario administrador
 └── storage/
     └── logs/
@@ -95,6 +108,7 @@ apps/igrejas/
    # b) migracoes numeradas, uma a uma, em ordem
    mysql -u usuario -p nome_do_banco < database/migrations/001_create_tables.sql
    mysql -u usuario -p nome_do_banco < database/migrations/002_create_membros_table.sql
+   mysql -u usuario -p nome_do_banco < database/migrations/003_create_ministerios_tables.sql
    ```
    A cada novo modulo implementado, uma nova migracao numerada e criada em
    `database/migrations/` e `database/install.sql` e atualizado para
@@ -128,6 +142,14 @@ apps/igrejas/
 | `/dashboard/membros/{id}/editar`       | Formulario de edicao                | AuthMiddleware   |
 | `POST /dashboard/membros/{id}`         | Atualiza membro                     | AuthMiddleware   |
 | `POST /dashboard/membros/{id}/excluir` | Remove membro                       | AuthMiddleware   |
+| `/dashboard/ministerios`               | Listagem de ministerios (busca/paginacao) | AuthMiddleware |
+| `/dashboard/ministerios/novo`          | Formulario de novo ministerio       | AuthMiddleware   |
+| `POST /dashboard/ministerios`          | Cadastra ministerio                 | AuthMiddleware   |
+| `/dashboard/ministerios/{id}/editar`   | Formulario de edicao (e voluntarios) | AuthMiddleware  |
+| `POST /dashboard/ministerios/{id}`     | Atualiza ministerio                 | AuthMiddleware   |
+| `POST /dashboard/ministerios/{id}/excluir` | Remove ministerio                | AuthMiddleware   |
+| `POST /dashboard/ministerios/{id}/voluntarios` | Adiciona voluntario         | AuthMiddleware   |
+| `POST /dashboard/ministerios/{id}/voluntarios/{membroId}/remover` | Remove voluntario | AuthMiddleware |
 | `/dashboard/{slug}`                    | Estrutura dos demais modulos do menu | AuthMiddleware  |
 | `POST /logout`                         | Encerra a sessao                    | AuthMiddleware   |
 

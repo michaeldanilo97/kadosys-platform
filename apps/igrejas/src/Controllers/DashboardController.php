@@ -7,6 +7,7 @@ namespace Igrejas\Controllers;
 use Igrejas\Core\Auth;
 use Igrejas\Core\Controller;
 use Igrejas\Models\Membro;
+use Igrejas\Models\Ministerio;
 
 /**
  * Controller do Dashboard administrativo.
@@ -106,6 +107,7 @@ final class DashboardController extends Controller
             'modules' => self::modules(),
             'membrosAtivos' => Membro::countActive(),
             'novosMembros' => Membro::countCreatedSince($inicioDoMes),
+            'ministeriosAtivos' => Ministerio::countActive(),
         ], 'dashboard');
     }
 

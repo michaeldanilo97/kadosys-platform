@@ -6,6 +6,7 @@ use Igrejas\Controllers\AuthController;
 use Igrejas\Controllers\DashboardController;
 use Igrejas\Controllers\LandingController;
 use Igrejas\Controllers\MembroController;
+use Igrejas\Controllers\MinisterioController;
 use Igrejas\Core\Middleware\AuthMiddleware;
 use Igrejas\Core\Middleware\GuestMiddleware;
 
@@ -38,6 +39,16 @@ $router->post('/dashboard/membros', [MembroController::class, 'store'], [AuthMid
 $router->get('/dashboard/membros/{id}/editar', [MembroController::class, 'edit'], [AuthMiddleware::class]);
 $router->post('/dashboard/membros/{id}', [MembroController::class, 'update'], [AuthMiddleware::class]);
 $router->post('/dashboard/membros/{id}/excluir', [MembroController::class, 'destroy'], [AuthMiddleware::class]);
+
+// Modulo Ministerios. Mesmo motivo: precisam vir antes do catch-all.
+$router->get('/dashboard/ministerios', [MinisterioController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/ministerios/novo', [MinisterioController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/ministerios', [MinisterioController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/ministerios/{id}/editar', [MinisterioController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/dashboard/ministerios/{id}', [MinisterioController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/ministerios/{id}/excluir', [MinisterioController::class, 'destroy'], [AuthMiddleware::class]);
+$router->post('/dashboard/ministerios/{id}/voluntarios', [MinisterioController::class, 'addVoluntario'], [AuthMiddleware::class]);
+$router->post('/dashboard/ministerios/{id}/voluntarios/{membroId}/remover', [MinisterioController::class, 'removeVoluntario'], [AuthMiddleware::class]);
 
 // Estrutura "em construcao" dos demais modulos do menu (catch-all).
 $router->get('/dashboard/{slug}', [DashboardController::class, 'page'], [AuthMiddleware::class]);

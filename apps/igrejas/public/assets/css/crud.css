@@ -471,6 +471,71 @@
   padding-top: 0.4rem;
 }
 
+/* ---- Formulario inline (ex.: adicionar voluntario a um ministerio) ------------------ */
+
+.crud-inline-form {
+  display: flex;
+  gap: 0.7rem;
+  margin-bottom: 0.4rem;
+}
+
+.crud-inline-form select {
+  flex: 1;
+  max-width: 340px;
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid var(--glass-border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--white);
+  padding: 0.6rem 0.9rem;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  cursor: pointer;
+  color-scheme: dark;
+}
+
+[data-theme="light"] .crud-inline-form select {
+  background: #FFFFFF;
+  border-color: rgba(30, 41, 59, 0.15);
+  color: #0F172A;
+  color-scheme: light;
+}
+
+.crud-inline-form select:focus {
+  outline: none;
+  border-color: rgba(96, 165, 250, 0.75);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.14);
+}
+
+/* ---- Lista de pessoas (ex.: voluntarios de um ministerio) ---------------------------- */
+
+.crud-people-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.crud-people-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+[data-theme="light"] .crud-people-list li {
+  background: rgba(30, 41, 59, 0.03);
+  border-color: rgba(30, 41, 59, 0.1);
+}
+
+.crud-people-list form {
+  display: inline;
+}
+
 /* ---- Responsivo --------------------------------------------------------------------- */
 
 @media (max-width: 767px) {
@@ -488,5 +553,13 @@
 
   .crud-form-actions .btn-k {
     width: 100%;
+  }
+
+  .crud-inline-form {
+    flex-direction: column;
+  }
+
+  .crud-inline-form select {
+    max-width: none;
   }
 }

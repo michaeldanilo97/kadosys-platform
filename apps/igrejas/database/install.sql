@@ -1,8 +1,9 @@
 -- KADOSYS Igrejas - Instalacao completa do banco de dados
 -- ============================================================================
 -- Este arquivo reune, em ordem, TODAS as migracoes ja criadas em
--- database/migrations/ ate o momento (001 e 002). Ele existe apenas para
--- facilitar a instalacao inicial (rodar um unico arquivo em vez de varios).
+-- database/migrations/ ate o momento (001, 002 e 003). Ele existe apenas
+-- para facilitar a instalacao inicial (rodar um unico arquivo em vez de
+-- varios).
 --
 -- As migracoes numeradas em database/migrations/ continuam sendo a fonte
 -- de verdade e o historico incremental do banco: sempre que um novo modulo
@@ -15,6 +16,7 @@
 --   b) Rodar as migracoes numeradas uma a uma, em ordem:
 --        mysql -u usuario -p nome_do_banco < database/migrations/001_create_tables.sql
 --        mysql -u usuario -p nome_do_banco < database/migrations/002_create_membros_table.sql
+--        mysql -u usuario -p nome_do_banco < database/migrations/003_create_ministerios_tables.sql
 -- ============================================================================
 
 
@@ -85,4 +87,35 @@ CREATE TABLE IF NOT EXISTS membros (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     KEY membros_nome_index (nome),
     KEY membros_status_index (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ----------------------------------------------------------------------------
+-- 003 - Modulo Ministerios
+-- ----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS ministerios (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    descricao TEXT NULL,
+    lider_membro_id INT UNSIGNED NULL,
+    status ENUM('ativo', 'inativo') NOT NULL DEFAULT 'ativo',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY ministerios_nome_index (nome),
+    KEY ministerios_status_index (status),
+    CONSTRAINT ministerios_lider_membro_id_foreign
+        FOREIGN KEY (lider_membro_id) REFERENCES membros (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS ministerio_membros (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    ministerio_id INT UNSIGNED NOT NULL,
+    membro_id INT UNSIGNED NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY ministerio_membros_unique (ministerio_id, membro_id),
+    CONSTRAINT ministerio_membros_ministerio_id_foreign
+        FOREIGN KEY (ministerio_id) REFERENCES ministerios (id) ON DELETE CASCADE,
+    CONSTRAINT ministerio_membros_membro_id_foreign
+        FOREIGN KEY (membro_id) REFERENCES membros (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
