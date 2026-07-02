@@ -199,6 +199,7 @@ CREATE TABLE IF NOT EXISTS biblia_versiculos (
     capitulo SMALLINT UNSIGNED NOT NULL,
     versiculo SMALLINT UNSIGNED NOT NULL,
     texto TEXT NOT NULL,
+    KEY biblia_versiculos_livro_id_index (livro_id),
     UNIQUE KEY biblia_versiculos_unique (versao, livro_id, capitulo, versiculo),
     KEY biblia_versiculos_capitulo_index (versao, livro_id, capitulo),
     CONSTRAINT biblia_versiculos_livro_id_foreign
