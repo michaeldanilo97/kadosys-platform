@@ -17,6 +17,22 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 2 - 2026-07-02
+
+**Video do YouTube nao tocava, cores invisiveis no tema claro**
+
+- Video as vezes carregava mas o Play do operador nao tinha efeito: o
+  comando chega no telao via polling, sem gesto direto do usuario
+  naquela pagina, e o navegador pode bloquear silenciosamente o play()
+  com som nesse caso. Agora o telao mostra um aviso "Toque na tela uma
+  vez para habilitar o audio automatico" ate o primeiro toque - depois
+  disso o video volta a responder aos comandos do operador
+  normalmente.
+- Corrigidas varias cores de texto que ficavam quase invisiveis no tema
+  claro (numeros de capitulo/versiculo, pills de versao inativas,
+  tempo do video) - agora usam cinza escuro em vez do cinza claro
+  pensado pra fundo escuro.
+
 ## Ajuste 1 - 2026-07-02
 
 **Criacao do log de deploy**

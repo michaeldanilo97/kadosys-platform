@@ -39,6 +39,10 @@ $logoUrl = $logoPath ? $basePath . '/' . $logoPath : null;
             <span class="telao-logo-fallback" data-telao-logo-fallback>KADOSYS Igrejas</span>
         <?php endif; ?>
     </div>
+
+    <div class="telao-aviso-audio" data-telao-audio-unlock>
+        <i class="bi bi-volume-up-fill"></i> Toque na tela uma vez para habilitar o audio automatico do video
+    </div>
 </div>
 
 <script type="application/json" id="telao-estado-inicial"><?= json_encode($estadoInicial) ?: 'null' ?></script>

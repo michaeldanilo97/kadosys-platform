@@ -333,3 +333,34 @@
   font-size: 0.78rem;
   color: var(--text-muted);
 }
+
+/* ---- Tema claro: as cores de --text/--text-muted/--text-dim sao
+   pensadas para texto claro sobre fundo escuro (tema padrao antigo).
+   No tema claro, sem essas correcoes, ficam quase invisiveis sobre o
+   fundo branco - troca por cinzas escuros (mesma paleta ja usada em
+   crud.css/dashboard.css para o tema claro). ------------------------- */
+
+[data-theme="light"] .biblia-secao-label,
+[data-theme="light"] .biblia-secao-label .hint,
+[data-theme="light"] .biblia-livro-field .bi-search {
+  color: #64748B;
+}
+
+[data-theme="light"] .biblia-pill {
+  color: #334155;
+}
+
+[data-theme="light"] .biblia-chip {
+  color: #0F172A;
+}
+
+[data-theme="light"] .video-progresso-tempo {
+  color: #334155;
+}
+
+/* :hover troca a cor para --white, que tambem some no tema claro (o
+   fundo do chip/pill no :hover continua praticamente branco). */
+[data-theme="light"] .biblia-pill:hover,
+[data-theme="light"] .biblia-chip:hover {
+  color: #0F172A;
+}

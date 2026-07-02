@@ -27,6 +27,9 @@
   var currentVideoId = null;
   var pendingVideo = null;
   var pendingVideoId = null;
+  var ultimoEstadoVideo = null;
+  var audioDesbloqueado = false;
+  var avisoAudio = root.querySelector('[data-telao-audio-unlock]');
 
   function extrairIdYoutube(url) {
     if (!url) {
@@ -155,6 +158,8 @@
       return;
     }
 
+    ultimoEstadoVideo = video.estado;
+
     if (video.estado === 'pausado' || video.estado === 'fadeout') {
       try {
         player.pauseVideo();
@@ -166,6 +171,14 @@
         player.playVideo();
       } catch (erro) {
         // Player ainda nao pronto; sera reaplicado no proximo poll.
+      }
+
+      // O comando de play chega aqui via polling, sem gesto direto do
+      // usuario nesta pagina - navegadores podem bloquear silenciosamente
+      // esse play() ate haver uma interacao real na tela do telao. Se
+      // ainda nao houve nenhum toque, mostra o aviso pedindo um toque.
+      if (!audioDesbloqueado && avisoAudio) {
+        avisoAudio.classList.add('is-visivel');
       }
     }
   }
@@ -361,6 +374,26 @@
       }
     } catch (erro) {
       // Navegador sem suporte a fullscreen ou chamada bloqueada; ignora.
+    }
+  });
+
+  // Primeiro toque/clique na tela do telao "destrava" o autoplay com som
+  // no navegador (necessario porque o comando de play chega por polling,
+  // sem gesto direto do usuario) - e reaplica o video se ele deveria
+  // estar tocando mas ficou bloqueado silenciosamente.
+  document.addEventListener('click', function () {
+    audioDesbloqueado = true;
+
+    if (avisoAudio) {
+      avisoAudio.classList.remove('is-visivel');
+    }
+
+    if (player && ultimoEstadoVideo === 'tocando') {
+      try {
+        player.playVideo();
+      } catch (erro) {
+        // Ignora; sera reaplicado no proximo poll ou proximo toque.
+      }
     }
   });
 

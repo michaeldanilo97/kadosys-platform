@@ -165,6 +165,40 @@ html, body {
   text-transform: uppercase;
 }
 
+/* ---- Aviso "toque para habilitar audio" ------------------------------------ */
+
+.telao-aviso-audio {
+  position: fixed;
+  left: 50%;
+  bottom: 2.2rem;
+  transform: translate(-50%, 0.6rem);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1.3rem;
+  border-radius: 999px;
+  background: rgba(5, 7, 13, 0.92);
+  border: 1px solid rgba(212, 161, 63, 0.4);
+  color: var(--telao-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.telao-aviso-audio.is-visivel {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.telao-aviso-audio i {
+  color: var(--telao-accent);
+  font-size: 1.1rem;
+}
+
 /* ---- Encerrado / aguardando ------------------------------------------------ */
 
 .telao-status {
