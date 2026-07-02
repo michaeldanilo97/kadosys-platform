@@ -350,6 +350,14 @@ html, body {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  /* Alguns tablets (ex.: Taskbar dos tablets Samsung/One UI) mostram uma
+     barra de sistema fixa por cima da pagina, cobrindo a parte de baixo
+     da tela sem que o navegador reporte isso via 100vh/100dvh. Reserva
+     um respiro extra no rodape para o conteudo nunca ficar colado na
+     borda inferior real da tela. env(safe-area-inset-bottom) cobre
+     casos onde o navegador reporta a area segura corretamente; o valor
+     fixo cobre os que nao reportam. */
+  padding-bottom: max(90px, calc(24px + env(safe-area-inset-bottom, 0px)));
 }
 
 .preletor-topbar {

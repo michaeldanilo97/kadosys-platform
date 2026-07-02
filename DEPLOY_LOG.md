@@ -17,6 +17,25 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 6 - 2026-07-02
+
+**Causa real identificada: barra de sistema (Taskbar) do tablet cobrindo os botoes**
+
+- Com o print enviado, ficou claro: nao era bug de rolagem nem de CSS -
+  era a barra de sistema do tablet (tipo a "Taskbar" dos tablets
+  Samsung/One UI, com os icones de apps e navegacao) sobrepondo a parte
+  de baixo da pagina, exatamente onde ficavam os botoes "Caneta"/
+  "Apagar marcacao". A pagina renderizava tudo certo, so que por baixo
+  dessa barra do sistema, sem o navegador avisar isso via 100vh/100dvh.
+- Adicionada uma margem de seguranca no rodape da tela do preletor
+  (`padding-bottom`, usando `env(safe-area-inset-bottom)` quando o
+  navegador reporta certo, com um valor minimo fixo por garantia), para
+  o conteudo nunca ficar colado na borda real da tela.
+- O zoom (belisca-tela) tambem estava desativado de proposito no
+  codigo (pensado para uma tela fixa tipo app) - isso impedia o usuario
+  de ter qualquer jeito de contornar problemas assim manualmente.
+  Zoom liberado.
+
 ## Ajuste 5 - 2026-07-02
 
 **Tentativa adicional para o problema do tablet (ainda investigando)**
