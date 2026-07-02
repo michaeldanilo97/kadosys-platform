@@ -73,6 +73,7 @@ apps/igrejas/
 │   ├── config.php             # configuracao geral (base_path automatico)
 │   └── database.php           # credenciais via variaveis de ambiente
 ├── database/
+│   ├── install.sql             # instalacao completa (todas as migracoes)
 │   ├── migrations/001_create_tables.sql
 │   ├── migrations/002_create_membros_table.sql
 │   └── seed_admin.php         # cria/atualiza o usuario administrador
@@ -85,11 +86,19 @@ apps/igrejas/
 1. Configure as variaveis de ambiente do banco (ou edite os fallbacks em
    `config/database.php`): `DB_HOST`, `DB_PORT`, `DB_DATABASE`,
    `DB_USERNAME`, `DB_PASSWORD`.
-2. Crie o banco de dados e rode as migracoes, em ordem:
+2. Crie o banco de dados e rode as migracoes. Duas formas equivalentes
+   (use apenas uma delas):
    ```
+   # a) instalacao completa em um unico arquivo (recomendado)
+   mysql -u usuario -p nome_do_banco < database/install.sql
+
+   # b) migracoes numeradas, uma a uma, em ordem
    mysql -u usuario -p nome_do_banco < database/migrations/001_create_tables.sql
    mysql -u usuario -p nome_do_banco < database/migrations/002_create_membros_table.sql
    ```
+   A cada novo modulo implementado, uma nova migracao numerada e criada em
+   `database/migrations/` e `database/install.sql` e atualizado para
+   refletir o schema completo mais recente.
 3. Crie o usuario administrador inicial:
    ```
    php database/seed_admin.php "Administrador" "[email protected]" "senha-forte"
