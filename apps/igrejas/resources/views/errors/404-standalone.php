@@ -19,47 +19,56 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #16213a;
-            color: #f6f3ea;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background:
+                radial-gradient(ellipse 60% 45% at 20% 10%, rgba(59, 130, 246, 0.16), transparent 60%),
+                radial-gradient(ellipse 55% 40% at 85% 85%, rgba(139, 92, 246, 0.16), transparent 62%),
+                #0F172A;
+            color: #E5E7EB;
             text-align: center;
             padding: 2rem;
         }
-        .folio {
+        .kicker {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.78rem;
+            font-size: 0.76rem;
             letter-spacing: 0.14em;
             text-transform: uppercase;
-            color: #b6862c;
+            color: #60A5FA;
             margin-bottom: 1rem;
         }
         h1 {
-            font-size: 4rem;
+            font-size: 5rem;
             margin: 0 0 0.6rem;
-            font-weight: 700;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         p {
-            color: rgba(246, 243, 234, 0.7);
+            color: #9CA3AF;
             margin: 0 0 2rem;
         }
         a {
             display: inline-block;
-            padding: 0.8rem 1.6rem;
-            border: 1px solid rgba(246, 243, 234, 0.3);
-            border-radius: 4px;
-            color: #f6f3ea;
+            padding: 0.85rem 1.8rem;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            color: #FFFFFF;
             text-decoration: none;
-            font-weight: 700;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
         a:hover {
-            border-color: #b6862c;
-            color: #d4a13f;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
         }
     </style>
 </head>
 <body>
     <div>
-        <div class="folio">Folio nao encontrado</div>
+        <div class="kicker">Rota nao encontrada</div>
         <h1>404</h1>
         <p>A pagina que voce procura nao existe ou foi movida.</p>
         <a href="<?= ($this->config['base_path'] ?? '') !== '' ? $this->config['base_path'] : '/' ?>">Voltar para o inicio</a>

@@ -55,7 +55,7 @@ $basePath = $config['base_path'] ?? '';
             <a href="<?= $basePath ?>/esqueci-senha">Esqueci minha senha</a>
         </div>
 
-        <button type="submit" class="btn-kadosys btn-primary-kadosys">Entrar</button>
+        <button type="submit" class="btn-k btn-k-grad">Entrar <i class="bi bi-arrow-right"></i></button>
     </form>
 
     <a href="<?= $basePath ?>/" class="auth-back-link">

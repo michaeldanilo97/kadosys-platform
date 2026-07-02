@@ -13,23 +13,31 @@ $basePath = $config['base_path'] ?? '';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle ?? 'KADOSYS Igrejas', ENT_QUOTES, 'UTF-8') ?></title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/[email protected]/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/[email protected]/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="<?= $basePath ?>/assets/css/app.css">
     <link rel="stylesheet" href="<?= $basePath ?>/assets/css/auth.css">
 </head>
 <body>
 
+<div class="bg-aurora" aria-hidden="true"></div>
+<div class="bg-grid" aria-hidden="true"></div>
+
 <div class="auth-shell">
     <aside class="auth-aside">
-        <a href="<?= $basePath ?>/" class="auth-aside-brand">
+        <a href="<?= $basePath ?>/" class="auth-aside-brand brand-mark">
             <span class="seal">K</span>
-            KADOSYS Igrejas
+            <span class="text-gradient">KADOSYS</span>&nbsp;Igrejas
         </a>
 
         <div class="auth-aside-quote">
-            <div class="folio-label">Folio de acesso</div>
-            <h2>Cada registro da sua igreja, <em>guardado em um so lugar</em>.</h2>
+            <span class="eyebrow">Plataforma inteligente</span>
+            <h2>A gestao da sua igreja, <span class="text-gradient">conectada ao futuro</span>.</h2>
+            <div class="auth-aside-points">
+                <div><i class="bi bi-shield-check"></i> Dados exclusivos da sua igreja</div>
+                <div><i class="bi bi-cloud-check"></i> Acesso de qualquer lugar</div>
+                <div><i class="bi bi-stars"></i> Insights com IA em breve</div>
+            </div>
         </div>
 
         <div class="auth-aside-foot">kadosys.com.br/apps/igrejas</div>
@@ -40,6 +48,6 @@ $basePath = $config['base_path'] ?? '';
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/[email protected]/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

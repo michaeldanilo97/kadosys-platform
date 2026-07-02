@@ -32,7 +32,7 @@ $basePath = $config['base_path'] ?? '';
             >
         </div>
 
-        <button type="submit" class="btn-kadosys btn-primary-kadosys">Enviar instrucoes</button>
+        <button type="submit" class="btn-k btn-k-grad">Enviar instrucoes <i class="bi bi-send"></i></button>
     </form>
 
     <a href="<?= $basePath ?>/login" class="auth-back-link">
