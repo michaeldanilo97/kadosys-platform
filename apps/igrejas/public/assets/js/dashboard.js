@@ -6,6 +6,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     initTheme();
     initSidebar();
+    initSearchShortcut();
   });
 
   function initTheme() {
@@ -19,7 +20,8 @@
       storedTheme = null;
     }
 
-    var theme = storedTheme || 'light';
+    // O tema padrao do painel e o escuro (visual Tech/IA).
+    var theme = storedTheme === 'light' ? 'light' : 'dark';
     applyTheme(body, theme);
 
     if (!toggleBtn) {
@@ -27,8 +29,8 @@
     }
 
     toggleBtn.addEventListener('click', function () {
-      var current = body.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-      var next = current === 'dark' ? 'light' : 'dark';
+      var current = body.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+      var next = current === 'light' ? 'dark' : 'light';
 
       applyTheme(body, next);
 
@@ -41,15 +43,15 @@
   }
 
   function applyTheme(body, theme) {
-    if (theme === 'dark') {
-      body.setAttribute('data-theme', 'dark');
+    if (theme === 'light') {
+      body.setAttribute('data-theme', 'light');
     } else {
       body.removeAttribute('data-theme');
     }
 
     var icon = document.querySelector('[data-theme-icon]');
     if (icon) {
-      icon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+      icon.className = theme === 'light' ? 'bi bi-moon-stars' : 'bi bi-sun';
     }
   }
 
@@ -74,5 +76,23 @@
 
     openBtn.addEventListener('click', open);
     overlay.addEventListener('click', close);
+  }
+
+  function initSearchShortcut() {
+    var input = document.querySelector('.dash-topbar-search input');
+
+    if (!input) {
+      return;
+    }
+
+    document.addEventListener('keydown', function (event) {
+      var target = event.target;
+      var isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+
+      if (event.key === '/' && !isTyping) {
+        event.preventDefault();
+        input.focus();
+      }
+    });
   }
 })();

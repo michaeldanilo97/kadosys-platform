@@ -24,8 +24,8 @@ $userInitial = mb_strtoupper(mb_substr($userName, 0, 1));
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle ?? 'Dashboard - KADOSYS Igrejas', ENT_QUOTES, 'UTF-8') ?></title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/[email protected]/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/[email protected]/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="<?= $basePath ?>/assets/css/app.css">
     <link rel="stylesheet" href="<?= $basePath ?>/assets/css/dashboard.css">
 </head>
@@ -37,7 +37,7 @@ $userInitial = mb_strtoupper(mb_substr($userName, 0, 1));
     <aside class="dash-sidebar" data-dash-sidebar>
         <a href="<?= $basePath ?>/dashboard" class="dash-sidebar-brand">
             <span class="seal">K</span>
-            KADOSYS Igrejas
+            <span><span class="text-gradient">KADOSYS</span> Igrejas</span>
         </a>
 
         <nav class="dash-nav">
@@ -56,6 +56,11 @@ $userInitial = mb_strtoupper(mb_substr($userName, 0, 1));
         </nav>
 
         <div class="dash-sidebar-footer">
+            <div class="dash-ai-card">
+                <div class="dash-ai-title"><i class="bi bi-stars"></i> Assistente IA</div>
+                <p>Insights automaticos sobre membros, financas e engajamento chegam em breve.</p>
+            </div>
+
             <form method="POST" action="<?= $basePath ?>/logout">
                 <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars(Csrf::token(), ENT_QUOTES, 'UTF-8') ?>">
                 <button type="submit" class="dash-logout-btn">
@@ -82,9 +87,20 @@ $userInitial = mb_strtoupper(mb_substr($userName, 0, 1));
                 </div>
             </div>
 
+            <div class="dash-topbar-search">
+                <i class="bi bi-search"></i>
+                <input type="search" placeholder="Buscar membros, cultos, lancamentos..." aria-label="Buscar no sistema">
+                <span class="kbd">/</span>
+            </div>
+
             <div class="dash-topbar-right">
-                <button class="theme-toggle-btn" data-theme-toggle aria-label="Alternar tema claro/escuro">
-                    <i class="bi bi-moon-stars" data-theme-icon></i>
+                <button class="topbar-icon-btn" type="button" aria-label="Notificacoes">
+                    <i class="bi bi-bell"></i>
+                    <span class="dot"></span>
+                </button>
+
+                <button class="topbar-icon-btn" data-theme-toggle aria-label="Alternar tema claro/escuro">
+                    <i class="bi bi-sun" data-theme-icon></i>
                 </button>
 
                 <div class="topbar-user">
@@ -100,7 +116,7 @@ $userInitial = mb_strtoupper(mb_substr($userName, 0, 1));
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/[email protected]/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?= $basePath ?>/assets/js/dashboard.js"></script>
 </body>
 </html>

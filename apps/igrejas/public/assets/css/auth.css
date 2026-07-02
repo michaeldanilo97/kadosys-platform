@@ -1,89 +1,88 @@
 /* ==========================================================================
-   KADOSYS Igrejas - Autenticacao
+   KADOSYS Igrejas - Autenticacao (visual futurista Tech/IA)
    ========================================================================== */
 
 .auth-shell {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 1fr 1fr;
+  position: relative;
+  z-index: 1;
 }
 
+/* ---- Painel lateral -------------------------------------------------------- */
+
 .auth-aside {
-  background: var(--ink);
-  color: var(--paper);
   padding: 3rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   position: relative;
   overflow: hidden;
+  border-right: 1px solid var(--glass-border);
+  background:
+    radial-gradient(ellipse 70% 50% at 20% 15%, rgba(59, 130, 246, 0.16), transparent 60%),
+    radial-gradient(ellipse 60% 45% at 85% 80%, rgba(139, 92, 246, 0.16), transparent 62%),
+    rgba(8, 12, 20, 0.6);
 }
 
 .auth-aside::before {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent,
-    transparent 43px,
-    rgba(246, 243, 234, 0.06) 44px
-  );
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 25%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 25%, transparent 75%);
   pointer-events: none;
 }
 
 .auth-aside-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.2rem;
   position: relative;
-}
-
-.auth-aside-brand .seal {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 1.5px solid var(--gold);
-  color: var(--gold);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
 }
 
 .auth-aside-quote {
   position: relative;
-  max-width: 380px;
-}
-
-.auth-aside-quote .folio-label {
-  color: rgba(246, 243, 234, 0.55);
-  margin-bottom: 1rem;
+  max-width: 420px;
 }
 
 .auth-aside-quote h2 {
   font-family: var(--font-display);
-  font-size: 1.7rem;
-  line-height: 1.3;
-  font-weight: 500;
-  margin: 0;
+  font-size: 1.9rem;
+  line-height: 1.25;
+  font-weight: 700;
+  margin: 1.2rem 0 1.8rem;
+  color: var(--white);
 }
 
-.auth-aside-quote h2 em {
-  color: var(--gold);
-  font-style: italic;
+.auth-aside-points {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.auth-aside-points div {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.auth-aside-points i {
+  color: var(--primary-soft);
+  font-size: 1.05rem;
 }
 
 .auth-aside-foot {
   position: relative;
   font-family: var(--font-mono);
   font-size: 0.76rem;
-  color: rgba(246, 243, 234, 0.5);
+  color: var(--text-dim);
 }
+
+/* ---- Lado do formulario ------------------------------------------------------ */
 
 .auth-form-side {
   display: flex;
@@ -94,18 +93,26 @@
 
 .auth-form-card {
   width: 100%;
-  max-width: 380px;
+  max-width: 420px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 2.4rem 2.2rem;
+  box-shadow: 0 0 40px rgba(59, 130, 246, 0.1), 0 24px 60px rgba(0, 0, 0, 0.35);
 }
 
 .auth-form-card .eyebrow {
-  margin-bottom: 0.6rem;
+  margin-bottom: 1rem;
 }
 
 .auth-form-card h1 {
   font-family: var(--font-display);
-  font-size: 1.9rem;
-  font-weight: 600;
+  font-size: 1.85rem;
+  font-weight: 700;
   margin: 0 0 0.5rem;
+  color: var(--white);
 }
 
 .auth-form-card .subtitle {
@@ -121,20 +128,30 @@
 .auth-field label {
   display: block;
   font-size: 0.84rem;
-  font-weight: 700;
-  margin-bottom: 0.4rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.45rem;
 }
 
 .auth-field .form-control {
   border-radius: var(--radius-sm);
-  border: 1px solid var(--line-strong);
-  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--glass-border-strong);
+  background: rgba(15, 23, 42, 0.72);
+  color: var(--white);
+  padding: 0.75rem 1rem;
   font-size: 0.95rem;
+  transition: var(--transition);
+}
+
+.auth-field .form-control::placeholder {
+  color: var(--text-dim);
 }
 
 .auth-field .form-control:focus {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(182, 134, 44, 0.18);
+  background: rgba(15, 23, 42, 0.9);
+  border-color: rgba(96, 165, 250, 0.75);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.16);
+  color: var(--white);
 }
 
 .auth-options {
@@ -143,15 +160,21 @@
   justify-content: space-between;
   margin-bottom: 1.6rem;
   font-size: 0.86rem;
+  color: var(--text-muted);
+}
+
+.auth-options input[type="checkbox"] {
+  accent-color: var(--primary);
 }
 
 .auth-options a {
-  color: var(--teal);
+  color: var(--primary-soft);
   font-weight: 600;
+  transition: var(--transition);
 }
 
 .auth-options a:hover {
-  color: var(--gold);
+  color: var(--accent-soft);
 }
 
 .auth-alert {
@@ -162,18 +185,18 @@
 }
 
 .auth-alert.error {
-  background: rgba(155, 59, 52, 0.1);
+  background: rgba(248, 113, 113, 0.1);
   color: var(--danger);
-  border: 1px solid rgba(155, 59, 52, 0.25);
+  border: 1px solid rgba(248, 113, 113, 0.3);
 }
 
 .auth-alert.success {
-  background: rgba(47, 93, 82, 0.1);
-  color: var(--teal);
-  border: 1px solid rgba(47, 93, 82, 0.25);
+  background: rgba(52, 211, 153, 0.1);
+  color: var(--success);
+  border: 1px solid rgba(52, 211, 153, 0.3);
 }
 
-.auth-form-card .btn-kadosys {
+.auth-form-card .btn-k {
   width: 100%;
   margin-top: 0.4rem;
 }
@@ -185,11 +208,14 @@
   margin-top: 1.6rem;
   font-size: 0.86rem;
   color: var(--text-muted);
+  transition: var(--transition);
 }
 
 .auth-back-link:hover {
-  color: var(--gold);
+  color: var(--primary-soft);
 }
+
+/* ---- Responsivo --------------------------------------------------------------- */
 
 @media (max-width: 860px) {
   .auth-shell {
@@ -198,5 +224,9 @@
 
   .auth-aside {
     display: none;
+  }
+
+  .auth-form-card {
+    padding: 2rem 1.6rem;
   }
 }
