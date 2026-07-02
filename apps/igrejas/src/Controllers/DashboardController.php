@@ -6,6 +6,7 @@ namespace Igrejas\Controllers;
 
 use Igrejas\Core\Auth;
 use Igrejas\Core\Controller;
+use Igrejas\Models\Membro;
 
 /**
  * Controller do Dashboard administrativo.
@@ -95,6 +96,7 @@ final class DashboardController extends Controller
     public function index(): void
     {
         $user = (new Auth($this->config))->user();
+        $inicioDoMes = new \DateTimeImmutable('first day of this month 00:00:00');
 
         echo $this->view('dashboard.index', [
             'pageTitle' => 'Dashboard - KADOSYS Igrejas',
@@ -102,6 +104,8 @@ final class DashboardController extends Controller
             'breadcrumb' => ['Dashboard'],
             'user' => $user,
             'modules' => self::modules(),
+            'membrosAtivos' => Membro::countActive(),
+            'novosMembros' => Membro::countCreatedSince($inicioDoMes),
         ], 'dashboard');
     }
 

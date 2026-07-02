@@ -28,6 +28,7 @@ $userInitial = mb_strtoupper(mb_substr($userName, 0, 1));
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="<?= $basePath ?>/assets/css/app.css">
     <link rel="stylesheet" href="<?= $basePath ?>/assets/css/dashboard.css">
+    <link rel="stylesheet" href="<?= $basePath ?>/assets/css/crud.css">
 </head>
 <body class="dashboard-body">
 

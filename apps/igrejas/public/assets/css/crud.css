@@ -1,0 +1,492 @@
+/* ==========================================================================
+   KADOSYS Igrejas - Componentes de CRUD (listas, tabelas e formularios)
+   Reaproveitado por todos os modulos de negocio (Membros, Ministerios,
+   Cultos, Financeiro, etc.), para evitar duplicacao de estilos.
+   ========================================================================== */
+
+/* ---- Alertas -------------------------------------------------------------- */
+
+.crud-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  border-radius: var(--radius-sm);
+  padding: 0.9rem 1.1rem;
+  font-size: 0.88rem;
+  margin-bottom: 1.2rem;
+}
+
+.crud-alert i {
+  margin-top: 0.15rem;
+}
+
+.crud-alert.success {
+  background: rgba(52, 211, 153, 0.1);
+  color: var(--success);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.crud-alert.error {
+  background: rgba(248, 113, 113, 0.1);
+  color: var(--danger);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+
+/* ---- Busca ------------------------------------------------------------------ */
+
+.crud-search {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  padding: 0.6rem 1.1rem;
+  margin-bottom: 1.4rem;
+  max-width: 420px;
+  color: var(--text-dim);
+  transition: var(--transition);
+}
+
+.crud-search:focus-within {
+  border-color: rgba(59, 130, 246, 0.6);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+}
+
+[data-theme="light"] .crud-search {
+  background: rgba(30, 41, 59, 0.05);
+  border-color: rgba(30, 41, 59, 0.12);
+}
+
+.crud-search input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+[data-theme="light"] .crud-search input {
+  color: #1E293B;
+}
+
+.crud-search input::placeholder {
+  color: var(--text-dim);
+}
+
+.crud-search-clear {
+  color: var(--text-dim);
+  display: flex;
+  transition: var(--transition);
+}
+
+.crud-search-clear:hover {
+  color: var(--danger);
+}
+
+/* ---- Estado vazio -------------------------------------------------------------- */
+
+.crud-empty {
+  text-align: center;
+  padding: 3.4rem 1.5rem;
+}
+
+.crud-empty .icon {
+  width: 62px;
+  height: 62px;
+  border-radius: 18px;
+  background: var(--gradient);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin: 0 auto 1.2rem;
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+}
+
+.crud-empty h2 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  color: var(--white);
+}
+
+[data-theme="light"] .crud-empty h2 {
+  color: #0F172A;
+}
+
+.crud-empty p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0 0 1.4rem;
+}
+
+[data-theme="light"] .crud-empty p {
+  color: #64748B;
+}
+
+/* ---- Tabela --------------------------------------------------------------------- */
+
+.crud-table-wrapper {
+  overflow-x: auto;
+  margin: 0 -0.2rem;
+}
+
+.crud-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.crud-table th {
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 600;
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid var(--glass-border);
+  white-space: nowrap;
+}
+
+.crud-table td {
+  padding: 0.85rem 0.9rem;
+  border-bottom: 1px solid var(--glass-border);
+  color: var(--text);
+  vertical-align: middle;
+}
+
+[data-theme="light"] .crud-table th,
+[data-theme="light"] .crud-table td {
+  border-bottom-color: rgba(30, 41, 59, 0.08);
+}
+
+[data-theme="light"] .crud-table td {
+  color: #334155;
+}
+
+.crud-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.crud-table tbody tr:hover {
+  background: var(--surface);
+}
+
+[data-theme="light"] .crud-table tbody tr:hover {
+  background: rgba(30, 41, 59, 0.03);
+}
+
+.crud-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.crud-table .actions-col {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.crud-text-dim {
+  color: var(--text-dim);
+  font-size: 0.82rem;
+}
+
+/* Pessoa (avatar + nome) */
+
+.crud-person {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-weight: 600;
+  color: var(--white);
+}
+
+[data-theme="light"] .crud-person {
+  color: #0F172A;
+}
+
+.crud-avatar {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--gradient);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.82rem;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Badge de status */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.32rem 0.75rem;
+  border-radius: 999px;
+}
+
+.status-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.status-badge.is-ativo {
+  background: rgba(52, 211, 153, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  color: var(--success);
+}
+
+.status-badge.is-ativo::before {
+  background: var(--success);
+  box-shadow: 0 0 6px var(--success);
+}
+
+.status-badge.is-inativo {
+  background: var(--surface-strong);
+  border: 1px solid var(--glass-border);
+  color: var(--text-dim);
+}
+
+.status-badge.is-inativo::before {
+  background: var(--text-dim);
+}
+
+/* Botoes de acao em icone */
+
+.crud-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid var(--glass-border);
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+  margin-left: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.crud-table form {
+  display: inline;
+}
+
+.crud-icon-btn:hover {
+  border-color: rgba(59, 130, 246, 0.5);
+  color: var(--white);
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.crud-icon-btn.danger:hover {
+  border-color: rgba(248, 113, 113, 0.5);
+  color: var(--danger);
+  background: rgba(248, 113, 113, 0.1);
+}
+
+[data-theme="light"] .crud-icon-btn {
+  background: rgba(30, 41, 59, 0.04);
+  border-color: rgba(30, 41, 59, 0.12);
+  color: #475569;
+}
+
+[data-theme="light"] .crud-icon-btn:hover {
+  color: #0F172A;
+}
+
+/* Paginacao */
+
+.crud-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.4rem;
+}
+
+.crud-pagination a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 0.6rem;
+  border-radius: 10px;
+  border: 1px solid var(--glass-border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.crud-pagination a:hover {
+  border-color: rgba(59, 130, 246, 0.5);
+  color: var(--white);
+}
+
+.crud-pagination a.active {
+  background: var(--gradient);
+  border-color: transparent;
+  color: var(--white);
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+}
+
+[data-theme="light"] .crud-pagination a {
+  background: rgba(30, 41, 59, 0.04);
+  border-color: rgba(30, 41, 59, 0.12);
+  color: #475569;
+}
+
+[data-theme="light"] .crud-pagination a:hover {
+  color: #0F172A;
+}
+
+/* ---- Formularios ------------------------------------------------------------------ */
+
+.crud-form-section {
+  margin-bottom: 2rem;
+}
+
+.crud-form-section:last-of-type {
+  margin-bottom: 1.6rem;
+}
+
+.crud-form-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--white);
+  margin: 0 0 1.1rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+[data-theme="light"] .crud-form-section h3 {
+  color: #0F172A;
+  border-bottom-color: rgba(30, 41, 59, 0.1);
+}
+
+.crud-form-section h3 i {
+  color: var(--primary-soft);
+}
+
+[data-theme="light"] .crud-form-section h3 i {
+  color: #1D4ED8;
+}
+
+.crud-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.1rem;
+}
+
+.crud-field-full {
+  grid-column: 1 / -1;
+}
+
+.crud-field label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+
+[data-theme="light"] .crud-field label {
+  color: #334155;
+}
+
+.crud-field input,
+.crud-field select,
+.crud-field textarea {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid var(--glass-border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--white);
+  padding: 0.65rem 0.9rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  transition: var(--transition);
+}
+
+[data-theme="light"] .crud-field input,
+[data-theme="light"] .crud-field select,
+[data-theme="light"] .crud-field textarea {
+  background: #FFFFFF;
+  border-color: rgba(30, 41, 59, 0.15);
+  color: #0F172A;
+}
+
+.crud-field input::placeholder,
+.crud-field textarea::placeholder {
+  color: var(--text-dim);
+}
+
+.crud-field input:focus,
+.crud-field select:focus,
+.crud-field textarea:focus {
+  outline: none;
+  border-color: rgba(96, 165, 250, 0.75);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.14);
+}
+
+.crud-field select {
+  cursor: pointer;
+  color-scheme: dark;
+}
+
+[data-theme="light"] .crud-field select {
+  color-scheme: light;
+}
+
+.crud-field textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.crud-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.8rem;
+  padding-top: 0.4rem;
+}
+
+/* ---- Responsivo --------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .crud-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .crud-field-full {
+    grid-column: auto;
+  }
+
+  .crud-form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .crud-form-actions .btn-k {
+    width: 100%;
+  }
+}

@@ -5,11 +5,12 @@ declare(strict_types=1);
 use Igrejas\Controllers\AuthController;
 use Igrejas\Controllers\DashboardController;
 use Igrejas\Controllers\LandingController;
+use Igrejas\Controllers\MembroController;
 use Igrejas\Core\Middleware\AuthMiddleware;
 use Igrejas\Core\Middleware\GuestMiddleware;
 
 /**
- * Rotas web - KADOSYS Igrejas (Sprint 1).
+ * Rotas web - KADOSYS Igrejas.
  *
  * @var \Igrejas\Core\Router $router
  */
@@ -27,4 +28,16 @@ $router->post('/esqueci-senha', [AuthController::class, 'sendForgotPassword'], [
 
 // Dashboard administrativo (protegido).
 $router->get('/dashboard', [DashboardController::class, 'index'], [AuthMiddleware::class]);
+
+// Modulo Membros. Registradas antes do catch-all de modulo (abaixo) para
+// que "/dashboard/membros" seja resolvida pelo MembroController e nao pela
+// pagina generica "em construcao".
+$router->get('/dashboard/membros', [MembroController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/membros/novo', [MembroController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/membros', [MembroController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/membros/{id}/editar', [MembroController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/dashboard/membros/{id}', [MembroController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/membros/{id}/excluir', [MembroController::class, 'destroy'], [AuthMiddleware::class]);
+
+// Estrutura "em construcao" dos demais modulos do menu (catch-all).
 $router->get('/dashboard/{slug}', [DashboardController::class, 'page'], [AuthMiddleware::class]);

@@ -3,6 +3,8 @@
  * @var array $config
  * @var \Igrejas\Models\User|null $user
  * @var array $modules
+ * @var int $membrosAtivos
+ * @var int $novosMembros
  */
 $basePath = $config['base_path'] ?? '';
 $firstName = explode(' ', trim($user?->name ?? 'Usuario'))[0];
@@ -15,7 +17,7 @@ $firstName = explode(' ', trim($user?->name ?? 'Usuario'))[0];
     </div>
     <div class="dash-page-actions">
         <a href="<?= $basePath ?>/dashboard/relatorios" class="btn-k btn-k-ghost"><i class="bi bi-bar-chart-line"></i> Relatorios</a>
-        <a href="<?= $basePath ?>/dashboard/membros" class="btn-k btn-k-grad"><i class="bi bi-plus-lg"></i> Novo membro</a>
+        <a href="<?= $basePath ?>/dashboard/membros/novo" class="btn-k btn-k-grad"><i class="bi bi-plus-lg"></i> Novo membro</a>
     </div>
 </div>
 
@@ -23,11 +25,15 @@ $firstName = explode(' ', trim($user?->name ?? 'Usuario'))[0];
     <div class="kpi-card">
         <div class="kpi-top">
             <div class="kpi-icon blue"><i class="bi bi-people"></i></div>
-            <span class="kpi-trend neutral"><i class="bi bi-dash"></i> aguardando dados</span>
+            <?php if ($novosMembros > 0): ?>
+                <span class="kpi-trend up"><i class="bi bi-arrow-up-short"></i> +<?= $novosMembros ?> este mes</span>
+            <?php else: ?>
+                <span class="kpi-trend neutral"><i class="bi bi-dash"></i> sem novidades</span>
+            <?php endif; ?>
         </div>
-        <div class="value">--</div>
+        <div class="value"><?= $membrosAtivos ?></div>
         <div class="label">Membros ativos</div>
-        <div class="delta">Disponivel no modulo Membros</div>
+        <div class="delta"><a href="<?= $basePath ?>/dashboard/membros">Ver todos os membros</a></div>
     </div>
     <div class="kpi-card">
         <div class="kpi-top">
@@ -85,7 +91,7 @@ $firstName = explode(' ', trim($user?->name ?? 'Usuario'))[0];
             <h2><i class="bi bi-lightning-charge"></i> Acoes rapidas</h2>
         </div>
         <div class="quick-actions">
-            <a href="<?= $basePath ?>/dashboard/membros" class="quick-action">
+            <a href="<?= $basePath ?>/dashboard/membros/novo" class="quick-action">
                 <i class="bi bi-person-plus"></i> Cadastrar membro
             </a>
             <a href="<?= $basePath ?>/dashboard/cultos" class="quick-action">
