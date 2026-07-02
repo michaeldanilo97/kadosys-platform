@@ -35,15 +35,25 @@ Entregue nesta versao:
 
 ## v2 — Modulos de negocio do app Igrejas
 
-Ainda **nao implementados** nesta v1, conforme escopo definido:
+- [x] Modulo Membros (cadastro, listagem com busca e paginacao, edicao e
+      remocao; KPI de membros ativos no dashboard)
+- [x] Modulo Ministerios (cadastro, lider, gestao de voluntarios,
+      listagem com busca e paginacao; KPI de ministerios ativos no
+      dashboard)
+- [x] Modulo Cultos (programacao, registro de frequencia, listagem com
+      busca e paginacao; KPI de proximo culto no dashboard)
+- [x] Modulo Projecao / Telao (painel do operador, tela do telao por
+      token e tela do preletor por PIN, sincronizados por polling;
+      biblia com os 66 livros - texto importavel via seed_biblia.php -,
+      video do YouTube com play/pausa/fadeout, upload de logo em
+      Configuracoes)
 
-- [ ] Modulo Membros (cadastro, historico, familia)
+Ainda **nao implementados**, conforme escopo definido:
+
 - [ ] Modulo Eventos (agenda, inscricoes)
 - [ ] Modulo Financeiro (dizimos, ofertas, despesas, relatorios)
 - [ ] Modulo Escalas (equipes, ministerios, disponibilidade)
-- [ ] Modulo Biblia (leitura, planos de leitura)
 - [ ] Modulo Louvores (repertorio, cifras, letras)
-- [ ] Modulo Projecao / Telao (apresentacao em culto)
 
 ## v3 — Novos aplicativos sobre o mesmo Core
 

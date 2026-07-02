@@ -18,6 +18,7 @@ final class Request
         public readonly array $query,
         public readonly array $body,
         public readonly array $server,
+        public readonly array $files,
     ) {
     }
 
@@ -38,7 +39,25 @@ final class Request
             query: $_GET,
             body: $_POST,
             server: $_SERVER,
+            files: $_FILES,
         );
+    }
+
+    /**
+     * Retorna a entrada de $_FILES para o campo informado (ou null se
+     * nenhum arquivo foi enviado nesse campo).
+     *
+     * @return array{name:string, type:string, tmp_name:string, error:int, size:int}|null
+     */
+    public function file(string $key): ?array
+    {
+        $file = $this->files[$key] ?? null;
+
+        if (!is_array($file) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+            return null;
+        }
+
+        return $file;
     }
 
     public function input(string $key, mixed $default = null): mixed

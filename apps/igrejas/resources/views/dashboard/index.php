@@ -3,6 +3,10 @@
  * @var array $config
  * @var \Igrejas\Models\User|null $user
  * @var array $modules
+ * @var int $membrosAtivos
+ * @var int $novosMembros
+ * @var int $ministeriosAtivos
+ * @var \Igrejas\Models\Culto|null $proximoCulto
  */
 $basePath = $config['base_path'] ?? '';
 $firstName = explode(' ', trim($user?->name ?? 'Usuario'))[0];
@@ -15,7 +19,7 @@ $firstName = explode(' ', trim($user?->name ?? 'Usuario'))[0];
     </div>
     <div class="dash-page-actions">
         <a href="<?= $basePath ?>/dashboard/relatorios" class="btn-k btn-k-ghost"><i class="bi bi-bar-chart-line"></i> Relatorios</a>
-        <a href="<?= $basePath ?>/dashboard/membros" class="btn-k btn-k-grad"><i class="bi bi-plus-lg"></i> Novo membro</a>
+        <a href="<?= $basePath ?>/dashboard/membros/novo" class="btn-k btn-k-grad"><i class="bi bi-plus-lg"></i> Novo membro</a>
     </div>
 </div>
 
@@ -23,29 +27,39 @@ $firstName = explode(' ', trim($user?->name ?? 'Usuario'))[0];
     <div class="kpi-card">
         <div class="kpi-top">
             <div class="kpi-icon blue"><i class="bi bi-people"></i></div>
-            <span class="kpi-trend neutral"><i class="bi bi-dash"></i> aguardando dados</span>
+            <?php if ($novosMembros > 0): ?>
+                <span class="kpi-trend up"><i class="bi bi-arrow-up-short"></i> +<?= $novosMembros ?> este mes</span>
+            <?php else: ?>
+                <span class="kpi-trend neutral"><i class="bi bi-dash"></i> sem novidades</span>
+            <?php endif; ?>
         </div>
-        <div class="value">--</div>
+        <div class="value"><?= $membrosAtivos ?></div>
         <div class="label">Membros ativos</div>
-        <div class="delta">Disponivel no modulo Membros</div>
+        <div class="delta"><a href="<?= $basePath ?>/dashboard/membros">Ver todos os membros</a></div>
     </div>
     <div class="kpi-card">
         <div class="kpi-top">
             <div class="kpi-icon violet"><i class="bi bi-diagram-3"></i></div>
-            <span class="kpi-trend neutral"><i class="bi bi-dash"></i> aguardando dados</span>
+            <span class="kpi-trend neutral"><i class="bi bi-diagram-3"></i> ativos</span>
         </div>
-        <div class="value">--</div>
+        <div class="value"><?= $ministeriosAtivos ?></div>
         <div class="label">Ministerios</div>
-        <div class="delta">Disponivel no modulo Ministerios</div>
+        <div class="delta"><a href="<?= $basePath ?>/dashboard/ministerios">Ver todos os ministerios</a></div>
     </div>
     <div class="kpi-card">
         <div class="kpi-top">
             <div class="kpi-icon cyan"><i class="bi bi-calendar2-week"></i></div>
-            <span class="kpi-trend neutral"><i class="bi bi-dash"></i> aguardando dados</span>
+            <?php if ($proximoCulto): ?>
+                <span class="kpi-trend neutral"><i class="bi bi-clock"></i> <?= $proximoCulto->dataHoraFormatada() ?></span>
+            <?php else: ?>
+                <span class="kpi-trend neutral"><i class="bi bi-dash"></i> nada agendado</span>
+            <?php endif; ?>
         </div>
-        <div class="value">--</div>
+        <div class="value" style="<?= $proximoCulto ? 'font-size: 1.3rem;' : '' ?>">
+            <?= $proximoCulto ? htmlspecialchars($proximoCulto->titulo, ENT_QUOTES, 'UTF-8') : '--' ?>
+        </div>
         <div class="label">Proximo culto</div>
-        <div class="delta">Disponivel no modulo Cultos</div>
+        <div class="delta"><a href="<?= $basePath ?>/dashboard/cultos">Ver todos os cultos</a></div>
     </div>
     <div class="kpi-card">
         <div class="kpi-top">
@@ -85,10 +99,10 @@ $firstName = explode(' ', trim($user?->name ?? 'Usuario'))[0];
             <h2><i class="bi bi-lightning-charge"></i> Acoes rapidas</h2>
         </div>
         <div class="quick-actions">
-            <a href="<?= $basePath ?>/dashboard/membros" class="quick-action">
+            <a href="<?= $basePath ?>/dashboard/membros/novo" class="quick-action">
                 <i class="bi bi-person-plus"></i> Cadastrar membro
             </a>
-            <a href="<?= $basePath ?>/dashboard/cultos" class="quick-action">
+            <a href="<?= $basePath ?>/dashboard/cultos/novo" class="quick-action">
                 <i class="bi bi-calendar-plus"></i> Agendar culto
             </a>
             <a href="<?= $basePath ?>/dashboard/financeiro" class="quick-action">

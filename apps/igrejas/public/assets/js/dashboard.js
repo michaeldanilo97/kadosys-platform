@@ -7,6 +7,7 @@
     initTheme();
     initSidebar();
     initSearchShortcut();
+    initConfirmForms();
   });
 
   function initTheme() {
@@ -93,6 +94,16 @@
         event.preventDefault();
         input.focus();
       }
+    });
+  }
+
+  function initConfirmForms() {
+    document.querySelectorAll('form[data-confirm]').forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!window.confirm(form.getAttribute('data-confirm'))) {
+          event.preventDefault();
+        }
+      });
     });
   }
 })();

@@ -1,0 +1,420 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700&display=swap');
+
+/* ==========================================================================
+   KADOSYS Igrejas - Telao / Preletor
+   Tela de projecao publica: alto contraste, texto grande, sem "chrome"
+   de dashboard. Estilo propositalmente independente do app.css (produto
+   diferente: superficie de projecao, nao painel administrativo).
+   ========================================================================== */
+
+:root {
+  --telao-bg: #05070d;
+  --telao-text: #f5f7fa;
+  --telao-muted: #9aa5b8;
+  --telao-accent: #d4a13f;
+  --telao-accent-2: #60a5fa;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--telao-bg);
+  color: var(--telao-text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow: hidden;
+}
+
+/* ---- Palco de projecao --------------------------------------------------- */
+
+.telao {
+  position: fixed;
+  inset: 0;
+  background: var(--telao-bg);
+}
+
+.telao-layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.7s ease;
+}
+
+.telao-layer.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.telao-blank {
+  background: var(--telao-bg);
+  z-index: 1;
+}
+
+.telao-video {
+  background: #000;
+  z-index: 2;
+}
+
+.telao-video iframe,
+.telao-video #telao-player {
+  width: 100%;
+  height: 100%;
+}
+
+.telao-biblia {
+  z-index: 3;
+  flex-direction: column;
+  padding: 6vw 8vw;
+  text-align: center;
+  gap: 2.4vh;
+}
+
+.telao-biblia-texto {
+  font-size: clamp(1.9rem, 3.6vw, 4rem);
+  line-height: 1.45;
+  font-weight: 500;
+  max-width: 1200px;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+}
+
+.telao-biblia-texto .numero {
+  font-size: 0.55em;
+  vertical-align: super;
+  color: var(--telao-accent);
+  font-weight: 700;
+  margin-right: 0.3em;
+}
+
+.telao-biblia-ref {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.1rem, 1.8vw, 1.8rem);
+  color: var(--telao-accent);
+  letter-spacing: 0.04em;
+}
+
+.telao-logo {
+  z-index: 4;
+  background: var(--telao-bg);
+}
+
+.telao-logo img {
+  max-width: 42vw;
+  max-height: 42vh;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 40px rgba(0, 0, 0, 0.5));
+}
+
+.telao-logo-fallback {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.4rem, 3vw, 2.4rem);
+  color: var(--telao-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ---- Encerrado / aguardando ------------------------------------------------ */
+
+.telao-status {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+.telao-status .glyph {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  border: 1px solid rgba(245, 247, 250, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  color: var(--telao-muted);
+}
+
+.telao-status h1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+.telao-status p {
+  color: var(--telao-muted);
+  max-width: 420px;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ---- Preletor: entrada por PIN ----------------------------------------------- */
+
+.preletor-entrada {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.preletor-card {
+  width: 100%;
+  max-width: 360px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(245, 247, 250, 0.12);
+  border-radius: 20px;
+  padding: 2.4rem 2rem;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.preletor-card .glyph {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  margin: 0 auto 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  background: linear-gradient(135deg, var(--telao-accent-2), var(--telao-accent));
+  color: #0b0d14;
+}
+
+.preletor-card h1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.3rem;
+  margin: 0 0 0.5rem;
+}
+
+.preletor-card p {
+  color: var(--telao-muted);
+  font-size: 0.9rem;
+  margin: 0 0 1.6rem;
+}
+
+.preletor-pin-input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(245, 247, 250, 0.18);
+  border-radius: 14px;
+  color: var(--telao-text);
+  font-family: 'Poppins', monospace;
+  font-size: 1.8rem;
+  letter-spacing: 0.5em;
+  text-align: center;
+  padding: 0.9rem 0.5rem 0.9rem 0.9rem;
+  margin-bottom: 1.2rem;
+}
+
+.preletor-pin-input:focus {
+  outline: none;
+  border-color: var(--telao-accent-2);
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.18);
+}
+
+.preletor-erro {
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.32);
+  color: #fca5a5;
+  border-radius: 10px;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.85rem;
+  margin-bottom: 1.2rem;
+}
+
+.preletor-btn {
+  width: 100%;
+  border: none;
+  border-radius: 999px;
+  padding: 0.85rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #0b0d14;
+  background: linear-gradient(135deg, var(--telao-accent-2), var(--telao-accent));
+  cursor: pointer;
+}
+
+/* ---- Preletor: painel (tablet) ----------------------------------------------- */
+
+.preletor-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.preletor-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.2rem;
+  border-bottom: 1px solid rgba(245, 247, 250, 0.1);
+  gap: 1rem;
+}
+
+.preletor-topbar .brand {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.preletor-topbar .brand .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 8px #34d399;
+}
+
+.preletor-sair {
+  border: 1px solid rgba(245, 247, 250, 0.18);
+  background: none;
+  color: var(--telao-muted);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.preletor-body {
+  flex: 1;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: 0;
+}
+
+.preletor-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid rgba(245, 247, 250, 0.08);
+}
+
+.preletor-picker select,
+.preletor-picker input {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(245, 247, 250, 0.16);
+  color: var(--telao-text);
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.88rem;
+}
+
+.preletor-picker input[type="number"] {
+  width: 78px;
+}
+
+.preletor-picker button {
+  border: none;
+  border-radius: 10px;
+  padding: 0.55rem 1.1rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #0b0d14;
+  background: linear-gradient(135deg, var(--telao-accent-2), var(--telao-accent));
+  cursor: pointer;
+}
+
+.preletor-canvas-wrap {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.preletor-texto {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  padding: 2rem 1.6rem 3rem;
+  font-size: clamp(1.1rem, 2.4vw, 1.5rem);
+  line-height: 1.7;
+}
+
+.preletor-texto .ref {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  color: var(--telao-accent);
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.preletor-texto .numero {
+  font-size: 0.62em;
+  vertical-align: super;
+  color: var(--telao-accent);
+  font-weight: 700;
+  margin-right: 0.25em;
+}
+
+.preletor-canvas {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+}
+
+.preletor-tools {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 5;
+}
+
+.preletor-tool-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(245, 247, 250, 0.2);
+  background: rgba(5, 7, 13, 0.7);
+  backdrop-filter: blur(6px);
+  color: var(--telao-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+
+.preletor-tool-btn.active {
+  border-color: var(--telao-accent);
+  color: var(--telao-accent);
+}
+
+.preletor-empty {
+  padding: 2rem;
+  color: var(--telao-muted);
+  text-align: center;
+  font-size: 0.92rem;
+}
+
+/* ---- Responsivo --------------------------------------------------------------- */
+
+@media (max-width: 700px) {
+  .telao-biblia {
+    padding: 8vw 6vw;
+  }
+
+  .preletor-picker {
+    gap: 0.5rem;
+  }
+}

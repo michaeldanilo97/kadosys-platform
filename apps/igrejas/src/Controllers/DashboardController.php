@@ -6,6 +6,9 @@ namespace Igrejas\Controllers;
 
 use Igrejas\Core\Auth;
 use Igrejas\Core\Controller;
+use Igrejas\Models\Culto;
+use Igrejas\Models\Membro;
+use Igrejas\Models\Ministerio;
 
 /**
  * Controller do Dashboard administrativo.
@@ -48,6 +51,11 @@ final class DashboardController extends Controller
                 'title' => 'Cultos',
                 'icon' => 'bi-calendar2-week',
                 'description' => 'Programacao, escalas e registro de frequencia dos cultos.',
+            ],
+            'projecao' => [
+                'title' => 'Projecao',
+                'icon' => 'bi-easel2',
+                'description' => 'Telao do culto: biblia, videos e controle do preletor em tempo real.',
             ],
             'agenda' => [
                 'title' => 'Agenda',
@@ -95,6 +103,7 @@ final class DashboardController extends Controller
     public function index(): void
     {
         $user = (new Auth($this->config))->user();
+        $inicioDoMes = new \DateTimeImmutable('first day of this month 00:00:00');
 
         echo $this->view('dashboard.index', [
             'pageTitle' => 'Dashboard - KADOSYS Igrejas',
@@ -102,6 +111,10 @@ final class DashboardController extends Controller
             'breadcrumb' => ['Dashboard'],
             'user' => $user,
             'modules' => self::modules(),
+            'membrosAtivos' => Membro::countActive(),
+            'novosMembros' => Membro::countCreatedSince($inicioDoMes),
+            'ministeriosAtivos' => Ministerio::countActive(),
+            'proximoCulto' => Culto::proximoAgendado(),
         ], 'dashboard');
     }
 

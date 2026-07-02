@@ -626,6 +626,20 @@ body.dashboard-body[data-theme="light"] {
   margin-top: 0.25rem;
 }
 
+.kpi-card .delta a {
+  color: var(--primary-soft);
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.kpi-card .delta a:hover {
+  color: var(--accent-soft);
+}
+
+[data-theme="light"] .kpi-card .delta a {
+  color: #1D4ED8;
+}
+
 /* ---- Paineis ---------------------------------------------------------------- */
 
 .dash-panels-row {

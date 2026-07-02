@@ -8,6 +8,10 @@
 /storage/sessions/*
 /storage/temp/*
 
+# Uploads de cada aplicativo (ex.: logo da igreja) sao arquivos de runtime,
+# nunca versionados.
+apps/*/public/uploads/
+
 node_modules/
 
 .DS_Store
