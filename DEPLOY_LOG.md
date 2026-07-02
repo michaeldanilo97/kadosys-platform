@@ -17,6 +17,22 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 5 - 2026-07-02
+
+**Tentativa adicional para o problema do tablet (ainda investigando)**
+
+- Trocado `100vh` por `100dvh` (com fallback) no preletor: `100vh` no
+  Chrome/Safari mobile nao desconta a barra de enderecos do navegador,
+  entao a pagina podia ficar "maior" que a area realmente visivel -
+  `100dvh` (altura dinamica de viewport) e o jeito correto/moderno de
+  medir isso.
+- Area do palco (`.preletor-canvas-wrap`) ganhou uma altura minima de
+  160px, pra nunca colapsar a zero em telas muito curtas.
+- Esse problema especifico (botoes sumidos so nesse tablet, em mais de
+  um navegador) ainda esta em investigacao - testei em varios tamanhos
+  de tela realistas e nao consegui reproduzir, entao pode ser algo
+  especifico desse aparelho/versao de Android.
+
 ## Ajuste 4 - 2026-07-02
 
 **Causa real dos botoes sumidos: canvas bloqueava todo toque por padrao**

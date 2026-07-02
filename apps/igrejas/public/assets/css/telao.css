@@ -21,7 +21,6 @@
 
 html, body {
   margin: 0;
-  height: 100%;
   background: var(--telao-bg);
   color: var(--telao-text);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -246,7 +245,13 @@ html, body {
 /* ---- Preletor: entrada por PIN ----------------------------------------------- */
 
 .preletor-entrada {
+  /* 100vh no Chrome/Safari mobile nao desconta a barra de
+     enderecos - a pagina fica "maior" que a area realmente visivel.
+     100dvh (altura dinamica de viewport) resolve isso; navegadores sem
+     suporte simplesmente ignoram a linha e ficam com o fallback 100vh
+     acima. */
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -334,7 +339,15 @@ html, body {
 /* ---- Preletor: painel (tablet) ----------------------------------------------- */
 
 .preletor-shell {
+  /* 100vh no Chrome/Safari mobile nao desconta a barra de enderecos -
+     a pagina fica "maior" que a area realmente visivel, o que tanto
+     empurra a barra de ferramentas para fora da tela quanto pode
+     confundir a deteccao de rolagem do navegador (a pagina "parece"
+     nao ter overflow real). 100dvh (altura dinamica de viewport)
+     resolve isso; navegadores sem suporte ignoram a linha e ficam com
+     o fallback 100vh acima. */
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
@@ -556,7 +569,7 @@ html, body {
 
 .preletor-canvas-wrap {
   position: relative;
-  min-height: 0;
+  min-height: 160px;
   overflow: hidden;
   display: flex;
   align-items: center;
