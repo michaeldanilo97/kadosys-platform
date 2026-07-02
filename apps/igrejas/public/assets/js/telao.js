@@ -257,7 +257,12 @@
     }
   }
 
-  window.addEventListener('resize', ajustarStage);
+  if (window.ResizeObserver) {
+    new ResizeObserver(ajustarStage).observe(layers.biblia);
+  } else {
+    window.addEventListener('resize', ajustarStage);
+  }
+
   ajustarStage();
 
   setInterval(poll, 1500);

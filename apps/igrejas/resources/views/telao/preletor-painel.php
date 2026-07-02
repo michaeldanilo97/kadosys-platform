@@ -26,43 +26,60 @@ $basePath = $config['base_path'] ?? '';
 
     <div class="preletor-body">
         <form class="preletor-picker" data-preletor-form onsubmit="return false;">
-            <select name="biblia_versao" data-campo="biblia_versao" required>
-                <?php foreach ($versoes as $codigo => $nome): ?>
-                    <option value="<?= htmlspecialchars($codigo, ENT_QUOTES, 'UTF-8') ?>">
-                        <?= htmlspecialchars($codigo, ENT_QUOTES, 'UTF-8') ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-
-            <div class="livro-combo" data-livro-combo>
-                <input type="text" class="livro-combo-input" data-livro-combo-input placeholder="Buscar livro..." autocomplete="off" aria-expanded="false">
-                <input type="hidden" data-campo="livro_id" required>
-                <div class="livro-combo-lista" data-livro-combo-lista hidden>
-                    <?php foreach ($livros as $livro): ?>
-                        <button type="button" class="livro-combo-item" data-livro-combo-item data-livro-id="<?= $livro->id ?>" data-nome="<?= htmlspecialchars($livro->nome, ENT_QUOTES, 'UTF-8') ?>" data-total-capitulos="<?= $livro->totalCapitulos ?>">
-                            <?= htmlspecialchars($livro->nome, ENT_QUOTES, 'UTF-8') ?>
-                        </button>
+            <div class="preletor-field">
+                <label for="preletor_versao">Versao</label>
+                <select id="preletor_versao" name="biblia_versao" data-campo="biblia_versao" required>
+                    <?php foreach ($versoes as $codigo => $nome): ?>
+                        <option value="<?= htmlspecialchars($codigo, ENT_QUOTES, 'UTF-8') ?>">
+                            <?= htmlspecialchars($codigo, ENT_QUOTES, 'UTF-8') ?>
+                        </option>
                     <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="preletor-field preletor-field-livro">
+                <label for="preletor_livro_busca">Livro</label>
+                <div class="livro-combo" data-livro-combo>
+                    <input type="text" id="preletor_livro_busca" class="livro-combo-input" data-livro-combo-input placeholder="Buscar livro..." autocomplete="off" aria-expanded="false">
+                    <input type="hidden" data-campo="livro_id" required>
+                    <div class="livro-combo-lista" data-livro-combo-lista hidden>
+                        <?php foreach ($livros as $livro): ?>
+                            <button type="button" class="livro-combo-item" data-livro-combo-item data-livro-id="<?= $livro->id ?>" data-nome="<?= htmlspecialchars($livro->nome, ENT_QUOTES, 'UTF-8') ?>" data-total-capitulos="<?= $livro->totalCapitulos ?>">
+                                <?= htmlspecialchars($livro->nome, ENT_QUOTES, 'UTF-8') ?>
+                            </button>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
             </div>
 
-            <select data-campo="capitulo" required>
-                <option value="" selected disabled>Cap...</option>
-            </select>
-            <select data-campo="versiculo_inicio" required>
-                <option value="" selected disabled>Vers...</option>
-            </select>
-            <select data-campo="versiculo_fim">
-                <option value="">Ate (opcional)</option>
-            </select>
+            <div class="preletor-field preletor-field-sm">
+                <label for="preletor_capitulo">Cap.</label>
+                <select id="preletor_capitulo" data-campo="capitulo" required>
+                    <option value="" selected disabled>Cap...</option>
+                </select>
+            </div>
+            <div class="preletor-field preletor-field-sm">
+                <label for="preletor_versiculo_inicio">Vers.</label>
+                <select id="preletor_versiculo_inicio" data-campo="versiculo_inicio" required>
+                    <option value="" selected disabled>Vers...</option>
+                </select>
+            </div>
+            <div class="preletor-field preletor-field-sm">
+                <label for="preletor_versiculo_fim">Ate</label>
+                <select id="preletor_versiculo_fim" data-campo="versiculo_fim">
+                    <option value="">Opcional</option>
+                </select>
+            </div>
 
-            <button type="submit" data-preletor-projetar><i class="bi bi-broadcast"></i> Projetar</button>
-            <button type="button" class="preletor-nav-btn" data-nav-acao="anterior" aria-label="Versiculo anterior">
-                <i class="bi bi-arrow-left"></i>
-            </button>
-            <button type="button" class="preletor-nav-btn" data-nav-acao="proximo" aria-label="Proximo versiculo">
-                <i class="bi bi-arrow-right"></i>
-            </button>
+            <div class="preletor-field-actions">
+                <button type="submit" data-preletor-projetar><i class="bi bi-broadcast"></i> Projetar</button>
+                <button type="button" class="preletor-nav-btn" data-nav-acao="anterior" aria-label="Versiculo anterior">
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+                <button type="button" class="preletor-nav-btn" data-nav-acao="proximo" aria-label="Proximo versiculo">
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </div>
         </form>
 
         <div class="preletor-preview" data-nav-preview hidden>

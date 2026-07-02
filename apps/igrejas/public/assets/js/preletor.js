@@ -298,18 +298,22 @@
     window.KadosysBiblia.montarVersiculos(form, capituloInfoUrl);
   }
 
-  form.addEventListener('submit', function (evento) {
-    evento.preventDefault();
+  var versiculoInicioSelect = form.querySelector('[data-campo="versiculo_inicio"]');
+  var versiculoFimSelect = form.querySelector('[data-campo="versiculo_fim"]');
+
+  function projetar() {
+    if (!livroSelect.value || !capituloSelect.value || !versiculoInicioSelect.value) {
+      return;
+    }
 
     var dados = new URLSearchParams();
     dados.set('biblia_versao', form.querySelector('[data-campo="biblia_versao"]').value);
     dados.set('livro_id', livroSelect.value);
     dados.set('capitulo', capituloSelect.value);
-    dados.set('versiculo_inicio', form.querySelector('[data-campo="versiculo_inicio"]').value);
+    dados.set('versiculo_inicio', versiculoInicioSelect.value);
 
-    var fim = form.querySelector('[data-campo="versiculo_fim"]').value;
-    if (fim) {
-      dados.set('versiculo_fim', fim);
+    if (versiculoFimSelect.value) {
+      dados.set('versiculo_fim', versiculoFimSelect.value);
     }
 
     fetch(bibliaUrl, {
@@ -322,7 +326,17 @@
         poll();
       })
       .catch(function () {});
+  }
+
+  form.addEventListener('submit', function (evento) {
+    evento.preventDefault();
+    projetar();
   });
+
+  // Trocar o versiculo (inicio/fim) ja projeta direto no telao, sem
+  // precisar clicar em "Projetar" de novo a cada verso.
+  versiculoInicioSelect.addEventListener('change', projetar);
+  versiculoFimSelect.addEventListener('change', projetar);
 
   botoesNav.forEach(function (botao) {
     botao.addEventListener('click', function () {
@@ -357,7 +371,16 @@
   canvas.addEventListener('pointerup', finalizarTraco);
   canvas.addEventListener('pointercancel', finalizarTraco);
 
-  window.addEventListener('resize', ajustarCanvas);
+  // ResizeObserver em vez de so "window resize": o espaco disponivel para
+  // o palco muda tambem quando a barra "A seguir" aparece/some ou quando
+  // os campos do formulario quebram linha - nada disso dispara resize da
+  // janela, mas precisa remedir o palco, senao a marcacao a lapis fica
+  // registrada com a proporcao antiga (errada) e cai no lugar errado.
+  if (window.ResizeObserver) {
+    new ResizeObserver(ajustarCanvas).observe(canvasWrap);
+  } else {
+    window.addEventListener('resize', ajustarCanvas);
+  }
 
   ajustarCanvas();
   setInterval(poll, 1500);

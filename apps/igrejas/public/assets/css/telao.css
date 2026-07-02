@@ -123,8 +123,15 @@ html, body {
 }
 
 .stage-marcacao {
+  /* canvas e um elemento "substituido": position:absolute + inset:0
+     sozinho NAO o estica para preencher o container, ele volta ao
+     tamanho intrinseco padrao (300x150) - por isso e essencial fixar
+     width/height em 100% aqui explicitamente. */
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .telao-logo {
@@ -329,9 +336,9 @@ html, body {
 .preletor-picker {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 0.6rem;
-  padding: 1rem 1.2rem;
+  align-items: flex-end;
+  gap: 0.9rem;
+  padding: 1.1rem 1.2rem;
   border-bottom: 1px solid rgba(245, 247, 250, 0.08);
   position: relative;
 }
@@ -344,10 +351,38 @@ html, body {
   border-radius: 10px;
   padding: 0.55rem 0.7rem;
   font-size: 0.88rem;
+  color-scheme: dark;
 }
 
 .preletor-picker select {
   width: 92px;
+  cursor: pointer;
+}
+
+.preletor-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.preletor-field label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--telao-muted);
+}
+
+.preletor-field-sm select {
+  width: 74px;
+}
+
+.preletor-field-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
 }
 
 /* ---- Combo de busca de livro (usado tambem no painel do operador,
@@ -355,7 +390,7 @@ html, body {
 
 .livro-combo {
   position: relative;
-  width: 160px;
+  width: 190px;
 }
 
 .livro-combo-input {
@@ -467,7 +502,6 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.6rem;
 }
 
 .preletor-stage {

@@ -91,18 +91,22 @@
       window.KadosysBiblia.montarVersiculos(formBiblia, capituloInfoUrl);
     }
 
-    formBiblia.addEventListener('submit', function (evento) {
-      evento.preventDefault();
+    var versiculoInicioSelect = formBiblia.querySelector('[data-campo="versiculo_inicio"]');
+    var versiculoFimSelect = formBiblia.querySelector('[data-campo="versiculo_fim"]');
+
+    function projetar() {
+      if (!livroSelect.value || !capituloInput.value || !versiculoInicioSelect.value) {
+        return;
+      }
 
       var dados = new URLSearchParams();
       dados.set('biblia_versao', formBiblia.querySelector('[data-campo="biblia_versao"]').value);
       dados.set('livro_id', livroSelect.value);
       dados.set('capitulo', capituloInput.value);
-      dados.set('versiculo_inicio', formBiblia.querySelector('[data-campo="versiculo_inicio"]').value);
+      dados.set('versiculo_inicio', versiculoInicioSelect.value);
 
-      var fim = formBiblia.querySelector('[data-campo="versiculo_fim"]').value;
-      if (fim) {
-        dados.set('versiculo_fim', fim);
+      if (versiculoFimSelect.value) {
+        dados.set('versiculo_fim', versiculoFimSelect.value);
       }
 
       enviar('/biblia', dados).then(function (resposta) {
@@ -111,7 +115,17 @@
         lastVersao = dadosResposta.versao;
         aplicarEstado(dadosResposta);
       }).catch(function () {});
+    }
+
+    formBiblia.addEventListener('submit', function (evento) {
+      evento.preventDefault();
+      projetar();
     });
+
+    // Trocar o versiculo (inicio/fim) ja projeta direto no telao, sem
+    // precisar clicar em "Projetar no telao" de novo a cada verso.
+    versiculoInicioSelect.addEventListener('change', projetar);
+    versiculoFimSelect.addEventListener('change', projetar);
   }
 
   function navegar(direcao) {
