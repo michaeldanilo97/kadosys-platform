@@ -30,6 +30,7 @@
 
   var lastVersao = null;
   var lastReferenciaChave = null;
+  var modoAtual = null;
   var desenhando = false;
   var caneteAtiva = false;
   var ultimoPonto = null;
@@ -212,6 +213,8 @@
   }
 
   function aplicarEstado(dados) {
+    modoAtual = dados ? dados.modo : null;
+
     if (!dados || dados.ativo === false || dados.modo !== 'biblia') {
       return;
     }
@@ -301,8 +304,26 @@
   var versiculoInicioSelect = form.querySelector('[data-campo="versiculo_inicio"]');
   var versiculoFimSelect = form.querySelector('[data-campo="versiculo_fim"]');
 
+  var NOMES_MODO = { biblia: 'a Bíblia', video: 'o vídeo', logo: 'a logo' };
+
+  // Trocar para a biblia interrompe o que ja esta sendo exibido ao vivo
+  // no telao (video ou logo) - confirma antes, para evitar trocar por
+  // engano no meio de um culto. Nao pede nada se a biblia ja e o que
+  // esta em exibicao (so navegando entre versiculos).
+  function confirmarTroca() {
+    if (!modoAtual || modoAtual === 'blank' || modoAtual === 'biblia') {
+      return true;
+    }
+
+    return window.confirm('Ja tem ' + (NOMES_MODO[modoAtual] || 'outro conteudo') + ' em exibicao no telao. Trocar para a Biblia agora?');
+  }
+
   function projetar() {
     if (!livroSelect.value || !capituloSelect.value || !versiculoInicioSelect.value) {
+      return;
+    }
+
+    if (!confirmarTroca()) {
       return;
     }
 

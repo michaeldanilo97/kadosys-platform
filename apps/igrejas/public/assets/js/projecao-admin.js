@@ -29,6 +29,28 @@
 
   var lastVersao = null;
   var sincronizando = false;
+  var modoAtual = null;
+
+  var NOMES_MODO = { biblia: 'a Bíblia', video: 'o vídeo', logo: 'a logo', blank: 'a tela em branco' };
+
+  /**
+   * Troca de modo (biblia/video/logo/blank) interrompe o que ja esta
+   * sendo exibido ao vivo no telao - confirma antes, para evitar trocar
+   * por engano no meio de um culto. So pede confirmacao quando ha algo
+   * diferente do novo modo realmente em exibicao (nao pede nada na
+   * primeira vez, com a tela em branco, ou ao continuar no mesmo modo -
+   * ex.: navegar entre versiculos com a biblia ja em exibicao).
+   */
+  function confirmarTroca(novoModo) {
+    if (!modoAtual || modoAtual === 'blank' || modoAtual === novoModo) {
+      return true;
+    }
+
+    var atual = NOMES_MODO[modoAtual] || 'outro conteudo';
+    var proximo = NOMES_MODO[novoModo] || 'outro conteudo';
+
+    return window.confirm('Ja tem ' + atual + ' em exibicao no telao. Trocar para ' + proximo + ' agora?');
+  }
 
   function escapeHtml(value) {
     var div = document.createElement('div');
@@ -69,6 +91,10 @@
 
     var projetar = function () {
       if (sincronizando || !livroSelect.value || !capituloInput.value || !versiculoInicioSelect.value) {
+        return;
+      }
+
+      if (!confirmarTroca('biblia')) {
         return;
       }
 
@@ -113,6 +139,8 @@
   }
 
   function aplicarEstado(dados) {
+    modoAtual = dados ? dados.modo : null;
+
     if (!dados || dados.modo !== 'biblia' || !dados.biblia || !dados.biblia.livroId) {
       if (navBox) {
         navBox.hidden = true;
@@ -264,11 +292,17 @@
     formVideo.addEventListener('submit', function (evento) {
       evento.preventDefault();
 
+      if (!confirmarTroca('video')) {
+        return;
+      }
+
       var url = formVideo.querySelector('#video_url').value;
       var dados = new URLSearchParams();
       dados.set('url', url);
 
-      enviar('/video', dados);
+      enviar('/video', dados).then(function () {
+        modoAtual = 'video';
+      });
     });
   }
 
@@ -288,13 +322,25 @@
 
   if (botaoLogo) {
     botaoLogo.addEventListener('click', function () {
-      enviar('/logo');
+      if (!confirmarTroca('logo')) {
+        return;
+      }
+
+      enviar('/logo').then(function () {
+        modoAtual = 'logo';
+      });
     });
   }
 
   if (botaoLimpar) {
     botaoLimpar.addEventListener('click', function () {
-      enviar('/limpar');
+      if (!confirmarTroca('blank')) {
+        return;
+      }
+
+      enviar('/limpar').then(function () {
+        modoAtual = 'blank';
+      });
     });
   }
 
