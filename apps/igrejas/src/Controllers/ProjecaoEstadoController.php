@@ -91,6 +91,65 @@ final class ProjecaoEstadoController extends Controller
         $this->jsonResponse(['ok' => true] + (ProjecaoEstado::atual($sessao->id)?->paraJson() ?? []));
     }
 
+    /**
+     * Numero de versiculos de um capitulo, usado para popular o select
+     * de versiculo no operador e no preletor (sem precisar digitar um
+     * numero "no escuro", sem saber onde o capitulo termina).
+     */
+    public function capituloInfo(string $token): void
+    {
+        $this->sessaoOuErro($token);
+
+        $bibliaVersao = (string) $this->request->input('versao', BibliaVersao::PADRAO);
+        $livroId = (int) $this->request->input('livro_id', 0);
+        $capitulo = (int) $this->request->input('capitulo', 0);
+
+        if (!BibliaVersao::valida($bibliaVersao) || $livroId <= 0 || $capitulo <= 0) {
+            $this->jsonResponse(['erro' => 'Dados invalidos.'], 422);
+        }
+
+        $this->jsonResponse(['totalVersiculos' => BibliaVersiculo::totalVersiculos($bibliaVersao, $livroId, $capitulo)]);
+    }
+
+    /**
+     * Marcacao a lapis do preletor sobre o texto em projecao. Os tracos
+     * chegam como fracao (0..1) das dimensoes do "palco" de projecao -
+     * nao pixels - para que a mesma marcacao caiba corretamente tanto no
+     * tablet do preletor quanto no telao, que tem tamanhos diferentes.
+     */
+    public function definirMarcacao(string $token): void
+    {
+        $sessao = $this->sessaoOuErro($token);
+        $bruto = json_decode((string) $this->request->input('tracos', '[]'), true);
+
+        if (!is_array($bruto)) {
+            $this->jsonResponse(['erro' => 'Dados invalidos.'], 422);
+        }
+
+        $tracos = [];
+        foreach ($bruto as $traco) {
+            if (!is_array($traco)) {
+                continue;
+            }
+
+            $pontos = [];
+            foreach ($traco as $ponto) {
+                if (!is_array($ponto) || !isset($ponto['x'], $ponto['y']) || !is_numeric($ponto['x']) || !is_numeric($ponto['y'])) {
+                    continue;
+                }
+
+                $pontos[] = ['x' => max(0.0, min(1.0, (float) $ponto['x'])), 'y' => max(0.0, min(1.0, (float) $ponto['y']))];
+            }
+
+            if ($pontos !== []) {
+                $tracos[] = $pontos;
+            }
+        }
+
+        ProjecaoEstado::definirMarcacao($sessao->id, $tracos);
+        $this->jsonResponse(['ok' => true]);
+    }
+
     public function definirVideo(string $token): void
     {
         $sessao = $this->sessaoOuErro($token);

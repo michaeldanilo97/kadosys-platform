@@ -10,14 +10,19 @@
   var pollUrl = root.getAttribute('data-poll-url');
   var bibliaUrl = root.getAttribute('data-biblia-url');
   var navegarUrl = root.getAttribute('data-navegar-url');
+  var capituloInfoUrl = root.getAttribute('data-capitulo-info-url');
+  var marcacaoUrl = root.getAttribute('data-marcacao-url');
   var texto = root.querySelector('[data-preletor-texto]');
+  var refEl = root.querySelector('[data-preletor-ref]');
+  var canvasWrap = root.querySelector('[data-preletor-canvas-wrap]');
+  var stage = root.querySelector('[data-preletor-stage]');
   var canvas = root.querySelector('[data-preletor-canvas]');
   var ctx = canvas.getContext('2d');
   var toolPenBtn = root.querySelector('[data-tool-pen]');
   var toolClearBtn = root.querySelector('[data-tool-clear]');
   var form = root.querySelector('[data-preletor-form]');
   var livroSelect = form.querySelector('[data-campo="livro_id"]');
-  var capituloInput = form.querySelector('[data-campo="capitulo"]');
+  var capituloSelect = form.querySelector('[data-campo="capitulo"]');
   var previewBox = root.querySelector('[data-nav-preview]');
   var previewRef = root.querySelector('[data-nav-preview-ref]');
   var previewTexto = root.querySelector('[data-nav-preview-texto]');
@@ -28,6 +33,8 @@
   var desenhando = false;
   var caneteAtiva = false;
   var ultimoPonto = null;
+  var tracoAtual = null;
+  var tracos = [];
 
   function escapeHtml(value) {
     var div = document.createElement('div');
@@ -37,6 +44,10 @@
   }
 
   function ajustarCanvas() {
+    if (window.KadosysBiblia) {
+      window.KadosysBiblia.ajustarPalco(canvasWrap, stage);
+    }
+
     var proporcao = window.devicePixelRatio || 1;
     var largura = canvas.clientWidth;
     var altura = canvas.clientHeight;
@@ -48,10 +59,54 @@
     ctx.lineCap = 'round';
     ctx.strokeStyle = '#d4a13f';
     ctx.lineWidth = 3;
+
+    redesenharTracos();
   }
 
-  function limparCanvas() {
+  function redesenharTracos() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    var largura = canvas.clientWidth;
+    var altura = canvas.clientHeight;
+
+    tracos.forEach(function (traco) {
+      if (traco.length < 2) {
+        return;
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(traco[0].x * largura, traco[0].y * altura);
+
+      for (var i = 1; i < traco.length; i++) {
+        ctx.lineTo(traco[i].x * largura, traco[i].y * altura);
+      }
+
+      ctx.stroke();
+    });
+  }
+
+  function limparCanvas(semEnviar) {
+    tracos = [];
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (!semEnviar) {
+      enviarMarcacao();
+    }
+  }
+
+  function enviarMarcacao() {
+    if (!marcacaoUrl) {
+      return;
+    }
+
+    var dados = new URLSearchParams();
+    dados.set('tracos', JSON.stringify(tracos));
+
+    fetch(marcacaoUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: dados.toString(),
+    }).catch(function () {});
   }
 
   function alternarCaneta() {
@@ -64,8 +119,8 @@
     var retangulo = canvas.getBoundingClientRect();
 
     return {
-      x: evento.clientX - retangulo.left,
-      y: evento.clientY - retangulo.top,
+      x: Math.max(0, Math.min(1, (evento.clientX - retangulo.left) / retangulo.width)),
+      y: Math.max(0, Math.min(1, (evento.clientY - retangulo.top) / retangulo.height)),
     };
   }
 
@@ -75,7 +130,9 @@
     }
 
     desenhando = true;
+    tracoAtual = [];
     ultimoPonto = posicaoRelativa(evento);
+    tracoAtual.push(ultimoPonto);
     canvas.setPointerCapture(evento.pointerId);
   }
 
@@ -85,23 +142,38 @@
     }
 
     var ponto = posicaoRelativa(evento);
+    var largura = canvas.clientWidth;
+    var altura = canvas.clientHeight;
 
     ctx.beginPath();
-    ctx.moveTo(ultimoPonto.x, ultimoPonto.y);
-    ctx.lineTo(ponto.x, ponto.y);
+    ctx.moveTo(ultimoPonto.x * largura, ultimoPonto.y * altura);
+    ctx.lineTo(ponto.x * largura, ponto.y * altura);
     ctx.stroke();
 
     ultimoPonto = ponto;
+    tracoAtual.push(ponto);
   }
 
   function finalizarTraco() {
+    if (!desenhando) {
+      return;
+    }
+
     desenhando = false;
     ultimoPonto = null;
+
+    if (tracoAtual && tracoAtual.length > 1) {
+      tracos.push(tracoAtual);
+      enviarMarcacao();
+    }
+
+    tracoAtual = null;
   }
 
   function renderTexto(biblia) {
     if (!biblia || !biblia.versiculos || !biblia.versiculos.length) {
       texto.innerHTML = '<p class="preletor-empty">Escolha um livro, capitulo e versiculo acima para projetar.</p>';
+      refEl.textContent = '';
 
       return;
     }
@@ -116,11 +188,11 @@
       referencia += ' · ' + biblia.bibliaVersao.toUpperCase();
     }
 
-    var corpo = biblia.versiculos.map(function (versiculo) {
+    texto.innerHTML = biblia.versiculos.map(function (versiculo) {
       return '<span class="numero">' + versiculo.numero + '</span>' + escapeHtml(versiculo.texto) + ' ';
     }).join('');
 
-    texto.innerHTML = '<div class="ref">' + escapeHtml(referencia) + '</div><div>' + corpo + '</div>';
+    refEl.textContent = referencia;
   }
 
   function renderPreview(biblia) {
@@ -150,10 +222,32 @@
     renderTexto(biblia);
     renderPreview(biblia);
 
-    // Referencia mudou: as marcacoes a lapis sao efemeras por versiculo.
+    // Referencia mudou: as marcacoes a lapis sao efemeras por versiculo
+    // (o servidor ja zera biblia_marcacao ao trocar a referencia). Excecao:
+    // na primeira aplicacao de estado (ex.: o preletor acabou de abrir ou
+    // recarregou a pagina), carrega a marcacao ja existente em vez de
+    // limpar, para nao apagar o que outro dispositivo desenhou.
+    var primeiraAplicacao = lastReferenciaChave === null;
+
     if (chave !== lastReferenciaChave) {
       lastReferenciaChave = chave;
-      limparCanvas();
+
+      if (primeiraAplicacao && biblia.marcacao && biblia.marcacao.length) {
+        tracos = biblia.marcacao;
+        redesenharTracos();
+      } else {
+        limparCanvas(true);
+      }
+    } else if (biblia.marcacao) {
+      // Mesma referencia: outro dispositivo (operador ou o proprio
+      // preletor em outra aba) pode ter alterado a marcacao - mantem em
+      // sincronia sem redesenhar do zero a cada poll se nada mudou.
+      var chaveMarcacao = JSON.stringify(biblia.marcacao);
+
+      if (chaveMarcacao !== JSON.stringify(tracos)) {
+        tracos = biblia.marcacao;
+        redesenharTracos();
+      }
     }
   }
 
@@ -198,22 +292,19 @@
       });
   }
 
-  livroSelect.addEventListener('change', function () {
-    var opcaoSelecionada = livroSelect.options[livroSelect.selectedIndex];
-    var totalCapitulos = opcaoSelecionada ? opcaoSelecionada.getAttribute('data-total-capitulos') : null;
-
-    if (totalCapitulos) {
-      capituloInput.setAttribute('max', totalCapitulos);
-    }
-  });
+  if (window.KadosysBiblia) {
+    window.KadosysBiblia.montarComboLivro(root.querySelector('[data-livro-combo]'));
+    window.KadosysBiblia.montarCapitulo(form);
+    window.KadosysBiblia.montarVersiculos(form, capituloInfoUrl);
+  }
 
   form.addEventListener('submit', function (evento) {
     evento.preventDefault();
 
     var dados = new URLSearchParams();
     dados.set('biblia_versao', form.querySelector('[data-campo="biblia_versao"]').value);
-    dados.set('livro_id', form.querySelector('[data-campo="livro_id"]').value);
-    dados.set('capitulo', form.querySelector('[data-campo="capitulo"]').value);
+    dados.set('livro_id', livroSelect.value);
+    dados.set('capitulo', capituloSelect.value);
     dados.set('versiculo_inicio', form.querySelector('[data-campo="versiculo_inicio"]').value);
 
     var fim = form.querySelector('[data-campo="versiculo_fim"]').value;
@@ -257,7 +348,9 @@
   });
 
   toolPenBtn.addEventListener('click', alternarCaneta);
-  toolClearBtn.addEventListener('click', limparCanvas);
+  toolClearBtn.addEventListener('click', function () {
+    limparCanvas(false);
+  });
 
   canvas.addEventListener('pointerdown', iniciarTraco);
   canvas.addEventListener('pointermove', continuarTraco);

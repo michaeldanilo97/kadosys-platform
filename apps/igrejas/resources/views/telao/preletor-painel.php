@@ -8,7 +8,15 @@
 $basePath = $config['base_path'] ?? '';
 ?>
 
-<div class="preletor-shell" data-preletor data-poll-url="<?= $basePath ?>/projecao/<?= urlencode($token) ?>/estado" data-biblia-url="<?= $basePath ?>/projecao/<?= urlencode($token) ?>/biblia" data-navegar-url="<?= $basePath ?>/projecao/<?= urlencode($token) ?>/biblia/navegar">
+<div
+    class="preletor-shell"
+    data-preletor
+    data-poll-url="<?= $basePath ?>/projecao/<?= urlencode($token) ?>/estado"
+    data-biblia-url="<?= $basePath ?>/projecao/<?= urlencode($token) ?>/biblia"
+    data-navegar-url="<?= $basePath ?>/projecao/<?= urlencode($token) ?>/biblia/navegar"
+    data-capitulo-info-url="<?= $basePath ?>/projecao/<?= urlencode($token) ?>/biblia/capitulo"
+    data-marcacao-url="<?= $basePath ?>/projecao/<?= urlencode($token) ?>/biblia/marcacao"
+>
     <header class="preletor-topbar">
         <span class="brand"><span class="dot"></span> Preletor &middot; ao vivo</span>
         <form method="POST" action="<?= $basePath ?>/preletor/sair">
@@ -25,17 +33,29 @@ $basePath = $config['base_path'] ?? '';
                     </option>
                 <?php endforeach; ?>
             </select>
-            <select name="livro_id" data-campo="livro_id" required>
-                <option value="" selected disabled>Livro...</option>
-                <?php foreach ($livros as $livro): ?>
-                    <option value="<?= $livro->id ?>" data-total-capitulos="<?= $livro->totalCapitulos ?>">
-                        <?= htmlspecialchars($livro->nome, ENT_QUOTES, 'UTF-8') ?>
-                    </option>
-                <?php endforeach; ?>
+
+            <div class="livro-combo" data-livro-combo>
+                <input type="text" class="livro-combo-input" data-livro-combo-input placeholder="Buscar livro..." autocomplete="off" aria-expanded="false">
+                <input type="hidden" data-campo="livro_id" required>
+                <div class="livro-combo-lista" data-livro-combo-lista hidden>
+                    <?php foreach ($livros as $livro): ?>
+                        <button type="button" class="livro-combo-item" data-livro-combo-item data-livro-id="<?= $livro->id ?>" data-nome="<?= htmlspecialchars($livro->nome, ENT_QUOTES, 'UTF-8') ?>" data-total-capitulos="<?= $livro->totalCapitulos ?>">
+                            <?= htmlspecialchars($livro->nome, ENT_QUOTES, 'UTF-8') ?>
+                        </button>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
+            <select data-campo="capitulo" required>
+                <option value="" selected disabled>Cap...</option>
             </select>
-            <input type="number" name="capitulo" data-campo="capitulo" placeholder="Cap." min="1" required>
-            <input type="number" name="versiculo_inicio" data-campo="versiculo_inicio" placeholder="Vers." min="1" required>
-            <input type="number" name="versiculo_fim" data-campo="versiculo_fim" placeholder="Ate (opcional)" min="1">
+            <select data-campo="versiculo_inicio" required>
+                <option value="" selected disabled>Vers...</option>
+            </select>
+            <select data-campo="versiculo_fim">
+                <option value="">Ate (opcional)</option>
+            </select>
+
             <button type="submit" data-preletor-projetar><i class="bi bi-broadcast"></i> Projetar</button>
             <button type="button" class="preletor-nav-btn" data-nav-acao="anterior" aria-label="Versiculo anterior">
                 <i class="bi bi-arrow-left"></i>
@@ -51,19 +71,25 @@ $basePath = $config['base_path'] ?? '';
             <span data-nav-preview-texto></span>
         </div>
 
-        <div class="preletor-canvas-wrap">
-            <div class="preletor-texto" data-preletor-texto>
-                <p class="preletor-empty">Escolha a versao, livro, capitulo e versiculo acima para projetar.</p>
+        <div class="preletor-canvas-wrap" data-preletor-canvas-wrap>
+            <div class="preletor-stage" data-preletor-stage>
+                <div class="stage-biblia">
+                    <div class="preletor-texto stage-biblia-texto" data-preletor-texto>
+                        <p class="preletor-empty">Escolha a versao, livro, capitulo e versiculo acima para projetar.</p>
+                    </div>
+                    <div class="stage-biblia-ref" data-preletor-ref></div>
+                </div>
+                <canvas class="preletor-canvas stage-marcacao" data-preletor-canvas></canvas>
             </div>
-            <canvas class="preletor-canvas" data-preletor-canvas></canvas>
-            <div class="preletor-tools">
-                <button type="button" class="preletor-tool-btn" data-tool-pen aria-label="Caneta">
-                    <i class="bi bi-pencil-fill"></i>
-                </button>
-                <button type="button" class="preletor-tool-btn preletor-tool-btn-wide" data-tool-clear aria-label="Apagar marcacoes">
-                    <i class="bi bi-eraser-fill"></i> Apagar
-                </button>
-            </div>
+        </div>
+
+        <div class="preletor-toolbar">
+            <button type="button" class="preletor-tool-btn-wide" data-tool-pen aria-label="Ativar caneta">
+                <i class="bi bi-pencil-fill"></i> Caneta
+            </button>
+            <button type="button" class="preletor-tool-btn-wide" data-tool-clear aria-label="Apagar marcacao">
+                <i class="bi bi-eraser-fill"></i> Apagar marcacao
+            </button>
         </div>
     </div>
 </div>

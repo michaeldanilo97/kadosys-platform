@@ -66,7 +66,7 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
         </form>
     </div>
 
-    <div class="dash-panels-row" data-projecao-controles data-token="<?= htmlspecialchars($sessao->token, ENT_QUOTES, 'UTF-8') ?>" data-poll-url="<?= $basePath ?>/projecao/<?= $sessao->token ?>/estado">
+    <div class="dash-panels-row" data-projecao-controles data-token="<?= htmlspecialchars($sessao->token, ENT_QUOTES, 'UTF-8') ?>" data-poll-url="<?= $basePath ?>/projecao/<?= $sessao->token ?>/estado" data-capitulo-info-url="<?= $basePath ?>/projecao/<?= $sessao->token ?>/biblia/capitulo">
         <div class="dash-panel">
             <div class="dash-panel-head">
                 <h2><i class="bi bi-book"></i> Biblia</h2>
@@ -84,27 +84,36 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                         </select>
                     </div>
                     <div class="crud-field crud-field-full">
-                        <label for="livro_id">Livro</label>
-                        <select id="livro_id" data-campo="livro_id" required>
-                            <option value="" selected disabled>Selecione...</option>
-                            <?php foreach ($livros as $livro): ?>
-                                <option value="<?= $livro->id ?>" data-total-capitulos="<?= $livro->totalCapitulos ?>">
-                                    <?= htmlspecialchars($livro->nome, ENT_QUOTES, 'UTF-8') ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
+                        <label for="livro_id_busca">Livro</label>
+                        <div class="livro-combo" data-livro-combo>
+                            <input type="text" id="livro_id_busca" class="livro-combo-input" data-livro-combo-input placeholder="Buscar livro..." autocomplete="off" aria-expanded="false">
+                            <input type="hidden" data-campo="livro_id" required>
+                            <div class="livro-combo-lista" data-livro-combo-lista hidden>
+                                <?php foreach ($livros as $livro): ?>
+                                    <button type="button" class="livro-combo-item" data-livro-combo-item data-livro-id="<?= $livro->id ?>" data-nome="<?= htmlspecialchars($livro->nome, ENT_QUOTES, 'UTF-8') ?>" data-total-capitulos="<?= $livro->totalCapitulos ?>">
+                                        <?= htmlspecialchars($livro->nome, ENT_QUOTES, 'UTF-8') ?>
+                                    </button>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
                     </div>
                     <div class="crud-field">
                         <label for="capitulo">Capitulo</label>
-                        <input type="number" id="capitulo" data-campo="capitulo" min="1" required>
+                        <select id="capitulo" data-campo="capitulo" required>
+                            <option value="" selected disabled>Cap...</option>
+                        </select>
                     </div>
                     <div class="crud-field">
                         <label for="versiculo_inicio">Versiculo</label>
-                        <input type="number" id="versiculo_inicio" data-campo="versiculo_inicio" min="1" required>
+                        <select id="versiculo_inicio" data-campo="versiculo_inicio" required>
+                            <option value="" selected disabled>Vers...</option>
+                        </select>
                     </div>
                     <div class="crud-field crud-field-full">
                         <label for="versiculo_fim">Ate o versiculo (opcional)</label>
-                        <input type="number" id="versiculo_fim" data-campo="versiculo_fim" min="1">
+                        <select id="versiculo_fim" data-campo="versiculo_fim">
+                            <option value="">Ate (opcional)</option>
+                        </select>
                     </div>
                 </div>
                 <div class="crud-form-actions" style="justify-content: flex-start;">
@@ -166,5 +175,6 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
         </div>
     </div>
 
+    <script src="<?= $basePath ?>/assets/js/biblia-picker.js"></script>
     <script src="<?= $basePath ?>/assets/js/projecao-admin.js"></script>
 <?php endif; ?>

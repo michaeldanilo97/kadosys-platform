@@ -464,6 +464,60 @@
   min-height: 100px;
 }
 
+/* ---- Combo de busca de livro (biblia-picker.js) ------------------------------- */
+
+.livro-combo {
+  position: relative;
+}
+
+.livro-combo-lista {
+  position: absolute;
+  top: calc(100% + 0.3rem);
+  left: 0;
+  right: 0;
+  max-height: 260px;
+  overflow-y: auto;
+  background: #0F172A;
+  border: 1px solid var(--glass-border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  z-index: 20;
+  padding: 0.35rem;
+}
+
+[data-theme="light"] .livro-combo-lista {
+  background: #FFFFFF;
+  border-color: rgba(30, 41, 59, 0.15);
+}
+
+.livro-combo-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--white);
+  padding: 0.55rem 0.7rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+.livro-combo-item[hidden] {
+  display: none;
+}
+
+[data-theme="light"] .livro-combo-item {
+  color: #0F172A;
+}
+
+.livro-combo-item:hover,
+.livro-combo-item:focus-visible {
+  background: rgba(139, 92, 246, 0.16);
+  color: var(--accent-soft);
+}
+
 .crud-form-actions {
   display: flex;
   justify-content: flex-end;

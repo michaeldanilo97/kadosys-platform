@@ -22,8 +22,13 @@ $logoUrl = $logoPath ? $basePath . '/' . $logoPath : null;
     </div>
 
     <div class="telao-layer telao-biblia" data-telao-layer="biblia">
-        <div class="telao-biblia-texto" data-telao-biblia-texto></div>
-        <div class="telao-biblia-ref" data-telao-biblia-ref></div>
+        <div class="telao-stage" data-telao-stage>
+            <div class="stage-biblia">
+                <div class="stage-biblia-texto" data-telao-biblia-texto></div>
+                <div class="stage-biblia-ref" data-telao-biblia-ref></div>
+            </div>
+            <canvas class="stage-marcacao" data-telao-marcacao></canvas>
+        </div>
     </div>
 
     <div class="telao-layer telao-logo" data-telao-layer="logo">

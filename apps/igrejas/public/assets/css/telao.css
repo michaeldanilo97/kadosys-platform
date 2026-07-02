@@ -70,21 +70,43 @@ html, body {
 
 .telao-biblia {
   z-index: 3;
-  flex-direction: column;
-  padding: 6vw 8vw;
-  text-align: center;
-  gap: 2.4vh;
 }
 
-.telao-biblia-texto {
-  font-size: clamp(1.9rem, 3.6vw, 4rem);
+/* ---- Palco 16:9 compartilhado entre telao e preletor ----------------------
+   Ambas as telas letterboxam o conteudo nesta mesma proporcao (o tamanho
+   real em pixels e calculado via JS, ver KadosysBiblia.ajustarPalco) e
+   usam unidades de container query (cqw/cqh) para o texto escalar de
+   forma identica nas duas telas. Isso garante que uma marcacao a lapis
+   feita no tablet do preletor, guardada como fracao (0..1) do palco,
+   caia exatamente no mesmo lugar visual quando espelhada no telao. */
+
+.telao-stage,
+.preletor-stage {
+  position: relative;
+  container-type: size;
+}
+
+.stage-biblia {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6cqw 8cqw;
+  text-align: center;
+  gap: 2.4cqh;
+}
+
+.stage-biblia-texto {
+  font-size: clamp(1rem, 3.6cqw, 4rem);
   line-height: 1.45;
   font-weight: 500;
-  max-width: 1200px;
+  max-width: 92%;
   text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
 }
 
-.telao-biblia-texto .numero {
+.stage-biblia-texto .numero {
   font-size: 0.55em;
   vertical-align: super;
   color: var(--telao-accent);
@@ -92,12 +114,17 @@ html, body {
   margin-right: 0.3em;
 }
 
-.telao-biblia-ref {
+.stage-biblia-ref {
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
-  font-size: clamp(1.1rem, 1.8vw, 1.8rem);
+  font-size: clamp(0.75rem, 1.8cqw, 1.8rem);
   color: var(--telao-accent);
   letter-spacing: 0.04em;
+}
+
+.stage-marcacao {
+  position: absolute;
+  inset: 0;
 }
 
 .telao-logo {
@@ -295,16 +322,18 @@ html, body {
 .preletor-body {
   flex: 1;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto 1fr auto;
   min-height: 0;
 }
 
 .preletor-picker {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
   gap: 0.6rem;
   padding: 1rem 1.2rem;
   border-bottom: 1px solid rgba(245, 247, 250, 0.08);
+  position: relative;
 }
 
 .preletor-picker select,
@@ -317,8 +346,58 @@ html, body {
   font-size: 0.88rem;
 }
 
-.preletor-picker input[type="number"] {
-  width: 78px;
+.preletor-picker select {
+  width: 92px;
+}
+
+/* ---- Combo de busca de livro (usado tambem no painel do operador,
+   ver crud.css para a versao clara) ------------------------------------- */
+
+.livro-combo {
+  position: relative;
+  width: 160px;
+}
+
+.livro-combo-input {
+  width: 100%;
+}
+
+.livro-combo-lista {
+  position: absolute;
+  top: calc(100% + 0.3rem);
+  left: 0;
+  width: 220px;
+  max-height: 260px;
+  overflow-y: auto;
+  background: #0b0d14;
+  border: 1px solid rgba(245, 247, 250, 0.16);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  z-index: 20;
+  padding: 0.35rem;
+}
+
+.livro-combo-lista .livro-combo-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--telao-text);
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.livro-combo-item[hidden] {
+  display: none;
+}
+
+.livro-combo-lista .livro-combo-item:hover,
+.livro-combo-lista .livro-combo-item:focus-visible {
+  background: rgba(212, 161, 63, 0.16);
+  color: var(--telao-accent);
 }
 
 .preletor-picker button {
@@ -385,33 +464,16 @@ html, body {
   position: relative;
   min-height: 0;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem;
 }
 
-.preletor-texto {
-  position: absolute;
-  inset: 0;
-  overflow-y: auto;
-  padding: 2rem 1.6rem 3rem;
-  font-size: clamp(1.1rem, 2.4vw, 1.5rem);
-  line-height: 1.7;
-}
-
-.preletor-texto .ref {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 700;
-  color: var(--telao-accent);
-  margin-bottom: 1rem;
-  font-size: 0.95rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.preletor-texto .numero {
-  font-size: 0.62em;
-  vertical-align: super;
-  color: var(--telao-accent);
-  font-weight: 700;
-  margin-right: 0.25em;
+.preletor-stage {
+  background: var(--telao-bg);
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px rgba(245, 247, 250, 0.08);
 }
 
 .preletor-canvas {
@@ -420,48 +482,38 @@ html, body {
   touch-action: none;
 }
 
-.preletor-tools {
-  position: absolute;
-  right: 1rem;
-  bottom: 1rem;
-  display: flex;
-  gap: 0.5rem;
-  z-index: 5;
-}
+/* ---- Barra de ferramentas: fixa, com rotulo de texto, sempre visivel
+   (nao flutua sobre o texto, para nao passar despercebida). ------------- */
 
-.preletor-tool-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1px solid rgba(245, 247, 250, 0.2);
-  background: rgba(5, 7, 13, 0.7);
-  backdrop-filter: blur(6px);
-  color: var(--telao-text);
+.preletor-toolbar {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.05rem;
-  cursor: pointer;
-}
-
-.preletor-tool-btn.active {
-  border-color: var(--telao-accent);
-  color: var(--telao-accent);
+  gap: 0.7rem;
+  padding: 0.8rem 1.2rem;
+  border-top: 1px solid rgba(245, 247, 250, 0.1);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .preletor-tool-btn-wide {
-  width: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(245, 247, 250, 0.2);
   border-radius: 999px;
-  padding: 0 1.1rem;
-  gap: 0.45rem;
+  padding: 0.7rem 1.4rem;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--telao-text);
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  cursor: pointer;
 }
 
-.preletor-tool-btn-wide:active {
+.preletor-tool-btn-wide.active {
   border-color: var(--telao-accent);
-  color: var(--telao-accent);
+  color: #0b0d14;
+  background: linear-gradient(135deg, var(--telao-accent-2), var(--telao-accent));
 }
 
 .preletor-empty {
@@ -474,11 +526,16 @@ html, body {
 /* ---- Responsivo --------------------------------------------------------------- */
 
 @media (max-width: 700px) {
-  .telao-biblia {
-    padding: 8vw 6vw;
+  .stage-biblia {
+    padding: 8cqw 6cqw;
   }
 
   .preletor-picker {
     gap: 0.5rem;
+  }
+
+  .livro-combo,
+  .livro-combo-lista {
+    width: 100%;
   }
 }

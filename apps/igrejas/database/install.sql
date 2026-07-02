@@ -295,6 +295,7 @@ CREATE TABLE IF NOT EXISTS projecao_estados (
     modo ENUM('biblia', 'video', 'logo', 'blank') NOT NULL DEFAULT 'blank',
     livro_id TINYINT UNSIGNED NULL,
     biblia_versao VARCHAR(10) NULL DEFAULT 'nvi',
+    biblia_marcacao TEXT NULL,
     capitulo SMALLINT UNSIGNED NULL,
     versiculo_inicio SMALLINT UNSIGNED NULL,
     versiculo_fim SMALLINT UNSIGNED NULL,

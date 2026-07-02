@@ -16,6 +16,7 @@ $basePath = $config['base_path'] ?? '';
     <link rel="stylesheet" href="<?= $basePath ?>/assets/css/telao.css">
 </head>
 <body>
+<script src="<?= $basePath ?>/assets/js/biblia-picker.js"></script>
 <?= $content ?>
 </body>
 </html>

@@ -9,6 +9,7 @@
 
   var pollUrl = root.getAttribute('data-poll-url');
   var baseUrl = pollUrl.replace(/\/estado$/, '');
+  var capituloInfoUrl = root.getAttribute('data-capitulo-info-url');
   var formBiblia = root.querySelector('[data-form-biblia]');
   var formVideo = root.querySelector('[data-form-video]');
   var botoesVideo = root.querySelectorAll('[data-video-acao]');
@@ -84,14 +85,11 @@
     var livroSelect = formBiblia.querySelector('[data-campo="livro_id"]');
     var capituloInput = formBiblia.querySelector('[data-campo="capitulo"]');
 
-    livroSelect.addEventListener('change', function () {
-      var opcao = livroSelect.options[livroSelect.selectedIndex];
-      var totalCapitulos = opcao ? opcao.getAttribute('data-total-capitulos') : null;
-
-      if (totalCapitulos) {
-        capituloInput.setAttribute('max', totalCapitulos);
-      }
-    });
+    if (window.KadosysBiblia) {
+      window.KadosysBiblia.montarComboLivro(formBiblia.querySelector('[data-livro-combo]'));
+      window.KadosysBiblia.montarCapitulo(formBiblia);
+      window.KadosysBiblia.montarVersiculos(formBiblia, capituloInfoUrl);
+    }
 
     formBiblia.addEventListener('submit', function (evento) {
       evento.preventDefault();

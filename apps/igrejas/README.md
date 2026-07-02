@@ -73,8 +73,10 @@ polling (sem WebSocket, por rodar em hospedagem compartilhada):
   proprio script).
 - Upload da logo da igreja em Configuracoes (`/dashboard/configuracoes`),
   usada no fadeout do video.
-- Marcacao a lapis do preletor tem botao "Apagar" visivel (canto inferior
-  direito da tela), alem do toggle da caneta.
+- Marcacao a lapis do preletor: barra fixa na parte inferior da tela com
+  botoes "Caneta" e "Apagar marcacao" (rotulo em texto, sempre visivel,
+  nao flutua sobre o conteudo). A marcacao e sincronizada em tempo real
+  (via o mesmo polling) com o telao - ver Sprint 7.
 
 ## Sprint 6 - Multiplas versoes da Biblia
 
@@ -99,6 +101,32 @@ varias traducoes da Biblia consultadas pelo operador e pelo preletor:
   cruzando capitulos e livros automaticamente. Uma previa do proximo
   versiculo fica visivel no painel do operador e no painel do preletor,
   para o operador nao precisar reabrir o formulario a cada versiculo.
+
+## Sprint 7 - Busca de livro, selects dependentes e marcacao sincronizada com o telao
+
+Migracao 007 (incremental, roda depois da 006):
+
+- **Busca de livro**: o select de livro (operador e preletor) virou um
+  combobox com campo de texto (`public/assets/js/biblia-picker.js`),
+  filtra a lista conforme o usuario digita (ignorando acentos), mais
+  rapido que rolar um select com 66 opcoes.
+- **Capitulo e versiculo por select**: em vez de digitar um numero "no
+  escuro", capitulo e populado com 1..totalCapitulos (dado ja conhecido
+  no cliente) e versiculo inicial/final e populado consultando o total
+  real de versiculos do capitulo no servidor (`GET
+  /projecao/{token}/biblia/capitulo`), pois pode variar por traducao.
+- **Palco 16:9 compartilhado**: telao e preletor agora renderizam o texto
+  biblico dentro de um mesmo "palco" letterboxed 16:9
+  (`KadosysBiblia.ajustarPalco`), com fonte dimensionada em unidades de
+  container query (cqw/cqh) - ou seja, a mesma proporcao visual nas duas
+  telas, independente do tamanho real de cada tela/tablet.
+- **Marcacao a lapis sincronizada com o telao**: os tracos desenhados
+  pelo preletor sao guardados como fracao (0..1) das dimensoes do palco
+  em `projecao_estados.biblia_marcacao` (JSON) e enviados via `POST
+  /projecao/{token}/biblia/marcacao` a cada traco concluido. O telao
+  desenha os mesmos tracos (`data-telao-marcacao`) usando o mesmo palco
+  16:9, entao a marcacao cai no mesmo lugar visual nas duas telas. A
+  marcacao e zerada automaticamente sempre que a referencia biblica muda.
 
 ## Tecnologias
 

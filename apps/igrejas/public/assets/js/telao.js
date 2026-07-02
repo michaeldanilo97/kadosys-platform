@@ -16,6 +16,9 @@
   };
   var bibliaTexto = root.querySelector('[data-telao-biblia-texto]');
   var bibliaRef = root.querySelector('[data-telao-biblia-ref]');
+  var stage = root.querySelector('[data-telao-stage]');
+  var marcacaoCanvas = root.querySelector('[data-telao-marcacao]');
+  var marcacaoCtx = marcacaoCanvas ? marcacaoCanvas.getContext('2d') : null;
 
   var lastVersao = null;
   var player = null;
@@ -78,6 +81,57 @@
     bibliaRef.textContent = referencia;
   }
 
+  function ajustarStage() {
+    if (!stage || !window.KadosysBiblia) {
+      return;
+    }
+
+    window.KadosysBiblia.ajustarPalco(layers.biblia, stage);
+
+    if (marcacaoCanvas) {
+      var proporcao = window.devicePixelRatio || 1;
+
+      marcacaoCanvas.width = stage.clientWidth * proporcao;
+      marcacaoCanvas.height = stage.clientHeight * proporcao;
+      marcacaoCtx.setTransform(proporcao, 0, 0, proporcao, 0, 0);
+    }
+  }
+
+  function renderMarcacao(tracos) {
+    if (!marcacaoCtx) {
+      return;
+    }
+
+    marcacaoCtx.clearRect(0, 0, marcacaoCanvas.clientWidth, marcacaoCanvas.clientHeight);
+
+    if (!tracos || !tracos.length) {
+      return;
+    }
+
+    marcacaoCtx.lineJoin = 'round';
+    marcacaoCtx.lineCap = 'round';
+    marcacaoCtx.strokeStyle = '#d4a13f';
+    marcacaoCtx.lineWidth = 3;
+
+    var largura = marcacaoCanvas.clientWidth;
+    var altura = marcacaoCanvas.clientHeight;
+
+    tracos.forEach(function (traco) {
+      if (!traco || traco.length < 2) {
+        return;
+      }
+
+      marcacaoCtx.beginPath();
+      marcacaoCtx.moveTo(traco[0].x * largura, traco[0].y * altura);
+
+      for (var i = 1; i < traco.length; i++) {
+        marcacaoCtx.lineTo(traco[i].x * largura, traco[i].y * altura);
+      }
+
+      marcacaoCtx.stroke();
+    });
+  }
+
   function aplicarVideo(video) {
     var videoId = extrairIdYoutube(video.url);
 
@@ -126,6 +180,8 @@
       mostrarSomente(['blank']);
     } else if (estado.modo === 'biblia') {
       renderBiblia(estado.biblia);
+      ajustarStage();
+      renderMarcacao(estado.biblia ? estado.biblia.marcacao : null);
       mostrarSomente(['biblia']);
     } else if (estado.modo === 'video') {
       aplicarVideo(estado.video);
@@ -200,6 +256,9 @@
       // Sem estado inicial valido; o primeiro poll resolve.
     }
   }
+
+  window.addEventListener('resize', ajustarStage);
+  ajustarStage();
 
   setInterval(poll, 1500);
   poll();

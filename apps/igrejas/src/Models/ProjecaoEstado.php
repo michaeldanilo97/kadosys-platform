@@ -26,6 +26,7 @@ final class ProjecaoEstado
         public readonly ?string $livroNome,
         public readonly ?string $livroAbreviacao,
         public readonly ?string $bibliaVersao,
+        public readonly ?array $bibliaMarcacao,
         public readonly ?int $capitulo,
         public readonly ?int $versiculoInicio,
         public readonly ?int $versiculoFim,
@@ -62,7 +63,7 @@ final class ProjecaoEstado
         $stmt = Database::connection()->prepare(
             'UPDATE projecao_estados SET
                 modo = "biblia", biblia_versao = :biblia_versao, livro_id = :livro_id, capitulo = :capitulo,
-                versiculo_inicio = :inicio, versiculo_fim = :fim,
+                versiculo_inicio = :inicio, versiculo_fim = :fim, biblia_marcacao = NULL,
                 versao = versao + 1, updated_at = NOW()
              WHERE sessao_id = :sessao_id'
         );
@@ -73,6 +74,28 @@ final class ProjecaoEstado
             'capitulo' => $capitulo,
             'inicio' => min($inicio, $fim),
             'fim' => max($inicio, $fim),
+        ]);
+    }
+
+    /**
+     * Marcacao a lapis do preletor sobre o texto atualmente projetado.
+     * Substitui integralmente os tracos anteriores (o cliente sempre
+     * envia o conjunto completo de tracos correntes) e e limpa
+     * automaticamente sempre que a referencia biblica muda, em
+     * definirBiblia() acima.
+     *
+     * @param array<int, array<int, array{x: float, y: float}>> $tracos
+     */
+    public static function definirMarcacao(int $sessaoId, array $tracos): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE projecao_estados SET
+                biblia_marcacao = :marcacao, versao = versao + 1, updated_at = NOW()
+             WHERE sessao_id = :sessao_id AND modo = "biblia"'
+        );
+        $stmt->execute([
+            'sessao_id' => $sessaoId,
+            'marcacao' => $tracos === [] ? null : json_encode($tracos),
         ]);
     }
 
@@ -155,6 +178,7 @@ final class ProjecaoEstado
                 'versiculoFim' => $this->versiculoFim,
                 'versiculos' => $versiculos,
                 'proximaPreview' => $proximaPreview,
+                'marcacao' => $this->bibliaMarcacao ?? [],
             ],
             'video' => [
                 'url' => $this->videoUrl,
@@ -209,6 +233,9 @@ final class ProjecaoEstado
             livroNome: $row['livro_nome'] ?? null,
             livroAbreviacao: $row['livro_abreviacao'] ?? null,
             bibliaVersao: $row['biblia_versao'] ?? null,
+            bibliaMarcacao: isset($row['biblia_marcacao']) && $row['biblia_marcacao'] !== null
+                ? (json_decode((string) $row['biblia_marcacao'], true) ?: [])
+                : null,
             capitulo: $row['capitulo'] !== null ? (int) $row['capitulo'] : null,
             versiculoInicio: $row['versiculo_inicio'] !== null ? (int) $row['versiculo_inicio'] : null,
             versiculoFim: $row['versiculo_fim'] !== null ? (int) $row['versiculo_fim'] : null,
