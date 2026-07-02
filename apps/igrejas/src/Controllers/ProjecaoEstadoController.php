@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Igrejas\Controllers;
 
 use Igrejas\Core\Controller;
+use Igrejas\Models\BibliaVersao;
 use Igrejas\Models\ProjecaoEstado;
 use Igrejas\Models\ProjecaoSessao;
 
@@ -37,16 +38,17 @@ final class ProjecaoEstadoController extends Controller
     {
         $sessao = $this->sessaoOuErro($token);
 
+        $bibliaVersao = (string) $this->request->input('biblia_versao', BibliaVersao::PADRAO);
         $livroId = (int) $this->request->input('livro_id', 0);
         $capitulo = (int) $this->request->input('capitulo', 0);
         $inicio = (int) $this->request->input('versiculo_inicio', 0);
         $fim = (int) $this->request->input('versiculo_fim', 0) ?: $inicio;
 
-        if ($livroId <= 0 || $capitulo <= 0 || $inicio <= 0) {
+        if (!BibliaVersao::valida($bibliaVersao) || $livroId <= 0 || $capitulo <= 0 || $inicio <= 0) {
             $this->jsonResponse(['erro' => 'Dados invalidos.'], 422);
         }
 
-        ProjecaoEstado::definirBiblia($sessao->id, $livroId, $capitulo, $inicio, $fim);
+        ProjecaoEstado::definirBiblia($sessao->id, $bibliaVersao, $livroId, $capitulo, $inicio, $fim);
         $this->jsonResponse(['ok' => true]);
     }
 

@@ -107,6 +107,10 @@
       referencia += '-' + biblia.versiculoFim;
     }
 
+    if (biblia.bibliaVersao) {
+      referencia += ' · ' + biblia.bibliaVersao.toUpperCase();
+    }
+
     var corpo = biblia.versiculos.map(function (versiculo) {
       return '<span class="numero">' + versiculo.numero + '</span>' + escapeHtml(versiculo.texto) + ' ';
     }).join('');
@@ -120,7 +124,7 @@
     }
 
     var biblia = dados.biblia || {};
-    var chave = [biblia.livroId, biblia.capitulo, biblia.versiculoInicio, biblia.versiculoFim].join('-');
+    var chave = [biblia.bibliaVersao, biblia.livroId, biblia.capitulo, biblia.versiculoInicio, biblia.versiculoFim].join('-');
 
     renderTexto(biblia);
 
@@ -162,6 +166,7 @@
     evento.preventDefault();
 
     var dados = new URLSearchParams();
+    dados.set('biblia_versao', form.querySelector('[data-campo="biblia_versao"]').value);
     dados.set('livro_id', form.querySelector('[data-campo="livro_id"]').value);
     dados.set('capitulo', form.querySelector('[data-campo="capitulo"]').value);
     dados.set('versiculo_inicio', form.querySelector('[data-campo="versiculo_inicio"]').value);

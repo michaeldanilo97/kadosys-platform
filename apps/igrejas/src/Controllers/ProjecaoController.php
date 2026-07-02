@@ -9,6 +9,7 @@ use Igrejas\Core\Controller;
 use Igrejas\Core\Csrf;
 use Igrejas\Core\Session;
 use Igrejas\Models\BibliaLivro;
+use Igrejas\Models\BibliaVersao;
 use Igrejas\Models\BibliaVersiculo;
 use Igrejas\Models\ProjecaoEstado;
 use Igrejas\Models\ProjecaoSessao;
@@ -35,6 +36,7 @@ final class ProjecaoController extends Controller
             'sessao' => $sessao,
             'estado' => $estado,
             'livros' => BibliaLivro::all(),
+            'versoes' => BibliaVersao::todas(),
             'bibliaImportada' => BibliaVersiculo::textoImportado(),
             'csrf' => Csrf::field(),
         ], 'dashboard');

@@ -4,6 +4,7 @@
  * @var \Igrejas\Models\ProjecaoSessao|null $sessao
  * @var \Igrejas\Models\ProjecaoEstado|null $estado
  * @var array<int, \Igrejas\Models\BibliaLivro> $livros
+ * @var array<string, string> $versoes
  * @var bool $bibliaImportada
  * @var string $csrf
  */
@@ -72,6 +73,16 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
             </div>
             <form class="crud-form" data-form-biblia onsubmit="return false;">
                 <div class="crud-form-grid">
+                    <div class="crud-field crud-field-full">
+                        <label for="biblia_versao">Versao</label>
+                        <select id="biblia_versao" data-campo="biblia_versao" required>
+                            <?php foreach ($versoes as $codigo => $nome): ?>
+                                <option value="<?= htmlspecialchars($codigo, ENT_QUOTES, 'UTF-8') ?>">
+                                    <?= htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                     <div class="crud-field crud-field-full">
                         <label for="livro_id">Livro</label>
                         <select id="livro_id" data-campo="livro_id" required>

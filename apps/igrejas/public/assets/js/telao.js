@@ -71,6 +71,10 @@
       referencia += '-' + biblia.versiculoFim;
     }
 
+    if (biblia.bibliaVersao) {
+      referencia += ' · ' + biblia.bibliaVersao.toUpperCase();
+    }
+
     bibliaRef.textContent = referencia;
   }
 

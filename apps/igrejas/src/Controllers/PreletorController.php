@@ -7,6 +7,7 @@ namespace Igrejas\Controllers;
 use Igrejas\Core\Controller;
 use Igrejas\Core\Session;
 use Igrejas\Models\BibliaLivro;
+use Igrejas\Models\BibliaVersao;
 use Igrejas\Models\ProjecaoSessao;
 
 /**
@@ -52,6 +53,7 @@ final class PreletorController extends Controller
             'pageTitle' => 'Preletor - KADOSYS Igrejas',
             'token' => $sessao->token,
             'livros' => BibliaLivro::all(),
+            'versoes' => BibliaVersao::todas(),
         ], 'telao');
     }
 

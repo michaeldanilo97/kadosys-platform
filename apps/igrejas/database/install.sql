@@ -1,24 +1,27 @@
 -- KADOSYS Igrejas - Instalacao completa do banco de dados
 -- ============================================================================
--- Este arquivo reune, em ordem, TODAS as migracoes ja criadas em
--- database/migrations/ ate o momento (001, 002, 003, 004 e 005). Ele
--- existe apenas para facilitar a instalacao inicial (rodar um unico
--- arquivo em vez de varios).
+-- Este arquivo reflete o schema completo mais recente (equivalente a
+-- rodar 001 a 006 em sequencia). Ele existe apenas para facilitar a
+-- INSTALACAO NOVA (rodar um unico arquivo em vez de varios).
 --
 -- As migracoes numeradas em database/migrations/ continuam sendo a fonte
 -- de verdade e o historico incremental do banco: sempre que um novo modulo
--- for implementado, uma nova migracao numerada e criada la, e este arquivo
--- e atualizado para refletir o schema completo mais recente.
+-- for implementado (ou o schema evolui, como em 006), uma nova migracao
+-- numerada e criada la, e este arquivo e atualizado para refletir o
+-- schema completo mais recente.
 --
--- Uso (escolha uma das duas formas, nunca as duas):
+-- Uso:
 --   a) Instalacao nova, direto por este arquivo unico:
 --        mysql -u usuario -p nome_do_banco < database/install.sql
---   b) Rodar as migracoes numeradas uma a uma, em ordem:
+--   b) Banco ja instalado ate a migracao 005: rode so a diferenca:
+--        mysql -u usuario -p nome_do_banco < database/migrations/006_add_biblia_versoes.sql
+--   c) Instalacao nova, migracoes numeradas uma a uma, em ordem:
 --        mysql -u usuario -p nome_do_banco < database/migrations/001_create_tables.sql
 --        mysql -u usuario -p nome_do_banco < database/migrations/002_create_membros_table.sql
 --        mysql -u usuario -p nome_do_banco < database/migrations/003_create_ministerios_tables.sql
 --        mysql -u usuario -p nome_do_banco < database/migrations/004_create_cultos_tables.sql
 --        mysql -u usuario -p nome_do_banco < database/migrations/005_create_projecao_tables.sql
+--        mysql -u usuario -p nome_do_banco < database/migrations/006_add_biblia_versoes.sql
 -- ============================================================================
 
 
@@ -186,14 +189,18 @@ CREATE TABLE IF NOT EXISTS biblia_livros (
     UNIQUE KEY biblia_livros_ordem_unique (ordem)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Coluna "versao" e chave unica ja refletem a migracao 006 (instalacao
+-- nova fica pronta em um unico passo; quem ja tinha so a 005 aplicada
+-- roda a 006 separadamente).
 CREATE TABLE IF NOT EXISTS biblia_versiculos (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     livro_id TINYINT UNSIGNED NOT NULL,
+    versao VARCHAR(10) NOT NULL DEFAULT 'nvi',
     capitulo SMALLINT UNSIGNED NOT NULL,
     versiculo SMALLINT UNSIGNED NOT NULL,
     texto TEXT NOT NULL,
-    UNIQUE KEY biblia_versiculos_unique (livro_id, capitulo, versiculo),
-    KEY biblia_versiculos_capitulo_index (livro_id, capitulo),
+    UNIQUE KEY biblia_versiculos_unique (versao, livro_id, capitulo, versiculo),
+    KEY biblia_versiculos_capitulo_index (versao, livro_id, capitulo),
     CONSTRAINT biblia_versiculos_livro_id_foreign
         FOREIGN KEY (livro_id) REFERENCES biblia_livros (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -286,6 +293,7 @@ CREATE TABLE IF NOT EXISTS projecao_estados (
     sessao_id INT UNSIGNED PRIMARY KEY,
     modo ENUM('biblia', 'video', 'logo', 'blank') NOT NULL DEFAULT 'blank',
     livro_id TINYINT UNSIGNED NULL,
+    biblia_versao VARCHAR(10) NULL DEFAULT 'nvi',
     capitulo SMALLINT UNSIGNED NULL,
     versiculo_inicio SMALLINT UNSIGNED NULL,
     versiculo_fim SMALLINT UNSIGNED NULL,

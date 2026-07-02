@@ -73,6 +73,26 @@ polling (sem WebSocket, por rodar em hospedagem compartilhada):
   proprio script).
 - Upload da logo da igreja em Configuracoes (`/dashboard/configuracoes`),
   usada no fadeout do video.
+- Marcacao a lapis do preletor tem botao "Apagar" visivel (canto inferior
+  direito da tela), alem do toggle da caneta.
+
+## Sprint 6 - Multiplas versoes da Biblia
+
+Migracao 006 (incremental, roda depois da 005): adiciona suporte a
+varias traducoes da Biblia consultadas pelo operador e pelo preletor:
+
+- Texto importado do projeto publico
+  [thiagobodruk/biblia](https://github.com/thiagobodruk/biblia) (NVI,
+  ACF e AA, licenca Creative Commons BY-NC - direitos de traducao das
+  respectivas sociedades biblicas).
+- `Igrejas\Models\BibliaVersao` lista as versoes disponiveis (fixas no
+  codigo, sem tabela propria).
+- Select de versao no painel do operador e no painel do preletor; a
+  versao escolhida faz parte do estado da projecao (sincronizada com o
+  telao).
+- `database/seed_biblia.php` aceita `<versao> <arquivo-ou-url>` e importa
+  diretamente do formato do thiagobodruk/biblia (ordem dos livros no
+  arquivo = ordem canonica 1-66, sem depender de abreviacao).
 
 ## Tecnologias
 
@@ -128,6 +148,7 @@ apps/igrejas/
 │   ├── migrations/003_create_ministerios_tables.sql
 │   ├── migrations/004_create_cultos_tables.sql
 │   ├── migrations/005_create_projecao_tables.sql
+│   ├── migrations/006_add_biblia_versoes.sql
 │   ├── seed_biblia.php        # importa o texto biblico (ver cabecalho do arquivo)
 │   └── seed_admin.php         # cria/atualiza o usuario administrador
 └── storage/
@@ -151,6 +172,7 @@ apps/igrejas/
    mysql -u usuario -p nome_do_banco < database/migrations/003_create_ministerios_tables.sql
    mysql -u usuario -p nome_do_banco < database/migrations/004_create_cultos_tables.sql
    mysql -u usuario -p nome_do_banco < database/migrations/005_create_projecao_tables.sql
+   mysql -u usuario -p nome_do_banco < database/migrations/006_add_biblia_versoes.sql
    ```
    A cada novo modulo implementado, uma nova migracao numerada e criada em
    `database/migrations/` e `database/install.sql` e atualizado para
@@ -159,6 +181,18 @@ apps/igrejas/
    ```
    php database/seed_admin.php "Administrador" "[email protected]" "senha-forte"
    ```
+3.1. Importe o texto biblico (opcional, necessario para o modulo
+   Projecao/Telao exibir o texto dos versiculos, nao so a referencia):
+   ```
+   php database/seed_biblia.php nvi caminho/para/nvi.json
+   php database/seed_biblia.php acf caminho/para/acf.json
+   php database/seed_biblia.php aa  caminho/para/aa.json
+   ```
+   Os arquivos JSON de origem (formato thiagobodruk/biblia) podem ser
+   baixados de https://github.com/thiagobodruk/biblia (pasta `json/`).
+   Sem acesso a `php` via linha de comando no servidor, use os arquivos
+   `.sql`/`.sql.gz` prontos (ja gerados a partir da mesma fonte) e
+   importe cada um via phpMyAdmin.
 4. (Opcional, recomendado) Gere o autoload via Composer:
    ```
    composer install

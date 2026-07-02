@@ -44,9 +44,10 @@ Entregue nesta versao:
       busca e paginacao; KPI de proximo culto no dashboard)
 - [x] Modulo Projecao / Telao (painel do operador, tela do telao por
       token e tela do preletor por PIN, sincronizados por polling;
-      biblia com os 66 livros - texto importavel via seed_biblia.php -,
-      video do YouTube com play/pausa/fadeout, upload de logo em
-      Configuracoes)
+      biblia com os 66 livros em 3 traducoes - NVI, ACF, AA, importadas
+      de thiagobodruk/biblia via seed_biblia.php -, video do YouTube com
+      play/pausa/fadeout, upload de logo em Configuracoes, marcacao a
+      lapis do preletor com botao de apagar)
 
 Ainda **nao implementados**, conforme escopo definido:
 

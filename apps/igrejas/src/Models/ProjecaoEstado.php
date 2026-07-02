@@ -11,10 +11,11 @@ use Igrejas\Core\Database;
  * um video do YouTube (com seu estado de reproducao), a logo da igreja
  * ou tela em branco.
  *
- * O campo "versao" e incrementado a cada alteracao e usado pelo telao e
- * pelo tablet do preletor para saber, via polling, quando ha algo novo
- * para buscar - sem precisar de WebSocket (nao disponivel na hospedagem
- * compartilhada).
+ * O campo "versao" (revisao) e incrementado a cada alteracao e usado
+ * pelo telao e pelo tablet do preletor para saber, via polling, quando
+ * ha algo novo para buscar - sem precisar de WebSocket (nao disponivel
+ * na hospedagem compartilhada). Nao confundir com "bibliaVersao", que e
+ * a traducao biblica selecionada (nvi/acf/aa, ver BibliaVersao).
  */
 final class ProjecaoEstado
 {
@@ -24,6 +25,7 @@ final class ProjecaoEstado
         public readonly ?int $livroId,
         public readonly ?string $livroNome,
         public readonly ?string $livroAbreviacao,
+        public readonly ?string $bibliaVersao,
         public readonly ?int $capitulo,
         public readonly ?int $versiculoInicio,
         public readonly ?int $versiculoFim,
@@ -49,17 +51,24 @@ final class ProjecaoEstado
         return $row ? self::fromRow($row) : null;
     }
 
-    public static function definirBiblia(int $sessaoId, int $livroId, int $capitulo, int $inicio, int $fim): void
-    {
+    public static function definirBiblia(
+        int $sessaoId,
+        string $bibliaVersao,
+        int $livroId,
+        int $capitulo,
+        int $inicio,
+        int $fim
+    ): void {
         $stmt = Database::connection()->prepare(
             'UPDATE projecao_estados SET
-                modo = "biblia", livro_id = :livro_id, capitulo = :capitulo,
+                modo = "biblia", biblia_versao = :biblia_versao, livro_id = :livro_id, capitulo = :capitulo,
                 versiculo_inicio = :inicio, versiculo_fim = :fim,
                 versao = versao + 1, updated_at = NOW()
              WHERE sessao_id = :sessao_id'
         );
         $stmt->execute([
             'sessao_id' => $sessaoId,
+            'biblia_versao' => $bibliaVersao,
             'livro_id' => $livroId,
             'capitulo' => $capitulo,
             'inicio' => min($inicio, $fim),
@@ -116,10 +125,16 @@ final class ProjecaoEstado
     {
         $versiculos = [];
 
-        if ($this->modo === 'biblia' && $this->livroId !== null && $this->capitulo !== null) {
+        if ($this->modo === 'biblia' && $this->livroId !== null && $this->capitulo !== null && $this->bibliaVersao !== null) {
             $versiculos = array_map(
                 static fn (BibliaVersiculo $v) => ['numero' => $v->versiculo, 'texto' => $v->texto],
-                BibliaVersiculo::doIntervalo($this->livroId, $this->capitulo, $this->versiculoInicio ?? 1, $this->versiculoFim ?? $this->versiculoInicio ?? 1)
+                BibliaVersiculo::doIntervalo(
+                    $this->bibliaVersao,
+                    $this->livroId,
+                    $this->capitulo,
+                    $this->versiculoInicio ?? 1,
+                    $this->versiculoFim ?? $this->versiculoInicio ?? 1
+                )
             );
         }
 
@@ -130,6 +145,8 @@ final class ProjecaoEstado
                 'livroId' => $this->livroId,
                 'livroNome' => $this->livroNome,
                 'livroAbreviacao' => $this->livroAbreviacao,
+                'bibliaVersao' => $this->bibliaVersao,
+                'bibliaVersaoNome' => BibliaVersao::nome($this->bibliaVersao),
                 'capitulo' => $this->capitulo,
                 'versiculoInicio' => $this->versiculoInicio,
                 'versiculoFim' => $this->versiculoFim,
@@ -150,6 +167,7 @@ final class ProjecaoEstado
             livroId: $row['livro_id'] !== null ? (int) $row['livro_id'] : null,
             livroNome: $row['livro_nome'] ?? null,
             livroAbreviacao: $row['livro_abreviacao'] ?? null,
+            bibliaVersao: $row['biblia_versao'] ?? null,
             capitulo: $row['capitulo'] !== null ? (int) $row['capitulo'] : null,
             versiculoInicio: $row['versiculo_inicio'] !== null ? (int) $row['versiculo_inicio'] : null,
             versiculoFim: $row['versiculo_fim'] !== null ? (int) $row['versiculo_fim'] : null,

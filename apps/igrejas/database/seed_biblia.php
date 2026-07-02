@@ -8,27 +8,31 @@ declare(strict_types=1);
 |--------------------------------------------------------------------------
 |
 | Os 66 livros (nomes, abreviacoes, total de capitulos) ja sao inseridos
-| pela migracao database/migrations/005_create_projecao_tables.sql. Este
-| script importa o TEXTO dos versiculos a partir de um arquivo JSON.
-|
-| Formato esperado do arquivo (lista simples de versiculos):
+| pela migracao database/migrations/005_create_projecao_tables.sql. As
+| versoes/traducoes disponiveis (nvi, acf, aa) sao fixas em
+| Igrejas\Models\BibliaVersao. Este script importa o TEXTO dos
+| versiculos de uma versao, a partir de um arquivo JSON no formato do
+| projeto publico thiagobodruk/biblia (https://github.com/thiagobodruk/biblia):
 |
 |   [
-|     { "livro_id": 1, "capitulo": 1, "versiculo": 1, "texto": "No principio criou Deus os ceus e a terra." },
-|     { "livro_id": 1, "capitulo": 1, "versiculo": 2, "texto": "..." },
+|     { "abbrev": "gn", "name": "Genesis", "chapters": [ ["...", "..."], ["..."] ] },
 |     ...
 |   ]
 |
-| "livro_id" segue a ordem canonica 1-66 (1 = Genesis ... 66 = Apocalipse),
-| igual a tabela biblia_livros. Se o arquivo de origem usar abreviacoes
-| (ex.: "Gn", "Mt") em vez de livro_id numerico, ajuste o mapeamento no
-| bloco RESOLVER_LIVRO_ID abaixo antes de rodar a importacao.
+| Os livros aparecem no arquivo na mesma ordem canonica (1-66) usada na
+| tabela biblia_livros, entao o indice do livro no array (comecando em 1)
+| e usado diretamente como livro_id - sem depender da abreviacao.
 |
-| Uso (linha de comando):
+| Uso (linha de comando), rode uma vez para cada versao:
 |
-|   php database/seed_biblia.php caminho/para/biblia.json
+|   php database/seed_biblia.php nvi caminho/para/nvi.json
+|   php database/seed_biblia.php acf caminho/para/acf.json
+|   php database/seed_biblia.php aa  caminho/para/aa.json
 |
-| A importacao e feita em lote (chunks) dentro de uma transacao e usa
+| O caminho tambem pode ser uma URL http(s) (ex.: o link "raw" do
+| arquivo no GitHub), se o servidor tiver allow_url_fopen habilitado.
+|
+| A importacao roda dentro de uma transacao e usa
 | "INSERT ... ON DUPLICATE KEY UPDATE", entao pode ser rodada novamente
 | com seguranca (ex.: para corrigir versiculos) sem duplicar linhas.
 |
@@ -45,81 +49,82 @@ if (is_file($vendorAutoload)) {
 }
 
 require_once dirname(__DIR__) . '/src/Core/Database.php';
+require_once dirname(__DIR__) . '/src/Models/BibliaVersao.php';
 
-[$script, $caminhoArquivo] = array_pad($argv, 2, null);
+[$script, $versao, $origem] = array_pad($argv, 3, null);
 
-if (!$caminhoArquivo || !is_file($caminhoArquivo)) {
-    fwrite(STDERR, "Uso: php database/seed_biblia.php caminho/para/biblia.json\n");
+if (!$versao || !$origem) {
+    fwrite(STDERR, "Uso: php database/seed_biblia.php <versao> <arquivo-ou-url.json>\n");
+    fwrite(STDERR, 'Versoes aceitas: ' . implode(', ', array_keys(\Igrejas\Models\BibliaVersao::todas())) . "\n");
     exit(1);
 }
 
-$conteudo = file_get_contents($caminhoArquivo);
-$versiculos = json_decode($conteudo, true);
+if (!\Igrejas\Models\BibliaVersao::valida($versao)) {
+    fwrite(STDERR, "Versao \"{$versao}\" nao reconhecida. Aceitas: " . implode(', ', array_keys(\Igrejas\Models\BibliaVersao::todas())) . "\n");
+    exit(1);
+}
 
-if (!is_array($versiculos)) {
+$isUrl = str_starts_with($origem, 'http://') || str_starts_with($origem, 'https://');
+
+if (!$isUrl && !is_file($origem)) {
+    fwrite(STDERR, "Arquivo nao encontrado: {$origem}\n");
+    exit(1);
+}
+
+$conteudo = file_get_contents($origem);
+
+if ($conteudo === false) {
+    fwrite(STDERR, "Nao foi possivel ler: {$origem}\n");
+    exit(1);
+}
+
+// Alguns arquivos vem com BOM UTF-8 (comum em exports do Windows).
+$conteudo = preg_replace('/^\xEF\xBB\xBF/', '', $conteudo);
+
+$livros = json_decode($conteudo, true);
+
+if (!is_array($livros) || $livros === []) {
     fwrite(STDERR, "Arquivo JSON invalido ou vazio.\n");
     exit(1);
 }
-
-// Mapa de abreviacao => livro_id, usado apenas se o arquivo de origem
-// identificar o livro por abreviacao em vez do id numerico 1-66.
-$RESOLVER_LIVRO_ID = static function (array $linha, \PDO $pdo): ?int {
-    if (isset($linha['livro_id'])) {
-        return (int) $linha['livro_id'];
-    }
-
-    if (isset($linha['abreviacao'])) {
-        static $cache = [];
-        $abreviacao = (string) $linha['abreviacao'];
-
-        if (!isset($cache[$abreviacao])) {
-            $stmt = $pdo->prepare('SELECT id FROM biblia_livros WHERE abreviacao = :abreviacao LIMIT 1');
-            $stmt->execute(['abreviacao' => $abreviacao]);
-            $cache[$abreviacao] = $stmt->fetchColumn() ?: null;
-        }
-
-        return $cache[$abreviacao] !== null ? (int) $cache[$abreviacao] : null;
-    }
-
-    return null;
-};
 
 $pdo = \Igrejas\Core\Database::connection();
 $pdo->beginTransaction();
 
 $stmt = $pdo->prepare(
-    'INSERT INTO biblia_versiculos (livro_id, capitulo, versiculo, texto)
-     VALUES (:livro_id, :capitulo, :versiculo, :texto)
+    'INSERT INTO biblia_versiculos (livro_id, versao, capitulo, versiculo, texto)
+     VALUES (:livro_id, :versao, :capitulo, :versiculo, :texto)
      ON DUPLICATE KEY UPDATE texto = VALUES(texto)'
 );
 
 $total = 0;
-$ignorados = 0;
 
-foreach ($versiculos as $linha) {
-    $livroId = $RESOLVER_LIVRO_ID($linha, $pdo);
+foreach ($livros as $indice => $livro) {
+    $livroId = $indice + 1; // ordem canonica do arquivo == ordem canonica de biblia_livros (1-66).
 
-    if ($livroId === null || !isset($linha['capitulo'], $linha['versiculo'], $linha['texto'])) {
-        $ignorados++;
+    if ($livroId < 1 || $livroId > 66 || !isset($livro['chapters']) || !is_array($livro['chapters'])) {
         continue;
     }
 
-    $stmt->execute([
-        'livro_id' => $livroId,
-        'capitulo' => (int) $linha['capitulo'],
-        'versiculo' => (int) $linha['versiculo'],
-        'texto' => trim((string) $linha['texto']),
-    ]);
+    foreach ($livro['chapters'] as $capituloIndice => $versiculos) {
+        if (!is_array($versiculos)) {
+            continue;
+        }
 
-    $total++;
+        foreach ($versiculos as $versiculoIndice => $texto) {
+            $stmt->execute([
+                'livro_id' => $livroId,
+                'versao' => $versao,
+                'capitulo' => $capituloIndice + 1,
+                'versiculo' => $versiculoIndice + 1,
+                'texto' => trim((string) $texto),
+            ]);
+
+            $total++;
+        }
+    }
 }
 
 $pdo->commit();
 
-echo "Importacao concluida: {$total} versiculos gravados";
-
-if ($ignorados > 0) {
-    echo ", {$ignorados} linhas ignoradas (dados incompletos ou livro nao identificado)";
-}
-
-echo ".\n";
+echo "Importacao concluida ({$versao}): {$total} versiculos gravados.\n";

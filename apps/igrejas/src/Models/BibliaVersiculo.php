@@ -9,12 +9,15 @@ use Igrejas\Core\Database;
 /**
  * Model de versiculo biblico. O texto e importado separadamente (ver
  * database/seed_biblia.php); esta classe so faz leitura.
+ *
+ * Cada versiculo pertence a uma versao/traducao (ver BibliaVersao).
  */
 final class BibliaVersiculo
 {
     public function __construct(
         public readonly int $id,
         public readonly int $livroId,
+        public readonly string $versao,
         public readonly int $capitulo,
         public readonly int $versiculo,
         public readonly string $texto,
@@ -26,14 +29,14 @@ final class BibliaVersiculo
      *
      * @return array<int, self>
      */
-    public static function doCapitulo(int $livroId, int $capitulo): array
+    public static function doCapitulo(string $versao, int $livroId, int $capitulo): array
     {
         $stmt = Database::connection()->prepare(
             'SELECT * FROM biblia_versiculos
-             WHERE livro_id = :livro_id AND capitulo = :capitulo
+             WHERE versao = :versao AND livro_id = :livro_id AND capitulo = :capitulo
              ORDER BY versiculo ASC'
         );
-        $stmt->execute(['livro_id' => $livroId, 'capitulo' => $capitulo]);
+        $stmt->execute(['versao' => $versao, 'livro_id' => $livroId, 'capitulo' => $capitulo]);
 
         return array_map(self::fromRow(...), $stmt->fetchAll());
     }
@@ -44,15 +47,16 @@ final class BibliaVersiculo
      *
      * @return array<int, self>
      */
-    public static function doIntervalo(int $livroId, int $capitulo, int $inicio, int $fim): array
+    public static function doIntervalo(string $versao, int $livroId, int $capitulo, int $inicio, int $fim): array
     {
         $stmt = Database::connection()->prepare(
             'SELECT * FROM biblia_versiculos
-             WHERE livro_id = :livro_id AND capitulo = :capitulo
+             WHERE versao = :versao AND livro_id = :livro_id AND capitulo = :capitulo
                    AND versiculo BETWEEN :inicio AND :fim
              ORDER BY versiculo ASC'
         );
         $stmt->execute([
+            'versao' => $versao,
             'livro_id' => $livroId,
             'capitulo' => $capitulo,
             'inicio' => min($inicio, $fim),
@@ -66,13 +70,13 @@ final class BibliaVersiculo
      * Maior numero de versiculo cadastrado para um capitulo (usado para
      * validar/limitar a selecao no painel de controle).
      */
-    public static function totalVersiculos(int $livroId, int $capitulo): int
+    public static function totalVersiculos(string $versao, int $livroId, int $capitulo): int
     {
         $stmt = Database::connection()->prepare(
             'SELECT COALESCE(MAX(versiculo), 0) FROM biblia_versiculos
-             WHERE livro_id = :livro_id AND capitulo = :capitulo'
+             WHERE versao = :versao AND livro_id = :livro_id AND capitulo = :capitulo'
         );
-        $stmt->execute(['livro_id' => $livroId, 'capitulo' => $capitulo]);
+        $stmt->execute(['versao' => $versao, 'livro_id' => $livroId, 'capitulo' => $capitulo]);
 
         return (int) $stmt->fetchColumn();
     }
@@ -90,6 +94,7 @@ final class BibliaVersiculo
         return new self(
             id: (int) $row['id'],
             livroId: (int) $row['livro_id'],
+            versao: (string) $row['versao'],
             capitulo: (int) $row['capitulo'],
             versiculo: (int) $row['versiculo'],
             texto: (string) $row['texto'],

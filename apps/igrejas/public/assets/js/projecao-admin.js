@@ -40,6 +40,7 @@
       evento.preventDefault();
 
       var dados = new URLSearchParams();
+      dados.set('biblia_versao', formBiblia.querySelector('[data-campo="biblia_versao"]').value);
       dados.set('livro_id', livroSelect.value);
       dados.set('capitulo', capituloInput.value);
       dados.set('versiculo_inicio', formBiblia.querySelector('[data-campo="versiculo_inicio"]').value);

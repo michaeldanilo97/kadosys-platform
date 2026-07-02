@@ -3,6 +3,7 @@
  * @var array $config
  * @var string $token
  * @var array<int, \Igrejas\Models\BibliaLivro> $livros
+ * @var array<string, string> $versoes
  */
 $basePath = $config['base_path'] ?? '';
 ?>
@@ -17,6 +18,13 @@ $basePath = $config['base_path'] ?? '';
 
     <div class="preletor-body">
         <form class="preletor-picker" data-preletor-form onsubmit="return false;">
+            <select name="biblia_versao" data-campo="biblia_versao" required>
+                <?php foreach ($versoes as $codigo => $nome): ?>
+                    <option value="<?= htmlspecialchars($codigo, ENT_QUOTES, 'UTF-8') ?>">
+                        <?= htmlspecialchars($codigo, ENT_QUOTES, 'UTF-8') ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
             <select name="livro_id" data-campo="livro_id" required>
                 <option value="" selected disabled>Livro...</option>
                 <?php foreach ($livros as $livro): ?>
@@ -33,12 +41,16 @@ $basePath = $config['base_path'] ?? '';
 
         <div class="preletor-canvas-wrap">
             <div class="preletor-texto" data-preletor-texto>
-                <p class="preletor-empty">Escolha um livro, capitulo e versiculo acima para projetar.</p>
+                <p class="preletor-empty">Escolha a versao, livro, capitulo e versiculo acima para projetar.</p>
             </div>
             <canvas class="preletor-canvas" data-preletor-canvas></canvas>
             <div class="preletor-tools">
-                <button type="button" class="preletor-tool-btn" data-tool-pen aria-label="Caneta"><i class="bi bi-pencil-fill"></i></button>
-                <button type="button" class="preletor-tool-btn" data-tool-clear aria-label="Apagar marcacoes"><i class="bi bi-eraser-fill"></i></button>
+                <button type="button" class="preletor-tool-btn" data-tool-pen aria-label="Caneta">
+                    <i class="bi bi-pencil-fill"></i>
+                </button>
+                <button type="button" class="preletor-tool-btn preletor-tool-btn-wide" data-tool-clear aria-label="Apagar marcacoes">
+                    <i class="bi bi-eraser-fill"></i> Apagar
+                </button>
             </div>
         </div>
     </div>
