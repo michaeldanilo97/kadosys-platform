@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Igrejas\Controllers\AuthController;
+use Igrejas\Controllers\CultoController;
 use Igrejas\Controllers\DashboardController;
 use Igrejas\Controllers\LandingController;
 use Igrejas\Controllers\MembroController;
@@ -49,6 +50,16 @@ $router->post('/dashboard/ministerios/{id}', [MinisterioController::class, 'upda
 $router->post('/dashboard/ministerios/{id}/excluir', [MinisterioController::class, 'destroy'], [AuthMiddleware::class]);
 $router->post('/dashboard/ministerios/{id}/voluntarios', [MinisterioController::class, 'addVoluntario'], [AuthMiddleware::class]);
 $router->post('/dashboard/ministerios/{id}/voluntarios/{membroId}/remover', [MinisterioController::class, 'removeVoluntario'], [AuthMiddleware::class]);
+
+// Modulo Cultos. Mesmo motivo: precisam vir antes do catch-all.
+$router->get('/dashboard/cultos', [CultoController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/cultos/novo', [CultoController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/cultos', [CultoController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/cultos/{id}/editar', [CultoController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/dashboard/cultos/{id}', [CultoController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/cultos/{id}/excluir', [CultoController::class, 'destroy'], [AuthMiddleware::class]);
+$router->post('/dashboard/cultos/{id}/presencas', [CultoController::class, 'addPresenca'], [AuthMiddleware::class]);
+$router->post('/dashboard/cultos/{id}/presencas/{membroId}/remover', [CultoController::class, 'removePresenca'], [AuthMiddleware::class]);
 
 // Estrutura "em construcao" dos demais modulos do menu (catch-all).
 $router->get('/dashboard/{slug}', [DashboardController::class, 'page'], [AuthMiddleware::class]);

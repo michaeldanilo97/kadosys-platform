@@ -1,9 +1,9 @@
 -- KADOSYS Igrejas - Instalacao completa do banco de dados
 -- ============================================================================
 -- Este arquivo reune, em ordem, TODAS as migracoes ja criadas em
--- database/migrations/ ate o momento (001, 002 e 003). Ele existe apenas
--- para facilitar a instalacao inicial (rodar um unico arquivo em vez de
--- varios).
+-- database/migrations/ ate o momento (001, 002, 003 e 004). Ele existe
+-- apenas para facilitar a instalacao inicial (rodar um unico arquivo em
+-- vez de varios).
 --
 -- As migracoes numeradas em database/migrations/ continuam sendo a fonte
 -- de verdade e o historico incremental do banco: sempre que um novo modulo
@@ -17,6 +17,7 @@
 --        mysql -u usuario -p nome_do_banco < database/migrations/001_create_tables.sql
 --        mysql -u usuario -p nome_do_banco < database/migrations/002_create_membros_table.sql
 --        mysql -u usuario -p nome_do_banco < database/migrations/003_create_ministerios_tables.sql
+--        mysql -u usuario -p nome_do_banco < database/migrations/004_create_cultos_tables.sql
 -- ============================================================================
 
 
@@ -117,5 +118,36 @@ CREATE TABLE IF NOT EXISTS ministerio_membros (
     CONSTRAINT ministerio_membros_ministerio_id_foreign
         FOREIGN KEY (ministerio_id) REFERENCES ministerios (id) ON DELETE CASCADE,
     CONSTRAINT ministerio_membros_membro_id_foreign
+        FOREIGN KEY (membro_id) REFERENCES membros (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ----------------------------------------------------------------------------
+-- 004 - Modulo Cultos
+-- ----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS cultos (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(150) NOT NULL,
+    data DATE NOT NULL,
+    hora TIME NULL,
+    local VARCHAR(150) NULL,
+    descricao TEXT NULL,
+    status ENUM('agendado', 'realizado', 'cancelado') NOT NULL DEFAULT 'agendado',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY cultos_data_index (data),
+    KEY cultos_status_index (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS culto_frequencias (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    culto_id INT UNSIGNED NOT NULL,
+    membro_id INT UNSIGNED NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY culto_frequencias_unique (culto_id, membro_id),
+    CONSTRAINT culto_frequencias_culto_id_foreign
+        FOREIGN KEY (culto_id) REFERENCES cultos (id) ON DELETE CASCADE,
+    CONSTRAINT culto_frequencias_membro_id_foreign
         FOREIGN KEY (membro_id) REFERENCES membros (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

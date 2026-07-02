@@ -6,6 +6,7 @@
  * @var int $membrosAtivos
  * @var int $novosMembros
  * @var int $ministeriosAtivos
+ * @var \Igrejas\Models\Culto|null $proximoCulto
  */
 $basePath = $config['base_path'] ?? '';
 $firstName = explode(' ', trim($user?->name ?? 'Usuario'))[0];
@@ -48,11 +49,17 @@ $firstName = explode(' ', trim($user?->name ?? 'Usuario'))[0];
     <div class="kpi-card">
         <div class="kpi-top">
             <div class="kpi-icon cyan"><i class="bi bi-calendar2-week"></i></div>
-            <span class="kpi-trend neutral"><i class="bi bi-dash"></i> aguardando dados</span>
+            <?php if ($proximoCulto): ?>
+                <span class="kpi-trend neutral"><i class="bi bi-clock"></i> <?= $proximoCulto->dataHoraFormatada() ?></span>
+            <?php else: ?>
+                <span class="kpi-trend neutral"><i class="bi bi-dash"></i> nada agendado</span>
+            <?php endif; ?>
         </div>
-        <div class="value">--</div>
+        <div class="value" style="<?= $proximoCulto ? 'font-size: 1.3rem;' : '' ?>">
+            <?= $proximoCulto ? htmlspecialchars($proximoCulto->titulo, ENT_QUOTES, 'UTF-8') : '--' ?>
+        </div>
         <div class="label">Proximo culto</div>
-        <div class="delta">Disponivel no modulo Cultos</div>
+        <div class="delta"><a href="<?= $basePath ?>/dashboard/cultos">Ver todos os cultos</a></div>
     </div>
     <div class="kpi-card">
         <div class="kpi-top">
@@ -95,7 +102,7 @@ $firstName = explode(' ', trim($user?->name ?? 'Usuario'))[0];
             <a href="<?= $basePath ?>/dashboard/membros/novo" class="quick-action">
                 <i class="bi bi-person-plus"></i> Cadastrar membro
             </a>
-            <a href="<?= $basePath ?>/dashboard/cultos" class="quick-action">
+            <a href="<?= $basePath ?>/dashboard/cultos/novo" class="quick-action">
                 <i class="bi bi-calendar-plus"></i> Agendar culto
             </a>
             <a href="<?= $basePath ?>/dashboard/financeiro" class="quick-action">

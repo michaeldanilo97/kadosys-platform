@@ -43,6 +43,17 @@ Segundo modulo de negocio implementado (v2 do roadmap):
 - Listagem com busca por nome e paginacao.
 - KPI "Ministerios" no dashboard, com contagem de ministerios ativos.
 
+## Sprint 4 - Modulo Cultos
+
+Terceiro modulo de negocio implementado (v2 do roadmap):
+
+- Programacao de cultos (titulo, data, horario, local, descricao e
+  status: agendado/realizado/cancelado).
+- Registro de frequencia: adicionar/remover membros presentes em cada
+  culto.
+- Listagem com busca por titulo/local e paginacao.
+- KPI "Proximo culto" no dashboard, com o proximo culto agendado.
+
 ## Tecnologias
 
 - PHP 8.3+
@@ -75,8 +86,8 @@ apps/igrejas/
 │   │   └── Middleware/        # GuestMiddleware, AuthMiddleware
 │   ├── Controllers/           # LandingController, AuthController,
 │   │                            DashboardController, MembroController,
-│   │                            MinisterioController
-│   └── Models/                # User, Membro, Ministerio
+│   │                            MinisterioController, CultoController
+│   └── Models/                # User, Membro, Ministerio, Culto
 ├── resources/
 │   └── views/
 │       ├── layouts/           # landing, auth, dashboard
@@ -89,6 +100,7 @@ apps/igrejas/
 │   ├── migrations/001_create_tables.sql
 │   ├── migrations/002_create_membros_table.sql
 │   ├── migrations/003_create_ministerios_tables.sql
+│   ├── migrations/004_create_cultos_tables.sql
 │   └── seed_admin.php         # cria/atualiza o usuario administrador
 └── storage/
     └── logs/
@@ -109,6 +121,7 @@ apps/igrejas/
    mysql -u usuario -p nome_do_banco < database/migrations/001_create_tables.sql
    mysql -u usuario -p nome_do_banco < database/migrations/002_create_membros_table.sql
    mysql -u usuario -p nome_do_banco < database/migrations/003_create_ministerios_tables.sql
+   mysql -u usuario -p nome_do_banco < database/migrations/004_create_cultos_tables.sql
    ```
    A cada novo modulo implementado, uma nova migracao numerada e criada em
    `database/migrations/` e `database/install.sql` e atualizado para
@@ -150,6 +163,14 @@ apps/igrejas/
 | `POST /dashboard/ministerios/{id}/excluir` | Remove ministerio                | AuthMiddleware   |
 | `POST /dashboard/ministerios/{id}/voluntarios` | Adiciona voluntario         | AuthMiddleware   |
 | `POST /dashboard/ministerios/{id}/voluntarios/{membroId}/remover` | Remove voluntario | AuthMiddleware |
+| `/dashboard/cultos`                    | Listagem de cultos (busca/paginacao) | AuthMiddleware  |
+| `/dashboard/cultos/novo`               | Formulario de novo culto            | AuthMiddleware   |
+| `POST /dashboard/cultos`               | Cadastra culto                      | AuthMiddleware   |
+| `/dashboard/cultos/{id}/editar`        | Formulario de edicao (e frequencia) | AuthMiddleware   |
+| `POST /dashboard/cultos/{id}`          | Atualiza culto                      | AuthMiddleware   |
+| `POST /dashboard/cultos/{id}/excluir`  | Remove culto                        | AuthMiddleware   |
+| `POST /dashboard/cultos/{id}/presencas` | Registra presenca                  | AuthMiddleware   |
+| `POST /dashboard/cultos/{id}/presencas/{membroId}/remover` | Remove presenca     | AuthMiddleware   |
 | `/dashboard/{slug}`                    | Estrutura dos demais modulos do menu | AuthMiddleware  |
 | `POST /logout`                         | Encerra a sessao                    | AuthMiddleware   |
 

@@ -40,6 +40,8 @@ Entregue nesta versao:
 - [x] Modulo Ministerios (cadastro, lider, gestao de voluntarios,
       listagem com busca e paginacao; KPI de ministerios ativos no
       dashboard)
+- [x] Modulo Cultos (programacao, registro de frequencia, listagem com
+      busca e paginacao; KPI de proximo culto no dashboard)
 
 Ainda **nao implementados**, conforme escopo definido:
 
