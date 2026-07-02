@@ -573,6 +573,14 @@ html, body {
   position: absolute;
   inset: 0;
   touch-action: none;
+  /* Comeca desativado (mesmo estado inicial da caneta, caneteAtiva=false
+     no JS) - sem isso, o canvas capturava todo toque por padrao (o JS so
+     definia pointer-events ao clicar em "Caneta"), e como tem
+     touch-action:none, um arraste de dedo sobre ele nao rolava a pagina
+     nem desenhava nada - so travava, sem nenhum efeito visivel. Fica
+     ainda mais perceptivel em telas largas (tablet), onde o canvas cobre
+     quase toda a largura da tela. */
+  pointer-events: none;
 }
 
 /* ---- Barra de ferramentas: fixa, com rotulo de texto, sempre visivel

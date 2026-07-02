@@ -17,6 +17,23 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 4 - 2026-07-02
+
+**Causa real dos botoes sumidos: canvas bloqueava todo toque por padrao**
+
+- A causa raiz nao era rolagem nem cache: o canvas de desenho do
+  preletor (`.preletor-canvas`) tem `touch-action: none` no CSS, mas o
+  `pointer-events` que deveria bloquea-lo quando a caneta esta
+  desligada so era definido pelo JavaScript ao clicar no botao
+  "Caneta". Antes do primeiro clique, o canvas ficava com
+  `pointer-events: auto` (padrao do navegador) e capturava TODO toque
+  sobre ele - como ele cobre quase a tela toda (ainda mais em telas
+  largas como tablets), um arraste de dedo ali nao desenhava nada (a
+  caneta estava desligada) nem rolava a pagina (touch-action:none) - so
+  travava, sem nenhum efeito visivel. Corrigido: o canvas agora comeca
+  com `pointer-events: none` por padrao, batendo com o estado inicial
+  real da caneta (desligada).
+
 ## Ajuste 3 - 2026-07-02
 
 **Botoes de caneta/apagar inacessiveis no preletor em telas curtas**
