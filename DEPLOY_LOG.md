@@ -17,6 +17,26 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 22 - 2026-07-06
+
+**Teste gratis na pagina institucional + novo modulo Playbacks**
+
+- O botao "Teste gratis" agora aparece no topo do site (ao lado de
+  "Acessar o sistema") e tambem em um banner destacado na secao de
+  Planos - os dois levam direto pro cadastro ja com a opcao de teste
+  gratis pre-selecionada.
+- Novo modulo **Playbacks** (biblioteca de faixas para o ministerio de
+  louvor) liberado em todos os planos, com card proprio na secao de
+  Recursos e entrada no menu do painel (estrutura "em construcao" por
+  enquanto - o conteudo em si sera publicado depois).
+- A secao de Recursos tambem ganhou um card explicando a Projecao/Telao
+  (ja existente, mas que nao estava descrita ali).
+- No plano Premium (o mais completo), foi adicionado o recurso "mudar o
+  tom da musica em tempo real" dos Playbacks - **funcionalidade ainda
+  nao implementada**, so a divulgacao na pagina de vendas por enquanto
+  (o desenvolvimento em si sera feito numa proxima etapa).
+- Sem migracao de banco nesta entrega.
+
 ## Ajuste 21 - 2026-07-06
 
 **CPF/CNPJ obrigatorio no cadastro + teste gratis de 7 dias**

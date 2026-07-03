@@ -45,6 +45,9 @@ $basePath = $config['base_path'] ?? '';
         </nav>
 
         <div class="landing-nav-actions">
+            <a href="<?= $basePath ?>/cadastro?metodo_pagamento=trial" class="btn-k btn-k-ghost">
+                <i class="bi bi-gift"></i> Teste gratis
+            </a>
             <a href="<?= $basePath ?>/login" class="btn-k btn-k-outline">Acessar o sistema</a>
             <button class="nav-toggle" type="button" data-nav-toggle aria-label="Abrir menu" aria-expanded="false">
                 <i class="bi bi-list" style="font-size: 1.3rem;"></i>

@@ -41,6 +41,16 @@ final class CadastroController extends Controller
             }
         }
 
+        // Permite pre-selecionar o teste gratis vindo do botao "Teste
+        // gratis" do topo da landing page (?metodo_pagamento=trial).
+        if (!isset($old['metodo_pagamento'])) {
+            $metodoQuery = (string) $this->request->input('metodo_pagamento', '');
+
+            if (in_array($metodoQuery, ['cartao', 'pix', 'trial'], true)) {
+                $old['metodo_pagamento'] = $metodoQuery;
+            }
+        }
+
         echo $this->view('cadastro.form', [
             'pageTitle' => 'Criar conta - KADOSYS Igrejas',
             'csrf' => Csrf::field(),
