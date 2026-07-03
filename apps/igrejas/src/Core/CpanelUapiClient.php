@@ -102,14 +102,6 @@ final class CpanelUapiClient
     }
 
     /**
-     * @return array{sucesso:bool, status_http:int, body:array}
-     */
-    public function excluirSubdominio(string $subdominioCompleto): array
-    {
-        return $this->chamar('SubDomain', 'delsubdomain', ['domain' => $subdominioCompleto]);
-    }
-
-    /**
      * @param array<string, string> $params
      * @return array{sucesso:bool, status_http:int, body:array}
      */

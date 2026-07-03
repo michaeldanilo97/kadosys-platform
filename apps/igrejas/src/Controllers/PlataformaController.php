@@ -92,14 +92,18 @@ final class PlataformaController extends Controller
             $this->redirect('/plataforma/igrejas');
         }
 
-        $erros = (new Desprovisionador(new CpanelUapiClient()))->excluir($tenant);
+        $resultado = (new Desprovisionador(new CpanelUapiClient()))->excluir($tenant);
 
-        if ($erros === []) {
-            Session::flash('plataforma_success', '"' . $tenant->nomeIgreja . '" foi excluida com sucesso (banco, usuario e subdominio removidos do cPanel).');
+        if ($resultado['erros'] === []) {
+            Session::flash('plataforma_success', array_merge(
+                ['"' . $tenant->nomeIgreja . '" foi excluida (banco de dados e usuario removidos do cPanel, registro removido do sistema).'],
+                $resultado['avisos']
+            ));
         } else {
             Session::flash('plataforma_errors', array_merge(
                 ['"' . $tenant->nomeIgreja . '" foi removida do sistema, mas algumas etapas no cPanel falharam - confira manualmente:'],
-                $erros
+                $resultado['erros'],
+                $resultado['avisos']
             ));
         }
 

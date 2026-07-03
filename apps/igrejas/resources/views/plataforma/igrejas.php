@@ -5,7 +5,7 @@ use Igrejas\Models\Plano;
 /**
  * @var array $config
  * @var array<int, \Igrejas\Models\Tenant> $igrejas
- * @var string|null $success
+ * @var array<int, string>|null $success
  * @var array $errors
  * @var string $csrfToken
  */
@@ -25,13 +25,21 @@ $statusLabel = [
         <h1 class="dash-page-title">Igrejas provisionadas</h1>
         <p class="dash-page-subtitle">
             <?= count($igrejas) ?> igreja<?= count($igrejas) === 1 ? '' : 's' ?> no total.
-            Excluir aqui apaga o banco de dados, o usuario do banco e o subdominio no cPanel - nao tem como desfazer.
+            Excluir aqui apaga o banco de dados e o usuario do banco no cPanel - nao tem como desfazer.
+            O subdominio precisa ser removido manualmente pelo cPanel (essa hospedagem nao suporta exclusao de subdominio via API).
         </p>
     </div>
 </div>
 
 <?php if (!empty($success)): ?>
-    <div class="crud-alert success"><i class="bi bi-check-circle"></i> <?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8') ?></div>
+    <div class="crud-alert success">
+        <i class="bi bi-check-circle"></i>
+        <div>
+            <?php foreach ($success as $mensagem): ?>
+                <div><?= htmlspecialchars($mensagem, ENT_QUOTES, 'UTF-8') ?></div>
+            <?php endforeach; ?>
+        </div>
+    </div>
 <?php endif; ?>
 
 <?php if ($errors !== []): ?>
@@ -94,7 +102,7 @@ $statusLabel = [
                                 <form
                                     method="POST"
                                     action="<?= $basePath ?>/plataforma/igrejas/<?= $igreja->id ?>/excluir"
-                                    data-confirm="ATENCAO: isso vai apagar PERMANENTEMENTE a igreja &quot;<?= htmlspecialchars($igreja->nomeIgreja, ENT_QUOTES, 'UTF-8') ?>&quot; - banco de dados, todos os membros/cultos/dados, usuario do banco e o subdominio &quot;<?= htmlspecialchars($igreja->subdominio, ENT_QUOTES, 'UTF-8') ?>&quot; no cPanel. Nao tem como desfazer. Confirma?"
+                                    data-confirm="ATENCAO: isso vai apagar PERMANENTEMENTE a igreja &quot;<?= htmlspecialchars($igreja->nomeIgreja, ENT_QUOTES, 'UTF-8') ?>&quot; - banco de dados (todos os membros/cultos/dados) e usuario do banco no cPanel. Nao tem como desfazer. Voce ainda vai precisar remover o subdominio &quot;<?= htmlspecialchars($igreja->subdominio, ENT_QUOTES, 'UTF-8') ?>&quot; manualmente pelo cPanel depois. Confirma?"
                                 >
                                     <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
                                     <button
