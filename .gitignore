@@ -3,6 +3,11 @@
 /.env
 /.env.local
 
+# Credenciais que nao suportam variavel de ambiente no provedor de
+# hospedagem (ver apps/igrejas/config/mercadopago.php) - criado direto no
+# servidor, nunca pelo Git.
+apps/*/config/*.local.php
+
 /storage/logs/*
 /storage/cache/*
 /storage/sessions/*
