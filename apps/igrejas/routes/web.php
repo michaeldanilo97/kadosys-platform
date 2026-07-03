@@ -6,6 +6,7 @@ use Igrejas\Controllers\AgendaController;
 use Igrejas\Controllers\AssinaturaController;
 use Igrejas\Controllers\AuthController;
 use Igrejas\Controllers\CadastroController;
+use Igrejas\Controllers\ComunicacaoController;
 use Igrejas\Controllers\ConfiguracaoController;
 use Igrejas\Controllers\CultoController;
 use Igrejas\Controllers\DashboardController;
@@ -14,11 +15,13 @@ use Igrejas\Controllers\GrupoController;
 use Igrejas\Controllers\LandingController;
 use Igrejas\Controllers\MembroController;
 use Igrejas\Controllers\MinisterioController;
+use Igrejas\Controllers\PatrimonioController;
 use Igrejas\Controllers\PermissaoController;
 use Igrejas\Controllers\PlataformaController;
 use Igrejas\Controllers\PreletorController;
 use Igrejas\Controllers\ProjecaoController;
 use Igrejas\Controllers\ProjecaoEstadoController;
+use Igrejas\Controllers\RelatorioController;
 use Igrejas\Controllers\TelaoController;
 use Igrejas\Controllers\UsuarioController;
 use Igrejas\Core\Middleware\AuthMiddleware;
@@ -187,10 +190,34 @@ $router->get('/dashboard/trial-expirado', [ConfiguracaoController::class, 'trial
 // pelo mesmo motivo de plano-bloqueado acima.
 $router->get('/dashboard/sem-permissao', [DashboardController::class, 'semPermissao'], [AuthMiddleware::class]);
 
-// Estrutura "em construcao" dos demais modulos do menu sem controller
-// proprio ainda (patrimonio, comunicacao, relatorios) - catch-all.
-// PlanoMiddleware aqui cobre todos eles de uma vez so, com base no
-// slug da propria URI.
+// Modulo Patrimonio. Mesmo motivo: precisa vir antes do catch-all.
+// PlanoMiddleware: Patrimonio exige o plano Premium (topo, ver
+// Igrejas\Models\Plano).
+$router->get('/dashboard/patrimonio', [PatrimonioController::class, 'index'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->get('/dashboard/patrimonio/novo', [PatrimonioController::class, 'create'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/patrimonio', [PatrimonioController::class, 'store'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->get('/dashboard/patrimonio/{id}/editar', [PatrimonioController::class, 'edit'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/patrimonio/{id}', [PatrimonioController::class, 'update'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/patrimonio/{id}/excluir', [PatrimonioController::class, 'destroy'], [AuthMiddleware::class, PlanoMiddleware::class]);
+
+// Modulo Comunicacao. Mesmo motivo: precisa vir antes do catch-all.
+// PlanoMiddleware: Comunicacao exige plano Plus ou superior (ver
+// Igrejas\Models\Plano).
+$router->get('/dashboard/comunicacao', [ComunicacaoController::class, 'index'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->get('/dashboard/comunicacao/novo', [ComunicacaoController::class, 'create'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/comunicacao', [ComunicacaoController::class, 'store'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->get('/dashboard/comunicacao/{id}/editar', [ComunicacaoController::class, 'edit'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/comunicacao/{id}', [ComunicacaoController::class, 'update'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/comunicacao/{id}/excluir', [ComunicacaoController::class, 'destroy'], [AuthMiddleware::class, PlanoMiddleware::class]);
+
+// Modulo Relatorios. Mesmo motivo: precisa vir antes do catch-all.
+// Somente leitura (sem create/edit/delete). PlanoMiddleware: Relatorios
+// exige o plano Premium (topo, ver Igrejas\Models\Plano).
+$router->get('/dashboard/relatorios', [RelatorioController::class, 'index'], [AuthMiddleware::class, PlanoMiddleware::class]);
+
+// Catch-all dos demais slugs do menu que ainda nao tem controller
+// proprio. PlanoMiddleware aqui cobre todos eles de uma vez so, com
+// base no slug da propria URI.
 $router->get('/dashboard/{slug}', [DashboardController::class, 'page'], [AuthMiddleware::class, PlanoMiddleware::class]);
 
 // Tela publica do telao (projetor). Acesso direto por link com token,

@@ -116,6 +116,46 @@ final class Culto
     }
 
     /**
+     * Cultos realizados/agendados num mes (YYYY-MM), usado no modulo
+     * Relatorios.
+     *
+     * @return array<int, self>
+     */
+    public static function noMes(string $mes): array
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT c.*,
+                    (SELECT COUNT(*) FROM culto_frequencias cf WHERE cf.culto_id = c.id) AS total_presentes
+             FROM cultos c
+             WHERE DATE_FORMAT(c.data, '%Y-%m') = :mes
+             ORDER BY c.data DESC, c.hora DESC"
+        );
+        $stmt->execute(['mes' => $mes]);
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /**
+     * Media de presencas por culto REALIZADO num mes (YYYY-MM), usado
+     * no modulo Relatorios.
+     */
+    public static function mediaPresencasNoMes(string $mes): float
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT AVG(total) FROM (
+                SELECT c.id, COUNT(cf.membro_id) AS total
+                FROM cultos c
+                LEFT JOIN culto_frequencias cf ON cf.culto_id = c.id
+                WHERE DATE_FORMAT(c.data, '%Y-%m') = :mes AND c.status = 'realizado'
+                GROUP BY c.id
+            ) sub"
+        );
+        $stmt->execute(['mes' => $mes]);
+
+        return (float) ($stmt->fetchColumn() ?: 0);
+    }
+
+    /**
      * @param array<string, mixed> $data
      */
     public static function create(array $data): int
