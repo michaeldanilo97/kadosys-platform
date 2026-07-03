@@ -115,6 +115,30 @@ final class FinanceiroLancamento
         return self::totais(['mes' => date('Y-m')]);
     }
 
+    /**
+     * Total por categoria num mes (YYYY-MM), usado no modulo
+     * Relatorios.
+     *
+     * @return array<int, array{categoria: string, tipo: string, total: float}>
+     */
+    public static function totaisPorCategoria(string $mes): array
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT COALESCE(fc.nome, 'Sem categoria') AS categoria, fl.tipo, SUM(fl.valor) AS total
+             FROM financeiro_lancamentos fl
+             LEFT JOIN financeiro_categorias fc ON fc.id = fl.categoria_id
+             WHERE DATE_FORMAT(fl.data_lancamento, '%Y-%m') = :mes
+             GROUP BY categoria, fl.tipo
+             ORDER BY fl.tipo ASC, total DESC"
+        );
+        $stmt->execute(['mes' => $mes]);
+
+        return array_map(
+            static fn (array $row) => ['categoria' => (string) $row['categoria'], 'tipo' => (string) $row['tipo'], 'total' => (float) $row['total']],
+            $stmt->fetchAll()
+        );
+    }
+
     public static function find(int $id): ?self
     {
         $stmt = Database::connection()->prepare(

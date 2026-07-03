@@ -17,6 +17,34 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 29 - 2026-07-06
+
+**Ultimos 3 modulos: Patrimonio, Comunicacao e Relatorios (fim dos "em construcao")**
+
+- **Patrimonio**: cadastro de bens, imoveis, veiculos e equipamentos da
+  igreja - categoria, numero de patrimonio, valor estimado, data de
+  aquisicao, local e status (ativo/em manutencao/baixado). Exclusivo do
+  plano Premium (topo).
+- **Comunicacao**: mural de avisos e comunicados para "todos os
+  membros" ou "so lideranca", com rascunho/publicado/arquivado. Por
+  enquanto e um mural dentro do proprio painel (envio por e-mail/SMS
+  fica pra uma proxima etapa). Disponivel a partir do plano Plus.
+- **Relatorios**: painel consolidado, por mes, com membros ativos,
+  novos membros, cultos e media de presenca, ministerios/grupos
+  ativos, entradas/saidas/saldo financeiro (com quebra por categoria) e
+  valor total do patrimonio ativo. Somente leitura, exclusivo do plano
+  Premium (topo).
+- Com isso, todos os modulos do menu lateral tem uma tela de verdade -
+  nao sobrou nenhum "em construcao".
+- Rode as migracoes novas no banco de CADA igreja ja criada (nao e no
+  banco central da plataforma). Igrejas novas ja recebem as tabelas
+  automaticamente (`database/install.sql` atualizado). Relatorios nao
+  precisa de migracao (so consulta dados que ja existem):
+  ```
+  mysql -u seu_usuario -p banco_da_igreja < apps/igrejas/database/migrations/019_create_patrimonio_tables.sql
+  mysql -u seu_usuario -p banco_da_igreja < apps/igrejas/database/migrations/020_create_comunicacao_tables.sql
+  ```
+
 ## Ajuste 27 - 2026-07-06
 
 **Novo modulo: Agenda + correcao critica na busca de Membros e Cultos**
