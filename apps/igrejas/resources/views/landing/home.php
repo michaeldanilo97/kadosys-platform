@@ -276,15 +276,16 @@ $modulosComparacao = array_filter(
 
         <div class="plans-grid">
             <div class="plan-card glass-card reveal">
-                <div class="plan-icon"><i class="bi bi-seedling"></i></div>
+                <div class="plan-icon"><i class="bi bi-rocket-takeoff"></i></div>
                 <h3>Essencial</h3>
-                <p class="plan-desc">Para igrejas que estao comecando a organizar sua gestao.</p>
-                <div class="plan-price">R$ 97<span>/mes</span></div>
+                <p class="plan-desc">Para igrejas pequenas que estao comecando a organizar sua gestao.</p>
+                <div class="plan-price">R$ 49,90<span>/mes</span></div>
                 <ul class="plan-features">
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Gestao de membros</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Agenda e cultos</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Cadastro de membros</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Cultos (programacao e frequencia)</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Projecao/Telao (Biblia e video)</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> 1 usuario administrador</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Backup automatico</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Suporte por e-mail</li>
                 </ul>
                 <a href="<?= $basePath ?>/cadastro?plano=essencial" class="btn-k btn-k-outline">Comecar agora</a>
@@ -293,31 +294,29 @@ $modulosComparacao = array_filter(
             <div class="plan-card glass-card featured reveal">
                 <span class="badge-featured">Mais escolhido</span>
                 <div class="plan-icon"><i class="bi bi-stars"></i></div>
-                <h3>Premium</h3>
-                <p class="plan-desc">Para igrejas com ministerios e financeiro ativos.</p>
-                <div class="plan-price">R$ 197<span>/mes</span></div>
+                <h3>Plus</h3>
+                <p class="plan-desc">Para igrejas em crescimento, com ministerios ativos.</p>
+                <div class="plan-price">R$ 99,90<span>/mes</span></div>
                 <ul class="plan-features">
                     <li class="plan-feature"><i class="bi bi-check2"></i> Tudo do plano Essencial</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Ministerios e grupos</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Financeiro completo</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Comunicacao e avisos</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Usuarios ilimitados</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Ministerios (lideres e voluntarios)</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Usuarios administradores ilimitados</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Suporte prioritario</li>
                 </ul>
                 <a href="<?= $basePath ?>/cadastro?plano=premium" class="btn-k btn-k-grad">Comecar agora</a>
             </div>
 
             <div class="plan-card glass-card reveal">
-                <div class="plan-icon"><i class="bi bi-building"></i></div>
-                <h3>Enterprise</h3>
-                <p class="plan-desc">Para redes de igrejas e estruturas administrativas maiores.</p>
-                <div class="plan-price">Sob consulta</div>
+                <div class="plan-icon"><i class="bi bi-gem"></i></div>
+                <h3>Premium</h3>
+                <p class="plan-desc">Para igrejas medias e grandes que querem prioridade.</p>
+                <div class="plan-price">R$ 179,90<span>/mes</span></div>
                 <ul class="plan-features">
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Tudo do plano Premium</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Patrimonio e relatorios avancados</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Permissoes avancadas por perfil</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Tudo do plano Plus</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Acesso prioritario a novos modulos (financeiro, comunicacao, relatorios)</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Atendimento dedicado</li>
                 </ul>
-                <a href="mailto:contato@kadosys.com.br" class="btn-k btn-k-outline">Falar com o suporte</a>
+                <a href="<?= $basePath ?>/cadastro?plano=enterprise" class="btn-k btn-k-outline">Comecar agora</a>
             </div>
         </div>
 

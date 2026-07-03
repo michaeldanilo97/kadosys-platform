@@ -23,31 +23,31 @@ final class Plano
         self::ENTERPRISE => 3,
     ];
 
-    /** @var array<string, string> */
+    /**
+     * Nomes usados na venda (ver landing/home.php) - as CONSTANTES/valores
+     * gravados no banco continuam "essencial"/"premium"/"enterprise" por
+     * baixo dos panos (sem migracao, sem risco), so o texto mostrado ao
+     * cliente mudou: o antigo "Premium" virou "Plus", e o antigo
+     * "Enterprise" (antes so "sob consulta") virou "Premium" autoatendido.
+     *
+     * @var array<string, string>
+     */
     public const LABELS = [
         self::ESSENCIAL => 'Essencial',
-        self::PREMIUM => 'Premium',
-        self::ENTERPRISE => 'Enterprise',
+        self::PREMIUM => 'Plus',
+        self::ENTERPRISE => 'Premium',
     ];
 
     /**
-     * Valor mensal dos planos com assinatura automatica via Mercado Pago
-     * (ver Igrejas\Core\MercadoPagoClient). Enterprise fica de fora de
-     * proposito - e "sob consulta", negociado direto com o suporte, sem
-     * checkout automatico nem cadastro publico autoatendido.
-     *
-     * TODO-TEMPORARIO: Essencial baixado pra R$1,00 so pra testar o
-     * provisionamento automatico com um pagamento real barato (ver Ajuste
-     * de teste). PRECISA voltar pra 97.00 antes de qualquer cliente real
-     * se cadastrar - a pagina de vendas (landing/home.php) continua
-     * mostrando R$97 fixo no texto, so o valor cobrado de verdade nesse
-     * formulario que esta temporariamente diferente.
+     * Valor mensal dos 3 planos - todos autoatendidos (cadastro publico +
+     * checkout automatico via Mercado Pago, cartao ou Pix).
      *
      * @var array<string, float>
      */
     public const VALOR_MENSAL = [
-        self::ESSENCIAL => 1.00,
-        self::PREMIUM => 197.00,
+        self::ESSENCIAL => 49.90,
+        self::PREMIUM => 99.90,
+        self::ENTERPRISE => 179.90,
     ];
 
     /**
