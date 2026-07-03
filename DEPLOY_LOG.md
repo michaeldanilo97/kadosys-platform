@@ -17,6 +17,31 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 19 - 2026-07-06
+
+**Ultimos ajustes da rodada de testes reais de Pix + provisionamento**
+
+1. Corrigido o nome da funcao do cPanel que concede acesso ao banco de
+   dados (`set_privileges_on_user` nao existe nesta versao de cPanel -
+   o certo e `set_privileges_on_database`) - esse era o ultimo passo do
+   provisionamento automatico que ainda estava falhando.
+2. O texto completo da Biblia (NVI, ACF e AA) agora e importado
+   automaticamente pra toda igreja nova - antes so a instalacao
+   original tinha isso, e cada igreja criada pelo cadastro ficava so
+   com os livros/capitulos, sem o texto dos versiculos.
+3. Ao abrir o subdominio de uma igreja ja criada (ex.:
+   `suaigreja.kadosys.com.br`), a pagina inicial agora vai direto pra
+   tela de login, em vez de mostrar o site institucional de vendas.
+4. Aviso de fatura Pix no painel ficou mais claro, diferenciando
+   renovacao do plano atual de um upgrade pendente pra outro plano.
+5. Campo "Endereco da sua igreja" no cadastro publico renomeado pra
+   "URL de acesso ao painel".
+
+Com isso, o fluxo completo de uma igreja nova - cadastro, pagamento
+(cartao ou Pix), criacao automatica do banco/subdominio, Biblia
+importada e e-mail de boas-vindas - deve funcionar de ponta a ponta
+sem nenhuma intervencao manual.
+
 ## Ajuste 18 - 2026-07-06
 
 **E-mail automatico de boas-vindas ao criar uma igreja nova**
