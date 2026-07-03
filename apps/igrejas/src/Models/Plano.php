@@ -36,10 +36,17 @@ final class Plano
      * proposito - e "sob consulta", negociado direto com o suporte, sem
      * checkout automatico nem cadastro publico autoatendido.
      *
+     * TODO-TEMPORARIO: Essencial baixado pra R$1,00 so pra testar o
+     * provisionamento automatico com um pagamento real barato (ver Ajuste
+     * de teste). PRECISA voltar pra 97.00 antes de qualquer cliente real
+     * se cadastrar - a pagina de vendas (landing/home.php) continua
+     * mostrando R$97 fixo no texto, so o valor cobrado de verdade nesse
+     * formulario que esta temporariamente diferente.
+     *
      * @var array<string, float>
      */
     public const VALOR_MENSAL = [
-        self::ESSENCIAL => 97.00,
+        self::ESSENCIAL => 1.00,
         self::PREMIUM => 197.00,
     ];
 
