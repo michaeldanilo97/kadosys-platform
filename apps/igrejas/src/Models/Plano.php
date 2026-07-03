@@ -31,6 +31,19 @@ final class Plano
     ];
 
     /**
+     * Valor mensal dos planos com assinatura automatica via Mercado Pago
+     * (ver Igrejas\Core\MercadoPagoClient). Enterprise fica de fora de
+     * proposito - e "sob consulta", negociado direto com o suporte, sem
+     * checkout automatico nem cadastro publico autoatendido.
+     *
+     * @var array<string, float>
+     */
+    public const VALOR_MENSAL = [
+        self::ESSENCIAL => 97.00,
+        self::PREMIUM => 197.00,
+    ];
+
+    /**
      * Plano minimo exigido por modulo do menu (slug => plano). Modulos que
      * nao aparecem aqui sao tratados como Essencial (liberado a todos).
      *

@@ -22,18 +22,6 @@ use Igrejas\Models\Plano;
  */
 final class AssinaturaController extends Controller
 {
-    /**
-     * Planos com assinatura automatica disponivel e seus valores
-     * mensais. Enterprise fica de fora de proposito (e "sob consulta" -
-     * negociado direto com o suporte, sem checkout automatico).
-     *
-     * @var array<string, float>
-     */
-    private const VALOR_POR_PLANO = [
-        Plano::ESSENCIAL => 97.00,
-        Plano::PREMIUM => 197.00,
-    ];
-
     public function iniciar(string $plano): void
     {
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
@@ -41,7 +29,7 @@ final class AssinaturaController extends Controller
             $this->redirect('/dashboard/configuracoes');
         }
 
-        if (!isset(self::VALOR_POR_PLANO[$plano])) {
+        if (!isset(Plano::VALOR_MENSAL[$plano])) {
             Session::flash('config_errors', ['Esse plano nao tem assinatura automatica disponivel. Para o Enterprise, fale com o suporte.']);
             $this->redirect('/dashboard/configuracoes');
         }
@@ -66,7 +54,7 @@ final class AssinaturaController extends Controller
         try {
             $resposta = $mp->criarAssinatura([
                 'reason' => 'KADOSYS Igrejas - Plano ' . Plano::label($plano),
-                'amount' => self::VALOR_POR_PLANO[$plano],
+                'amount' => Plano::VALOR_MENSAL[$plano],
                 'payerEmail' => $usuario?->email ?? '',
                 'backUrl' => $mpConfig['app_url'] . $this->url('/dashboard/assinatura/retorno'),
                 'externalReference' => $referenciaExterna,

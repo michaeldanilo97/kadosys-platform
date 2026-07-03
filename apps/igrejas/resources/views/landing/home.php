@@ -287,7 +287,7 @@ $modulosComparacao = array_filter(
                     <li class="plan-feature"><i class="bi bi-check2"></i> 1 usuario administrador</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Suporte por e-mail</li>
                 </ul>
-                <a href="<?= $basePath ?>/login" class="btn-k btn-k-outline">Comecar agora</a>
+                <a href="<?= $basePath ?>/cadastro?plano=essencial" class="btn-k btn-k-outline">Comecar agora</a>
             </div>
 
             <div class="plan-card glass-card featured reveal">
@@ -303,7 +303,7 @@ $modulosComparacao = array_filter(
                     <li class="plan-feature"><i class="bi bi-check2"></i> Comunicacao e avisos</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Usuarios ilimitados</li>
                 </ul>
-                <a href="<?= $basePath ?>/login" class="btn-k btn-k-grad">Comecar agora</a>
+                <a href="<?= $basePath ?>/cadastro?plano=premium" class="btn-k btn-k-grad">Comecar agora</a>
             </div>
 
             <div class="plan-card glass-card reveal">
@@ -317,7 +317,7 @@ $modulosComparacao = array_filter(
                     <li class="plan-feature"><i class="bi bi-check2"></i> Permissoes avancadas por perfil</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Atendimento dedicado</li>
                 </ul>
-                <a href="<?= $basePath ?>/login" class="btn-k btn-k-outline">Comecar agora</a>
+                <a href="mailto:contato@kadosys.com.br" class="btn-k btn-k-outline">Falar com o suporte</a>
             </div>
         </div>
 

@@ -14,7 +14,7 @@ use Igrejas\Models\Plano;
 $basePath = $config['base_path'] ?? '';
 $logoUrl = $configuracao->logoPath ? $basePath . '/' . $configuracao->logoPath : null;
 
-$valorPorPlano = [Plano::ESSENCIAL => 97.0, Plano::PREMIUM => 197.0];
+$valorPorPlano = Plano::VALOR_MENSAL;
 
 /** @var array<string, string> */
 $statusAssinaturaLabel = [

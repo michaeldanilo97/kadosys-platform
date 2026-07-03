@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Igrejas\Controllers\AssinaturaController;
 use Igrejas\Controllers\AuthController;
+use Igrejas\Controllers\CadastroController;
 use Igrejas\Controllers\ConfiguracaoController;
 use Igrejas\Controllers\CultoController;
 use Igrejas\Controllers\DashboardController;
@@ -26,6 +27,13 @@ use Igrejas\Core\Middleware\PlanoMiddleware;
 
 // Landing page publica.
 $router->get('/', [LandingController::class, 'index']);
+
+// Cadastro publico autoatendido (igreja + administrador + plano),
+// redireciona pro checkout do Mercado Pago. O provisionamento em si
+// (criar banco, subdominio) acontece via webhook, nao aqui.
+$router->get('/cadastro', [CadastroController::class, 'form'], [GuestMiddleware::class]);
+$router->post('/cadastro', [CadastroController::class, 'enviar'], [GuestMiddleware::class]);
+$router->get('/cadastro/retorno', [CadastroController::class, 'retorno']);
 
 // Autenticacao.
 $router->get('/login', [AuthController::class, 'showLogin'], [GuestMiddleware::class]);

@@ -17,6 +17,32 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 14 - 2026-07-03
+
+**Cadastro publico (igreja + administrador + plano) - Fase 1 de 3**
+
+- Nova tela publica em `/cadastro`: nome da igreja, subdominio (sugerido
+  automaticamente pelo nome, editavel), nome/e-mail/senha do
+  administrador, e escolha do plano (Essencial ou Premium - Enterprise
+  continua "fale com o suporte"). Ao enviar, cria a assinatura no
+  Mercado Pago e redireciona pro pagamento, igual ao fluxo que ja existe
+  em Configuracoes.
+- Os botoes "Comecar agora" da pagina de planos agora levam pra essa
+  tela (com o plano ja pre-selecionado), em vez de irem direto pro
+  login.
+- **Isso e a Fase 1 de um projeto maior**: por enquanto, o cadastro fica
+  registrado numa fila (tabela `plataforma_provisionamentos`) depois que
+  o pagamento e aprovado - a criacao automatica do banco de dados da
+  nova igreja (Fase 2) e a resolucao por subdominio (Fase 3) ainda vao
+  ser implementadas nas proximas entregas. Ate la, um pagamento aprovado
+  fica "aguardando provisionamento" e precisa ser finalizado na mao.
+- Rode a migracao nova no banco de producao (cria as tabelas
+  `plataforma_provisionamentos` e `plataforma_tenants` - registro
+  central de igrejas, separado dos dados desta igreja):
+  ```
+  mysql -u seu_usuario -p seu_banco < database/migrations/011_create_plataforma_tenants.sql
+  ```
+
 ## Ajuste 13 - 2026-07-03
 
 **Alternativa para configurar o Mercado Pago sem variavel de ambiente**
