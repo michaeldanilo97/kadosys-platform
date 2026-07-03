@@ -17,6 +17,21 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 33 - 2026-07-06
+
+**Correcao: tela de Permissoes escondia modulos durante o teste gratis**
+
+- Em Permissoes, a lista de modulos que da pra marcar pra um usuario
+  usava sempre o plano contratado (Essencial, Plus, Premium) pra
+  decidir o que mostrar - mas durante o teste gratis de 7 dias, o
+  sistema libera TODOS os modulos temporariamente (mesma regra usada
+  no resto do painel). Essa tela nao sabia disso, entao so aparecia
+  Membros/Cultos/Projecao/Playbacks/Agenda, mesmo com a igreja em
+  trial e o restante liberado de verdade.
+- Agora a tela de Permissoes mostra todos os modulos liberados no
+  momento (respeitando o trial), igual o resto do sistema ja fazia.
+- Sem migracao - e so codigo.
+
 ## Ajuste 32 - 2026-07-06
 
 **Quadro de avisos publico da igreja + aviso do dono da plataforma pra todas as igrejas**
