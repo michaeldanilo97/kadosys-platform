@@ -266,6 +266,28 @@
   background: var(--text-dim);
 }
 
+.status-badge.is-entrada {
+  background: rgba(52, 211, 153, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  color: var(--success);
+}
+
+.status-badge.is-entrada::before {
+  background: var(--success);
+  box-shadow: 0 0 6px var(--success);
+}
+
+.status-badge.is-saida {
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  color: var(--danger);
+}
+
+.status-badge.is-saida::before {
+  background: var(--danger);
+  box-shadow: 0 0 6px var(--danger);
+}
+
 /* Botoes de acao em icone */
 
 .crud-icon-btn {
@@ -547,7 +569,8 @@
   margin-bottom: 0.4rem;
 }
 
-.crud-inline-form select {
+.crud-inline-form select,
+.crud-inline-form input[type="text"] {
   flex: 1;
   max-width: 340px;
   background: rgba(15, 23, 42, 0.55);
@@ -561,17 +584,77 @@
   color-scheme: dark;
 }
 
-[data-theme="light"] .crud-inline-form select {
+.crud-inline-form input[type="text"] {
+  cursor: text;
+  flex: 2;
+}
+
+[data-theme="light"] .crud-inline-form select,
+[data-theme="light"] .crud-inline-form input[type="text"] {
   background: #FFFFFF;
   border-color: rgba(30, 41, 59, 0.15);
   color: #0F172A;
   color-scheme: light;
 }
 
-.crud-inline-form select:focus {
+.crud-inline-form select:focus,
+.crud-inline-form input[type="text"]:focus {
   outline: none;
   border-color: rgba(96, 165, 250, 0.75);
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.14);
+}
+
+/* ---- Barra de filtros (ex.: Financeiro: mes, tipo, categoria, busca) ----------------- */
+
+.crud-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 1.4rem;
+}
+
+.crud-filters .crud-search {
+  margin-bottom: 0;
+}
+
+.crud-filters select,
+.crud-filters input[type="month"] {
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid var(--glass-border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--white);
+  padding: 0.6rem 0.9rem;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  cursor: pointer;
+  color-scheme: dark;
+}
+
+[data-theme="light"] .crud-filters select,
+[data-theme="light"] .crud-filters input[type="month"] {
+  background: #FFFFFF;
+  border-color: rgba(30, 41, 59, 0.15);
+  color: #0F172A;
+  color-scheme: light;
+}
+
+.crud-filters select:focus,
+.crud-filters input[type="month"]:focus {
+  outline: none;
+  border-color: rgba(96, 165, 250, 0.75);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.14);
+}
+
+@media (max-width: 767px) {
+  .crud-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .crud-filters .crud-search {
+    max-width: none;
+  }
 }
 
 /* ---- Lista de pessoas (ex.: voluntarios de um ministerio) ---------------------------- */

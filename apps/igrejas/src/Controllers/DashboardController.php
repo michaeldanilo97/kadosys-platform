@@ -6,8 +6,10 @@ namespace Igrejas\Controllers;
 
 use Igrejas\Core\Auth;
 use Igrejas\Core\Controller;
+use Igrejas\Core\TenantResolver;
 use Igrejas\Models\ConfiguracaoIgreja;
 use Igrejas\Models\Culto;
+use Igrejas\Models\FinanceiroLancamento;
 use Igrejas\Models\Membro;
 use Igrejas\Models\Ministerio;
 use Igrejas\Models\Plano;
@@ -117,6 +119,9 @@ final class DashboardController extends Controller
     {
         $user = (new Auth($this->config))->user();
         $inicioDoMes = new \DateTimeImmutable('first day of this month 00:00:00');
+        $planoAtual = ConfiguracaoIgreja::atual()->plano;
+        $emTrial = TenantResolver::atual()?->metodoPagamento === 'trial';
+        $financeiroDisponivel = Plano::disponivel($planoAtual, 'financeiro', $emTrial);
 
         echo $this->view('dashboard.index', [
             'pageTitle' => 'Dashboard - KADOSYS Igrejas',
@@ -128,6 +133,8 @@ final class DashboardController extends Controller
             'novosMembros' => Membro::countCreatedSince($inicioDoMes),
             'ministeriosAtivos' => Ministerio::countActive(),
             'proximoCulto' => Culto::proximoAgendado(),
+            'financeiroDisponivel' => $financeiroDisponivel,
+            'financeiroTotais' => $financeiroDisponivel ? FinanceiroLancamento::totaisMesAtual() : null,
         ], 'dashboard');
     }
 
