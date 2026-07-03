@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Igrejas\Core\Csrf;
+use Igrejas\Core\View;
 
 /**
  * @var string $content
@@ -26,10 +27,10 @@ $userInitial = mb_strtoupper(mb_substr($userName, 0, 1));
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="<?= $basePath ?>/assets/css/app.css">
-    <link rel="stylesheet" href="<?= $basePath ?>/assets/css/dashboard.css">
-    <link rel="stylesheet" href="<?= $basePath ?>/assets/css/crud.css">
-    <link rel="stylesheet" href="<?= $basePath ?>/assets/css/biblia-picker.css">
+    <link rel="stylesheet" href="<?= $basePath ?>/assets/css/app.css?v=<?= View::assetVersion('assets/css/app.css') ?>">
+    <link rel="stylesheet" href="<?= $basePath ?>/assets/css/dashboard.css?v=<?= View::assetVersion('assets/css/dashboard.css') ?>">
+    <link rel="stylesheet" href="<?= $basePath ?>/assets/css/crud.css?v=<?= View::assetVersion('assets/css/crud.css') ?>">
+    <link rel="stylesheet" href="<?= $basePath ?>/assets/css/biblia-picker.css?v=<?= View::assetVersion('assets/css/biblia-picker.css') ?>">
 </head>
 <body class="dashboard-body">
 
@@ -119,6 +120,6 @@ $userInitial = mb_strtoupper(mb_substr($userName, 0, 1));
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="<?= $basePath ?>/assets/js/dashboard.js"></script>
+<script src="<?= $basePath ?>/assets/js/dashboard.js?v=<?= View::assetVersion('assets/js/dashboard.js') ?>"></script>
 </body>
 </html>

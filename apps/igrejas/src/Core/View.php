@@ -21,6 +21,20 @@ final class View
         self::$viewsPath = rtrim($path, '/');
     }
 
+    /**
+     * Timestamp de modificacao de um asset (public/assets/...), usado como
+     * query string de cache-busting (?v=...). Sem isso, hospedagem
+     * compartilhada/navegadores em tablets tendem a manter em cache a
+     * versao antiga do CSS/JS por bastante tempo, fazendo um ajuste ja
+     * enviado (git push) parecer que "nao aplicou" no aparelho do usuario.
+     */
+    public static function assetVersion(string $relativePath): string
+    {
+        $file = dirname(self::$viewsPath, 2) . '/public/' . ltrim($relativePath, '/');
+
+        return is_file($file) ? (string) filemtime($file) : '1';
+    }
+
     public static function render(string $view, array $data = [], ?string $layout = null): string
     {
         $content = self::renderFile($view, $data);

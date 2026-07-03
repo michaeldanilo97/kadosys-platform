@@ -17,6 +17,25 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 9 - 2026-07-03
+
+**Cache do navegador podia esconder ajustes ja enviados (CSS/JS com versionamento automatico)**
+
+- Causa provavel do "lapis nao fica ativo, fica a mesma cor" mesmo depois
+  do Ajuste 8: o navegador do tablet guarda o `telao.css`/`preletor.js`
+  em cache por um tempo, entao um ajuste ja enviado (git push) podia
+  continuar parecendo "antigo" no aparelho ate o cache vencer sozinho.
+  Isso pode ter acontecido em mais telas ao longo do projeto, nao so no
+  preletor.
+- Agora todo CSS/JS carregado pelas paginas (preletor, telao, dashboard,
+  landing, login) leva um `?v=` na URL com a data de modificacao real do
+  arquivo no servidor - a cada novo deploy, o navegador e obrigado a
+  buscar a versao nova, sem precisar o usuario limpar cache manualmente.
+- Para este deploy especifico (o mecanismo de versionamento em si e
+  novo), pode ser necessario um "puxar para atualizar" ou fechar/abrir a
+  aba uma vez - dos proximos ajustes em diante, isso deixa de ser
+  necessario.
+
 ## Ajuste 8 - 2026-07-02
 
 **Tela cheia com modo foco de reserva, estado da caneta mais visivel, botao de ajuda e palco redesenhado no preletor**

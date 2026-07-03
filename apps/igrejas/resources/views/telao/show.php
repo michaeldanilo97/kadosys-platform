@@ -1,4 +1,7 @@
 <?php
+
+use Igrejas\Core\View;
+
 /**
  * @var array $config
  * @var string $token
@@ -46,5 +49,5 @@ $logoUrl = $logoPath ? $basePath . '/' . $logoPath : null;
 </div>
 
 <script type="application/json" id="telao-estado-inicial"><?= json_encode($estadoInicial) ?: 'null' ?></script>
-<script src="<?= $basePath ?>/assets/js/telao.js"></script>
+<script src="<?= $basePath ?>/assets/js/telao.js?v=<?= View::assetVersion('assets/js/telao.js') ?>"></script>
 <script src="https://www.youtube.com/iframe_api"></script>

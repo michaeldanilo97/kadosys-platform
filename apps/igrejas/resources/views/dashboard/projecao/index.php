@@ -1,4 +1,7 @@
 <?php
+
+use Igrejas\Core\View;
+
 /**
  * @var array $config
  * @var \Igrejas\Models\ProjecaoSessao|null $sessao
@@ -187,6 +190,6 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
         </div>
     </div>
 
-    <script src="<?= $basePath ?>/assets/js/biblia-picker.js"></script>
-    <script src="<?= $basePath ?>/assets/js/projecao-admin.js"></script>
+    <script src="<?= $basePath ?>/assets/js/biblia-picker.js?v=<?= View::assetVersion('assets/js/biblia-picker.js') ?>"></script>
+    <script src="<?= $basePath ?>/assets/js/projecao-admin.js?v=<?= View::assetVersion('assets/js/projecao-admin.js') ?>"></script>
 <?php endif; ?>

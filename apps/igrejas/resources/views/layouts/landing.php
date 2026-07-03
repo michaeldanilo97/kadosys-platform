@@ -1,4 +1,7 @@
 <?php
+
+use Igrejas\Core\View;
+
 /**
  * @var string $content
  * @var string $pageTitle
@@ -18,8 +21,8 @@ $basePath = $config['base_path'] ?? '';
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="<?= $basePath ?>/assets/css/app.css">
-    <link rel="stylesheet" href="<?= $basePath ?>/assets/css/landing.css">
+    <link rel="stylesheet" href="<?= $basePath ?>/assets/css/app.css?v=<?= View::assetVersion('assets/css/app.css') ?>">
+    <link rel="stylesheet" href="<?= $basePath ?>/assets/css/landing.css?v=<?= View::assetVersion('assets/css/landing.css') ?>">
 </head>
 <body>
 
@@ -99,6 +102,6 @@ $basePath = $config['base_path'] ?? '';
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="<?= $basePath ?>/assets/js/landing.js"></script>
+<script src="<?= $basePath ?>/assets/js/landing.js?v=<?= View::assetVersion('assets/js/landing.js') ?>"></script>
 </body>
 </html>

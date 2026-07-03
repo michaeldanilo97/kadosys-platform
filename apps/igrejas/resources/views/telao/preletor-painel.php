@@ -1,4 +1,7 @@
 <?php
+
+use Igrejas\Core\View;
+
 /**
  * @var array $config
  * @var string $token
@@ -133,4 +136,4 @@ $basePath = $config['base_path'] ?? '';
     </div>
 </div>
 
-<script src="<?= $basePath ?>/assets/js/preletor.js"></script>
+<script src="<?= $basePath ?>/assets/js/preletor.js?v=<?= View::assetVersion('assets/js/preletor.js') ?>"></script>
