@@ -96,7 +96,6 @@ $router->post('/dashboard/projecao/encerrar', [ProjecaoController::class, 'encer
 $router->get('/dashboard/configuracoes', [ConfiguracaoController::class, 'index'], [AuthMiddleware::class]);
 $router->post('/dashboard/configuracoes/logo', [ConfiguracaoController::class, 'atualizarLogo'], [AuthMiddleware::class]);
 $router->post('/dashboard/configuracoes/logo/remover', [ConfiguracaoController::class, 'removerLogo'], [AuthMiddleware::class]);
-$router->post('/dashboard/configuracoes/plano', [ConfiguracaoController::class, 'atualizarPlano'], [AuthMiddleware::class]);
 
 // Assinatura recorrente do plano via Mercado Pago (Checkout Pro). Sem
 // PlanoMiddleware pelo mesmo motivo das rotas de Configuracoes acima.

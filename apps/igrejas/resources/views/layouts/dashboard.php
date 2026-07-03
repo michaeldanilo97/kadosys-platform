@@ -22,6 +22,7 @@ $basePath = $config['base_path'] ?? '';
 $userName = $user?->name ?? 'Usuario';
 $userInitial = mb_strtoupper(mb_substr($userName, 0, 1));
 $planoAtual = ConfiguracaoIgreja::atual()->plano;
+$emTrial = TenantResolver::atual()?->metodoPagamento === 'trial';
 
 // Aviso de fatura Pix perto do vencimento - so aparece pra tenants que
 // pagam por Pix (ver AuthMiddleware pro bloqueio depois que vence). Nao
@@ -120,7 +121,7 @@ if ($activeMenu !== 'trial-expirado' && $activeMenu !== 'fatura-vencida') {
 
             <div class="dash-nav-group-label">Modulos</div>
             <?php foreach ($modules as $slug => $module): ?>
-                <?php $bloqueado = !Plano::disponivel($planoAtual, $slug); ?>
+                <?php $bloqueado = !Plano::disponivel($planoAtual, $slug, $emTrial); ?>
                 <a href="<?= $basePath ?>/dashboard/<?= $slug ?>" class="dash-nav-link <?= $activeMenu === $slug ? 'active' : '' ?><?= $bloqueado ? ' dash-nav-link-locked' : '' ?>">
                     <i class="bi <?= htmlspecialchars($module['icon'], ENT_QUOTES, 'UTF-8') ?>"></i>
                     <?= htmlspecialchars($module['title'], ENT_QUOTES, 'UTF-8') ?>

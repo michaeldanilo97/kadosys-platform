@@ -1,5 +1,6 @@
 <?php
 
+use Igrejas\Core\TenantResolver;
 use Igrejas\Models\ConfiguracaoIgreja;
 use Igrejas\Models\Plano;
 
@@ -15,6 +16,7 @@ use Igrejas\Models\Plano;
 $basePath = $config['base_path'] ?? '';
 $firstName = explode(' ', trim($user?->name ?? 'Usuario'))[0];
 $planoAtual = ConfiguracaoIgreja::atual()->plano;
+$emTrial = TenantResolver::atual()?->metodoPagamento === 'trial';
 ?>
 
 <div class="dash-page-head">
@@ -126,7 +128,7 @@ $planoAtual = ConfiguracaoIgreja::atual()->plano;
     </div>
     <div class="module-grid">
         <?php foreach ($modules as $slug => $module): ?>
-            <?php $bloqueado = !Plano::disponivel($planoAtual, $slug); ?>
+            <?php $bloqueado = !Plano::disponivel($planoAtual, $slug, $emTrial); ?>
             <a href="<?= $basePath ?>/dashboard/<?= $slug ?>" class="module-card<?= $bloqueado ? ' module-card-locked' : '' ?>">
                 <div class="icon"><i class="bi <?= htmlspecialchars($module['icon'], ENT_QUOTES, 'UTF-8') ?>"></i></div>
                 <div>

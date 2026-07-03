@@ -1071,19 +1071,6 @@ body.dashboard-body[data-theme="light"] {
   letter-spacing: 0.04em;
 }
 
-.plano-manual-detalhes {
-  margin-top: 1.4rem;
-  border-top: 1px solid var(--glass-border);
-  padding-top: 1rem;
-}
-
-.plano-manual-detalhes summary {
-  cursor: pointer;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  font-weight: 600;
-}
-
 /* ---- Placeholder "em construcao" ------------------------------------------------ */
 
 .placeholder-box {

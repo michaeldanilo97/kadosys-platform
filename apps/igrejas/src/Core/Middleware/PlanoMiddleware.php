@@ -6,6 +6,7 @@ namespace Igrejas\Core\Middleware;
 
 use Igrejas\Core\MiddlewareInterface;
 use Igrejas\Core\Request;
+use Igrejas\Core\TenantResolver;
 use Igrejas\Models\ConfiguracaoIgreja;
 use Igrejas\Models\Plano;
 
@@ -37,8 +38,9 @@ final class PlanoMiddleware implements MiddlewareInterface
 
         $slug = $matches[1];
         $planoAtual = ConfiguracaoIgreja::atual()->plano;
+        $emTrial = TenantResolver::atual()?->metodoPagamento === 'trial';
 
-        if (Plano::disponivel($planoAtual, $slug)) {
+        if (Plano::disponivel($planoAtual, $slug, $emTrial)) {
             return;
         }
 

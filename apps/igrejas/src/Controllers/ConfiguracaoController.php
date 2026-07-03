@@ -53,30 +53,11 @@ final class ConfiguracaoController extends Controller
             // sempre na instalacao central) saber a quem pertence cada
             // pagamento. A instalacao original continua so com cartao.
             'pixDisponivel' => TenantResolver::atual() !== null,
+            'tenant' => TenantResolver::atual(),
             'success' => Session::flash('config_success'),
             'errors' => Session::flash('config_errors') ?? [],
             'csrf' => Csrf::field(),
         ], 'dashboard');
-    }
-
-    public function atualizarPlano(): void
-    {
-        if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('config_errors', ['Sessao expirada. Tente novamente.']);
-            $this->redirect('/dashboard/configuracoes');
-        }
-
-        $plano = (string) $this->request->input('plano', '');
-
-        if (!isset(Plano::LABELS[$plano])) {
-            Session::flash('config_errors', ['Plano invalido.']);
-            $this->redirect('/dashboard/configuracoes');
-        }
-
-        ConfiguracaoIgreja::atualizarPlano($plano);
-
-        Session::flash('config_success', 'Plano atualizado para ' . Plano::label($plano) . '.');
-        $this->redirect('/dashboard/configuracoes');
     }
 
     /**

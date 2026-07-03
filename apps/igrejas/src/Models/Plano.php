@@ -71,8 +71,19 @@ final class Plano
         return self::MODULO_MINIMO[$slug] ?? self::ESSENCIAL;
     }
 
-    public static function disponivel(string $planoAtual, string $slug): bool
+    /**
+     * $emTrial libera todos os modulos independente do plano escolhido no
+     * cadastro - o teste gratis de 7 dias precisa dar acesso completo ao
+     * sistema, senao a igreja nao consegue avaliar os recursos dos planos
+     * superiores antes de decidir por qual assinar (ver
+     * Igrejas\Core\Middleware\PlanoMiddleware).
+     */
+    public static function disponivel(string $planoAtual, string $slug, bool $emTrial = false): bool
     {
+        if ($emTrial) {
+            return true;
+        }
+
         $atual = self::ORDEM[$planoAtual] ?? self::ORDEM[self::ESSENCIAL];
         $minimo = self::ORDEM[self::minimoParaModulo($slug)];
 
