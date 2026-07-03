@@ -85,7 +85,10 @@ final class MercadoPagoClient
                 'email' => $dados['payerEmail'],
             ],
             'external_reference' => $dados['externalReference'],
-            'date_of_expiration' => $dados['expiraEm']->format('Y-m-d\TH:i:sP'),
+            // O Mercado Pago exige milissegundos nesse campo
+            // (yyyy-MM-dd'T'HH:mm:ss.SSSzzz) - sem eles a API recusa com
+            // "must be valid date and format" (erro 400, code 23).
+            'date_of_expiration' => $dados['expiraEm']->format('Y-m-d\TH:i:s.000P'),
         ], [
             // Evita que uma cobranca seja criada em dobro se a requisicao
             // falhar depois de ja ter chegado no Mercado Pago (ex.:
