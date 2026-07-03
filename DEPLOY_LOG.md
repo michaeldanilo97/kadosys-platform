@@ -17,6 +17,28 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 23 - 2026-07-06
+
+**Teste gratis com acesso total + remocao do ajuste manual de plano**
+
+- Durante o teste gratis de 7 dias, todos os modulos do sistema ficam
+  liberados agora, independente do plano escolhido no cadastro -
+  antes, quem tinha selecionado Essencial no cadastro so via os
+  modulos do Essencial durante o teste, o que nao fazia sentido (o
+  objetivo do teste e conhecer o sistema completo antes de decidir o
+  plano).
+- Em Configuracoes, enquanto o teste gratis esta ativo, os 3 planos
+  aparecem com o botao "Assinar" disponivel (nenhum fica marcado como
+  "Plano atual", ja que nada foi de fato contratado ainda) - e o texto
+  da secao passa a explicar que e um teste gratis, com a data em que
+  termina.
+- Removido o "Ajuste manual do plano (uso interno/suporte)" que
+  aparecia em Configuracoes - alem de nao ser mais necessario (a
+  assinatura via cartao/Pix ja e automatica), ele ficava visivel pra
+  qualquer administrador de qualquer igreja, que podia trocar o
+  proprio plano pra Premium sem pagar nada.
+- Sem migracao de banco nesta entrega.
+
 ## Ajuste 22 - 2026-07-06
 
 **Teste gratis na pagina institucional + novo modulo Playbacks**
