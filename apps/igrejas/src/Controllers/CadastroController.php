@@ -210,9 +210,9 @@ final class CadastroController extends Controller
      * exporia e o nome da igreja + QR code de uma cobranca que so aquele
      * CPF/conta consegue pagar mesmo.
      */
-    public function pix(int $id): void
+    public function pix(string $id): void
     {
-        $provisionamento = Provisionamento::buscarPorId($id);
+        $provisionamento = Provisionamento::buscarPorId((int) $id);
 
         if ($provisionamento === null || $provisionamento->metodoPagamento !== 'pix' || $provisionamento->pixQrCode === null) {
             $this->redirect('/cadastro');
@@ -228,9 +228,9 @@ final class CadastroController extends Controller
      * Endpoint de polling (JS da tela de Pix) - so devolve o status,
      * nada sensivel.
      */
-    public function pixStatus(int $id): void
+    public function pixStatus(string $id): void
     {
-        $provisionamento = Provisionamento::buscarPorId($id);
+        $provisionamento = Provisionamento::buscarPorId((int) $id);
 
         $this->jsonResponse([
             'status' => $provisionamento?->status ?? 'desconhecido',
