@@ -5,12 +5,24 @@ use Igrejas\Models\Plano;
 /**
  * @var array $config
  * @var \Igrejas\Models\ConfiguracaoIgreja $configuracao
+ * @var \Igrejas\Models\Assinatura|null $assinatura
+ * @var bool $pagamentoConfigurado
  * @var string|null $success
  * @var array $errors
  * @var string $csrf
  */
 $basePath = $config['base_path'] ?? '';
 $logoUrl = $configuracao->logoPath ? $basePath . '/' . $configuracao->logoPath : null;
+
+$valorPorPlano = [Plano::ESSENCIAL => 97.0, Plano::PREMIUM => 197.0];
+
+/** @var array<string, string> */
+$statusAssinaturaLabel = [
+    'pendente' => 'Pagamento pendente',
+    'autorizada' => 'Assinatura ativa',
+    'pausada' => 'Assinatura pausada',
+    'cancelada' => 'Assinatura cancelada',
+];
 ?>
 
 <div class="dash-page-head">
@@ -39,27 +51,67 @@ $logoUrl = $configuracao->logoPath ? $basePath . '/' . $configuracao->logoPath :
     <div class="dash-panel-head">
         <h2><i class="bi bi-star"></i> Plano contratado</h2>
     </div>
-    <p class="dash-page-subtitle" style="margin-bottom: 1.4rem;">
+    <p class="dash-page-subtitle" style="margin-bottom: 0.6rem;">
         Define quais modulos ficam disponiveis no menu lateral. Plano atual:
         <strong><?= htmlspecialchars(Plano::label($configuracao->plano), ENT_QUOTES, 'UTF-8') ?></strong>.
+        <?php if ($assinatura !== null): ?>
+            <span class="plano-status-badge plano-status-<?= htmlspecialchars($assinatura->status, ENT_QUOTES, 'UTF-8') ?>">
+                <?= htmlspecialchars($statusAssinaturaLabel[$assinatura->status] ?? $assinatura->status, ENT_QUOTES, 'UTF-8') ?>
+            </span>
+        <?php endif; ?>
     </p>
 
-    <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/plano" class="crud-form">
-        <?= $csrf ?>
-        <div class="crud-field">
-            <label for="plano_select">Plano</label>
-            <select id="plano_select" name="plano">
-                <?php foreach (Plano::LABELS as $valor => $rotulo): ?>
-                    <option value="<?= htmlspecialchars($valor, ENT_QUOTES, 'UTF-8') ?>" <?= $configuracao->plano === $valor ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($rotulo, ENT_QUOTES, 'UTF-8') ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+    <?php if (!$pagamentoConfigurado): ?>
+        <div class="crud-alert" style="background: rgba(212, 161, 63, 0.1); border-color: rgba(212, 161, 63, 0.35); color: #d4a13f;">
+            <i class="bi bi-info-circle"></i>
+            Pagamento online ainda nao foi configurado neste servidor. Use o ajuste manual abaixo, ou fale com o suporte para habilitar a assinatura automatica.
         </div>
-        <div class="crud-form-actions" style="justify-content: flex-start;">
-            <button type="submit" class="btn-k btn-k-grad"><i class="bi bi-check2"></i> Salvar plano</button>
+    <?php endif; ?>
+
+    <div class="plano-assinar-grid">
+        <?php foreach ($valorPorPlano as $valor => $preco): ?>
+            <div class="plano-assinar-card<?= $configuracao->plano === $valor ? ' atual' : '' ?>">
+                <strong><?= htmlspecialchars(Plano::label($valor), ENT_QUOTES, 'UTF-8') ?></strong>
+                <span class="preco">R$ <?= number_format($preco, 2, ',', '.') ?><small>/mes</small></span>
+                <?php if ($configuracao->plano === $valor): ?>
+                    <span class="plano-assinar-atual-tag">Plano atual</span>
+                <?php else: ?>
+                    <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/assinatura/<?= htmlspecialchars($valor, ENT_QUOTES, 'UTF-8') ?>">
+                        <?= $csrf ?>
+                        <button type="submit" class="btn-k btn-k-grad" <?= $pagamentoConfigurado ? '' : 'disabled' ?>>
+                            <i class="bi bi-credit-card"></i> Assinar
+                        </button>
+                    </form>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
+
+        <div class="plano-assinar-card">
+            <strong>Enterprise</strong>
+            <span class="preco">Sob consulta</span>
+            <a href="mailto:contato@kadosys.com.br" class="btn-k btn-k-outline"><i class="bi bi-headset"></i> Fale com o suporte</a>
         </div>
-    </form>
+    </div>
+
+    <details class="plano-manual-detalhes">
+        <summary>Ajuste manual do plano (uso interno/suporte)</summary>
+        <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/plano" class="crud-form" style="margin-top: 1rem;">
+            <?= $csrf ?>
+            <div class="crud-field">
+                <label for="plano_select">Plano</label>
+                <select id="plano_select" name="plano">
+                    <?php foreach (Plano::LABELS as $valor => $rotulo): ?>
+                        <option value="<?= htmlspecialchars($valor, ENT_QUOTES, 'UTF-8') ?>" <?= $configuracao->plano === $valor ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($rotulo, ENT_QUOTES, 'UTF-8') ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="crud-form-actions" style="justify-content: flex-start;">
+                <button type="submit" class="btn-k btn-k-outline"><i class="bi bi-check2"></i> Salvar plano manualmente</button>
+            </div>
+        </form>
+    </details>
 </div>
 
 <div class="dash-panel">

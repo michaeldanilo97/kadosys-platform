@@ -484,6 +484,20 @@ body.dashboard-body[data-theme="light"] {
   color: #1E293B;
 }
 
+/* .btn-k-outline (definido em app.css) so tinha cores pensadas pro tema
+   escuro (var(--text) e var(--glass-border-strong)) - ficava quase
+   invisivel no tema claro, ex.: botao "Fale com o suporte" do plano
+   Enterprise em Configuracoes. */
+[data-theme="light"] .btn-k-outline {
+  color: #1E293B;
+  border-color: rgba(30, 41, 59, 0.2);
+}
+
+[data-theme="light"] .btn-k-outline:hover {
+  color: #1D4ED8;
+  border-color: #1D4ED8;
+}
+
 .dash-page-title {
   font-family: var(--font-display);
   font-weight: 700;
@@ -935,6 +949,119 @@ body.dashboard-body[data-theme="light"] {
   color: #d4a13f;
   border: 1px solid rgba(212, 161, 63, 0.35);
   vertical-align: middle;
+}
+
+/* ---- Plano contratado / assinatura -------------------------------------------- */
+
+.plano-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.plano-status-pendente {
+  background: rgba(251, 191, 36, 0.15);
+  color: #FBBF24;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
+
+.plano-status-autorizada {
+  background: rgba(52, 211, 153, 0.15);
+  color: #34D399;
+  border: 1px solid rgba(52, 211, 153, 0.35);
+}
+
+.plano-status-pausada {
+  background: rgba(156, 163, 175, 0.15);
+  color: #9CA3AF;
+  border: 1px solid rgba(156, 163, 175, 0.35);
+}
+
+.plano-status-cancelada {
+  background: rgba(248, 113, 113, 0.15);
+  color: #F87171;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+}
+
+.plano-assinar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.9rem;
+  margin: 1.2rem 0;
+}
+
+.plano-assinar-card {
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: var(--surface);
+}
+
+.plano-assinar-card.atual {
+  border-color: rgba(59, 130, 246, 0.5);
+  background: rgba(59, 130, 246, 0.06);
+}
+
+.plano-assinar-card strong {
+  font-size: 1rem;
+  color: var(--white);
+}
+
+[data-theme="light"] .plano-assinar-card strong {
+  color: #0F172A;
+}
+
+.plano-assinar-card .preco {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--primary-soft);
+}
+
+[data-theme="light"] .plano-assinar-card .preco {
+  color: #1D4ED8;
+}
+
+.plano-assinar-card .preco small {
+  font-weight: 500;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.plano-assinar-card form,
+.plano-assinar-card .btn-k {
+  width: 100%;
+}
+
+.plano-assinar-atual-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--primary-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.plano-manual-detalhes {
+  margin-top: 1.4rem;
+  border-top: 1px solid var(--glass-border);
+  padding-top: 1rem;
+}
+
+.plano-manual-detalhes summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
 }
 
 /* ---- Placeholder "em construcao" ------------------------------------------------ */

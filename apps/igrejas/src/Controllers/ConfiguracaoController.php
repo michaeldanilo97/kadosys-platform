@@ -7,7 +7,9 @@ namespace Igrejas\Controllers;
 use Igrejas\Core\Auth;
 use Igrejas\Core\Controller;
 use Igrejas\Core\Csrf;
+use Igrejas\Core\MercadoPagoClient;
 use Igrejas\Core\Session;
+use Igrejas\Models\Assinatura;
 use Igrejas\Models\ConfiguracaoIgreja;
 use Igrejas\Models\Plano;
 
@@ -41,6 +43,8 @@ final class ConfiguracaoController extends Controller
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
             'configuracao' => ConfiguracaoIgreja::atual(),
+            'assinatura' => Assinatura::ultima(),
+            'pagamentoConfigurado' => (new MercadoPagoClient())->configurado(),
             'success' => Session::flash('config_success'),
             'errors' => Session::flash('config_errors') ?? [],
             'csrf' => Csrf::field(),

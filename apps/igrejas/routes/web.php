@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Igrejas\Controllers\AssinaturaController;
 use Igrejas\Controllers\AuthController;
 use Igrejas\Controllers\ConfiguracaoController;
 use Igrejas\Controllers\CultoController;
@@ -85,6 +86,11 @@ $router->post('/dashboard/configuracoes/logo', [ConfiguracaoController::class, '
 $router->post('/dashboard/configuracoes/logo/remover', [ConfiguracaoController::class, 'removerLogo'], [AuthMiddleware::class]);
 $router->post('/dashboard/configuracoes/plano', [ConfiguracaoController::class, 'atualizarPlano'], [AuthMiddleware::class]);
 
+// Assinatura recorrente do plano via Mercado Pago (Checkout Pro). Sem
+// PlanoMiddleware pelo mesmo motivo das rotas de Configuracoes acima.
+$router->post('/dashboard/configuracoes/assinatura/{plano}', [AssinaturaController::class, 'iniciar'], [AuthMiddleware::class]);
+$router->get('/dashboard/assinatura/retorno', [AssinaturaController::class, 'retorno'], [AuthMiddleware::class]);
+
 // Tela exibida quando um modulo fora do plano contratado e acessado (ver
 // PlanoMiddleware). Tambem sem PlanoMiddleware, para nao criar um loop de
 // redirecionamento.
@@ -119,3 +125,9 @@ $router->post('/projecao/{token}/video/estado', [ProjecaoEstadoController::class
 $router->post('/projecao/{token}/video/tempo', [ProjecaoEstadoController::class, 'atualizarTempoVideo']);
 $router->post('/projecao/{token}/logo', [ProjecaoEstadoController::class, 'mostrarLogo']);
 $router->post('/projecao/{token}/limpar', [ProjecaoEstadoController::class, 'limpar']);
+
+// Webhook do Mercado Pago (notificacoes de assinatura/pagamento). Publica
+// de proposito - a seguranca aqui vem da validacao da assinatura
+// "x-signature" dentro do proprio controller, nao de sessao/CSRF (quem
+// chama e o servidor do Mercado Pago, nao um navegador logado).
+$router->post('/webhooks/mercadopago', [AssinaturaController::class, 'webhook']);

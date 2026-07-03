@@ -311,3 +311,29 @@ CREATE TABLE IF NOT EXISTS projecao_estados (
     CONSTRAINT projecao_estados_livro_id_foreign
         FOREIGN KEY (livro_id) REFERENCES biblia_livros (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ----------------------------------------------------------------------------
+-- 010 - Assinaturas recorrentes via Mercado Pago (ver Igrejas\Models\Plano)
+-- ----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS assinaturas (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    plano ENUM('essencial', 'premium', 'enterprise') NOT NULL,
+    mp_preapproval_id VARCHAR(64) NULL,
+    mp_payer_email VARCHAR(190) NULL,
+    status ENUM('pendente', 'autorizada', 'pausada', 'cancelada') NOT NULL DEFAULT 'pendente',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_mp_preapproval_id (mp_preapproval_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS assinatura_eventos (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    assinatura_id INT UNSIGNED NULL,
+    tipo VARCHAR(40) NOT NULL,
+    payload TEXT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_assinatura_eventos_assinatura
+        FOREIGN KEY (assinatura_id) REFERENCES assinaturas(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

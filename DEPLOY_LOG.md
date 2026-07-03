@@ -17,6 +17,40 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 12 - 2026-07-03
+
+**Assinatura recorrente do plano via Mercado Pago (Checkout Pro)**
+
+- Em Configuracoes, os planos Essencial e Premium agora tem um botao
+  "Assinar" que leva pro checkout do Mercado Pago (cartao, PIX, etc.).
+  Enterprise continua "sob consulta" (fale com o suporte).
+- Quando o pagamento e aprovado, o Mercado Pago avisa o sistema por
+  webhook e o plano contratado da igreja e atualizado sozinho - sem
+  precisar trocar nada manualmente. O status da assinatura (pendente,
+  ativa, pausada, cancelada) aparece do lado do nome do plano atual.
+- Seguranca: toda notificacao recebida e validada (assinatura HMAC do
+  Mercado Pago) antes de mexer em qualquer coisa - notificacao sem
+  assinatura valida e rejeitada. O plano so muda de fato depois de
+  confirmar o status direto na API do Mercado Pago (nunca so pelo que
+  chega na notificacao).
+- **IMPORTANTE - requer configuracao no servidor antes de funcionar**:
+  precisa cadastrar 4 variáveis de ambiente no cPanel (MultiPHP INI
+  Editor ou equivalente) com as credenciais do Mercado Pago:
+  `MP_ACCESS_TOKEN`, `MP_PUBLIC_KEY`, `MP_WEBHOOK_SECRET` e `APP_URL`
+  (URL publica completa do site). Sem isso, o botao "Assinar" mostra um
+  aviso e a troca de plano continua disponivel manualmente (like antes,
+  em "Ajuste manual do plano").
+- Rode a migracao nova no banco de producao (cria as tabelas
+  `assinaturas` e `assinatura_eventos`, essa ultima guarda um historico
+  de cada notificacao recebida, pra ajudar a diagnosticar problema de
+  pagamento se acontecer):
+  ```
+  mysql -u seu_usuario -p seu_banco < database/migrations/010_create_assinaturas.sql
+  ```
+- Corrigido de brinde: o botao "outline" (ex.: "Fale com o suporte",
+  "Remover logo") estava com cor quase invisivel no tema claro (que e o
+  padrao do painel) - agora com contraste adequado.
+
 ## Ajuste 11 - 2026-07-03
 
 **Landing page: secao de Planos modernizada, com tabela comparativa completa**
