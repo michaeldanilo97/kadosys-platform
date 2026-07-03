@@ -49,8 +49,14 @@ final class Membro
         $params = [];
 
         if ($search !== '') {
-            $where = 'WHERE nome LIKE :search OR email LIKE :search';
-            $params['search'] = '%' . $search . '%';
+            // Parametros nomeados repetidos na mesma query nao sao
+            // suportados pelo driver MySQL do PDO com prepares nativos
+            // (PDO::ATTR_EMULATE_PREPARES => false, ver Database.php) -
+            // cada ocorrencia de LIKE precisa do seu proprio placeholder,
+            // mesmo vinculado ao mesmo valor.
+            $where = 'WHERE nome LIKE :search_nome OR email LIKE :search_email';
+            $params['search_nome'] = '%' . $search . '%';
+            $params['search_email'] = '%' . $search . '%';
         }
 
         $totalStmt = Database::connection()->prepare("SELECT COUNT(*) FROM membros {$where}");

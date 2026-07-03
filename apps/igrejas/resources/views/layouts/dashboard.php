@@ -8,6 +8,7 @@ use Igrejas\Core\View;
 use Igrejas\Models\ConfiguracaoIgreja;
 use Igrejas\Models\FaturaPix;
 use Igrejas\Models\Plano;
+use Igrejas\Models\User;
 
 /**
  * @var string $content
@@ -121,12 +122,18 @@ if ($activeMenu !== 'trial-expirado' && $activeMenu !== 'fatura-vencida') {
 
             <div class="dash-nav-group-label">Modulos</div>
             <?php foreach ($modules as $slug => $module): ?>
-                <?php $bloqueado = !Plano::disponivel($planoAtual, $slug, $emTrial); ?>
+                <?php
+                $bloqueadoPeloPlano = !Plano::disponivel($planoAtual, $slug, $emTrial);
+                $bloqueadoPelaPermissao = !$bloqueadoPeloPlano && !User::podeAcessarModulo($user, $slug);
+                $bloqueado = $bloqueadoPeloPlano || $bloqueadoPelaPermissao;
+                ?>
                 <a href="<?= $basePath ?>/dashboard/<?= $slug ?>" class="dash-nav-link <?= $activeMenu === $slug ? 'active' : '' ?><?= $bloqueado ? ' dash-nav-link-locked' : '' ?>">
                     <i class="bi <?= htmlspecialchars($module['icon'], ENT_QUOTES, 'UTF-8') ?>"></i>
                     <?= htmlspecialchars($module['title'], ENT_QUOTES, 'UTF-8') ?>
-                    <?php if ($bloqueado): ?>
+                    <?php if ($bloqueadoPeloPlano): ?>
                         <i class="bi bi-lock-fill dash-nav-lock-icon" title="Disponivel no plano <?= htmlspecialchars(Plano::label($module['planoMinimo']), ENT_QUOTES, 'UTF-8') ?>"></i>
+                    <?php elseif ($bloqueadoPelaPermissao): ?>
+                        <i class="bi bi-shield-lock dash-nav-lock-icon" title="Sem permissao pra acessar este modulo"></i>
                     <?php endif; ?>
                 </a>
             <?php endforeach; ?>

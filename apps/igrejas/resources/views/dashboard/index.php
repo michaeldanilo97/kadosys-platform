@@ -3,6 +3,7 @@
 use Igrejas\Core\TenantResolver;
 use Igrejas\Models\ConfiguracaoIgreja;
 use Igrejas\Models\Plano;
+use Igrejas\Models\User;
 
 /**
  * @var array $config
@@ -140,14 +141,20 @@ $emTrial = TenantResolver::atual()?->metodoPagamento === 'trial';
     </div>
     <div class="module-grid">
         <?php foreach ($modules as $slug => $module): ?>
-            <?php $bloqueado = !Plano::disponivel($planoAtual, $slug, $emTrial); ?>
+            <?php
+            $bloqueadoPeloPlano = !Plano::disponivel($planoAtual, $slug, $emTrial);
+            $bloqueadoPelaPermissao = !$bloqueadoPeloPlano && !User::podeAcessarModulo($user, $slug);
+            $bloqueado = $bloqueadoPeloPlano || $bloqueadoPelaPermissao;
+            ?>
             <a href="<?= $basePath ?>/dashboard/<?= $slug ?>" class="module-card<?= $bloqueado ? ' module-card-locked' : '' ?>">
                 <div class="icon"><i class="bi <?= htmlspecialchars($module['icon'], ENT_QUOTES, 'UTF-8') ?>"></i></div>
                 <div>
                     <div class="name">
                         <?= htmlspecialchars($module['title'], ENT_QUOTES, 'UTF-8') ?>
-                        <?php if ($bloqueado): ?>
+                        <?php if ($bloqueadoPeloPlano): ?>
                             <span class="plano-badge"><i class="bi bi-lock-fill"></i> <?= htmlspecialchars(Plano::label($module['planoMinimo']), ENT_QUOTES, 'UTF-8') ?></span>
+                        <?php elseif ($bloqueadoPelaPermissao): ?>
+                            <span class="plano-badge"><i class="bi bi-shield-lock"></i> Sem permissao</span>
                         <?php endif; ?>
                     </div>
                     <div class="desc"><?= htmlspecialchars($module['description'], ENT_QUOTES, 'UTF-8') ?></div>

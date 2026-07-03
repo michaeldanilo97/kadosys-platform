@@ -17,6 +17,55 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 27 - 2026-07-06
+
+**Novo modulo: Agenda + correcao critica na busca de Membros e Cultos**
+
+- Modulo Agenda completo: eventos, reunioes e reservas de espaco da
+  igreja, com tipo, data, horario de inicio/termino, local e
+  responsavel (um membro) opcional. Disponivel em todos os planos.
+- **Correcao critica**: a busca por texto em Membros (por nome OU
+  e-mail) e em Cultos (por titulo OU local) estava **derrubando a
+  pagina com erro** desde sempre - o banco de dados nao aceita usar o
+  mesmo parametro (":search") duas vezes na mesma consulta. Se algum
+  usuario ja tentou buscar algo em Membros ou Cultos e a pagina deu
+  erro, era isso.
+- Rode a migracao nova no banco de CADA igreja ja criada (nao e no
+  banco central da plataforma). Igrejas novas ja recebem a tabela
+  automaticamente (`database/install.sql` atualizado):
+  ```
+  mysql -u seu_usuario -p banco_da_igreja < apps/igrejas/database/migrations/017_create_agenda_tables.sql
+  ```
+
+## Ajuste 28 - 2026-07-06
+
+**Novo modulo: Usuarios e Permissoes**
+
+- Ate aqui so existia 1 usuario administrador por igreja. Agora um
+  admin pode convidar mais gente em Usuarios, cada um com um papel:
+  - **Administrador**: acesso total, inclusive gerenciar usuarios,
+    permissoes e o plano/faturamento da igreja.
+  - **Usuario**: acesso a todos os modulos do plano contratado (igual
+    a um admin), exceto Usuarios, Permissoes e Configuracoes.
+- No plano Premium (o mais completo), o admin pode ir em Permissoes e
+  restringir ainda mais um usuario especifico, liberando so os
+  modulos escolhidos (ex.: um voluntario que so deveria ver Membros e
+  Cultos).
+- Quando alguem tenta acessar um modulo sem permissao, aparece uma
+  tela explicando o bloqueio (em vez de deixar a pagina carregar pela
+  metade) - e o menu lateral ja mostra um cadeado nos modulos fora do
+  alcance daquele usuario.
+- Protecoes contra erro: nao da pra se auto-rebaixar, se auto-desativar
+  ou excluir a propria conta, nem remover/desativar o ultimo
+  administrador ativo da igreja - sempre precisa sobrar pelo menos um
+  admin.
+- Rode a migracao nova no banco de CADA igreja ja criada (nao e no
+  banco central da plataforma). Igrejas novas ja recebem a estrutura
+  automaticamente (`database/install.sql` atualizado):
+  ```
+  mysql -u seu_usuario -p banco_da_igreja < apps/igrejas/database/migrations/018_create_usuarios_permissoes.sql
+  ```
+
 ## Ajuste 26 - 2026-07-06
 
 **Novo modulo: Grupos (pequenos grupos, celulas e classes)**

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Igrejas\Controllers\AgendaController;
 use Igrejas\Controllers\AssinaturaController;
 use Igrejas\Controllers\AuthController;
 use Igrejas\Controllers\CadastroController;
@@ -13,11 +14,13 @@ use Igrejas\Controllers\GrupoController;
 use Igrejas\Controllers\LandingController;
 use Igrejas\Controllers\MembroController;
 use Igrejas\Controllers\MinisterioController;
+use Igrejas\Controllers\PermissaoController;
 use Igrejas\Controllers\PlataformaController;
 use Igrejas\Controllers\PreletorController;
 use Igrejas\Controllers\ProjecaoController;
 use Igrejas\Controllers\ProjecaoEstadoController;
 use Igrejas\Controllers\TelaoController;
+use Igrejas\Controllers\UsuarioController;
 use Igrejas\Core\Middleware\AuthMiddleware;
 use Igrejas\Core\Middleware\GuestMiddleware;
 use Igrejas\Core\Middleware\PlanoMiddleware;
@@ -97,6 +100,16 @@ $router->post('/dashboard/cultos/{id}/excluir', [CultoController::class, 'destro
 $router->post('/dashboard/cultos/{id}/presencas', [CultoController::class, 'addPresenca'], [AuthMiddleware::class]);
 $router->post('/dashboard/cultos/{id}/presencas/{membroId}/remover', [CultoController::class, 'removePresenca'], [AuthMiddleware::class]);
 
+// Modulo Agenda. Mesmo motivo: precisa vir antes do catch-all. Sem
+// PlanoMiddleware - Agenda esta liberada em todos os planos, mesmo
+// nivel de acesso de Membros/Cultos.
+$router->get('/dashboard/agenda', [AgendaController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/agenda/novo', [AgendaController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/agenda', [AgendaController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/agenda/{id}/editar', [AgendaController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/dashboard/agenda/{id}', [AgendaController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/agenda/{id}/excluir', [AgendaController::class, 'destroy'], [AuthMiddleware::class]);
+
 // Modulo Financeiro. Mesmo motivo: precisa vir antes do catch-all.
 // PlanoMiddleware: Financeiro exige plano Plus ou superior (ver
 // Igrejas\Models\Plano). As rotas de categorias precisam ser
@@ -119,6 +132,25 @@ $router->post('/dashboard/financeiro/{id}/excluir', [FinanceiroController::class
 $router->get('/dashboard/projecao', [ProjecaoController::class, 'index'], [AuthMiddleware::class]);
 $router->post('/dashboard/projecao/iniciar', [ProjecaoController::class, 'iniciar'], [AuthMiddleware::class]);
 $router->post('/dashboard/projecao/encerrar', [ProjecaoController::class, 'encerrar'], [AuthMiddleware::class]);
+
+// Modulo Usuarios. Mesmo motivo: precisa vir antes do catch-all. Sem
+// PlanoMiddleware - disponivel em todos os planos, mas so 'admin'
+// acessa de verdade (ver AuthMiddleware::bloquearSePermissaoNegada e
+// User::MODULOS_SOMENTE_ADMIN).
+$router->get('/dashboard/usuarios', [UsuarioController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/usuarios/novo', [UsuarioController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/usuarios', [UsuarioController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/usuarios/{id}/editar', [UsuarioController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/dashboard/usuarios/{id}', [UsuarioController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/usuarios/{id}/excluir', [UsuarioController::class, 'destroy'], [AuthMiddleware::class]);
+
+// Modulo Permissoes. Mesmo motivo: precisa vir antes do catch-all.
+// PlanoMiddleware: Permissoes exige o plano Premium (topo, ver
+// Igrejas\Models\Plano) - so 'admin' acessa de verdade (mesma regra
+// de Usuarios acima).
+$router->get('/dashboard/permissoes', [PermissaoController::class, 'index'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->get('/dashboard/permissoes/{id}/editar', [PermissaoController::class, 'edit'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/permissoes/{id}', [PermissaoController::class, 'update'], [AuthMiddleware::class, PlanoMiddleware::class]);
 
 // Configuracoes (logo da igreja, usada no fadeout da projecao, e o plano
 // contratado). Mesmo motivo: precisa vir antes do catch-all. Sem
@@ -149,10 +181,16 @@ $router->get('/dashboard/fatura-vencida/status', [ConfiguracaoController::class,
 // escolher um plano pago (ver AuthMiddleware).
 $router->get('/dashboard/trial-expirado', [ConfiguracaoController::class, 'trialExpirado'], [AuthMiddleware::class]);
 
-// Estrutura "em construcao" dos demais modulos do menu (catch-all).
-// PlanoMiddleware aqui cobre todos os modulos sem controller proprio
-// (grupos, agenda, financeiro, patrimonio, comunicacao, relatorios,
-// usuarios, permissoes) de uma vez so, com base no slug da propria URI.
+// Tela exibida quando um usuario (papel 'usuario') tenta acessar um
+// modulo fora da propria permissao (ver
+// AuthMiddleware::bloquearSePermissaoNegada). Tambem sem PlanoMiddleware,
+// pelo mesmo motivo de plano-bloqueado acima.
+$router->get('/dashboard/sem-permissao', [DashboardController::class, 'semPermissao'], [AuthMiddleware::class]);
+
+// Estrutura "em construcao" dos demais modulos do menu sem controller
+// proprio ainda (patrimonio, comunicacao, relatorios) - catch-all.
+// PlanoMiddleware aqui cobre todos eles de uma vez so, com base no
+// slug da propria URI.
 $router->get('/dashboard/{slug}', [DashboardController::class, 'page'], [AuthMiddleware::class, PlanoMiddleware::class]);
 
 // Tela publica do telao (projetor). Acesso direto por link com token,

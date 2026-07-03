@@ -194,4 +194,30 @@ final class DashboardController extends Controller
             'planoAtual' => ConfiguracaoIgreja::atual()->plano,
         ], 'dashboard');
     }
+
+    /**
+     * Tela exibida quando um usuario com papel 'usuario' tenta acessar
+     * um modulo fora da propria permissao (ver
+     * AuthMiddleware::bloquearSePermissaoNegada, que redireciona pra ca
+     * em vez de deixar a pagina do modulo carregar).
+     */
+    public function semPermissao(): void
+    {
+        $modules = self::modules();
+        $slug = (string) $this->request->input('modulo', '');
+        $module = $modules[$slug] ?? null;
+
+        if ($module === null) {
+            $this->redirect('/dashboard');
+        }
+
+        echo $this->view('dashboard.sem-permissao', [
+            'pageTitle' => $module['title'] . ' - KADOSYS Igrejas',
+            'activeMenu' => $slug,
+            'breadcrumb' => ['Dashboard', $module['title']],
+            'user' => (new Auth($this->config))->user(),
+            'modules' => $modules,
+            'module' => $module,
+        ], 'dashboard');
+    }
 }
