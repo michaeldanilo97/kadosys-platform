@@ -8,6 +8,7 @@
     initSidebar();
     initSearchShortcut();
     initConfirmForms();
+    initTopbarDropdowns();
   });
 
   function initTheme() {
@@ -104,6 +105,63 @@
           event.preventDefault();
         }
       });
+    });
+  }
+
+  // Sino de notificacoes e menu do usuario no topo do painel: os dois
+  // seguem o mesmo padrao (botao + painel escondido por "hidden"), so
+  // um aberto por vez.
+  function initTopbarDropdowns() {
+    var dropdowns = document.querySelectorAll('[data-topbar-dropdown]');
+
+    if (dropdowns.length === 0) {
+      return;
+    }
+
+    function closeAll(except) {
+      dropdowns.forEach(function (dropdown) {
+        if (dropdown === except) {
+          return;
+        }
+
+        var panel = dropdown.querySelector('[data-dropdown-panel]');
+        var toggle = dropdown.querySelector('[data-dropdown-toggle]');
+
+        if (panel) {
+          panel.hidden = true;
+        }
+        if (toggle) {
+          toggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    dropdowns.forEach(function (dropdown) {
+      var toggle = dropdown.querySelector('[data-dropdown-toggle]');
+      var panel = dropdown.querySelector('[data-dropdown-panel]');
+
+      if (!toggle || !panel) {
+        return;
+      }
+
+      toggle.addEventListener('click', function (event) {
+        event.stopPropagation();
+
+        var abrindo = panel.hidden;
+        closeAll(dropdown);
+        panel.hidden = !abrindo;
+        toggle.setAttribute('aria-expanded', abrindo ? 'true' : 'false');
+      });
+    });
+
+    document.addEventListener('click', function () {
+      closeAll(null);
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        closeAll(null);
+      }
     });
   }
 })();

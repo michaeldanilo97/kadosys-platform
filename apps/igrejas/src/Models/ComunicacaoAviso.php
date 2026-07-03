@@ -84,6 +84,25 @@ final class ComunicacaoAviso
     }
 
     /**
+     * Avisos publicados mais recentes, usado no sino de notificacoes do
+     * topo do painel.
+     *
+     * @return array<int, self>
+     */
+    public static function ultimosPublicados(int $limite = 5): array
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT * FROM comunicacao_avisos WHERE status = 'publicado'
+             ORDER BY data_publicacao DESC, created_at DESC
+             LIMIT :limite"
+        );
+        $stmt->bindValue('limite', $limite, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /**
      * @param array<string, mixed> $data
      */
     public static function create(array $data): int
