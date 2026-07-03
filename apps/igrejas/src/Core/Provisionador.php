@@ -88,10 +88,79 @@ final class Provisionador
 
             Tenant::marcarAtivo($tenantId);
             Provisionamento::vincularTenant($provisionamento->id, $tenantId);
+            $this->importarBiblia($pdo, $provisionamento);
             $this->enviarEmailBoasVindas($provisionamento, $subdominio);
         } catch (\Throwable $exception) {
             Provisionamento::atualizarStatus($provisionamento->id, 'erro', $exception->getMessage());
         }
+    }
+
+    /**
+     * Importa o texto biblico (NVI, ACF, AA) pro banco do tenant novo, a
+     * partir dos dumps pre-gerados em database/seed/ - sem isso a
+     * Projecao ate deixa escolher a referencia, mas o texto do
+     * versiculo fica vazio ate alguem importar na mao, o que inviabiliza
+     * o cadastro autoatendido. Falha aqui (de qualquer versao) nunca
+     * reverte o provisionamento (banco/subdominio/admin ja prontos
+     * nesse ponto) - so fica registrada como aviso.
+     */
+    private function importarBiblia(PDO $pdo, Provisionamento $provisionamento): void
+    {
+        foreach (['nvi', 'acf', 'aa'] as $versao) {
+            try {
+                $this->importarVersaoBiblia($pdo, $versao);
+            } catch (\Throwable $exception) {
+                Provisionamento::atualizarStatus(
+                    $provisionamento->id,
+                    'concluido',
+                    "Aviso: falha ao importar o texto da Biblia ({$versao}) - " . $exception->getMessage()
+                );
+            }
+        }
+    }
+
+    private function importarVersaoBiblia(PDO $pdo, string $versao): void
+    {
+        $caminho = dirname(__DIR__, 2) . "/database/seed/biblia_{$versao}.sql.gz";
+
+        if (!is_file($caminho)) {
+            return;
+        }
+
+        $comprimido = file_get_contents($caminho);
+
+        if ($comprimido === false) {
+            throw new \RuntimeException("Nao foi possivel ler {$caminho}.");
+        }
+
+        $sql = gzdecode($comprimido);
+
+        if ($sql === false || $sql === '') {
+            throw new \RuntimeException("Nao foi possivel descompactar {$caminho}.");
+        }
+
+        foreach ($this->dividirStatementsBiblia($sql) as $statement) {
+            $pdo->exec($statement);
+        }
+    }
+
+    /**
+     * Diferente de dividirStatements() (usado no install.sql), aqui NAO
+     * da pra dividir por ";" cru - o texto biblico tem ponto-e-virgula
+     * (e parenteses) dentro das proprias strings, o que quebraria os
+     * dados no meio. Cada bloco de INSERT no dump ja vem pre-lotado
+     * (~500 versiculos por bloco, pra nao estourar o max_allowed_packet
+     * do MySQL) e sempre termina com a mesma linha fixa - usa ela como
+     * delimitador real do statement, em vez de qualquer ";" solto no
+     * meio do texto.
+     *
+     * @return array<int, string>
+     */
+    private function dividirStatementsBiblia(string $sql): array
+    {
+        preg_match_all('/INSERT INTO biblia_versiculos.*?ON DUPLICATE KEY UPDATE texto = VALUES\(texto\);/s', $sql, $matches);
+
+        return $matches[0];
     }
 
     /**
