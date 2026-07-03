@@ -7,6 +7,7 @@ use Igrejas\Models\Plano;
  * @var \Igrejas\Models\ConfiguracaoIgreja $configuracao
  * @var \Igrejas\Models\Assinatura|null $assinatura
  * @var bool $pagamentoConfigurado
+ * @var bool $pixDisponivel
  * @var string|null $success
  * @var array $errors
  * @var string $csrf
@@ -78,6 +79,18 @@ $statusAssinaturaLabel = [
                 <?php else: ?>
                     <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/assinatura/<?= htmlspecialchars($valor, ENT_QUOTES, 'UTF-8') ?>">
                         <?= $csrf ?>
+                        <?php if ($pixDisponivel): ?>
+                            <div class="plano-assinar-metodo">
+                                <label>
+                                    <input type="radio" name="metodo_pagamento" value="cartao" checked>
+                                    Cartao
+                                </label>
+                                <label>
+                                    <input type="radio" name="metodo_pagamento" value="pix">
+                                    Pix
+                                </label>
+                            </div>
+                        <?php endif; ?>
                         <button type="submit" class="btn-k btn-k-grad" <?= $pagamentoConfigurado ? '' : 'disabled' ?>>
                             <i class="bi bi-credit-card"></i> Assinar
                         </button>

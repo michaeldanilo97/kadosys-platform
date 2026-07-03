@@ -47,6 +47,12 @@ final class ConfiguracaoController extends Controller
             'configuracao' => ConfiguracaoIgreja::atual(),
             'assinatura' => Assinatura::ultima(),
             'pagamentoConfigurado' => (new MercadoPagoClient())->configurado(),
+            // Pix so esta disponivel pra igrejas provisionadas
+            // automaticamente (com registro central de tenant) - a fatura
+            // Pix mensal depende desse registro pra o webhook (que roda
+            // sempre na instalacao central) saber a quem pertence cada
+            // pagamento. A instalacao original continua so com cartao.
+            'pixDisponivel' => TenantResolver::atual() !== null,
             'success' => Session::flash('config_success'),
             'errors' => Session::flash('config_errors') ?? [],
             'csrf' => Csrf::field(),

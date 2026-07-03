@@ -9,9 +9,15 @@ use Igrejas\Core\View;
 $basePath = $config['base_path'] ?? '';
 $valor = $fatura?->valor ?? 0.0;
 $vencimento = $fatura?->vencimento ? new DateTimeImmutable($fatura->vencimento) : null;
+// A mesma tela cobre dois cenarios: uma fatura recem-gerada (troca de
+// plano via Pix ou renovacao em dia, ainda dentro do prazo) e uma fatura
+// realmente vencida sem pagamento (que bloqueou o acesso - ver
+// AuthMiddleware). O texto muda conforme o caso pra nao dizer "venceu"
+// de algo que ainda nem chegou no vencimento.
+$faturaVencida = $vencimento !== null && $vencimento < new DateTimeImmutable();
 ?>
 
-<h1 class="dash-page-title">Fatura pendente</h1>
+<h1 class="dash-page-title"><?= $faturaVencida ? 'Fatura pendente' : 'Confirme o pagamento' ?></h1>
 <p class="dash-page-subtitle">O acesso da igreja fica liberado de novo assim que o Pix for confirmado.</p>
 
 <div class="placeholder-box placeholder-box-plano" style="max-width: 480px; margin: 0 auto;">
@@ -24,7 +30,11 @@ $vencimento = $fatura?->vencimento ? new DateTimeImmutable($fatura->vencimento) 
             ou fale com o suporte.
         </p>
     <?php else: ?>
-        <h2>Sua fatura de <?= htmlspecialchars(\Igrejas\Models\Plano::label($fatura->plano), ENT_QUOTES, 'UTF-8') ?> venceu</h2>
+        <?php if ($faturaVencida): ?>
+            <h2>Sua fatura de <?= htmlspecialchars(\Igrejas\Models\Plano::label($fatura->plano), ENT_QUOTES, 'UTF-8') ?> venceu</h2>
+        <?php else: ?>
+            <h2>Pague com Pix pra confirmar o plano <?= htmlspecialchars(\Igrejas\Models\Plano::label($fatura->plano), ENT_QUOTES, 'UTF-8') ?></h2>
+        <?php endif; ?>
 
         <div class="pix-valor">R$ <?= number_format($valor, 2, ',', '.') ?></div>
 

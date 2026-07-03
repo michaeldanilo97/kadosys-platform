@@ -74,6 +74,34 @@ final class Tenant
         $stmt->execute(['id' => $id]);
     }
 
+    /**
+     * Mantem o "plano" do registro central sincronizado com
+     * configuracoes_igreja.plano (que mora no banco isolado de cada
+     * tenant) sempre que uma troca de plano e confirmada - ver
+     * AssinaturaController::processarFaturaPix(). Sem isso,
+     * cron/gerar_faturas_pix.php geraria a proxima fatura com o plano
+     * antigo, ja que ele so enxerga esse registro central.
+     */
+    public static function atualizarPlano(int $id, string $plano): void
+    {
+        $stmt = Database::central()->prepare('UPDATE plataforma_tenants SET plano = :plano WHERE id = :id');
+        $stmt->execute(['plano' => $plano, 'id' => $id]);
+    }
+
+    /**
+     * Usado quando um tenant ja ativo troca de metodo de pagamento pela
+     * tela de Configuracoes (ver AssinaturaController::iniciar) - ex.:
+     * escolhe pagar por Pix ao trocar de plano, mesmo ja tendo sido
+     * provisionado originalmente por cartao.
+     */
+    public static function atualizarMetodoPagamento(int $id, string $metodoPagamento): void
+    {
+        $stmt = Database::central()->prepare(
+            'UPDATE plataforma_tenants SET metodo_pagamento = :metodo_pagamento WHERE id = :id'
+        );
+        $stmt->execute(['metodo_pagamento' => $metodoPagamento, 'id' => $id]);
+    }
+
     public static function buscarPorSubdominio(string $subdominio): ?self
     {
         $stmt = Database::central()->prepare(self::SELECT_BASE . ' WHERE subdominio = :subdominio LIMIT 1');
