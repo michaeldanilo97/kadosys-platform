@@ -1,8 +1,26 @@
 <?php
+
+use Igrejas\Controllers\DashboardController;
+use Igrejas\Models\Plano;
+
 /**
  * @var array $config
  */
 $basePath = $config['base_path'] ?? '';
+
+// Tabela de comparacao de planos: gerada a partir do mesmo mapa modulo -> plano
+// usado de verdade pro controle de acesso (ver Igrejas\Models\Plano e
+// PlanoMiddleware), pra pagina de vendas nunca ficar desatualizada em
+// relacao ao que o sistema realmente libera em cada plano.
+$planosComparacao = [Plano::ESSENCIAL, Plano::PREMIUM, Plano::ENTERPRISE];
+// "configuracoes" e "usuarios" ficam fora da tabela: nao sao recursos de
+// venda (configuracoes e so ajuste do sistema, e usuarios ja tem sua
+// propria linha "Usuarios administradores" com a contagem de assentos).
+$modulosComparacao = array_filter(
+    DashboardController::modules(),
+    static fn (string $slug) => !in_array($slug, ['configuracoes', 'usuarios'], true),
+    ARRAY_FILTER_USE_KEY
+);
 ?>
 
 <!-- HERO -->
@@ -258,12 +276,14 @@ $basePath = $config['base_path'] ?? '';
 
         <div class="plans-grid">
             <div class="plan-card glass-card reveal">
+                <div class="plan-icon"><i class="bi bi-seedling"></i></div>
                 <h3>Essencial</h3>
                 <p class="plan-desc">Para igrejas que estao comecando a organizar sua gestao.</p>
                 <div class="plan-price">R$ 97<span>/mes</span></div>
                 <ul class="plan-features">
                     <li class="plan-feature"><i class="bi bi-check2"></i> Gestao de membros</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Agenda e cultos</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Projecao/Telao (Biblia e video)</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> 1 usuario administrador</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Suporte por e-mail</li>
                 </ul>
@@ -272,6 +292,7 @@ $basePath = $config['base_path'] ?? '';
 
             <div class="plan-card glass-card featured reveal">
                 <span class="badge-featured">Mais escolhido</span>
+                <div class="plan-icon"><i class="bi bi-stars"></i></div>
                 <h3>Premium</h3>
                 <p class="plan-desc">Para igrejas com ministerios e financeiro ativos.</p>
                 <div class="plan-price">R$ 197<span>/mes</span></div>
@@ -279,12 +300,14 @@ $basePath = $config['base_path'] ?? '';
                     <li class="plan-feature"><i class="bi bi-check2"></i> Tudo do plano Essencial</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Ministerios e grupos</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Financeiro completo</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Comunicacao e avisos</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Usuarios ilimitados</li>
                 </ul>
                 <a href="<?= $basePath ?>/login" class="btn-k btn-k-grad">Comecar agora</a>
             </div>
 
             <div class="plan-card glass-card reveal">
+                <div class="plan-icon"><i class="bi bi-building"></i></div>
                 <h3>Enterprise</h3>
                 <p class="plan-desc">Para redes de igrejas e estruturas administrativas maiores.</p>
                 <div class="plan-price">Sob consulta</div>
@@ -295,6 +318,59 @@ $basePath = $config['base_path'] ?? '';
                     <li class="plan-feature"><i class="bi bi-check2"></i> Atendimento dedicado</li>
                 </ul>
                 <a href="<?= $basePath ?>/login" class="btn-k btn-k-outline">Comecar agora</a>
+            </div>
+        </div>
+
+        <div class="plan-compare-toggle-wrap reveal">
+            <button type="button" class="plan-compare-toggle" data-plan-compare-toggle aria-expanded="false">
+                <i class="bi bi-table"></i> <span data-plan-compare-toggle-label>Comparar todos os recursos</span>
+                <i class="bi bi-chevron-down"></i>
+            </button>
+        </div>
+
+        <div class="plan-compare-wrap" data-plan-compare hidden>
+            <div class="plan-compare-scroll">
+                <table class="plan-compare-table">
+                    <thead>
+                        <tr>
+                            <th class="plan-compare-feature-col">Recurso</th>
+                            <?php foreach ($planosComparacao as $plano): ?>
+                                <th><?= htmlspecialchars(Plano::label($plano), ENT_QUOTES, 'UTF-8') ?></th>
+                            <?php endforeach; ?>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($modulosComparacao as $slug => $modulo): ?>
+                            <tr>
+                                <td class="plan-compare-feature-col">
+                                    <i class="bi <?= htmlspecialchars($modulo['icon'], ENT_QUOTES, 'UTF-8') ?>"></i>
+                                    <?= htmlspecialchars($modulo['title'], ENT_QUOTES, 'UTF-8') ?>
+                                </td>
+                                <?php foreach ($planosComparacao as $plano): ?>
+                                    <td>
+                                        <?php if (Plano::disponivel($plano, $slug)): ?>
+                                            <i class="bi bi-check-circle-fill plan-compare-yes"></i>
+                                        <?php else: ?>
+                                            <i class="bi bi-dash-lg plan-compare-no"></i>
+                                        <?php endif; ?>
+                                    </td>
+                                <?php endforeach; ?>
+                            </tr>
+                        <?php endforeach; ?>
+                        <tr>
+                            <td class="plan-compare-feature-col"><i class="bi bi-person-badge"></i> Usuarios administradores</td>
+                            <td>1</td>
+                            <td>Ilimitados</td>
+                            <td>Ilimitados</td>
+                        </tr>
+                        <tr>
+                            <td class="plan-compare-feature-col"><i class="bi bi-headset"></i> Suporte</td>
+                            <td>E-mail</td>
+                            <td>E-mail prioritario</td>
+                            <td>Dedicado</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

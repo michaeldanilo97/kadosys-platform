@@ -4,6 +4,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     initMobileMenu();
     initFaqAccordion();
+    initPlanCompare();
     initScrollHeader();
     initReveal();
     initCounters();
@@ -57,6 +58,31 @@
           answer.style.maxHeight = answer.scrollHeight + 'px';
         }
       });
+    });
+  }
+
+  function initPlanCompare() {
+    var toggle = document.querySelector('[data-plan-compare-toggle]');
+    var wrap = document.querySelector('[data-plan-compare]');
+    var label = document.querySelector('[data-plan-compare-toggle-label]');
+
+    if (!toggle || !wrap) {
+      return;
+    }
+
+    toggle.addEventListener('click', function () {
+      var isOpen = !wrap.hidden;
+
+      wrap.hidden = isOpen;
+      toggle.setAttribute('aria-expanded', String(!isOpen));
+
+      if (label) {
+        label.textContent = isOpen ? 'Comparar todos os recursos' : 'Ocultar comparativo';
+      }
+
+      if (!isOpen) {
+        wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
     });
   }
 

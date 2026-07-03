@@ -17,6 +17,22 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 11 - 2026-07-03
+
+**Landing page: secao de Planos modernizada, com tabela comparativa completa**
+
+- Cada card de plano (Essencial/Premium/Enterprise) ganhou um icone no
+  topo e mais itens na lista de recursos (Projecao/Telao no Essencial,
+  Comunicacao no Premium).
+- Novo botao "Comparar todos os recursos" abaixo dos cards: abre uma
+  tabela completa com cada modulo do sistema e em qual plano ele esta
+  incluso (check verde) ou nao (traco cinza), alem de linhas extras pra
+  numero de usuarios e nivel de suporte.
+- Essa tabela e gerada automaticamente a partir do mesmo mapeamento
+  modulo -> plano usado de verdade no controle de acesso (Ajuste 10) -
+  ou seja, a pagina de vendas nunca vai ficar desatualizada em relacao
+  ao que o sistema realmente libera em cada plano.
+
 ## Ajuste 10 - 2026-07-03
 
 **Novo modulo: acesso aos modulos do menu conforme o plano contratado (Essencial/Premium/Enterprise)**
