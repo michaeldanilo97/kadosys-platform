@@ -36,7 +36,7 @@ final class AssinaturaController extends Controller
         }
 
         if (!isset(Plano::VALOR_MENSAL[$plano])) {
-            Session::flash('config_errors', ['Esse plano nao tem assinatura automatica disponivel. Para o Enterprise, fale com o suporte.']);
+            Session::flash('config_errors', ['Esse plano nao tem assinatura automatica disponivel.']);
             $this->redirect('/dashboard/configuracoes');
         }
 
@@ -85,6 +85,18 @@ final class AssinaturaController extends Controller
 
         $assinaturaId = Assinatura::criar($plano, (string) $resposta['body']['id'], $usuario?->email ?? '');
         Assinatura::registrarEvento($assinaturaId, 'assinatura_criada', json_encode($resposta['body'], JSON_UNESCAPED_UNICODE));
+
+        // Mesmo padrao ja usado por iniciarPix(): marca o metodo de
+        // pagamento assim que a assinatura e iniciada (nao so quando
+        // confirmada) - e o que libera uma igreja em teste gratis do
+        // bloqueio de trial vencido assim que ela parte pra um pagamento
+        // de verdade, sem depender do webhook (que nao consegue mapear
+        // um preapproval de volta pro tenant certo hoje).
+        $tenantAtual = TenantResolver::atual();
+
+        if ($tenantAtual !== null) {
+            Tenant::atualizarMetodoPagamento($tenantAtual->id, 'cartao');
+        }
 
         header('Location: ' . $resposta['body']['init_point']);
         exit;

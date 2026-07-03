@@ -4,6 +4,8 @@
   document.addEventListener('DOMContentLoaded', function () {
     initSlugSugerido();
     initPlanoEscolha();
+    initDocumentoTipo();
+    initSubmitLabel();
   });
 
   function normalizarSlug(valor) {
@@ -63,6 +65,98 @@
       if (radio) {
         radio.addEventListener('change', atualizar);
       }
+    });
+
+    atualizar();
+  }
+
+  function initDocumentoTipo() {
+    var radios = document.querySelectorAll('[data-documento-tipo]');
+    var input = document.querySelector('[data-documento-input]');
+    var label = document.querySelector('[data-documento-label]');
+    var razaoField = document.querySelector('[data-razao-social-field]');
+    var razaoInput = document.querySelector('[data-razao-social-input]');
+
+    if (!radios.length || !input) {
+      return;
+    }
+
+    function tipoSelecionado() {
+      var checked = document.querySelector('[data-documento-tipo]:checked');
+      return checked ? checked.value : 'cpf';
+    }
+
+    function aplicarMascara(valor, tipo) {
+      var digitos = valor.replace(/\D/g, '').slice(0, tipo === 'cnpj' ? 14 : 11);
+
+      if (tipo === 'cnpj') {
+        return digitos
+          .replace(/^(\d{2})(\d)/, '$1.$2')
+          .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+          .replace(/\.(\d{3})(\d)/, '.$1/$2')
+          .replace(/(\d{4})(\d)/, '$1-$2');
+      }
+
+      return digitos
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    }
+
+    function atualizar() {
+      var tipo = tipoSelecionado();
+
+      if (label) {
+        label.textContent = tipo === 'cnpj' ? 'CNPJ' : 'CPF';
+      }
+
+      input.placeholder = tipo === 'cnpj' ? '00.000.000/0000-00' : '000.000.000-00';
+      input.value = aplicarMascara(input.value, tipo);
+
+      if (razaoField) {
+        razaoField.hidden = tipo !== 'cnpj';
+      }
+
+      if (razaoInput) {
+        razaoInput.required = tipo === 'cnpj';
+      }
+    }
+
+    radios.forEach(function (radio) {
+      radio.addEventListener('change', atualizar);
+    });
+
+    input.addEventListener('input', function () {
+      input.value = aplicarMascara(input.value, tipoSelecionado());
+    });
+
+    atualizar();
+  }
+
+  // So troca o texto do botao pra deixar claro que o teste gratis nao
+  // manda pra nenhum pagamento - o resto (cartao/Pix) continua igual.
+  function initSubmitLabel() {
+    var radios = document.querySelectorAll('input[name="metodo_pagamento"]');
+    var botao = document.querySelector('[data-cadastro-submit]');
+
+    if (!radios.length || !botao) {
+      return;
+    }
+
+    var textos = {
+      cartao: 'Criar conta e ir para o pagamento',
+      pix: 'Criar conta e ir para o pagamento',
+      trial: 'Criar minha conta e testar gratis'
+    };
+
+    function atualizar() {
+      var checked = document.querySelector('input[name="metodo_pagamento"]:checked');
+      var tipo = checked ? checked.value : 'cartao';
+      botao.innerHTML = (textos[tipo] || textos.cartao) + ' <i class="bi bi-arrow-right"></i>';
+    }
+
+    radios.forEach(function (radio) {
+      radio.addEventListener('change', atualizar);
     });
 
     atualizar();

@@ -92,6 +92,66 @@ $basePath = $config['base_path'] ?? '';
             </div>
         </div>
 
+        <div class="auth-field">
+            <label>CPF ou CNPJ</label>
+            <div class="plano-escolha">
+                <label class="plano-escolha-card" data-plano-card>
+                    <input
+                        type="radio"
+                        name="documento_tipo"
+                        value="cpf"
+                        data-documento-tipo
+                        <?= ($old['documento_tipo'] ?? 'cpf') === 'cpf' ? 'checked' : '' ?>
+                    >
+                    <span class="nome">CPF</span>
+                    <span class="desc">Pessoa fisica</span>
+                </label>
+                <label class="plano-escolha-card" data-plano-card>
+                    <input
+                        type="radio"
+                        name="documento_tipo"
+                        value="cnpj"
+                        data-documento-tipo
+                        <?= ($old['documento_tipo'] ?? '') === 'cnpj' ? 'checked' : '' ?>
+                    >
+                    <span class="nome">CNPJ</span>
+                    <span class="desc">Pessoa juridica</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="auth-field-row">
+            <div class="auth-field">
+                <label for="documento" data-documento-label>CPF</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="documento"
+                    name="documento"
+                    value="<?= htmlspecialchars($old['documento'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                    placeholder="000.000.000-00"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    data-documento-input
+                    required
+                >
+                <span class="auth-field-hint">Usado so para evitar abuso do teste gratis - seus dados ficam seguros.</span>
+            </div>
+            <div class="auth-field" data-razao-social-field hidden>
+                <label for="razao_social">Razao social</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="razao_social"
+                    name="razao_social"
+                    value="<?= htmlspecialchars($old['razao_social'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                    placeholder="Razao social da igreja/instituicao"
+                    autocomplete="organization"
+                    data-razao-social-input
+                >
+            </div>
+        </div>
+
         <div class="auth-field-row">
             <div class="auth-field">
                 <label for="senha">Senha</label>
@@ -164,10 +224,20 @@ $basePath = $config['base_path'] ?? '';
                     <span class="nome"><i class="bi bi-qr-code"></i> Pix</span>
                     <span class="desc">Fatura nova todo mes, paga na hora</span>
                 </label>
+                <label class="plano-escolha-card" data-plano-card>
+                    <input
+                        type="radio"
+                        name="metodo_pagamento"
+                        value="trial"
+                        <?= ($old['metodo_pagamento'] ?? '') === 'trial' ? 'checked' : '' ?>
+                    >
+                    <span class="nome"><i class="bi bi-gift"></i> Teste gratis</span>
+                    <span class="desc">7 dias gratis, sem cartao</span>
+                </label>
             </div>
         </div>
 
-        <button type="submit" class="btn-k btn-k-grad">Criar conta e ir para o pagamento <i class="bi bi-arrow-right"></i></button>
+        <button type="submit" class="btn-k btn-k-grad" data-cadastro-submit>Criar conta e ir para o pagamento <i class="bi bi-arrow-right"></i></button>
     </form>
 
     <a href="<?= $basePath ?>/login" class="auth-back-link">

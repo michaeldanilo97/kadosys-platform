@@ -20,6 +20,9 @@ final class Provisionamento
         public readonly string $slug,
         public readonly string $adminNome,
         public readonly string $adminEmail,
+        public readonly string $documentoTipo,
+        public readonly string $documento,
+        public readonly ?string $razaoSocial,
         public readonly string $adminSenhaHash,
         public readonly string $plano,
         public readonly string $metodoPagamento,
@@ -39,21 +42,29 @@ final class Provisionamento
         string $slug,
         string $adminNome,
         string $adminEmail,
+        string $documentoTipo,
+        string $documento,
+        ?string $razaoSocial,
         string $adminSenhaHash,
         string $plano,
         string $metodoPagamento,
     ): int {
         $stmt = Database::central()->prepare(
             'INSERT INTO plataforma_provisionamentos
-                (nome_igreja, slug, admin_nome, admin_email, admin_senha_hash, plano, metodo_pagamento, status)
+                (nome_igreja, slug, admin_nome, admin_email, documento_tipo, documento, razao_social,
+                 admin_senha_hash, plano, metodo_pagamento, status)
              VALUES
-                (:nome_igreja, :slug, :admin_nome, :admin_email, :admin_senha_hash, :plano, :metodo_pagamento, "aguardando_pagamento")'
+                (:nome_igreja, :slug, :admin_nome, :admin_email, :documento_tipo, :documento, :razao_social,
+                 :admin_senha_hash, :plano, :metodo_pagamento, "aguardando_pagamento")'
         );
         $stmt->execute([
             'nome_igreja' => $nomeIgreja,
             'slug' => $slug,
             'admin_nome' => $adminNome,
             'admin_email' => $adminEmail,
+            'documento_tipo' => $documentoTipo,
+            'documento' => $documento,
+            'razao_social' => $razaoSocial,
             'admin_senha_hash' => $adminSenhaHash,
             'plano' => $plano,
             'metodo_pagamento' => $metodoPagamento,
@@ -181,9 +192,9 @@ final class Provisionamento
         $stmt->execute(['tenant_id' => $tenantId, 'id' => $id]);
     }
 
-    private const SELECT_BASE = 'SELECT id, nome_igreja, slug, admin_nome, admin_email, admin_senha_hash, plano,
-            metodo_pagamento, mp_preapproval_id, mp_payment_id, pix_qr_code, pix_qr_code_base64, pix_vencimento,
-            status, erro_mensagem, tenant_id
+    private const SELECT_BASE = 'SELECT id, nome_igreja, slug, admin_nome, admin_email, documento_tipo, documento,
+            razao_social, admin_senha_hash, plano, metodo_pagamento, mp_preapproval_id, mp_payment_id, pix_qr_code,
+            pix_qr_code_base64, pix_vencimento, status, erro_mensagem, tenant_id
         FROM plataforma_provisionamentos';
 
     private static function fromRow(array $row): self
@@ -194,6 +205,9 @@ final class Provisionamento
             slug: $row['slug'],
             adminNome: $row['admin_nome'],
             adminEmail: $row['admin_email'],
+            documentoTipo: $row['documento_tipo'],
+            documento: $row['documento'],
+            razaoSocial: $row['razao_social'],
             adminSenhaHash: $row['admin_senha_hash'],
             plano: $row['plano'],
             metodoPagamento: $row['metodo_pagamento'],
