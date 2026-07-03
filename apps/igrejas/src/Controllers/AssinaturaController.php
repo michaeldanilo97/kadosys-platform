@@ -6,12 +6,15 @@ namespace Igrejas\Controllers;
 
 use Igrejas\Core\Auth;
 use Igrejas\Core\Controller;
+use Igrejas\Core\CpanelUapiClient;
 use Igrejas\Core\Csrf;
 use Igrejas\Core\MercadoPagoClient;
+use Igrejas\Core\Provisionador;
 use Igrejas\Core\Session;
 use Igrejas\Models\Assinatura;
 use Igrejas\Models\ConfiguracaoIgreja;
 use Igrejas\Models\Plano;
+use Igrejas\Models\Provisionamento;
 
 /**
  * Assinatura recorrente do plano contratado via Mercado Pago (Checkout
@@ -133,15 +136,6 @@ final class AssinaturaController extends Controller
         }
 
         $preapproval = $resposta['body'];
-        $assinatura = Assinatura::buscarPorPreapprovalId($dataId);
-
-        if ($assinatura === null) {
-            Assinatura::registrarEvento(null, 'webhook_assinatura_desconhecida', $corpoBruto);
-            http_response_code(200);
-
-            return;
-        }
-
         $statusMp = (string) ($preapproval['status'] ?? '');
         $statusInterno = match ($statusMp) {
             'authorized' => 'autorizada',
@@ -150,14 +144,59 @@ final class AssinaturaController extends Controller
             default => 'pendente',
         };
 
-        Assinatura::atualizarStatus($assinatura->id, $statusInterno);
-        Assinatura::registrarEvento($assinatura->id, 'webhook_status_' . $statusInterno, $corpoBruto);
+        // Duas origens possiveis pro mesmo preapproval_id: um cliente ja
+        // existente trocando de plano (Assinatura, ver Configuracoes), ou
+        // um cadastro publico novo (Provisionamento, ver
+        // CadastroController) - so uma delas vai bater.
+        $assinatura = Assinatura::buscarPorPreapprovalId($dataId);
 
-        if ($statusInterno === 'autorizada') {
-            ConfiguracaoIgreja::atualizarPlano($assinatura->plano);
+        if ($assinatura !== null) {
+            Assinatura::atualizarStatus($assinatura->id, $statusInterno);
+            Assinatura::registrarEvento($assinatura->id, 'webhook_status_' . $statusInterno, $corpoBruto);
+
+            if ($statusInterno === 'autorizada') {
+                ConfiguracaoIgreja::atualizarPlano($assinatura->plano);
+            }
+
+            http_response_code(200);
+
+            return;
         }
 
+        $provisionamento = Provisionamento::buscarPorPreapprovalId($dataId);
+
+        if ($provisionamento !== null) {
+            $this->processarProvisionamento($provisionamento, $statusInterno, $corpoBruto);
+            http_response_code(200);
+
+            return;
+        }
+
+        Assinatura::registrarEvento(null, 'webhook_assinatura_desconhecida', $corpoBruto);
         http_response_code(200);
+    }
+
+    /**
+     * So dispara o provisionamento (criar banco, subdominio, etc.) na
+     * primeira vez que a assinatura e autorizada - o Mercado Pago pode
+     * reenviar a mesma notificacao mais de uma vez, e
+     * Provisionamento::reivindicarProcessamento() garante (de forma
+     * atomica no banco) que isso so acontece uma unica vez mesmo se duas
+     * entregas chegarem quase juntas.
+     */
+    private function processarProvisionamento(Provisionamento $provisionamento, string $statusInterno, string $corpoBruto): void
+    {
+        Assinatura::registrarEvento(null, 'webhook_provisionamento_' . $statusInterno, $corpoBruto);
+
+        if ($statusInterno !== 'autorizada') {
+            return;
+        }
+
+        if (!Provisionamento::reivindicarProcessamento($provisionamento->id)) {
+            return;
+        }
+
+        (new Provisionador(new CpanelUapiClient()))->provisionar($provisionamento);
     }
 
     /** @return array<string, string> */

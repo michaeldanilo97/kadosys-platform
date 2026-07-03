@@ -16,6 +16,7 @@ declare(strict_types=1);
 use Igrejas\Core\Request;
 use Igrejas\Core\Router;
 use Igrejas\Core\Session;
+use Igrejas\Core\TenantResolver;
 use Igrejas\Core\View;
 
 $vendorAutoload = dirname(__DIR__) . '/vendor/autoload.php';
@@ -65,6 +66,14 @@ Session::start($config['session_name']);
 View::setBasePath(dirname(__DIR__) . '/resources/views');
 
 $request = Request::capture();
+
+// Se esta requisicao for de um subdominio de igreja provisionada
+// automaticamente, troca o banco de dados usado pro resto da
+// requisicao. Sem efeito nenhum ate CPANEL_ROOT_DOMAIN ser configurado
+// (ver config/cpanel.php) - a instalacao atual continua usando sempre o
+// banco fixo de config/database.php.
+TenantResolver::resolver($request->server['HTTP_HOST'] ?? '');
+
 $router = new Router($request, $config['base_path'], $config);
 
 require dirname(__DIR__) . '/routes/web.php';

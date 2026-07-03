@@ -17,6 +17,46 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 15 - 2026-07-03
+
+**Provisionamento 100% automatico da nova igreja (Fases 2 e 3) - cadastro completo funcionando sozinho**
+
+- Quando o pagamento de um cadastro publico (Ajuste 14) e aprovado, o
+  sistema agora cria tudo sozinho, sem ninguem mexer na mao:
+  1. Banco de dados e usuario MySQL novos, exclusivos daquela igreja
+     (via API do cPanel).
+  2. Subdominio proprio (ex.: `igrejaabc.kadosys.com.br`), apontando pro
+     mesmo codigo do sistema.
+  3. As tabelas do sistema instaladas nesse banco novo (o mesmo
+     `install.sql` de qualquer instalacao).
+  4. A igreja e o primeiro usuario administrador (com o nome/e-mail/
+     senha que a pessoa preencheu no cadastro) ja criados e prontos pra
+     usar.
+- O sistema passa a reconhecer sozinho qual igreja e qual pelo
+  subdominio de cada requisicao - cada igreja continua com seu banco
+  isolado (nao e um banco compartilhado entre todas), so que agora essa
+  troca de banco acontece automaticamente. Testado extensivamente
+  (inclusive os cenarios de "nada configurado ainda" e "subdominio
+  desconhecido") pra garantir que a instalacao atual (kadosys.com.br)
+  continua funcionando exatamente igual, sem nenhum efeito colateral.
+- **Configuracao necessaria no servidor** (novas variaveis de ambiente,
+  mesmo esquema do Mercado Pago - via cPanel ou arquivo
+  `config/cpanel.local.php`, fora do Git):
+  - `CPANEL_HOST` - host do servidor (ex.: server.vipreseller25ssd.com)
+  - `CPANEL_PORT` - normalmente 2083
+  - `CPANEL_USERNAME` - usuario da conta cPanel (ex.: kadosys1)
+  - `CPANEL_API_TOKEN` - token gerado em "Manage API Tokens" no cPanel
+  - `CPANEL_ROOT_DOMAIN` - dominio raiz dos subdominios (ex.:
+    kadosys.com.br) - **esse e o interruptor geral**: enquanto ele nao
+    for definido, nada muda no funcionamento atual.
+  - `CPANEL_SUBDOMAIN_DOCROOT` - pasta (relativa ao home da conta) que
+    cada subdominio novo deve apontar - a mesma pasta onde o sistema ja
+    esta publicado hoje (ex.: public_html/apps/igrejas/public).
+- Sem essas variaveis configuradas, o cadastro publico continua
+  funcionando normalmente ate a etapa de pagamento, so a criacao
+  automatica do banco fica pausada (fica registrada como erro no
+  provisionamento, pra retomar depois).
+
 ## Ajuste 14 - 2026-07-03
 
 **Cadastro publico (igreja + administrador + plano) - Fase 1 de 3**

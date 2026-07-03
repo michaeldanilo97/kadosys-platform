@@ -37,7 +37,7 @@ final class Provisionamento
         string $adminSenhaHash,
         string $plano,
     ): int {
-        $stmt = Database::connection()->prepare(
+        $stmt = Database::central()->prepare(
             'INSERT INTO plataforma_provisionamentos
                 (nome_igreja, slug, admin_nome, admin_email, admin_senha_hash, plano, status)
              VALUES
@@ -52,7 +52,7 @@ final class Provisionamento
             'plano' => $plano,
         ]);
 
-        return (int) Database::connection()->lastInsertId();
+        return (int) Database::central()->lastInsertId();
     }
 
     /**
@@ -63,7 +63,7 @@ final class Provisionamento
      */
     public static function slugReservado(string $slug): bool
     {
-        $stmt = Database::connection()->prepare(
+        $stmt = Database::central()->prepare(
             "SELECT 1 FROM plataforma_provisionamentos
              WHERE slug = :slug AND status IN ('aguardando_pagamento', 'pago_aguardando_provisionamento', 'provisionando')
              LIMIT 1"
@@ -73,9 +73,29 @@ final class Provisionamento
         return $stmt->fetch() !== false;
     }
 
+    /**
+     * Reivindica o processamento deste provisionamento de forma atomica:
+     * so avanca o status para "pago_aguardando_provisionamento" se ele
+     * ainda estiver em "aguardando_pagamento". Evita que duas entregas
+     * duplicadas do mesmo webhook do Mercado Pago (comum, eles
+     * reenviam em caso de qualquer duvida) disparem o provisionamento
+     * (criacao de banco/subdominio) duas vezes em paralelo.
+     */
+    public static function reivindicarProcessamento(int $id): bool
+    {
+        $stmt = Database::central()->prepare(
+            "UPDATE plataforma_provisionamentos
+             SET status = 'pago_aguardando_provisionamento'
+             WHERE id = :id AND status = 'aguardando_pagamento'"
+        );
+        $stmt->execute(['id' => $id]);
+
+        return $stmt->rowCount() > 0;
+    }
+
     public static function definirPreapprovalId(int $id, string $mpPreapprovalId): void
     {
-        $stmt = Database::connection()->prepare(
+        $stmt = Database::central()->prepare(
             'UPDATE plataforma_provisionamentos SET mp_preapproval_id = :mp_preapproval_id WHERE id = :id'
         );
         $stmt->execute(['mp_preapproval_id' => $mpPreapprovalId, 'id' => $id]);
@@ -83,7 +103,7 @@ final class Provisionamento
 
     public static function buscarPorPreapprovalId(string $mpPreapprovalId): ?self
     {
-        $stmt = Database::connection()->prepare(
+        $stmt = Database::central()->prepare(
             'SELECT id, nome_igreja, slug, admin_nome, admin_email, admin_senha_hash, plano,
                     mp_preapproval_id, status, erro_mensagem, tenant_id
              FROM plataforma_provisionamentos WHERE mp_preapproval_id = :id LIMIT 1'
@@ -96,7 +116,7 @@ final class Provisionamento
 
     public static function atualizarStatus(int $id, string $status, ?string $erroMensagem = null): void
     {
-        $stmt = Database::connection()->prepare(
+        $stmt = Database::central()->prepare(
             'UPDATE plataforma_provisionamentos SET status = :status, erro_mensagem = :erro_mensagem WHERE id = :id'
         );
         $stmt->execute(['status' => $status, 'erro_mensagem' => $erroMensagem, 'id' => $id]);
@@ -104,7 +124,7 @@ final class Provisionamento
 
     public static function vincularTenant(int $id, int $tenantId): void
     {
-        $stmt = Database::connection()->prepare(
+        $stmt = Database::central()->prepare(
             'UPDATE plataforma_provisionamentos SET tenant_id = :tenant_id, status = "concluido" WHERE id = :id'
         );
         $stmt->execute(['tenant_id' => $tenantId, 'id' => $id]);

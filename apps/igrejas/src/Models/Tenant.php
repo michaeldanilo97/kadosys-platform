@@ -31,7 +31,7 @@ final class Tenant
 
     public static function slugDisponivel(string $slug): bool
     {
-        $stmt = Database::connection()->prepare('SELECT 1 FROM plataforma_tenants WHERE slug = :slug LIMIT 1');
+        $stmt = Database::central()->prepare('SELECT 1 FROM plataforma_tenants WHERE slug = :slug LIMIT 1');
         $stmt->execute(['slug' => $slug]);
 
         return $stmt->fetch() === false;
@@ -46,7 +46,7 @@ final class Tenant
         string $dbUser,
         string $dbPassword,
     ): int {
-        $stmt = Database::connection()->prepare(
+        $stmt = Database::central()->prepare(
             'INSERT INTO plataforma_tenants
                 (slug, nome_igreja, plano, subdominio, db_name, db_user, db_password, status)
              VALUES
@@ -62,18 +62,18 @@ final class Tenant
             'db_password' => $dbPassword,
         ]);
 
-        return (int) Database::connection()->lastInsertId();
+        return (int) Database::central()->lastInsertId();
     }
 
     public static function marcarAtivo(int $id): void
     {
-        $stmt = Database::connection()->prepare('UPDATE plataforma_tenants SET status = "ativo" WHERE id = :id');
+        $stmt = Database::central()->prepare('UPDATE plataforma_tenants SET status = "ativo" WHERE id = :id');
         $stmt->execute(['id' => $id]);
     }
 
     public static function buscarPorSubdominio(string $subdominio): ?self
     {
-        $stmt = Database::connection()->prepare(
+        $stmt = Database::central()->prepare(
             'SELECT id, slug, nome_igreja, plano, subdominio, db_name, db_user, db_password, status
              FROM plataforma_tenants WHERE subdominio = :subdominio LIMIT 1'
         );

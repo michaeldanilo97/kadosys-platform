@@ -8,14 +8,56 @@ use PDO;
 use PDOException;
 
 /**
- * Acesso unico (singleton) a conexao PDO com o MySQL.
+ * Acesso a conexao PDO com o MySQL.
  *
- * Cada instalacao do KADOSYS Igrejas usa um banco exclusivo (sem
- * multi-tenant), portanto uma unica conexao por requisicao e suficiente.
+ * Continua "um banco por igreja" (sem multi-tenant de dados
+ * compartilhados) - a diferenca e que agora existem duas variantes de
+ * conexao:
+ *
+ * - connection(): o banco "desta" igreja. Por padrao e sempre o de
+ *   config/database.php, IGUAL a antes - mas se usarCredenciais() for
+ *   chamado bem cedo na requisicao (ver public/index.php, resolucao de
+ *   tenant por subdominio), passa a apontar pro banco daquela igreja
+ *   especifica. Todos os Models existentes (Membro, Culto, User, etc.)
+ *   usam essa conexao sem saber da diferenca.
+ * - central(): SEMPRE o banco de config/database.php, nunca sobrescrito
+ *   - usado so pelo registro central de igrejas (Igrejas\Models\Tenant e
+ *   Igrejas\Models\Provisionamento), que por definicao mora nesse banco
+ *   fixo independente de qual igreja esta sendo atendida.
+ *
+ * Se usarCredenciais() nunca for chamado (comportamento de qualquer
+ * requisicao que nao seja de um subdominio de igreja provisionada),
+ * connection() e central() sao a mesma coisa, e o sistema funciona
+ * exatamente como antes desta mudanca.
  */
 final class Database
 {
     private static ?PDO $connection = null;
+    private static ?PDO $central = null;
+
+    /** @var array{database:string, username:string, password:string}|null */
+    private static ?array $overrideCredenciais = null;
+
+    /**
+     * Define as credenciais do banco a usar em connection() pro resto
+     * desta requisicao. Precisa ser chamado antes de qualquer consulta
+     * (ver public/index.php) - depois que a primeira conexao e aberta,
+     * trocar de banco no meio da requisicao seria uma fonte grave de
+     * bug (dado de uma igreja vazando pra outra), entao isso e proibido
+     * de proposito.
+     */
+    public static function usarCredenciais(string $dbName, string $dbUser, string $dbPassword): void
+    {
+        if (self::$connection instanceof PDO) {
+            throw new \RuntimeException('Database::usarCredenciais() precisa ser chamado antes da primeira conexao.');
+        }
+
+        self::$overrideCredenciais = [
+            'database' => $dbName,
+            'username' => $dbUser,
+            'password' => $dbPassword,
+        ];
+    }
 
     public static function connection(): PDO
     {
@@ -25,6 +67,29 @@ final class Database
 
         $config = require dirname(__DIR__, 2) . '/config/database.php';
 
+        if (self::$overrideCredenciais !== null) {
+            $config = array_merge($config, self::$overrideCredenciais);
+        }
+
+        self::$connection = self::conectar($config, 'Nao foi possivel conectar ao banco de dados. Verifique config/database.php.');
+
+        return self::$connection;
+    }
+
+    public static function central(): PDO
+    {
+        if (self::$central instanceof PDO) {
+            return self::$central;
+        }
+
+        $config = require dirname(__DIR__, 2) . '/config/database.php';
+        self::$central = self::conectar($config, 'Nao foi possivel conectar ao banco central. Verifique config/database.php.');
+
+        return self::$central;
+    }
+
+    private static function conectar(array $config, string $mensagemErro): PDO
+    {
         $dsn = sprintf(
             '%s:host=%s;port=%s;dbname=%s;charset=%s',
             $config['driver'],
@@ -35,18 +100,13 @@ final class Database
         );
 
         try {
-            self::$connection = new PDO($dsn, $config['username'], $config['password'], [
+            return new PDO($dsn, $config['username'], $config['password'], [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES => false,
             ]);
         } catch (PDOException $exception) {
-            throw new \RuntimeException(
-                'Nao foi possivel conectar ao banco de dados. Verifique config/database.php.',
-                previous: $exception
-            );
+            throw new \RuntimeException($mensagemErro, previous: $exception);
         }
-
-        return self::$connection;
     }
 }
