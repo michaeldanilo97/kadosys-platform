@@ -21,6 +21,7 @@ final class ComunicacaoAviso
         public readonly string $status,
         public readonly ?string $dataPublicacao,
         public readonly string $createdAt,
+        public readonly bool $lido = false,
     ) {
     }
 
@@ -124,6 +125,43 @@ final class ComunicacaoAviso
     }
 
     /**
+     * Avisos publicados mais recentes com a flag "lido" (por usuario),
+     * usado na lista da barra lateral do painel - ver
+     * layouts/dashboard.php e marcarComoLido().
+     *
+     * @return array<int, self>
+     */
+    public static function paraSidebar(int $userId, int $limite = 5): array
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT ca.*, (cal.id IS NOT NULL) AS lido
+             FROM comunicacao_avisos ca
+             LEFT JOIN comunicacao_aviso_leituras cal ON cal.aviso_id = ca.id AND cal.user_id = :user_id
+             WHERE ca.status = 'publicado'
+             ORDER BY ca.data_publicacao DESC, ca.created_at DESC
+             LIMIT :limite"
+        );
+        $stmt->bindValue('user_id', $userId, PDO::PARAM_INT);
+        $stmt->bindValue('limite', $limite, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /**
+     * Marca um aviso como lido por um usuario - idempotente (abrir o
+     * mesmo aviso de novo nao da erro nem duplica linha).
+     */
+    public static function marcarComoLido(int $avisoId, int $userId): void
+    {
+        $stmt = Database::connection()->prepare(
+            'INSERT IGNORE INTO comunicacao_aviso_leituras (aviso_id, user_id, lido_em)
+             VALUES (:aviso_id, :user_id, NOW())'
+        );
+        $stmt->execute(['aviso_id' => $avisoId, 'user_id' => $userId]);
+    }
+
+    /**
      * @param array<string, mixed> $data
      */
     public static function create(array $data): int
@@ -187,6 +225,7 @@ final class ComunicacaoAviso
             status: (string) $row['status'],
             dataPublicacao: $row['data_publicacao'],
             createdAt: (string) $row['created_at'],
+            lido: (bool) ($row['lido'] ?? false),
         );
     }
 }

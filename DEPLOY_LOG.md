@@ -17,6 +17,27 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 34 - 2026-07-06
+
+**Avisos na barra lateral (no lugar do card "Insights da IA") + pagina de detalhe com controle de lido**
+
+- O card "Insights da IA" da barra lateral (so um teaser de recurso
+  futuro) foi substituido por uma lista com os avisos mais recentes do
+  modulo Comunicacao. So aparece pra quem tem acesso ao modulo.
+- Cada aviso agora tem uma pagina de detalhe propria
+  (`/dashboard/comunicacao/{id}`) - clicar num aviso na barra lateral
+  ou nas notificacoes abre essa pagina.
+- Abrir a pagina de detalhe marca o aviso como lido **por usuario**
+  (cada pessoa tem seu proprio controle de leitura) - o ponto azul de
+  "novo" na barra lateral some depois disso, mesmo se outro usuario da
+  igreja ainda nao tiver lido.
+- Rode a migracao nova no banco de CADA igreja ja criada (nao e o
+  banco central da plataforma). Igrejas novas ja recebem a tabela
+  automaticamente (`database/install.sql` atualizado):
+  ```
+  mysql -u seu_usuario -p banco_da_igreja < apps/igrejas/database/migrations/022_create_comunicacao_aviso_leituras.sql
+  ```
+
 ## Ajuste 33 - 2026-07-06
 
 **Correcao: tela de Permissoes escondia modulos durante o teste gratis**

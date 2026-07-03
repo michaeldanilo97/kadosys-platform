@@ -43,6 +43,37 @@ final class ComunicacaoController extends Controller
         ], 'dashboard');
     }
 
+    /**
+     * Pagina de detalhe de um aviso - abrir aqui marca automaticamente
+     * como lido pro usuario logado (tira o indicador de "novo" na
+     * lista da barra lateral, ver ComunicacaoAviso::paraSidebar()).
+     */
+    public function show(string $id): void
+    {
+        $aviso = ComunicacaoAviso::find((int) $id);
+
+        if (!$aviso) {
+            $this->renderNotFound();
+
+            return;
+        }
+
+        $user = (new Auth($this->config))->user();
+
+        if ($user !== null) {
+            ComunicacaoAviso::marcarComoLido($aviso->id, $user->id);
+        }
+
+        echo $this->view('dashboard.comunicacao.show', [
+            'pageTitle' => $aviso->titulo . ' - KADOSYS Igrejas',
+            'activeMenu' => 'comunicacao',
+            'breadcrumb' => ['Dashboard', 'Comunicacao', $aviso->titulo],
+            'user' => $user,
+            'modules' => DashboardController::modules(),
+            'aviso' => $aviso,
+        ], 'dashboard');
+    }
+
     public function create(): void
     {
         echo $this->view('dashboard.comunicacao.form', [
