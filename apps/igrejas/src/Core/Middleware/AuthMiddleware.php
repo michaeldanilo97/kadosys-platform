@@ -17,9 +17,10 @@ use Igrejas\Models\FaturaPix;
  *
  * Tambem bloqueia o acesso de igrejas que pagam por Pix (ver
  * plataforma_faturas) quando a ultima fatura de renovacao venceu sem
- * pagamento - unico ponto de entrada comum a todas as rotas do
- * dashboard, entao e o lugar mais simples de aplicar esse bloqueio sem
- * repetir a middleware em cada rota.
+ * pagamento, e de igrejas em teste gratis cujo prazo ja passou sem
+ * escolherem um plano pago - unico ponto de entrada comum a todas as
+ * rotas do dashboard, entao e o lugar mais simples de aplicar esses
+ * bloqueios sem repetir a middleware em cada rota.
  */
 final class AuthMiddleware implements MiddlewareInterface
 {
@@ -38,6 +39,7 @@ final class AuthMiddleware implements MiddlewareInterface
         }
 
         $this->bloquearSeFaturaPixVencida($request);
+        $this->bloquearSeTrialExpirado($request);
     }
 
     private function bloquearSeFaturaPixVencida(Request $request): void
@@ -87,6 +89,42 @@ final class AuthMiddleware implements MiddlewareInterface
         }
 
         return true;
+    }
+
+    private function bloquearSeTrialExpirado(Request $request): void
+    {
+        if (!$this->trialExpirado()) {
+            return;
+        }
+
+        $base = $this->config['base_path'] ?? '';
+        $uri = $this->uriSemBase($request);
+
+        // "/dashboard/configuracoes" (e as rotas dela, tipo o POST que
+        // inicia a assinatura) precisa continuar acessivel mesmo
+        // bloqueado - e la que a igreja escolhe um plano pago pra sair
+        // do trial. Sem essa excecao viraria um loop de redirecionamento.
+        if ($uri === '/dashboard/trial-expirado' || $uri === '/logout' || str_starts_with($uri, '/dashboard/configuracoes')) {
+            return;
+        }
+
+        header('Location: ' . $base . '/dashboard/trial-expirado');
+        exit;
+    }
+
+    /**
+     * So a decisao (sem side-effect de header/exit), separada pra poder
+     * ser testada isoladamente.
+     */
+    private function trialExpirado(): bool
+    {
+        $tenant = TenantResolver::atual();
+
+        if ($tenant === null || $tenant->metodoPagamento !== 'trial' || $tenant->trialExpiraEm === null) {
+            return false;
+        }
+
+        return new \DateTimeImmutable() > new \DateTimeImmutable($tenant->trialExpiraEm);
     }
 
     private function uriSemBase(Request $request): string

@@ -20,8 +20,12 @@ final class Tenant
         public readonly int $id,
         public readonly string $slug,
         public readonly string $nomeIgreja,
+        public readonly string $documentoTipo,
+        public readonly string $documento,
+        public readonly ?string $razaoSocial,
         public readonly string $plano,
         public readonly string $metodoPagamento,
+        public readonly ?string $trialExpiraEm,
         public readonly string $subdominio,
         public readonly string $dbName,
         public readonly string $dbUser,
@@ -39,11 +43,31 @@ final class Tenant
         return $stmt->fetch() === false;
     }
 
+    /**
+     * Verifica se esse CPF/CNPJ ja usou o teste gratis antes - impede
+     * criar uma conta nova em trial so trocando de e-mail/igreja. So
+     * conta igrejas que de fato chegaram a ter um trial_expira_em
+     * preenchido (nao importa se ja venceu ou nao).
+     */
+    public static function documentoJaUsouTrial(string $documento): bool
+    {
+        $stmt = Database::central()->prepare(
+            'SELECT 1 FROM plataforma_tenants WHERE documento = :documento AND trial_expira_em IS NOT NULL LIMIT 1'
+        );
+        $stmt->execute(['documento' => $documento]);
+
+        return $stmt->fetch() !== false;
+    }
+
     public static function criar(
         string $slug,
         string $nomeIgreja,
+        string $documentoTipo,
+        string $documento,
+        ?string $razaoSocial,
         string $plano,
         string $metodoPagamento,
+        ?\DateTimeImmutable $trialExpiraEm,
         string $subdominio,
         string $dbName,
         string $dbUser,
@@ -51,15 +75,21 @@ final class Tenant
     ): int {
         $stmt = Database::central()->prepare(
             'INSERT INTO plataforma_tenants
-                (slug, nome_igreja, plano, metodo_pagamento, subdominio, db_name, db_user, db_password, status)
+                (slug, nome_igreja, documento_tipo, documento, razao_social, plano, metodo_pagamento,
+                 trial_expira_em, subdominio, db_name, db_user, db_password, status)
              VALUES
-                (:slug, :nome_igreja, :plano, :metodo_pagamento, :subdominio, :db_name, :db_user, :db_password, "provisionando")'
+                (:slug, :nome_igreja, :documento_tipo, :documento, :razao_social, :plano, :metodo_pagamento,
+                 :trial_expira_em, :subdominio, :db_name, :db_user, :db_password, "provisionando")'
         );
         $stmt->execute([
             'slug' => $slug,
             'nome_igreja' => $nomeIgreja,
+            'documento_tipo' => $documentoTipo,
+            'documento' => $documento,
+            'razao_social' => $razaoSocial,
             'plano' => $plano,
             'metodo_pagamento' => $metodoPagamento,
+            'trial_expira_em' => $trialExpiraEm?->format('Y-m-d H:i:s'),
             'subdominio' => $subdominio,
             'db_name' => $dbName,
             'db_user' => $dbUser,
@@ -160,8 +190,8 @@ final class Tenant
         $stmt->execute(['id' => $id]);
     }
 
-    private const SELECT_BASE = 'SELECT id, slug, nome_igreja, plano, metodo_pagamento, subdominio,
-            db_name, db_user, db_password, status, created_at
+    private const SELECT_BASE = 'SELECT id, slug, nome_igreja, documento_tipo, documento, razao_social, plano,
+            metodo_pagamento, trial_expira_em, subdominio, db_name, db_user, db_password, status, created_at
         FROM plataforma_tenants';
 
     private static function fromRow(array $row): self
@@ -170,8 +200,12 @@ final class Tenant
             id: (int) $row['id'],
             slug: $row['slug'],
             nomeIgreja: $row['nome_igreja'],
+            documentoTipo: $row['documento_tipo'],
+            documento: $row['documento'],
+            razaoSocial: $row['razao_social'],
             plano: $row['plano'],
             metodoPagamento: $row['metodo_pagamento'],
+            trialExpiraEm: $row['trial_expira_em'],
             subdominio: $row['subdominio'],
             dbName: $row['db_name'],
             dbUser: $row['db_user'],

@@ -114,6 +114,10 @@ $router->get('/dashboard/plano-bloqueado', [DashboardController::class, 'planoBl
 $router->get('/dashboard/fatura-vencida', [ConfiguracaoController::class, 'faturaVencida'], [AuthMiddleware::class]);
 $router->get('/dashboard/fatura-vencida/status', [ConfiguracaoController::class, 'faturaVencidaStatus'], [AuthMiddleware::class]);
 
+// Tela exibida quando o teste gratis de 7 dias vence sem a igreja
+// escolher um plano pago (ver AuthMiddleware).
+$router->get('/dashboard/trial-expirado', [ConfiguracaoController::class, 'trialExpirado'], [AuthMiddleware::class]);
+
 // Estrutura "em construcao" dos demais modulos do menu (catch-all).
 // PlanoMiddleware aqui cobre todos os modulos sem controller proprio
 // (grupos, agenda, financeiro, patrimonio, comunicacao, relatorios,

@@ -75,11 +75,19 @@ final class Provisionador
             $this->instalarEsquema($pdo);
             $this->inserirDadosIniciais($pdo, $provisionamento);
 
+            $trialExpiraEm = $provisionamento->metodoPagamento === 'trial'
+                ? new \DateTimeImmutable('+7 days')
+                : null;
+
             $tenantId = Tenant::criar(
                 $provisionamento->slug,
                 $provisionamento->nomeIgreja,
+                $provisionamento->documentoTipo,
+                $provisionamento->documento,
+                $provisionamento->razaoSocial,
                 $provisionamento->plano,
                 $provisionamento->metodoPagamento,
+                $trialExpiraEm,
                 $subdominio,
                 $dbNome,
                 $dbNome,

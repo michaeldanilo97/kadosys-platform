@@ -184,6 +184,31 @@ final class ConfiguracaoController extends Controller
         return FaturaPix::buscarPorPaymentId((string) $resposta['body']['id']);
     }
 
+    /**
+     * Tela mostrada quando o teste gratis de 7 dias vence sem a igreja
+     * escolher um plano pago (ver AuthMiddleware::bloquearSeTrialExpirado)
+     * - so um aviso com CTA pra Configuracoes, onde ela ja pode assinar
+     * via cartao ou Pix normalmente (essas rotas continuam liberadas
+     * mesmo com o trial vencido).
+     */
+    public function trialExpirado(): void
+    {
+        $tenant = TenantResolver::atual();
+
+        if ($tenant === null || $tenant->metodoPagamento !== 'trial') {
+            $this->redirect('/dashboard');
+        }
+
+        echo $this->view('dashboard.trial-expirado', [
+            'pageTitle' => 'Teste gratis encerrado - KADOSYS Igrejas',
+            'activeMenu' => 'trial-expirado',
+            'breadcrumb' => ['Dashboard', 'Teste gratis encerrado'],
+            'user' => (new Auth($this->config))->user(),
+            'modules' => DashboardController::modules(),
+            'tenant' => $tenant,
+        ], 'dashboard');
+    }
+
     public function atualizarLogo(): void
     {
         if (!Csrf::verify($this->request->input('_csrf_token'))) {

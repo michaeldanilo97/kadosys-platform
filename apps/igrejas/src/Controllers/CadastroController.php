@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Igrejas\Controllers;
 
 use Igrejas\Core\Controller;
+use Igrejas\Core\CpanelUapiClient;
 use Igrejas\Core\Csrf;
+use Igrejas\Core\Documento;
 use Igrejas\Core\MercadoPagoClient;
+use Igrejas\Core\Provisionador;
 use Igrejas\Core\Session;
 use Igrejas\Models\Plano;
 use Igrejas\Models\Provisionamento;
@@ -62,10 +65,19 @@ final class CadastroController extends Controller
         $senhaConfirmacao = (string) $this->request->input('senha_confirmacao', '');
         $plano = (string) $this->request->input('plano', '');
         $metodoPagamento = (string) $this->request->input('metodo_pagamento', 'cartao');
+        $documentoTipo = (string) $this->request->input('documento_tipo', 'cpf');
+        $documentoInformado = trim((string) $this->request->input('documento', ''));
+        $razaoSocial = trim((string) $this->request->input('razao_social', ''));
 
-        if (!in_array($metodoPagamento, ['cartao', 'pix'], true)) {
+        if (!in_array($metodoPagamento, ['cartao', 'pix', 'trial'], true)) {
             $metodoPagamento = 'cartao';
         }
+
+        if (!in_array($documentoTipo, ['cpf', 'cnpj'], true)) {
+            $documentoTipo = 'cpf';
+        }
+
+        $documento = Documento::apenasDigitos($documentoInformado);
 
         $old = [
             'nome_igreja' => $nomeIgreja,
@@ -74,15 +86,39 @@ final class CadastroController extends Controller
             'admin_email' => $adminEmail,
             'plano' => $plano,
             'metodo_pagamento' => $metodoPagamento,
+            'documento_tipo' => $documentoTipo,
+            'documento' => $documentoInformado,
+            'razao_social' => $razaoSocial,
         ];
 
         $slug = $this->normalizarSlug($slugInformado !== '' ? $slugInformado : $nomeIgreja);
-        $errors = $this->validar($nomeIgreja, $slug, $adminNome, $adminEmail, $senha, $senhaConfirmacao, $plano);
+        $errors = $this->validar(
+            $nomeIgreja,
+            $slug,
+            $adminNome,
+            $adminEmail,
+            $senha,
+            $senhaConfirmacao,
+            $plano,
+            $documentoTipo,
+            $documento,
+            $razaoSocial,
+        );
+
+        if ($metodoPagamento === 'trial' && $documento !== '' && Tenant::documentoJaUsouTrial($documento)) {
+            $errors[] = 'Esse CPF/CNPJ ja usou o teste gratis antes. Escolha um plano pago pra continuar.';
+        }
 
         if ($errors !== []) {
             Session::flash('cadastro_errors', $errors);
             Session::flash('cadastro_old', $old);
             $this->redirect('/cadastro');
+        }
+
+        $razaoSocialFinal = $documentoTipo === 'cnpj' ? $razaoSocial : null;
+
+        if ($metodoPagamento === 'trial') {
+            $this->criarContaTrial($nomeIgreja, $slug, $adminNome, $adminEmail, $documentoTipo, $documento, $razaoSocialFinal, $senha, $plano);
         }
 
         $mp = new MercadoPagoClient();
@@ -106,6 +142,9 @@ final class CadastroController extends Controller
             $slug,
             $adminNome,
             $adminEmail,
+            $documentoTipo,
+            $documento,
+            $razaoSocialFinal,
             password_hash($senha, PASSWORD_BCRYPT),
             $plano,
             $metodoPagamento,
@@ -203,6 +242,64 @@ final class CadastroController extends Controller
     }
 
     /**
+     * Teste gratis de 7 dias: sem Mercado Pago nenhum envolvido - cria o
+     * provisionamento e ja dispara o provisionamento de verdade (banco,
+     * subdominio, etc.) na hora, de forma sincrona (diferente do fluxo
+     * por cartao/Pix, que so provisiona depois do webhook confirmar o
+     * pagamento - aqui nao ha pagamento nenhum pra esperar). Como e
+     * sincrono, ja sabemos o resultado final antes de responder, entao
+     * da pra mandar direto pro subdominio pronto (ou mostrar o erro na
+     * hora) em vez da tela generica "processando".
+     */
+    private function criarContaTrial(
+        string $nomeIgreja,
+        string $slug,
+        string $adminNome,
+        string $adminEmail,
+        string $documentoTipo,
+        string $documento,
+        ?string $razaoSocial,
+        string $senha,
+        string $plano,
+    ): void {
+        $provisionamentoId = Provisionamento::criar(
+            $nomeIgreja,
+            $slug,
+            $adminNome,
+            $adminEmail,
+            $documentoTipo,
+            $documento,
+            $razaoSocial,
+            password_hash($senha, PASSWORD_BCRYPT),
+            $plano,
+            'trial',
+        );
+
+        if (!Provisionamento::reivindicarProcessamento($provisionamentoId)) {
+            // Nao deveria acontecer (o provisionamento acabou de ser
+            // criado agora mesmo, ninguem mais tem o id ainda) - por
+            // seguranca, trata como falha em vez de travar o usuario.
+            Session::flash('cadastro_errors', ['Nao foi possivel iniciar seu teste gratis agora. Tente novamente.']);
+            $this->redirect('/cadastro');
+        }
+
+        $provisionamento = Provisionamento::buscarPorId($provisionamentoId);
+        (new Provisionador(new CpanelUapiClient()))->provisionar($provisionamento);
+
+        $provisionamentoFinal = Provisionamento::buscarPorId($provisionamentoId);
+
+        if ($provisionamentoFinal?->status !== 'concluido' || $provisionamentoFinal->tenantId === null) {
+            Session::flash('cadastro_errors', ['Tivemos um problema ao preparar sua conta de teste. Nossa equipe ja foi avisada - tente novamente em alguns minutos ou fale com o suporte.']);
+            $this->redirect('/cadastro');
+        }
+
+        $tenant = Tenant::buscarPorId($provisionamentoFinal->tenantId);
+
+        header('Location: https://' . $tenant->subdominio . '/login');
+        exit;
+    }
+
+    /**
      * Tela com o QR code / copia-e-cola da cobranca Pix do cadastro. So
      * mostra dados nao sensiveis (nada de senha/hash) - o id na URL nao
      * precisa de autenticacao porque o unico jeito de "adivinhar" o id de
@@ -260,6 +357,9 @@ final class CadastroController extends Controller
         string $senha,
         string $senhaConfirmacao,
         string $plano,
+        string $documentoTipo,
+        string $documento,
+        string $razaoSocial,
     ): array {
         $errors = [];
 
@@ -289,6 +389,14 @@ final class CadastroController extends Controller
 
         if (!isset(Plano::VALOR_MENSAL[$plano])) {
             $errors[] = 'Escolha um plano valido.';
+        }
+
+        if (!Documento::validar($documentoTipo, $documento)) {
+            $errors[] = $documentoTipo === 'cnpj' ? 'Informe um CNPJ valido.' : 'Informe um CPF valido.';
+        }
+
+        if ($documentoTipo === 'cnpj' && ($razaoSocial === '' || mb_strlen($razaoSocial) < 3)) {
+            $errors[] = 'Informe a razao social da igreja/instituicao.';
         }
 
         return $errors;

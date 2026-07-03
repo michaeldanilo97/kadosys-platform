@@ -62,6 +62,29 @@ if ($activeMenu !== 'fatura-vencida') {
         }
     }
 }
+
+// Aviso de teste gratis (contagem regressiva) - so aparece pra tenants
+// ainda em trial e nao vencido (depois de vencer, o AuthMiddleware ja
+// bloqueia o resto do painel e manda pra /dashboard/trial-expirado).
+$avisoTrialTexto = '';
+if ($activeMenu !== 'trial-expirado' && $activeMenu !== 'fatura-vencida') {
+    $tenantAtual ??= TenantResolver::atual();
+
+    if ($tenantAtual !== null && $tenantAtual->metodoPagamento === 'trial' && $tenantAtual->trialExpiraEm !== null) {
+        $expiraEm = new DateTimeImmutable($tenantAtual->trialExpiraEm);
+        $agora = new DateTimeImmutable();
+
+        if ($agora <= $expiraEm) {
+            $diasRestantes = (int) ceil(($expiraEm->getTimestamp() - $agora->getTimestamp()) / 86400);
+            $avisoTrialTexto = sprintf(
+                'Seu teste gratis termina em %d dia%s (%s). Clique aqui para escolher um plano.',
+                $diasRestantes,
+                $diasRestantes === 1 ? '' : 's',
+                $expiraEm->format('d/m/Y')
+            );
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -164,6 +187,14 @@ if ($activeMenu !== 'fatura-vencida') {
         </header>
 
         <div class="dash-content">
+            <?php if ($avisoTrialTexto !== ''): ?>
+                <a href="<?= $basePath ?>/dashboard/configuracoes#plano-contratado" class="dash-pix-aviso">
+                    <i class="bi bi-hourglass-split"></i>
+                    <span><?= htmlspecialchars($avisoTrialTexto, ENT_QUOTES, 'UTF-8') ?></span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            <?php endif; ?>
+
             <?php if ($avisoFaturaPix !== null): ?>
                 <a href="<?= $basePath ?>/dashboard/fatura-vencida" class="dash-pix-aviso">
                     <i class="bi bi-qr-code"></i>

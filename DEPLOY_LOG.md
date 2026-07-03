@@ -17,6 +17,29 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 21 - 2026-07-06
+
+**CPF/CNPJ obrigatorio no cadastro + teste gratis de 7 dias**
+
+- O formulario publico de cadastro (`/cadastro`) agora exige CPF ou
+  CNPJ - escolhendo CNPJ, a razao social tambem passa a ser
+  obrigatoria. O documento e validado de verdade (digito verificador),
+  nao so o formato.
+- Nova opcao de forma de pagamento: "Teste gratis" - cria a conta na
+  hora (sem passar pelo Mercado Pago) com 7 dias de acesso completo. O
+  mesmo CPF/CNPJ so pode usar o teste gratis uma vez - se tentar de
+  novo com outro e-mail/igreja, o cadastro e recusado.
+- Passado os 7 dias, se a igreja nao tiver assinado um plano (cartao ou
+  Pix), o painel fica bloqueado com uma tela avisando que o teste
+  acabou - so "Configuracoes" continua acessivel, pra dar pra assinar e
+  liberar o acesso de novo. Enquanto o teste ainda esta rodando,
+  aparece um aviso no topo do painel com a contagem regressiva de dias.
+- Rode a migracao nova no banco de producao (adiciona as colunas de
+  documento/razao social/trial nas tabelas centrais da plataforma):
+  ```
+  mysql -u seu_usuario -p seu_banco < apps/igrejas/database/migrations/014_add_documento_e_trial.sql
+  ```
+
 ## Ajuste 20 - 2026-07-06
 
 **Painel administrativo da plataforma - excluir igrejas**
