@@ -59,6 +59,11 @@ final class DashboardController extends Controller
                 'icon' => 'bi-easel2',
                 'description' => 'Telao do culto: biblia, videos e controle do preletor em tempo real.',
             ],
+            'playbacks' => [
+                'title' => 'Playbacks',
+                'icon' => 'bi-music-note-beamed',
+                'description' => 'Biblioteca de playbacks para o ministerio de louvor, liberada em todos os planos.',
+            ],
             'agenda' => [
                 'title' => 'Agenda',
                 'icon' => 'bi-calendar3',

@@ -41,7 +41,7 @@ $modulosComparacao = array_filter(
                 </a>
             </div>
             <div class="hero-meta">
-                <div><strong data-counter="12">0</strong> modulos integrados</div>
+                <div><strong data-counter="14">0</strong> modulos integrados</div>
                 <div><strong data-counter="100">0</strong><span class="unit">%</span> dados na sua propria base</div>
                 <div><strong>IA</strong> integrada a plataforma</div>
             </div>
@@ -156,6 +156,16 @@ $modulosComparacao = array_filter(
                 <div class="icon"><i class="bi bi-megaphone"></i></div>
                 <h3>Comunicacao</h3>
                 <p>Avisos e comunicados centralizados para membros e lideranca.</p>
+            </div>
+            <div class="feature-card glass-card reveal">
+                <div class="icon"><i class="bi bi-easel2"></i></div>
+                <h3>Projecao e Telao</h3>
+                <p>Biblia, videos e letras projetados ao vivo no telao, com controle remoto para o preletor direto do celular ou tablet durante o culto.</p>
+            </div>
+            <div class="feature-card glass-card reveal">
+                <div class="icon"><i class="bi bi-music-note-beamed"></i></div>
+                <h3>Playbacks</h3>
+                <p>Biblioteca de playbacks para o ministerio de louvor, liberada em todos os planos - sem custo extra.</p>
             </div>
         </div>
     </div>
@@ -274,6 +284,17 @@ $modulosComparacao = array_filter(
             <p class="section-lead">Planos pensados para igrejas de diferentes tamanhos e necessidades.</p>
         </div>
 
+        <div class="plan-trial-banner glass-card reveal">
+            <div class="plan-trial-banner-icon"><i class="bi bi-gift"></i></div>
+            <div class="plan-trial-banner-copy">
+                <h3>Teste gratis por 7 dias</h3>
+                <p>Experimente o sistema completo, sem cartao de credito e sem compromisso. Depois escolha o plano que combina com a sua igreja.</p>
+            </div>
+            <a href="<?= $basePath ?>/cadastro?metodo_pagamento=trial" class="btn-k btn-k-grad">
+                Testar gratis agora <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
         <div class="plans-grid">
             <div class="plan-card glass-card reveal">
                 <div class="plan-icon"><i class="bi bi-rocket-takeoff"></i></div>
@@ -314,6 +335,7 @@ $modulosComparacao = array_filter(
                 <ul class="plan-features">
                     <li class="plan-feature"><i class="bi bi-check2"></i> Tudo do plano Plus</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Acesso prioritario a novos modulos (financeiro, comunicacao, relatorios)</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Playbacks: mudar o tom da musica em tempo real</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Atendimento dedicado</li>
                 </ul>
                 <a href="<?= $basePath ?>/cadastro?plano=enterprise" class="btn-k btn-k-outline">Comecar agora</a>
@@ -368,6 +390,12 @@ $modulosComparacao = array_filter(
                             <td>E-mail prioritario</td>
                             <td>Dedicado</td>
                         </tr>
+                        <tr>
+                            <td class="plan-compare-feature-col"><i class="bi bi-music-note-beamed"></i> Playbacks: mudar tom da musica</td>
+                            <td><i class="bi bi-dash-lg plan-compare-no"></i></td>
+                            <td><i class="bi bi-dash-lg plan-compare-no"></i></td>
+                            <td><i class="bi bi-check-circle-fill plan-compare-yes"></i></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -418,12 +446,25 @@ $modulosComparacao = array_filter(
 
             <div class="faq-item glass-card reveal" data-faq-item>
                 <button class="faq-question">
+                    O que sao os Playbacks e como funciona a troca de tom?
+                    <span class="plus">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>O modulo de Playbacks disponibiliza uma biblioteca de faixas para o ministerio
+                        de louvor, liberada em todos os planos. No plano Premium, sera possivel ainda
+                        mudar o tom da musica em tempo real durante a execucao - recurso em
+                        desenvolvimento, com previsao de lancamento em breve.</p>
+                </div>
+            </div>
+
+            <div class="faq-item glass-card reveal" data-faq-item>
+                <button class="faq-question">
                     Quais modulos estarao disponiveis em seguida?
                     <span class="plus">+</span>
                 </button>
                 <div class="faq-answer">
-                    <p>Modulos como Biblia, Louvores, Projecao, Streamer, CRM e ERP estao planejados
-                        para sprints futuras de desenvolvimento.</p>
+                    <p>Modulos como Grupos, Agenda, Financeiro, Comunicacao, CRM e ERP estao
+                        planejados para sprints futuras de desenvolvimento.</p>
                 </div>
             </div>
         </div>
