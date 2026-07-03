@@ -1416,3 +1416,44 @@ body.dashboard-body[data-theme="light"] {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---- Painel da plataforma: abas Igrejas/Avisos --------------------------- */
+
+.plataforma-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.4rem;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 0.6rem;
+}
+
+.plataforma-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.plataforma-tab:hover {
+  color: var(--text);
+  background: var(--surface);
+}
+
+.plataforma-tab.active {
+  color: var(--white);
+  background: var(--gradient);
+}
+
+[data-theme="light"] .plataforma-tab {
+  color: #475569;
+}
+
+[data-theme="light"] .plataforma-tab.active {
+  color: var(--white);
+}

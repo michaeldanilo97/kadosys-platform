@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Igrejas\Controllers\AgendaController;
 use Igrejas\Controllers\AssinaturaController;
 use Igrejas\Controllers\AuthController;
+use Igrejas\Controllers\AvisoPublicoController;
 use Igrejas\Controllers\CadastroController;
 use Igrejas\Controllers\ComunicacaoController;
 use Igrejas\Controllers\ConfiguracaoController;
@@ -225,6 +226,11 @@ $router->get('/dashboard/{slug}', [DashboardController::class, 'page'], [AuthMid
 // sem exigir login administrativo.
 $router->get('/telao/{token}', [TelaoController::class, 'show']);
 
+// Quadro de avisos publico da igreja (sem login) - link pra compartilhar
+// com a congregacao (grupo do WhatsApp, QR code no templo, etc.). Mostra
+// so os avisos de Comunicacao publicados com publico "todos".
+$router->get('/avisos', [AvisoPublicoController::class, 'index']);
+
 // Tela publica do preletor (tablet do pastor). Acesso por PIN de 6
 // digitos, sem exigir login administrativo.
 $router->get('/preletor', [PreletorController::class, 'entrar']);
@@ -260,3 +266,6 @@ $router->post('/plataforma/entrar', [PlataformaController::class, 'autenticar'])
 $router->post('/plataforma/sair', [PlataformaController::class, 'sair'], [PlataformaAuthMiddleware::class]);
 $router->get('/plataforma/igrejas', [PlataformaController::class, 'igrejas'], [PlataformaAuthMiddleware::class]);
 $router->post('/plataforma/igrejas/{id}/excluir', [PlataformaController::class, 'excluirIgreja'], [PlataformaAuthMiddleware::class]);
+$router->get('/plataforma/avisos', [PlataformaController::class, 'avisos'], [PlataformaAuthMiddleware::class]);
+$router->post('/plataforma/avisos', [PlataformaController::class, 'publicarAviso'], [PlataformaAuthMiddleware::class]);
+$router->post('/plataforma/avisos/{id}/encerrar', [PlataformaController::class, 'encerrarAviso'], [PlataformaAuthMiddleware::class]);
