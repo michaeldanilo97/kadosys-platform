@@ -88,8 +88,39 @@ final class Provisionador
 
             Tenant::marcarAtivo($tenantId);
             Provisionamento::vincularTenant($provisionamento->id, $tenantId);
+            $this->enviarEmailBoasVindas($provisionamento, $subdominio);
         } catch (\Throwable $exception) {
             Provisionamento::atualizarStatus($provisionamento->id, 'erro', $exception->getMessage());
+        }
+    }
+
+    /**
+     * Falha no envio do e-mail nunca pode reverter o provisionamento (o
+     * banco/subdominio ja foram criados com sucesso nesse ponto) - so
+     * fica registrado como aviso, sem mudar o status de "concluido".
+     */
+    private function enviarEmailBoasVindas(Provisionamento $provisionamento, string $subdominio): void
+    {
+        try {
+            $corpo = View::render('emails.boas-vindas', [
+                'nomeAdmin' => $provisionamento->adminNome,
+                'nomeIgreja' => $provisionamento->nomeIgreja,
+                'urlAcesso' => 'https://' . $subdominio,
+                'plano' => $provisionamento->plano,
+            ]);
+
+            $enviado = Mailer::enviar(
+                $provisionamento->adminEmail,
+                $provisionamento->adminNome,
+                'Bem-vindo ao KADOSYS Igrejas - sua conta esta pronta!',
+                $corpo,
+            );
+
+            if (!$enviado) {
+                Provisionamento::atualizarStatus($provisionamento->id, 'concluido', 'Aviso: nao foi possivel enviar o e-mail de boas-vindas.');
+            }
+        } catch (\Throwable $exception) {
+            Provisionamento::atualizarStatus($provisionamento->id, 'concluido', 'Aviso: falha ao enviar o e-mail de boas-vindas - ' . $exception->getMessage());
         }
     }
 
