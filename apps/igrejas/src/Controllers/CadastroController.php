@@ -257,9 +257,11 @@ final class CadastroController extends Controller
      * subdominio, etc.) na hora, de forma sincrona (diferente do fluxo
      * por cartao/Pix, que so provisiona depois do webhook confirmar o
      * pagamento - aqui nao ha pagamento nenhum pra esperar). Como e
-     * sincrono, ja sabemos o resultado final antes de responder, entao
-     * da pra mandar direto pro subdominio pronto (ou mostrar o erro na
-     * hora) em vez da tela generica "processando".
+     * sincrono, ja sabemos o resultado final antes de responder - mas o
+     * subdominio recem-criado no cPanel pode levar um tempo pro DNS
+     * propagar (confirmado num teste real: "pagina nao existe" mesmo
+     * com o subdominio ja existindo no painel), entao manda pra tela de
+     * espera (pronto()) em vez de redirecionar direto pra ele.
      */
     private function criarContaTrial(
         string $nomeIgreja,
@@ -303,10 +305,37 @@ final class CadastroController extends Controller
             $this->redirect('/cadastro');
         }
 
-        $tenant = Tenant::buscarPorId($provisionamentoFinal->tenantId);
+        $this->redirect('/cadastro/pronto/' . $provisionamentoId);
+    }
 
-        header('Location: https://' . $tenant->subdominio . '/login');
-        exit;
+    /**
+     * Tela de espera exibida logo depois do teste gratis ser criado (ver
+     * criarContaTrial()) - o subdominio acabou de ser criado no cPanel,
+     * mas o navegador as vezes ainda nao consegue abrir
+     * https://{subdominio} na hora porque o DNS nao propagou o
+     * suficiente. Em vez de arriscar um redirecionamento direto que da
+     * "pagina nao existe", mostra uma tela "preparando tudo" que so
+     * redireciona de verdade depois que o JS (cadastro-pronto.js)
+     * confirma que o subdominio ja responde.
+     */
+    public function pronto(string $id): void
+    {
+        $provisionamento = Provisionamento::buscarPorId((int) $id);
+
+        if ($provisionamento === null || $provisionamento->status !== 'concluido' || $provisionamento->tenantId === null) {
+            $this->redirect('/cadastro');
+        }
+
+        $tenant = Tenant::buscarPorId($provisionamento->tenantId);
+
+        if ($tenant === null) {
+            $this->redirect('/cadastro');
+        }
+
+        echo $this->view('cadastro.pronto', [
+            'pageTitle' => 'Preparando sua conta - KADOSYS Igrejas',
+            'subdominio' => $tenant->subdominio,
+        ], 'auth');
     }
 
     /**
