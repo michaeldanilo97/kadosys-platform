@@ -17,6 +17,23 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 24 - 2026-07-06
+
+**Tela de espera no teste gratis (subdominio recem-criado pode demorar a responder)**
+
+- Depois de criar a conta no teste gratis de 7 dias, o sistema
+  redirecionava direto pro `https://{subdominio}/login` recem-criado -
+  mas o subdominio, mesmo ja existindo no painel do cPanel, pode
+  demorar um pouco pro DNS propagar, dando "pagina nao existe" nesse
+  primeiro acesso.
+- Agora aparece uma tela "Estamos preparando tudo" logo depois do
+  cadastro, que fica verificando em segundo plano (a cada poucos
+  segundos) se o subdominio ja esta respondendo, e so entao
+  redireciona pra tela de login de verdade - sem risco de cair numa
+  pagina inexistente. Se demorar demais (mais de 1 minuto), aparece um
+  link pra tentar entrar manualmente.
+- Sem migracao de banco nesta entrega.
+
 ## Ajuste 23 - 2026-07-06
 
 **Teste gratis com acesso total + remocao do ajuste manual de plano**

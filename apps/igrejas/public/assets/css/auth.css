@@ -353,7 +353,8 @@
   color: var(--success);
 }
 
-.pix-status {
+.pix-status,
+.provisionamento-status {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -368,16 +369,32 @@
   font-weight: 600;
 }
 
-.pix-status.confirmado {
+.pix-status.confirmado,
+.provisionamento-status.confirmado {
   background: rgba(52, 211, 153, 0.1);
   color: var(--success);
   border-color: rgba(52, 211, 153, 0.3);
 }
 
-.pix-status.erro {
+.pix-status.erro,
+.provisionamento-status.erro {
   background: rgba(248, 113, 113, 0.1);
   color: var(--danger);
   border-color: rgba(248, 113, 113, 0.3);
+}
+
+.spin {
+  display: inline-block;
+  animation: kadosys-spin 1.4s linear infinite;
+}
+
+@keyframes kadosys-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .auth-signup-hint {
