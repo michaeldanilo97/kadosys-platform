@@ -9,6 +9,7 @@ use Igrejas\Controllers\ConfiguracaoController;
 use Igrejas\Controllers\CultoController;
 use Igrejas\Controllers\DashboardController;
 use Igrejas\Controllers\FinanceiroController;
+use Igrejas\Controllers\GrupoController;
 use Igrejas\Controllers\LandingController;
 use Igrejas\Controllers\MembroController;
 use Igrejas\Controllers\MinisterioController;
@@ -73,6 +74,18 @@ $router->post('/dashboard/ministerios/{id}', [MinisterioController::class, 'upda
 $router->post('/dashboard/ministerios/{id}/excluir', [MinisterioController::class, 'destroy'], [AuthMiddleware::class, PlanoMiddleware::class]);
 $router->post('/dashboard/ministerios/{id}/voluntarios', [MinisterioController::class, 'addVoluntario'], [AuthMiddleware::class, PlanoMiddleware::class]);
 $router->post('/dashboard/ministerios/{id}/voluntarios/{membroId}/remover', [MinisterioController::class, 'removeVoluntario'], [AuthMiddleware::class, PlanoMiddleware::class]);
+
+// Modulo Grupos. Mesmo motivo: precisam vir antes do catch-all.
+// PlanoMiddleware: Grupos exige plano Premium ou superior (ver
+// Igrejas\Models\Plano), mesma estrutura do modulo Ministerios.
+$router->get('/dashboard/grupos', [GrupoController::class, 'index'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->get('/dashboard/grupos/novo', [GrupoController::class, 'create'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/grupos', [GrupoController::class, 'store'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->get('/dashboard/grupos/{id}/editar', [GrupoController::class, 'edit'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/grupos/{id}', [GrupoController::class, 'update'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/grupos/{id}/excluir', [GrupoController::class, 'destroy'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/grupos/{id}/participantes', [GrupoController::class, 'addParticipante'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/grupos/{id}/participantes/{membroId}/remover', [GrupoController::class, 'removeParticipante'], [AuthMiddleware::class, PlanoMiddleware::class]);
 
 // Modulo Cultos. Mesmo motivo: precisam vir antes do catch-all.
 $router->get('/dashboard/cultos', [CultoController::class, 'index'], [AuthMiddleware::class]);

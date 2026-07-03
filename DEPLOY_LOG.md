@@ -17,6 +17,23 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 26 - 2026-07-06
+
+**Novo modulo: Grupos (pequenos grupos, celulas e classes)**
+
+- Modulo completo de gestao de grupos, disponivel a partir do plano
+  Plus (mesmo nivel de Ministerios): cada grupo pode ter um lider
+  (membro) e uma lista de participantes, alem de tipo (Grupo, Celula
+  ou Classe), dia da semana, horario e local do encontro.
+- Mesma estrutura de tela do modulo Ministerios (lista com busca e
+  paginacao, formulario com secao de participantes).
+- **Rode a migracao nova no banco de CADA igreja ja criada** (nao e no
+  banco central da plataforma). Igrejas novas ja recebem a tabela
+  automaticamente (`database/install.sql` atualizado):
+  ```
+  mysql -u seu_usuario -p banco_da_igreja < apps/igrejas/database/migrations/016_create_grupos_tables.sql
+  ```
+
 ## Ajuste 25 - 2026-07-06
 
 **Novo modulo: Financeiro (dizimos, ofertas e despesas)**
