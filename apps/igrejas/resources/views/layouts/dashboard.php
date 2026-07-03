@@ -5,7 +5,9 @@ declare(strict_types=1);
 use Igrejas\Core\Csrf;
 use Igrejas\Core\TenantResolver;
 use Igrejas\Core\View;
+use Igrejas\Models\ComunicacaoAviso;
 use Igrejas\Models\ConfiguracaoIgreja;
+use Igrejas\Models\Culto;
 use Igrejas\Models\FaturaPix;
 use Igrejas\Models\Plano;
 use Igrejas\Models\User;
@@ -87,6 +89,46 @@ if ($activeMenu !== 'trial-expirado' && $activeMenu !== 'fatura-vencida') {
         }
     }
 }
+
+/**
+ * Notificacoes do sino no topo do painel: junta os avisos de
+ * pagamento/trial que ja existiam em outros pontos do layout com
+ * avisos de Comunicacao publicados e o proximo culto agendado, pra dar
+ * uma visao rapida sem precisar entrar em cada modulo.
+ *
+ * @var array<int, array{icon: string, texto: string, url: string}>
+ */
+$notificacoes = [];
+
+if ($avisoFaturaPixTexto !== '') {
+    $notificacoes[] = ['icon' => 'bi-qr-code', 'texto' => $avisoFaturaPixTexto, 'url' => $basePath . '/dashboard/fatura-vencida'];
+}
+
+if ($avisoTrialTexto !== '') {
+    $notificacoes[] = ['icon' => 'bi-hourglass-split', 'texto' => $avisoTrialTexto, 'url' => $basePath . '/dashboard/configuracoes#plano-contratado'];
+}
+
+if (Plano::disponivel($planoAtual, 'comunicacao', $emTrial) && User::podeAcessarModulo($user, 'comunicacao')) {
+    foreach (ComunicacaoAviso::ultimosPublicados(3) as $aviso) {
+        $notificacoes[] = [
+            'icon' => 'bi-megaphone',
+            'texto' => $aviso->titulo,
+            'url' => $basePath . '/dashboard/comunicacao',
+        ];
+    }
+}
+
+if (User::podeAcessarModulo($user, 'cultos')) {
+    $proximoCulto = Culto::proximoAgendado();
+
+    if ($proximoCulto !== null) {
+        $notificacoes[] = [
+            'icon' => 'bi-calendar2-week',
+            'texto' => $proximoCulto->titulo . ' - ' . $proximoCulto->dataHoraFormatada(),
+            'url' => $basePath . '/dashboard/cultos',
+        ];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -141,8 +183,15 @@ if ($activeMenu !== 'trial-expirado' && $activeMenu !== 'fatura-vencida') {
 
         <div class="dash-sidebar-footer">
             <div class="dash-ai-card">
-                <div class="dash-ai-title"><i class="bi bi-stars"></i> Assistente IA</div>
-                <p>Insights automaticos sobre membros, financas e engajamento chegam em breve.</p>
+                <div class="dash-ai-title">
+                    <i class="bi bi-stars"></i> Insights da IA
+                    <span class="dash-ai-badge">em breve</span>
+                </div>
+                <ul class="dash-ai-list">
+                    <li>Resumos automaticos de frequencia e crescimento da congregacao.</li>
+                    <li>Alertas inteligentes sobre dizimos, ofertas e despesas fora do padrao.</li>
+                    <li>Sugestoes de comunicacao para engajar membros e voluntarios.</li>
+                </ul>
             </div>
 
             <form method="POST" action="<?= $basePath ?>/logout">
@@ -178,18 +227,50 @@ if ($activeMenu !== 'trial-expirado' && $activeMenu !== 'fatura-vencida') {
             </div>
 
             <div class="dash-topbar-right">
-                <button class="topbar-icon-btn" type="button" aria-label="Notificacoes">
-                    <i class="bi bi-bell"></i>
-                    <span class="dot"></span>
-                </button>
+                <div class="topbar-dropdown" data-topbar-dropdown>
+                    <button class="topbar-icon-btn" type="button" aria-label="Notificacoes" aria-expanded="false" data-dropdown-toggle>
+                        <i class="bi bi-bell"></i>
+                        <?php if ($notificacoes !== []): ?><span class="dot"></span><?php endif; ?>
+                    </button>
+
+                    <div class="topbar-dropdown-panel notif-panel" data-dropdown-panel hidden>
+                        <div class="topbar-dropdown-head">Notificacoes</div>
+
+                        <?php if ($notificacoes === []): ?>
+                            <div class="notif-empty">Nenhuma notificacao no momento.</div>
+                        <?php else: ?>
+                            <?php foreach ($notificacoes as $notificacao): ?>
+                                <a href="<?= htmlspecialchars($notificacao['url'], ENT_QUOTES, 'UTF-8') ?>" class="notif-item">
+                                    <i class="bi <?= htmlspecialchars($notificacao['icon'], ENT_QUOTES, 'UTF-8') ?>"></i>
+                                    <span><?= htmlspecialchars($notificacao['texto'], ENT_QUOTES, 'UTF-8') ?></span>
+                                </a>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
 
                 <button class="topbar-icon-btn" data-theme-toggle aria-label="Alternar tema claro/escuro">
                     <i class="bi bi-sun" data-theme-icon></i>
                 </button>
 
-                <div class="topbar-user">
-                    <span class="avatar"><?= htmlspecialchars($userInitial, ENT_QUOTES, 'UTF-8') ?></span>
-                    <span class="name"><?= htmlspecialchars($userName, ENT_QUOTES, 'UTF-8') ?></span>
+                <div class="topbar-dropdown" data-topbar-dropdown>
+                    <button class="topbar-user" type="button" aria-expanded="false" data-dropdown-toggle>
+                        <span class="avatar"><?= htmlspecialchars($userInitial, ENT_QUOTES, 'UTF-8') ?></span>
+                        <span class="name"><?= htmlspecialchars($userName, ENT_QUOTES, 'UTF-8') ?></span>
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+
+                    <div class="topbar-dropdown-panel user-menu-panel" data-dropdown-panel hidden>
+                        <a href="<?= $basePath ?>/dashboard/configuracoes" class="user-menu-item">
+                            <i class="bi bi-gear"></i> Configuracoes
+                        </a>
+                        <form method="POST" action="<?= $basePath ?>/logout">
+                            <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars(Csrf::token(), ENT_QUOTES, 'UTF-8') ?>">
+                            <button type="submit" class="user-menu-item user-menu-item-danger">
+                                <i class="bi bi-box-arrow-right"></i> Sair
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </header>

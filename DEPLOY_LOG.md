@@ -17,6 +17,23 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 31 - 2026-07-06
+
+**Sino de notificacoes e menu do usuario funcionais + novo texto do card de IA**
+
+- O sino de notificacoes no topo do painel era so decorativo. Agora
+  mostra de verdade: fatura Pix perto de vencer, contagem do teste
+  gratis, ultimos avisos publicados em Comunicacao e o proximo culto
+  agendado - cada um com link direto pro modulo. O ponto vermelho so
+  aparece quando ha algo de fato.
+- Clicar no nome do usuario, no topo, agora abre um menu com
+  "Configuracoes" e "Sair" (antes era so um texto sem acao).
+- O card "Assistente IA" da barra lateral ganhou um texto novo,
+  detalhando o que vem por ai (resumos de frequencia, alertas
+  financeiros, sugestoes de comunicacao).
+- Sem migracao de banco - e so codigo (view, CSS, JS e um metodo novo
+  no model de Comunicacao).
+
 ## Ajuste 30 - 2026-07-06
 
 **Correcao: redirecionamento prematuro pro subdominio novo (tela "preparando tudo")**
