@@ -12,6 +12,8 @@ use Igrejas\Models\Plano;
  * @var int $novosMembros
  * @var int $ministeriosAtivos
  * @var \Igrejas\Models\Culto|null $proximoCulto
+ * @var bool $financeiroDisponivel
+ * @var array{entradas: float, saidas: float, saldo: float}|null $financeiroTotais
  */
 $basePath = $config['base_path'] ?? '';
 $firstName = explode(' ', trim($user?->name ?? 'Usuario'))[0];
@@ -69,13 +71,23 @@ $emTrial = TenantResolver::atual()?->metodoPagamento === 'trial';
         <div class="delta"><a href="<?= $basePath ?>/dashboard/cultos">Ver todos os cultos</a></div>
     </div>
     <div class="kpi-card">
-        <div class="kpi-top">
-            <div class="kpi-icon green"><i class="bi bi-cash-coin"></i></div>
-            <span class="kpi-trend neutral"><i class="bi bi-dash"></i> aguardando dados</span>
-        </div>
-        <div class="value">--</div>
-        <div class="label">Financeiro do mes</div>
-        <div class="delta">Disponivel no modulo Financeiro</div>
+        <?php if ($financeiroDisponivel && $financeiroTotais !== null): ?>
+            <div class="kpi-top">
+                <div class="kpi-icon <?= $financeiroTotais['saldo'] >= 0 ? 'green' : 'red' ?>"><i class="bi bi-cash-coin"></i></div>
+                <span class="kpi-trend neutral"><i class="bi bi-calendar3"></i> <?= (new DateTimeImmutable())->format('m/Y') ?></span>
+            </div>
+            <div class="value" style="font-size: 1.5rem;">R$ <?= number_format($financeiroTotais['saldo'], 2, ',', '.') ?></div>
+            <div class="label">Saldo do mes (Financeiro)</div>
+            <div class="delta"><a href="<?= $basePath ?>/dashboard/financeiro">Ver lancamentos</a></div>
+        <?php else: ?>
+            <div class="kpi-top">
+                <div class="kpi-icon green"><i class="bi bi-cash-coin"></i></div>
+                <span class="kpi-trend neutral"><i class="bi bi-lock"></i> plano Plus+</span>
+            </div>
+            <div class="value">--</div>
+            <div class="label">Financeiro do mes</div>
+            <div class="delta">Disponivel no modulo Financeiro</div>
+        <?php endif; ?>
     </div>
 </div>
 

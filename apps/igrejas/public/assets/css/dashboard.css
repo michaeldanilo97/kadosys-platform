@@ -597,10 +597,17 @@ body.dashboard-body[data-theme="light"] {
   color: var(--success);
 }
 
+.kpi-icon.red {
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  color: var(--danger);
+}
+
 [data-theme="light"] .kpi-icon.cyan { color: #0E7490; }
 [data-theme="light"] .kpi-icon.blue { color: #1D4ED8; }
 [data-theme="light"] .kpi-icon.violet { color: #6D28D9; }
 [data-theme="light"] .kpi-icon.green { color: #047857; }
+[data-theme="light"] .kpi-icon.red { color: #B91C1C; }
 
 .kpi-trend {
   font-family: var(--font-mono);

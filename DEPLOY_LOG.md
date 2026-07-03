@@ -17,6 +17,33 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 25 - 2026-07-06
+
+**Novo modulo: Financeiro (dizimos, ofertas e despesas)**
+
+- Modulo completo de controle financeiro, disponivel a partir do plano
+  Plus: lancamentos de entrada (dizimo, oferta, doacao...) e saida
+  (despesa), cada um com categoria, forma de pagamento, data e vinculo
+  opcional com um membro (pra registrar de quem foi um dizimo/oferta
+  especifico).
+- Tela principal com filtro por mes, tipo (entrada/saida), categoria e
+  busca por descricao - e totais de entradas, saidas e saldo do
+  periodo filtrado.
+- Categorias sao totalmente customizaveis (`/dashboard/financeiro/categorias`)
+  - a igreja pode criar, desativar ou remover as suas proprias, alem
+    das 11 categorias padrao ja cadastradas (Dizimo, Oferta, Aluguel,
+    Salarios, etc.).
+- O card "Financeiro do mes" no Dashboard agora mostra o saldo real do
+  mes corrente (antes era so um "--" de espera).
+- **Rode a migracao nova no banco de CADA igreja ja criada** (nao e no
+  banco central da plataforma - e o banco de cada igreja, inclusive a
+  instalacao original). Igrejas novas criadas a partir de agora ja
+  recebem essas tabelas automaticamente (`database/install.sql` foi
+  atualizado):
+  ```
+  mysql -u seu_usuario -p banco_da_igreja < apps/igrejas/database/migrations/015_create_financeiro_tables.sql
+  ```
+
 ## Ajuste 24 - 2026-07-06
 
 **Tela de espera no teste gratis (subdominio recem-criado pode demorar a responder)**

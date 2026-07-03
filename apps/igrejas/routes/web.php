@@ -8,6 +8,7 @@ use Igrejas\Controllers\CadastroController;
 use Igrejas\Controllers\ConfiguracaoController;
 use Igrejas\Controllers\CultoController;
 use Igrejas\Controllers\DashboardController;
+use Igrejas\Controllers\FinanceiroController;
 use Igrejas\Controllers\LandingController;
 use Igrejas\Controllers\MembroController;
 use Igrejas\Controllers\MinisterioController;
@@ -82,6 +83,23 @@ $router->post('/dashboard/cultos/{id}', [CultoController::class, 'update'], [Aut
 $router->post('/dashboard/cultos/{id}/excluir', [CultoController::class, 'destroy'], [AuthMiddleware::class]);
 $router->post('/dashboard/cultos/{id}/presencas', [CultoController::class, 'addPresenca'], [AuthMiddleware::class]);
 $router->post('/dashboard/cultos/{id}/presencas/{membroId}/remover', [CultoController::class, 'removePresenca'], [AuthMiddleware::class]);
+
+// Modulo Financeiro. Mesmo motivo: precisa vir antes do catch-all.
+// PlanoMiddleware: Financeiro exige plano Plus ou superior (ver
+// Igrejas\Models\Plano). As rotas de categorias precisam ser
+// registradas antes de "/dashboard/financeiro/{id}" (POST) - senao o
+// router (que casa por ordem de registro) tentaria interpretar
+// "categorias" como um {id} de lancamento.
+$router->get('/dashboard/financeiro', [FinanceiroController::class, 'index'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->get('/dashboard/financeiro/novo', [FinanceiroController::class, 'create'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/financeiro', [FinanceiroController::class, 'store'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->get('/dashboard/financeiro/categorias', [FinanceiroController::class, 'categorias'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/financeiro/categorias', [FinanceiroController::class, 'storeCategoria'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/financeiro/categorias/{id}/status', [FinanceiroController::class, 'alternarStatusCategoria'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/financeiro/categorias/{id}/excluir', [FinanceiroController::class, 'destroyCategoria'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->get('/dashboard/financeiro/{id}/editar', [FinanceiroController::class, 'edit'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/financeiro/{id}', [FinanceiroController::class, 'update'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/financeiro/{id}/excluir', [FinanceiroController::class, 'destroy'], [AuthMiddleware::class, PlanoMiddleware::class]);
 
 // Modulo Projecao/Telao: painel do operador (protegido). Mesmo motivo:
 // precisa vir antes do catch-all.
