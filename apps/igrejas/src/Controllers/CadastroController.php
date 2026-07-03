@@ -108,7 +108,12 @@ final class CadastroController extends Controller
 
         try {
             $resposta = $mp->criarAssinatura([
-                'reason' => 'KADOSYS Igrejas - Plano ' . Plano::label($plano) . ' (' . $nomeIgreja . ')',
+                // O Mercado Pago limita "reason" a 40 caracteres - nao da
+                // pra incluir o nome da igreja aqui com seguranca (nomes
+                // longos estourariam o limite e a API rejeitaria a
+                // criacao da assinatura). O nome da igreja fica registrado
+                // em plataforma_provisionamentos mesmo assim.
+                'reason' => 'KADOSYS Igrejas - Plano ' . Plano::label($plano),
                 'amount' => Plano::VALOR_MENSAL[$plano],
                 'payerEmail' => $adminEmail,
                 'backUrl' => $mpConfig['app_url'] . $this->url('/cadastro/retorno'),
