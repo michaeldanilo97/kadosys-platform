@@ -17,6 +17,33 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 20 - 2026-07-06
+
+**Painel administrativo da plataforma - excluir igrejas**
+
+- Nova tela `/plataforma/igrejas` pra voce (dono do sistema) ver todas
+  as igrejas provisionadas e excluir uma quando precisar - apaga o
+  banco de dados, o usuario do banco e o subdominio no cPanel, alem do
+  registro no sistema. Acao irreversivel, com confirmacao antes de
+  executar.
+- Login totalmente separado do login normal de cada igreja - uma unica
+  "chave mestra" configurada so no servidor.
+- **Configuracao necessaria antes de usar** - gere o hash da sua chave
+  (troque o texto entre aspas por uma chave bem longa e unica sua):
+
+  ```
+  php -r "echo password_hash('sua-chave-bem-longa-aqui', PASSWORD_BCRYPT), PHP_EOL;"
+  ```
+
+  E defina a variavel de ambiente `PLATAFORMA_ADMIN_SENHA_HASH` no
+  cPanel com o resultado (mesmo esquema das outras variaveis, ex.:
+  `MP_ACCESS_TOKEN`) - ou crie `config/plataforma.local.php` com
+  `['senha_hash' => '...']` se o servidor nao suportar variavel de
+  ambiente customizada. Sem isso configurado, a tela fica bloqueada
+  (login sempre recusado, por seguranca).
+- Acesse em `https://kadosys.com.br/plataforma/entrar` (ou o caminho
+  equivalente com o BASE_PATH da instalacao).
+
 ## Ajuste 19 - 2026-07-06
 
 **Ultimos ajustes da rodada de testes reais de Pix + provisionamento**
