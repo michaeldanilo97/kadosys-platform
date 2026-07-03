@@ -380,6 +380,23 @@
   border-color: rgba(248, 113, 113, 0.3);
 }
 
+.auth-signup-hint {
+  margin: 1.4rem 0 0;
+  text-align: center;
+  font-size: 0.86rem;
+  color: var(--text-muted);
+}
+
+.auth-signup-hint a {
+  color: var(--primary-soft);
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.auth-signup-hint a:hover {
+  color: var(--accent-soft);
+}
+
 .auth-back-link {
   display: inline-flex;
   align-items: center;
