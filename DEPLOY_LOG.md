@@ -17,6 +17,37 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 18 - 2026-07-06
+
+**E-mail automatico de boas-vindas ao criar uma igreja nova**
+
+- Assim que o provisionamento automatico de uma igreja termina (banco +
+  subdominio prontos, cartao ou Pix), o administrador recebe um e-mail
+  de `igrejas@kadosys.com.br` com o link do painel da igreja.
+- Usa o envio nativo do PHP (sem servico externo) - funciona porque
+  `igrejas@kadosys.com.br` e uma caixa de fato hospedada no mesmo
+  dominio do servidor. Se o envio falhar por qualquer motivo, isso NAO
+  atrapalha o provisionamento (a igreja continua criada normalmente) -
+  so fica um aviso registrado pra conferencia.
+
+## Ajuste 17 - 2026-07-06
+
+**3 correcoes encontradas testando pagamento Pix real em producao**
+
+1. A data de vencimento da cobranca Pix enviada ao Mercado Pago estava
+   num formato que a API rejeitava (faltavam os milissegundos) - toda
+   cobranca Pix nova estava sendo recusada com erro 400.
+2. A tela de QR code do Pix (`/cadastro/pix/...`) dava erro 500 ao
+   abrir, por causa de um parametro de rota com o tipo errado.
+3. Depois do pagamento confirmado, a criacao automatica do banco da
+   igreja no cPanel falhava com "nome nao comeca com o prefixo
+   obrigatorio" - esse servidor exige o nome do banco ja com o prefixo
+   da conta cPanel incluido, diferente do que o codigo assumia.
+
+Com essas 3 correcoes, o fluxo completo de Pix (cadastro -> pagamento
+-> confirmacao -> banco/subdominio criados automaticamente) devia
+funcionar de ponta a ponta.
+
 ## Ajuste 16 - 2026-07-03
 
 **Pagamento via Pix (fatura mensal) - cadastro novo e renovacao de igrejas ja ativas**
