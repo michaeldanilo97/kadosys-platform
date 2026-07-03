@@ -209,6 +209,10 @@ $router->get('/dashboard/comunicacao', [ComunicacaoController::class, 'index'], 
 $router->get('/dashboard/comunicacao/novo', [ComunicacaoController::class, 'create'], [AuthMiddleware::class, PlanoMiddleware::class]);
 $router->post('/dashboard/comunicacao', [ComunicacaoController::class, 'store'], [AuthMiddleware::class, PlanoMiddleware::class]);
 $router->get('/dashboard/comunicacao/{id}/editar', [ComunicacaoController::class, 'edit'], [AuthMiddleware::class, PlanoMiddleware::class]);
+// "show" (pagina de detalhe do aviso) precisa vir depois de "novo"
+// acima - senao "novo" seria interpretado como um {id}, ja que o
+// router casa por ordem de registro (ver Igrejas\Core\Router).
+$router->get('/dashboard/comunicacao/{id}', [ComunicacaoController::class, 'show'], [AuthMiddleware::class, PlanoMiddleware::class]);
 $router->post('/dashboard/comunicacao/{id}', [ComunicacaoController::class, 'update'], [AuthMiddleware::class, PlanoMiddleware::class]);
 $router->post('/dashboard/comunicacao/{id}/excluir', [ComunicacaoController::class, 'destroy'], [AuthMiddleware::class, PlanoMiddleware::class]);
 

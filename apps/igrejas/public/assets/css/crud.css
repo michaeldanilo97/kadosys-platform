@@ -884,3 +884,19 @@
   border-radius: 4px;
   padding: 0.05rem 0.4rem;
 }
+
+/* ---- Detalhe de um aviso (modulo Comunicacao) ---------------------------- */
+
+.aviso-show-meta {
+  margin-bottom: 1rem;
+}
+
+.aviso-show-conteudo {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+[data-theme="light"] .aviso-show-conteudo {
+  color: #1E293B;
+}

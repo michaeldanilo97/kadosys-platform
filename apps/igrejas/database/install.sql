@@ -498,3 +498,19 @@ CREATE TABLE IF NOT EXISTS comunicacao_avisos (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     KEY comunicacao_avisos_status_index (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------------------------
+-- 022 - Leitura de avisos por usuario (barra lateral do painel)
+-- ----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS comunicacao_aviso_leituras (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    aviso_id INT UNSIGNED NOT NULL,
+    user_id INT UNSIGNED NOT NULL,
+    lido_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY comunicacao_aviso_leituras_unique (aviso_id, user_id),
+    CONSTRAINT comunicacao_aviso_leituras_aviso_id_foreign
+        FOREIGN KEY (aviso_id) REFERENCES comunicacao_avisos (id) ON DELETE CASCADE,
+    CONSTRAINT comunicacao_aviso_leituras_user_id_foreign
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -118,7 +118,9 @@ if ($avisoTrialTexto !== '') {
     $notificacoes[] = ['icon' => 'bi-hourglass-split', 'texto' => $avisoTrialTexto, 'url' => $basePath . '/dashboard/configuracoes#plano-contratado'];
 }
 
-if (Plano::disponivel($planoAtual, 'comunicacao', $emTrial) && User::podeAcessarModulo($user, 'comunicacao')) {
+$comunicacaoDisponivel = Plano::disponivel($planoAtual, 'comunicacao', $emTrial) && User::podeAcessarModulo($user, 'comunicacao');
+
+if ($comunicacaoDisponivel) {
     foreach (ComunicacaoAviso::ultimosPublicados(3) as $aviso) {
         $notificacoes[] = [
             'icon' => 'bi-megaphone',
@@ -139,6 +141,14 @@ if (User::podeAcessarModulo($user, 'cultos')) {
         ];
     }
 }
+
+// Lista de avisos da barra lateral (substitui o antigo card "Assistente
+// IA") - so aparece pra quem realmente tem acesso ao modulo Comunicacao.
+// Cada aviso ganha um indicador de "novo" ate o usuario abrir a pagina
+// de detalhe (ver ComunicacaoController::show()/marcarComoLido()).
+$avisosSidebar = ($comunicacaoDisponivel && $user !== null)
+    ? ComunicacaoAviso::paraSidebar($user->id, 5)
+    : [];
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -192,17 +202,29 @@ if (User::podeAcessarModulo($user, 'cultos')) {
         </nav>
 
         <div class="dash-sidebar-footer">
-            <div class="dash-ai-card">
-                <div class="dash-ai-title">
-                    <i class="bi bi-stars"></i> Insights da IA
-                    <span class="dash-ai-badge">em breve</span>
+            <?php if ($comunicacaoDisponivel): ?>
+                <div class="dash-avisos-card">
+                    <div class="dash-avisos-title">
+                        <i class="bi bi-megaphone"></i> Avisos
+                        <a href="<?= $basePath ?>/dashboard/comunicacao" class="dash-avisos-ver-todos">Ver todos</a>
+                    </div>
+
+                    <?php if ($avisosSidebar === []): ?>
+                        <p class="dash-avisos-vazio">Nenhum aviso publicado ainda.</p>
+                    <?php else: ?>
+                        <ul class="dash-avisos-list">
+                            <?php foreach ($avisosSidebar as $avisoSidebar): ?>
+                                <li>
+                                    <a href="<?= $basePath ?>/dashboard/comunicacao/<?= $avisoSidebar->id ?>" class="dash-aviso-item">
+                                        <?php if (!$avisoSidebar->lido): ?><span class="dash-aviso-dot" title="Nao lido"></span><?php endif; ?>
+                                        <span class="dash-aviso-titulo"><?= htmlspecialchars($avisoSidebar->titulo, ENT_QUOTES, 'UTF-8') ?></span>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
                 </div>
-                <ul class="dash-ai-list">
-                    <li>Resumos automaticos de frequencia e crescimento da congregacao.</li>
-                    <li>Alertas inteligentes sobre dizimos, ofertas e despesas fora do padrao.</li>
-                    <li>Sugestoes de comunicacao para engajar membros e voluntarios.</li>
-                </ul>
-            </div>
+            <?php endif; ?>
 
             <form method="POST" action="<?= $basePath ?>/logout">
                 <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars(Csrf::token(), ENT_QUOTES, 'UTF-8') ?>">
