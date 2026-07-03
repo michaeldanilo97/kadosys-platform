@@ -45,7 +45,7 @@ $basePath = $config['base_path'] ?? '';
         </div>
 
         <div class="auth-field">
-            <label for="slug">Endereco da sua igreja</label>
+            <label for="slug">URL de acesso ao painel</label>
             <div class="auth-slug-input">
                 <input
                     type="text"
