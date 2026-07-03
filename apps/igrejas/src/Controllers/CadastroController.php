@@ -61,6 +61,11 @@ final class CadastroController extends Controller
         $senha = (string) $this->request->input('senha', '');
         $senhaConfirmacao = (string) $this->request->input('senha_confirmacao', '');
         $plano = (string) $this->request->input('plano', '');
+        $metodoPagamento = (string) $this->request->input('metodo_pagamento', 'cartao');
+
+        if (!in_array($metodoPagamento, ['cartao', 'pix'], true)) {
+            $metodoPagamento = 'cartao';
+        }
 
         $old = [
             'nome_igreja' => $nomeIgreja,
@@ -68,6 +73,7 @@ final class CadastroController extends Controller
             'admin_nome' => $adminNome,
             'admin_email' => $adminEmail,
             'plano' => $plano,
+            'metodo_pagamento' => $metodoPagamento,
         ];
 
         $slug = $this->normalizarSlug($slugInformado !== '' ? $slugInformado : $nomeIgreja);
@@ -102,9 +108,14 @@ final class CadastroController extends Controller
             $adminEmail,
             password_hash($senha, PASSWORD_BCRYPT),
             $plano,
+            $metodoPagamento,
         );
 
         $referenciaExterna = 'kadosys-cadastro-' . $provisionamentoId . '-' . bin2hex(random_bytes(4));
+
+        if ($metodoPagamento === 'pix') {
+            $this->criarCobrancaPix($mp, $provisionamentoId, $plano, $adminEmail, $referenciaExterna, $old);
+        }
 
         try {
             $resposta = $mp->criarAssinatura([
@@ -137,6 +148,93 @@ final class CadastroController extends Controller
 
         header('Location: ' . $resposta['body']['init_point']);
         exit;
+    }
+
+    /**
+     * Cria a cobranca Pix avulsa (chamada so quando metodo_pagamento =
+     * pix) e redireciona pra tela com o QR code - nunca retorna (redireciona
+     * ou aborta a execucao), diferente do fluxo por cartao que continua
+     * na mesma funcao enviar().
+     */
+    private function criarCobrancaPix(
+        MercadoPagoClient $mp,
+        int $provisionamentoId,
+        string $plano,
+        string $adminEmail,
+        string $referenciaExterna,
+        array $old,
+    ): void {
+        $vencimento = new \DateTimeImmutable('+3 days');
+
+        try {
+            $resposta = $mp->criarPagamentoPix([
+                'description' => 'KADOSYS Igrejas - Plano ' . Plano::label($plano),
+                'amount' => Plano::VALOR_MENSAL[$plano],
+                'payerEmail' => $adminEmail,
+                'externalReference' => $referenciaExterna,
+                'expiraEm' => $vencimento,
+            ]);
+        } catch (\RuntimeException $exception) {
+            Provisionamento::atualizarStatus($provisionamentoId, 'erro', $exception->getMessage());
+            Session::flash('cadastro_errors', ['Nao foi possivel gerar a cobranca Pix agora. Tente novamente em instantes.']);
+            Session::flash('cadastro_old', $old);
+            $this->redirect('/cadastro');
+        }
+
+        $qrCode = $resposta['body']['point_of_interaction']['transaction_data']['qr_code'] ?? null;
+        $qrCodeBase64 = $resposta['body']['point_of_interaction']['transaction_data']['qr_code_base64'] ?? null;
+
+        if ($resposta['status'] >= 300 || !isset($resposta['body']['id']) || $qrCode === null) {
+            Provisionamento::atualizarStatus($provisionamentoId, 'erro', json_encode($resposta, JSON_UNESCAPED_UNICODE));
+            Session::flash('cadastro_errors', ['O Mercado Pago recusou a cobranca Pix. Tente novamente.']);
+            Session::flash('cadastro_old', $old);
+            $this->redirect('/cadastro');
+        }
+
+        Provisionamento::definirPagamentoPix(
+            $provisionamentoId,
+            (string) $resposta['body']['id'],
+            $qrCode,
+            (string) $qrCodeBase64,
+            $vencimento,
+        );
+
+        $this->redirect('/cadastro/pix/' . $provisionamentoId);
+    }
+
+    /**
+     * Tela com o QR code / copia-e-cola da cobranca Pix do cadastro. So
+     * mostra dados nao sensiveis (nada de senha/hash) - o id na URL nao
+     * precisa de autenticacao porque o unico jeito de "adivinhar" o id de
+     * outra pessoa e forca bruta num numero sequencial, e o pior que
+     * exporia e o nome da igreja + QR code de uma cobranca que so aquele
+     * CPF/conta consegue pagar mesmo.
+     */
+    public function pix(int $id): void
+    {
+        $provisionamento = Provisionamento::buscarPorId($id);
+
+        if ($provisionamento === null || $provisionamento->metodoPagamento !== 'pix' || $provisionamento->pixQrCode === null) {
+            $this->redirect('/cadastro');
+        }
+
+        echo $this->view('cadastro.pix', [
+            'pageTitle' => 'Pagar com Pix - KADOSYS Igrejas',
+            'provisionamento' => $provisionamento,
+        ], 'auth');
+    }
+
+    /**
+     * Endpoint de polling (JS da tela de Pix) - so devolve o status,
+     * nada sensivel.
+     */
+    public function pixStatus(int $id): void
+    {
+        $provisionamento = Provisionamento::buscarPorId($id);
+
+        $this->jsonResponse([
+            'status' => $provisionamento?->status ?? 'desconhecido',
+        ]);
     }
 
     /**

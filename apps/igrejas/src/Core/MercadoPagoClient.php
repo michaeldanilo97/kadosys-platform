@@ -66,6 +66,43 @@ final class MercadoPagoClient
     }
 
     /**
+     * Cria uma cobranca Pix avulsa (QR code + copia-e-cola), com prazo de
+     * vencimento. Diferente de criarAssinatura() (cartao recorrente,
+     * debitado automaticamente), aqui cada cobranca e paga manualmente
+     * pelo cliente - a renovacao mensal fica por conta de um cron (ver
+     * cron/gerar_faturas_pix.php) que gera uma cobranca nova a cada ciclo.
+     *
+     * @param array{description:string, amount:float, payerEmail:string, externalReference:string, expiraEm:\DateTimeImmutable} $dados
+     * @return array{status:int, body:array}
+     */
+    public function criarPagamentoPix(array $dados): array
+    {
+        return $this->request('POST', '/v1/payments', [
+            'transaction_amount' => $dados['amount'],
+            'description' => $dados['description'],
+            'payment_method_id' => 'pix',
+            'payer' => [
+                'email' => $dados['payerEmail'],
+            ],
+            'external_reference' => $dados['externalReference'],
+            'date_of_expiration' => $dados['expiraEm']->format('Y-m-d\TH:i:sP'),
+        ], [
+            // Evita que uma cobranca seja criada em dobro se a requisicao
+            // falhar depois de ja ter chegado no Mercado Pago (ex.:
+            // timeout na resposta) e o codigo tentar de novo.
+            'X-Idempotency-Key: ' . $dados['externalReference'],
+        ]);
+    }
+
+    /**
+     * @return array{status:int, body:array}
+     */
+    public function buscarPagamento(string $paymentId): array
+    {
+        return $this->request('GET', '/v1/payments/' . urlencode($paymentId));
+    }
+
+    /**
      * Valida o cabecalho "x-signature" de uma notificacao de webhook do
      * Mercado Pago.
      *
@@ -103,19 +140,20 @@ final class MercadoPagoClient
     }
 
     /**
+     * @param array<int, string> $headersExtras
      * @return array{status:int, body:array}
      */
-    private function request(string $method, string $path, ?array $body = null): array
+    private function request(string $method, string $path, ?array $body = null, array $headersExtras = []): array
     {
         $ch = curl_init(self::API_BASE . $path);
 
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => $method,
-            CURLOPT_HTTPHEADER => [
+            CURLOPT_HTTPHEADER => array_merge([
                 'Authorization: Bearer ' . $this->accessToken,
                 'Content-Type: application/json',
-            ],
+            ], $headersExtras),
             CURLOPT_TIMEOUT => 15,
             CURLOPT_SSL_VERIFYPEER => true,
         ]);

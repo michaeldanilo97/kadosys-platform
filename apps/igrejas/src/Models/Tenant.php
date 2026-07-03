@@ -21,6 +21,7 @@ final class Tenant
         public readonly string $slug,
         public readonly string $nomeIgreja,
         public readonly string $plano,
+        public readonly string $metodoPagamento,
         public readonly string $subdominio,
         public readonly string $dbName,
         public readonly string $dbUser,
@@ -41,6 +42,7 @@ final class Tenant
         string $slug,
         string $nomeIgreja,
         string $plano,
+        string $metodoPagamento,
         string $subdominio,
         string $dbName,
         string $dbUser,
@@ -48,14 +50,15 @@ final class Tenant
     ): int {
         $stmt = Database::central()->prepare(
             'INSERT INTO plataforma_tenants
-                (slug, nome_igreja, plano, subdominio, db_name, db_user, db_password, status)
+                (slug, nome_igreja, plano, metodo_pagamento, subdominio, db_name, db_user, db_password, status)
              VALUES
-                (:slug, :nome_igreja, :plano, :subdominio, :db_name, :db_user, :db_password, "provisionando")'
+                (:slug, :nome_igreja, :plano, :metodo_pagamento, :subdominio, :db_name, :db_user, :db_password, "provisionando")'
         );
         $stmt->execute([
             'slug' => $slug,
             'nome_igreja' => $nomeIgreja,
             'plano' => $plano,
+            'metodo_pagamento' => $metodoPagamento,
             'subdominio' => $subdominio,
             'db_name' => $dbName,
             'db_user' => $dbUser,
@@ -71,24 +74,77 @@ final class Tenant
         $stmt->execute(['id' => $id]);
     }
 
-    public static function buscarPorSubdominio(string $subdominio): ?self
+    /**
+     * Mantem o "plano" do registro central sincronizado com
+     * configuracoes_igreja.plano (que mora no banco isolado de cada
+     * tenant) sempre que uma troca de plano e confirmada - ver
+     * AssinaturaController::processarFaturaPix(). Sem isso,
+     * cron/gerar_faturas_pix.php geraria a proxima fatura com o plano
+     * antigo, ja que ele so enxerga esse registro central.
+     */
+    public static function atualizarPlano(int $id, string $plano): void
+    {
+        $stmt = Database::central()->prepare('UPDATE plataforma_tenants SET plano = :plano WHERE id = :id');
+        $stmt->execute(['plano' => $plano, 'id' => $id]);
+    }
+
+    /**
+     * Usado quando um tenant ja ativo troca de metodo de pagamento pela
+     * tela de Configuracoes (ver AssinaturaController::iniciar) - ex.:
+     * escolhe pagar por Pix ao trocar de plano, mesmo ja tendo sido
+     * provisionado originalmente por cartao.
+     */
+    public static function atualizarMetodoPagamento(int $id, string $metodoPagamento): void
     {
         $stmt = Database::central()->prepare(
-            'SELECT id, slug, nome_igreja, plano, subdominio, db_name, db_user, db_password, status
-             FROM plataforma_tenants WHERE subdominio = :subdominio LIMIT 1'
+            'UPDATE plataforma_tenants SET metodo_pagamento = :metodo_pagamento WHERE id = :id'
         );
+        $stmt->execute(['metodo_pagamento' => $metodoPagamento, 'id' => $id]);
+    }
+
+    public static function buscarPorSubdominio(string $subdominio): ?self
+    {
+        $stmt = Database::central()->prepare(self::SELECT_BASE . ' WHERE subdominio = :subdominio LIMIT 1');
         $stmt->execute(['subdominio' => $subdominio]);
         $row = $stmt->fetch();
 
-        if ($row === false) {
-            return null;
-        }
+        return $row === false ? null : self::fromRow($row);
+    }
 
+    public static function buscarPorId(int $id): ?self
+    {
+        $stmt = Database::central()->prepare(self::SELECT_BASE . ' WHERE id = :id LIMIT 1');
+        $stmt->execute(['id' => $id]);
+        $row = $stmt->fetch();
+
+        return $row === false ? null : self::fromRow($row);
+    }
+
+    /**
+     * @return array<int, self>
+     */
+    public static function ativosComPagamentoPix(): array
+    {
+        $stmt = Database::central()->prepare(
+            self::SELECT_BASE . " WHERE status = 'ativo' AND metodo_pagamento = 'pix'"
+        );
+        $stmt->execute();
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    private const SELECT_BASE = 'SELECT id, slug, nome_igreja, plano, metodo_pagamento, subdominio,
+            db_name, db_user, db_password, status
+        FROM plataforma_tenants';
+
+    private static function fromRow(array $row): self
+    {
         return new self(
             id: (int) $row['id'],
             slug: $row['slug'],
             nomeIgreja: $row['nome_igreja'],
             plano: $row['plano'],
+            metodoPagamento: $row['metodo_pagamento'],
             subdominio: $row['subdominio'],
             dbName: $row['db_name'],
             dbUser: $row['db_user'],

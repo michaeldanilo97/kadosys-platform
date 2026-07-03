@@ -11,10 +11,13 @@ use Igrejas\Core\Csrf;
 use Igrejas\Core\MercadoPagoClient;
 use Igrejas\Core\Provisionador;
 use Igrejas\Core\Session;
+use Igrejas\Core\TenantResolver;
 use Igrejas\Models\Assinatura;
 use Igrejas\Models\ConfiguracaoIgreja;
+use Igrejas\Models\FaturaPix;
 use Igrejas\Models\Plano;
 use Igrejas\Models\Provisionamento;
+use Igrejas\Models\Tenant;
 
 /**
  * Assinatura recorrente do plano contratado via Mercado Pago (Checkout
@@ -52,6 +55,12 @@ final class AssinaturaController extends Controller
         }
 
         $usuario = (new Auth($this->config))->user();
+        $metodoPagamento = (string) $this->request->input('metodo_pagamento', 'cartao');
+
+        if ($metodoPagamento === 'pix') {
+            $this->iniciarPix($mp, $plano, $usuario?->email ?? '');
+        }
+
         $referenciaExterna = 'kadosys-' . $plano . '-' . bin2hex(random_bytes(6));
 
         try {
@@ -82,6 +91,64 @@ final class AssinaturaController extends Controller
     }
 
     /**
+     * Equivalente a iniciar(), mas pra Pix: em vez de redirecionar pro
+     * Checkout Pro (que so aceita cartao), gera uma cobranca avulsa e
+     * redireciona pra tela de QR code (reaproveitada de
+     * ConfiguracaoController::faturaVencida). So disponivel pra tenants
+     * provisionados automaticamente (ver TenantResolver) - sem isso nao
+     * ha onde registrar a fatura Pix (ver Igrejas\Models\FaturaPix).
+     */
+    private function iniciarPix(MercadoPagoClient $mp, string $plano, string $payerEmail): never
+    {
+        $tenant = TenantResolver::atual();
+
+        if ($tenant === null) {
+            Session::flash('config_errors', ['Pagamento via Pix nao esta disponivel pra esta conta. Use cartao.']);
+            $this->redirect('/dashboard/configuracoes');
+        }
+
+        $vencimento = new \DateTimeImmutable('+3 days');
+        $referenciaExterna = 'kadosys-renovacao-' . $tenant->id . '-' . bin2hex(random_bytes(4));
+
+        try {
+            $resposta = $mp->criarPagamentoPix([
+                'description' => 'KADOSYS Igrejas - Plano ' . Plano::label($plano),
+                'amount' => Plano::VALOR_MENSAL[$plano],
+                'payerEmail' => $payerEmail,
+                'externalReference' => $referenciaExterna,
+                'expiraEm' => $vencimento,
+            ]);
+        } catch (\RuntimeException $exception) {
+            Assinatura::registrarEvento(null, 'erro_criar_pagamento_pix', $exception->getMessage());
+            Session::flash('config_errors', ['Nao foi possivel gerar a cobranca Pix agora. Tente novamente em instantes.']);
+            $this->redirect('/dashboard/configuracoes');
+        }
+
+        $qrCode = $resposta['body']['point_of_interaction']['transaction_data']['qr_code'] ?? null;
+        $qrCodeBase64 = $resposta['body']['point_of_interaction']['transaction_data']['qr_code_base64'] ?? null;
+
+        if ($resposta['status'] >= 300 || !isset($resposta['body']['id']) || $qrCode === null) {
+            Assinatura::registrarEvento(null, 'erro_criar_pagamento_pix', json_encode($resposta, JSON_UNESCAPED_UNICODE));
+            Session::flash('config_errors', ['O Mercado Pago recusou a cobranca Pix. Tente novamente.']);
+            $this->redirect('/dashboard/configuracoes');
+        }
+
+        FaturaPix::criar(
+            $tenant->id,
+            $plano,
+            Plano::VALOR_MENSAL[$plano],
+            (string) $resposta['body']['id'],
+            $qrCode,
+            (string) $qrCodeBase64,
+            $vencimento,
+        );
+
+        Tenant::atualizarMetodoPagamento($tenant->id, 'pix');
+
+        $this->redirect('/dashboard/fatura-vencida');
+    }
+
+    /**
      * Pagina de retorno do Checkout Pro. Nunca atualiza o plano por
      * aqui - o navegador do usuario nao e uma fonte confiavel pra
      * confirmar pagamento, so o webhook (assinado pelo Mercado Pago) e.
@@ -99,12 +166,23 @@ final class AssinaturaController extends Controller
         $xSignature = $headers['x-signature'] ?? '';
         $xRequestId = $headers['x-request-id'] ?? '';
         $dataId = $this->extrairDataId($corpoBruto);
+        $tipo = $this->extrairTipo($corpoBruto);
 
         $mp = new MercadoPagoClient();
 
         if (!$mp->validarAssinaturaWebhook($xSignature, $xRequestId, $dataId)) {
             Assinatura::registrarEvento(null, 'webhook_assinatura_invalida', $corpoBruto);
             http_response_code(401);
+
+            return;
+        }
+
+        // Notificacao de pagamento avulso (Pix) - cadastro novo ou fatura
+        // de renovacao mensal. Fluxo totalmente separado do preapproval
+        // (cartao) abaixo, porque "data.id" aqui e um id de pagamento, nao
+        // de assinatura.
+        if ($tipo === 'payment') {
+            $this->processarNotificacaoPagamento($mp, $dataId, $corpoBruto);
 
             return;
         }
@@ -199,6 +277,124 @@ final class AssinaturaController extends Controller
         (new Provisionador(new CpanelUapiClient()))->provisionar($provisionamento);
     }
 
+    /**
+     * Notificacao de pagamento avulso (topic/type "payment"). Cobre os
+     * dois casos de cobranca Pix do sistema: o pagamento unico de um
+     * cadastro publico novo (Provisionamento) e a fatura de renovacao
+     * mensal de um tenant ja ativo (FaturaPix) - so um dos dois vai bater
+     * pra um dado id de pagamento.
+     */
+    private function processarNotificacaoPagamento(MercadoPagoClient $mp, string $paymentId, string $corpoBruto): void
+    {
+        try {
+            $resposta = $mp->buscarPagamento($paymentId);
+        } catch (\RuntimeException $exception) {
+            Assinatura::registrarEvento(null, 'webhook_pagamento_erro_comunicacao', $exception->getMessage());
+            http_response_code(502);
+
+            return;
+        }
+
+        if ($resposta['status'] !== 200) {
+            Assinatura::registrarEvento(null, 'webhook_pagamento_ignorado', $corpoBruto);
+            http_response_code(200);
+
+            return;
+        }
+
+        $pagamento = $resposta['body'];
+        $statusPagamento = (string) ($pagamento['status'] ?? '');
+        $statusInterno = match ($statusPagamento) {
+            'approved' => 'autorizada',
+            'cancelled', 'rejected', 'refunded', 'charged_back' => 'cancelada',
+            default => 'pendente',
+        };
+
+        $provisionamento = Provisionamento::buscarPorPaymentId($paymentId);
+
+        if ($provisionamento !== null) {
+            $this->processarProvisionamento($provisionamento, $statusInterno, $corpoBruto);
+            http_response_code(200);
+
+            return;
+        }
+
+        $fatura = FaturaPix::buscarPorPaymentId($paymentId);
+
+        if ($fatura !== null) {
+            $this->processarFaturaPix($fatura, $statusInterno, $corpoBruto);
+            http_response_code(200);
+
+            return;
+        }
+
+        Assinatura::registrarEvento(null, 'webhook_pagamento_desconhecido', $corpoBruto);
+        http_response_code(200);
+    }
+
+    /**
+     * Confirma a fatura de renovacao mensal (ver cron/gerar_faturas_pix.php)
+     * assim que o Pix cai - o que libera o acesso da igreja de volta (ver
+     * tela de Configuracoes) e o proximo ciclo fica por conta do cron.
+     */
+    private function processarFaturaPix(FaturaPix $fatura, string $statusInterno, string $corpoBruto): void
+    {
+        Assinatura::registrarEvento(null, 'webhook_fatura_pix_' . $statusInterno, $corpoBruto);
+
+        if ($statusInterno !== 'autorizada' || $fatura->status !== 'pendente') {
+            return;
+        }
+
+        FaturaPix::marcarPaga($fatura->id);
+
+        // A fatura carrega o plano que ela cobre (pode ser uma troca de
+        // plano via Pix, nao so a renovacao do mesmo plano - ver
+        // AssinaturaController::iniciarPix). Propaga pros dois lugares:
+        // o registro central (usado pelo cron pra saber o valor da
+        // proxima cobranca) e o banco isolado do proprio tenant (fonte
+        // de verdade pro PlanoMiddleware liberar os modulos).
+        Tenant::atualizarPlano($fatura->tenantId, $fatura->plano);
+        $this->atualizarPlanoNoBancoDoTenant($fatura->tenantId, $fatura->plano);
+    }
+
+    /**
+     * O webhook roda sempre na instalacao central (o Mercado Pago chama
+     * uma unica URL fixa, nunca o subdominio de um tenant especifico) -
+     * entao Database::connection() aqui NUNCA e o banco isolado do
+     * tenant certo. Por isso conecta direto, com as credenciais gravadas
+     * no registro central (mesmo padrao do Provisionador).
+     */
+    private function atualizarPlanoNoBancoDoTenant(int $tenantId, string $plano): void
+    {
+        $tenant = Tenant::buscarPorId($tenantId);
+
+        if ($tenant === null) {
+            return;
+        }
+
+        $dbConfig = require dirname(__DIR__, 2) . '/config/database.php';
+        $dsn = sprintf(
+            '%s:host=%s;port=%s;dbname=%s;charset=%s',
+            $dbConfig['driver'],
+            $dbConfig['host'],
+            $dbConfig['port'],
+            $tenant->dbName,
+            $dbConfig['charset']
+        );
+
+        try {
+            $pdo = new \PDO($dsn, $tenant->dbUser, $tenant->dbPassword, [
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+            ]);
+            $pdo->prepare(
+                'INSERT INTO configuracoes_igreja (id, plano) VALUES (1, :plano)
+                 ON DUPLICATE KEY UPDATE plano = VALUES(plano)'
+            )->execute(['plano' => $plano]);
+        } catch (\Throwable $exception) {
+            Assinatura::registrarEvento(null, 'erro_atualizar_plano_tenant_' . $tenantId, $exception->getMessage());
+        }
+    }
+
     /** @return array<string, string> */
     private function cabecalhosEmMinusculo(): array
     {
@@ -229,5 +425,24 @@ final class AssinaturaController extends Controller
         $corpo = json_decode($corpoBruto, true);
 
         return (string) ($corpo['data']['id'] ?? '');
+    }
+
+    /**
+     * O tipo da notificacao ("payment" ou "subscription_preapproval")
+     * vem tanto na query string ("type"/"topic", dependendo da versao do
+     * webhook) quanto, as vezes, no corpo. Sem ponto no nome, entao
+     * $_GET funciona normalmente aqui (diferente de "data.id").
+     */
+    private function extrairTipo(string $corpoBruto): string
+    {
+        $tipo = (string) ($_GET['type'] ?? $_GET['topic'] ?? '');
+
+        if ($tipo !== '') {
+            return $tipo;
+        }
+
+        $corpo = json_decode($corpoBruto, true);
+
+        return (string) ($corpo['type'] ?? $corpo['topic'] ?? '');
     }
 }

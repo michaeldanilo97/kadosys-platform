@@ -9,8 +9,10 @@ use Igrejas\Core\Controller;
 use Igrejas\Core\Csrf;
 use Igrejas\Core\MercadoPagoClient;
 use Igrejas\Core\Session;
+use Igrejas\Core\TenantResolver;
 use Igrejas\Models\Assinatura;
 use Igrejas\Models\ConfiguracaoIgreja;
+use Igrejas\Models\FaturaPix;
 use Igrejas\Models\Plano;
 
 /**
@@ -45,6 +47,12 @@ final class ConfiguracaoController extends Controller
             'configuracao' => ConfiguracaoIgreja::atual(),
             'assinatura' => Assinatura::ultima(),
             'pagamentoConfigurado' => (new MercadoPagoClient())->configurado(),
+            // Pix so esta disponivel pra igrejas provisionadas
+            // automaticamente (com registro central de tenant) - a fatura
+            // Pix mensal depende desse registro pra o webhook (que roda
+            // sempre na instalacao central) saber a quem pertence cada
+            // pagamento. A instalacao original continua so com cartao.
+            'pixDisponivel' => TenantResolver::atual() !== null,
             'success' => Session::flash('config_success'),
             'errors' => Session::flash('config_errors') ?? [],
             'csrf' => Csrf::field(),
@@ -69,6 +77,111 @@ final class ConfiguracaoController extends Controller
 
         Session::flash('config_success', 'Plano atualizado para ' . Plano::label($plano) . '.');
         $this->redirect('/dashboard/configuracoes');
+    }
+
+    /**
+     * Tela mostrada quando a fatura Pix de renovacao mensal vence sem
+     * pagamento (ver AuthMiddleware::bloquearSeFaturaPixVencida) - exibe
+     * o QR code pra pagar. Se a ultima fatura ja estiver "expirada" (o
+     * cron so gera uma nova uma vez por dia), gera uma cobranca nova na
+     * hora pra nao deixar o admin esperando.
+     */
+    public function faturaVencida(): void
+    {
+        $tenant = TenantResolver::atual();
+
+        if ($tenant === null || $tenant->metodoPagamento !== 'pix') {
+            $this->redirect('/dashboard');
+        }
+
+        $fatura = FaturaPix::ultimaDoTenant($tenant->id);
+
+        if ($fatura !== null && ($fatura->status === 'paga' || $fatura->status === 'cancelada')) {
+            $this->redirect('/dashboard');
+        }
+
+        if ($fatura === null || $fatura->status === 'expirada') {
+            $fatura = $this->gerarNovaFaturaPix($tenant, $fatura);
+        }
+
+        echo $this->view('dashboard.fatura-vencida', [
+            'pageTitle' => 'Fatura pendente - KADOSYS Igrejas',
+            'activeMenu' => 'fatura-vencida',
+            'breadcrumb' => ['Dashboard', 'Fatura pendente'],
+            'user' => (new Auth($this->config))->user(),
+            'modules' => DashboardController::modules(),
+            'fatura' => $fatura,
+        ], 'dashboard');
+    }
+
+    /**
+     * Endpoint de polling (JS da tela de fatura vencida) - so devolve o
+     * status da ultima fatura, nada sensivel.
+     */
+    public function faturaVencidaStatus(): void
+    {
+        $tenant = TenantResolver::atual();
+        $fatura = $tenant !== null ? FaturaPix::ultimaDoTenant($tenant->id) : null;
+
+        $this->jsonResponse([
+            'status' => $fatura?->status ?? 'desconhecido',
+        ]);
+    }
+
+    /**
+     * Gera uma cobranca Pix nova pra fatura de renovacao, sob demanda
+     * (fora do horario do cron). Devolve a fatura anterior sem quebrar a
+     * tela se o Mercado Pago nao estiver configurado ou recusar a
+     * cobranca - o cron tenta de novo no proximo ciclo de qualquer jeito.
+     */
+    private function gerarNovaFaturaPix(\Igrejas\Models\Tenant $tenant, ?FaturaPix $anterior): ?FaturaPix
+    {
+        $mp = new MercadoPagoClient();
+
+        if (!$mp->configurado()) {
+            return $anterior;
+        }
+
+        $valor = Plano::VALOR_MENSAL[$tenant->plano] ?? null;
+
+        if ($valor === null) {
+            return $anterior;
+        }
+
+        $usuario = (new Auth($this->config))->user();
+        $vencimento = new \DateTimeImmutable('+3 days');
+        $referencia = 'kadosys-renovacao-' . $tenant->id . '-' . bin2hex(random_bytes(4));
+
+        try {
+            $resposta = $mp->criarPagamentoPix([
+                'description' => 'KADOSYS Igrejas - Renovacao ' . Plano::label($tenant->plano),
+                'amount' => $valor,
+                'payerEmail' => $usuario?->email ?? '',
+                'externalReference' => $referencia,
+                'expiraEm' => $vencimento,
+            ]);
+        } catch (\RuntimeException) {
+            return $anterior;
+        }
+
+        $qrCode = $resposta['body']['point_of_interaction']['transaction_data']['qr_code'] ?? null;
+        $qrCodeBase64 = $resposta['body']['point_of_interaction']['transaction_data']['qr_code_base64'] ?? null;
+
+        if ($resposta['status'] >= 300 || !isset($resposta['body']['id']) || $qrCode === null) {
+            return $anterior;
+        }
+
+        FaturaPix::criar(
+            $tenant->id,
+            $tenant->plano,
+            $valor,
+            (string) $resposta['body']['id'],
+            $qrCode,
+            (string) $qrCodeBase64,
+            $vencimento,
+        );
+
+        return FaturaPix::buscarPorPaymentId((string) $resposta['body']['id']);
     }
 
     public function atualizarLogo(): void

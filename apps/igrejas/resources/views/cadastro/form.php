@@ -141,6 +141,32 @@ $basePath = $config['base_path'] ?? '';
             <span class="auth-field-hint">Precisa do plano Enterprise? <a href="mailto:contato@kadosys.com.br">Fale com o suporte</a>.</span>
         </div>
 
+        <div class="auth-field">
+            <label>Forma de pagamento</label>
+            <div class="plano-escolha">
+                <label class="plano-escolha-card" data-plano-card>
+                    <input
+                        type="radio"
+                        name="metodo_pagamento"
+                        value="cartao"
+                        <?= ($old['metodo_pagamento'] ?? 'cartao') === 'cartao' ? 'checked' : '' ?>
+                    >
+                    <span class="nome"><i class="bi bi-credit-card"></i> Cartao</span>
+                    <span class="desc">Cobranca automatica todo mes</span>
+                </label>
+                <label class="plano-escolha-card" data-plano-card>
+                    <input
+                        type="radio"
+                        name="metodo_pagamento"
+                        value="pix"
+                        <?= ($old['metodo_pagamento'] ?? '') === 'pix' ? 'checked' : '' ?>
+                    >
+                    <span class="nome"><i class="bi bi-qr-code"></i> Pix</span>
+                    <span class="desc">Fatura nova todo mes, paga na hora</span>
+                </label>
+            </div>
+        </div>
+
         <button type="submit" class="btn-k btn-k-grad">Criar conta e ir para o pagamento <i class="bi bi-arrow-right"></i></button>
     </form>
 
