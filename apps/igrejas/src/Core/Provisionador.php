@@ -57,8 +57,14 @@ final class Provisionador
         $subdominio = $provisionamento->slug . '.' . $cpanelConfig['root_domain'];
 
         try {
-            $this->executarOuFalhar($this->cpanel->criarBancoDeDados($sufixo), 'criar o banco de dados');
-            $this->executarOuFalhar($this->cpanel->criarUsuarioBanco($sufixo, $dbSenha), 'criar o usuario do banco');
+            // Mysql::create_database/create_user exigem o nome ja com o
+            // prefixo "usuario_" incluido nesta versao/configuracao do
+            // cPanel (confirmado com um erro real em producao: "O nome
+            // 't10' nao comeca com o prefixo obrigatorio 'kadosys1_'") -
+            // diferente do comportamento classico de auto-prefixar a
+            // partir so do sufixo.
+            $this->executarOuFalhar($this->cpanel->criarBancoDeDados($dbNome), 'criar o banco de dados');
+            $this->executarOuFalhar($this->cpanel->criarUsuarioBanco($dbNome, $dbSenha), 'criar o usuario do banco');
             $this->executarOuFalhar($this->cpanel->concederPrivilegios($dbNome, $dbNome), 'conceder privilegios ao usuario do banco');
             $this->executarOuFalhar(
                 $this->cpanel->criarSubdominio($provisionamento->slug, $cpanelConfig['root_domain'], $cpanelConfig['subdomain_docroot']),
