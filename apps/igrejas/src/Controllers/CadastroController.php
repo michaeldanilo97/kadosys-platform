@@ -335,7 +335,67 @@ final class CadastroController extends Controller
         echo $this->view('cadastro.pronto', [
             'pageTitle' => 'Preparando sua conta - KADOSYS Igrejas',
             'subdominio' => $tenant->subdominio,
+            'provisionamentoId' => $provisionamento->id,
         ], 'auth');
+    }
+
+    /**
+     * Endpoint de polling (JS da tela de espera "pronto") - verifica se
+     * o subdominio recem-criado ja esta respondendo de verdade.
+     *
+     * Antes esse check era feito no navegador com um fetch
+     * "no-cors" direto pro subdominio: como esse modo so enxerga se a
+     * conexao foi estabelecida (nunca o status/corpo da resposta - isso
+     * e opaco por causa do CORS), qualquer resposta HTTP contava como
+     * "pronto", inclusive uma pagina de erro do proprio servidor
+     * (dominio ainda sem vhost carregado, banco daquele tenant ainda
+     * nao acessivel, etc.) - o usuario era mandado pro login mesmo com
+     * o site ainda quebrado. Fazendo a checagem aqui no servidor da pra
+     * ler o status E o corpo de verdade, e so confirmar "pronto" quando
+     * a pagina de login renderizou por completo.
+     */
+    public function prontoStatus(string $id): void
+    {
+        $provisionamento = Provisionamento::buscarPorId((int) $id);
+
+        if ($provisionamento === null || $provisionamento->status !== 'concluido' || $provisionamento->tenantId === null) {
+            $this->jsonResponse(['pronto' => false]);
+        }
+
+        $tenant = Tenant::buscarPorId($provisionamento->tenantId);
+
+        if ($tenant === null) {
+            $this->jsonResponse(['pronto' => false]);
+        }
+
+        $this->jsonResponse(['pronto' => self::subdominioRespondendo($tenant->subdominio)]);
+    }
+
+    private static function subdominioRespondendo(string $subdominio): bool
+    {
+        $ch = curl_init('https://' . $subdominio . '/login');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_TIMEOUT => 8,
+        ]);
+        $body = curl_exec($ch);
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        return self::respostaIndicaProntidao((int) $status, is_string($body) ? $body : null);
+    }
+
+    /**
+     * Confirma que a resposta e a pagina de login de verdade (status
+     * 200 e marcador do formulario no corpo), nao so que o servidor
+     * respondeu alguma coisa (o que incluiria uma pagina de erro).
+     * Separado do curl acima pra dar pra testar sem depender de rede.
+     */
+    private static function respostaIndicaProntidao(int $status, ?string $body): bool
+    {
+        return $status === 200 && $body !== null && str_contains($body, 'name="_csrf_token"');
     }
 
     /**

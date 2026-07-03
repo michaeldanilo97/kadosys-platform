@@ -10,10 +10,11 @@
 
   function initVerificacao() {
     var loginUrl = window.KADOSYS_LOGIN_URL;
+    var statusUrl = window.KADOSYS_STATUS_URL;
     var statusEl = document.querySelector('[data-provisionamento-status]');
     var fallbackEl = document.querySelector('[data-provisionamento-fallback]');
 
-    if (!loginUrl || !statusEl) {
+    if (!loginUrl || !statusUrl || !statusEl) {
       return;
     }
 
@@ -27,12 +28,24 @@
       verificando = true;
       tentativas++;
 
-      // "no-cors" nao deixa ler o status da resposta, mas a Promise so
-      // rejeita se o navegador nem conseguir chegar no servidor (DNS
-      // ainda nao propagou) - suficiente pra saber quando da pra
-      // redirecionar com seguranca pro subdominio novo.
-      fetch(loginUrl, { mode: 'no-cors', cache: 'no-store' })
-        .then(function () {
+      // O check roda no proprio servidor (mesma origem, sem CORS),
+      // que consegue ler o status/corpo de verdade da pagina de login
+      // do subdominio novo - so confirma "pronto" quando a pagina
+      // carregou por completo, nao so quando o servidor respondeu
+      // alguma coisa (o que incluiria uma pagina de erro).
+      fetch(statusUrl, { cache: 'no-store' })
+        .then(function (resposta) { return resposta.json(); })
+        .then(function (dados) {
+          verificando = false;
+
+          if (!dados || !dados.pronto) {
+            if (tentativas >= MAX_TENTATIVAS && fallbackEl) {
+              fallbackEl.hidden = false;
+            }
+
+            return;
+          }
+
           clearInterval(intervalo);
           statusEl.classList.add('confirmado');
           statusEl.innerHTML = '<i class="bi bi-check-circle"></i> Tudo pronto! Entrando...';
