@@ -50,11 +50,18 @@ final class CpanelUapiClient
     }
 
     /**
+     * A funcao "set_privileges_on_user" (nome usado na documentacao mais
+     * recente da UAPI) nao existe nesta versao/instalacao de cPanel -
+     * confirmado com um erro real em producao ("The system could not
+     * find the function") e com uma listagem direta das funcoes do
+     * modulo (Cpanel::API::Mysql) via SSH, que so tem
+     * "set_privileges_on_database".
+     *
      * @return array{sucesso:bool, status_http:int, body:array}
      */
     public function concederPrivilegios(string $usuario, string $banco): array
     {
-        return $this->chamar('Mysql', 'set_privileges_on_user', [
+        return $this->chamar('Mysql', 'set_privileges_on_database', [
             'user' => $usuario,
             'database' => $banco,
             'privileges' => 'ALL PRIVILEGES',
