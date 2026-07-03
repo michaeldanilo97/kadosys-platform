@@ -21,6 +21,7 @@ final class Tenant
         public readonly string $slug,
         public readonly string $nomeIgreja,
         public readonly string $plano,
+        public readonly string $metodoPagamento,
         public readonly string $subdominio,
         public readonly string $dbName,
         public readonly string $dbUser,
@@ -41,6 +42,7 @@ final class Tenant
         string $slug,
         string $nomeIgreja,
         string $plano,
+        string $metodoPagamento,
         string $subdominio,
         string $dbName,
         string $dbUser,
@@ -48,14 +50,15 @@ final class Tenant
     ): int {
         $stmt = Database::central()->prepare(
             'INSERT INTO plataforma_tenants
-                (slug, nome_igreja, plano, subdominio, db_name, db_user, db_password, status)
+                (slug, nome_igreja, plano, metodo_pagamento, subdominio, db_name, db_user, db_password, status)
              VALUES
-                (:slug, :nome_igreja, :plano, :subdominio, :db_name, :db_user, :db_password, "provisionando")'
+                (:slug, :nome_igreja, :plano, :metodo_pagamento, :subdominio, :db_name, :db_user, :db_password, "provisionando")'
         );
         $stmt->execute([
             'slug' => $slug,
             'nome_igreja' => $nomeIgreja,
             'plano' => $plano,
+            'metodo_pagamento' => $metodoPagamento,
             'subdominio' => $subdominio,
             'db_name' => $dbName,
             'db_user' => $dbUser,
@@ -73,22 +76,47 @@ final class Tenant
 
     public static function buscarPorSubdominio(string $subdominio): ?self
     {
-        $stmt = Database::central()->prepare(
-            'SELECT id, slug, nome_igreja, plano, subdominio, db_name, db_user, db_password, status
-             FROM plataforma_tenants WHERE subdominio = :subdominio LIMIT 1'
-        );
+        $stmt = Database::central()->prepare(self::SELECT_BASE . ' WHERE subdominio = :subdominio LIMIT 1');
         $stmt->execute(['subdominio' => $subdominio]);
         $row = $stmt->fetch();
 
-        if ($row === false) {
-            return null;
-        }
+        return $row === false ? null : self::fromRow($row);
+    }
 
+    public static function buscarPorId(int $id): ?self
+    {
+        $stmt = Database::central()->prepare(self::SELECT_BASE . ' WHERE id = :id LIMIT 1');
+        $stmt->execute(['id' => $id]);
+        $row = $stmt->fetch();
+
+        return $row === false ? null : self::fromRow($row);
+    }
+
+    /**
+     * @return array<int, self>
+     */
+    public static function ativosComPagamentoPix(): array
+    {
+        $stmt = Database::central()->prepare(
+            self::SELECT_BASE . " WHERE status = 'ativo' AND metodo_pagamento = 'pix'"
+        );
+        $stmt->execute();
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    private const SELECT_BASE = 'SELECT id, slug, nome_igreja, plano, metodo_pagamento, subdominio,
+            db_name, db_user, db_password, status
+        FROM plataforma_tenants';
+
+    private static function fromRow(array $row): self
+    {
         return new self(
             id: (int) $row['id'],
             slug: $row['slug'],
             nomeIgreja: $row['nome_igreja'],
             plano: $row['plano'],
+            metodoPagamento: $row['metodo_pagamento'],
             subdominio: $row['subdominio'],
             dbName: $row['db_name'],
             dbUser: $row['db_user'],

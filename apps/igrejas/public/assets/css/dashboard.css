@@ -1142,6 +1142,33 @@ body.dashboard-body[data-theme="light"] {
   color: #6D28D9;
 }
 
+/* ---- Aviso de fatura Pix perto do vencimento ------------------------------ */
+
+.dash-pix-aviso {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.85rem 1.1rem;
+  margin-bottom: 1.2rem;
+  border-radius: var(--radius-sm);
+  background: rgba(212, 161, 63, 0.1);
+  border: 1px solid rgba(212, 161, 63, 0.3);
+  color: #d4a13f;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.dash-pix-aviso:hover {
+  background: rgba(212, 161, 63, 0.16);
+  color: #d4a13f;
+}
+
+.dash-pix-aviso span {
+  flex: 1;
+}
+
 /* ---- Overlay mobile da sidebar -------------------------------------------- */
 
 .sidebar-overlay {

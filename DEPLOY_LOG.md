@@ -17,6 +17,34 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 16 - 2026-07-03
+
+**Pagamento via Pix (fatura mensal) - cadastro novo e renovacao de igrejas ja ativas**
+
+- Agora, alem do cartao (assinatura recorrente automatica), quem se
+  cadastra pode escolher pagar por Pix. Nesse caso:
+  - No cadastro publico, gera na hora um QR code + codigo "copia e
+    cola" com 3 dias de prazo; a tela fica atualizando sozinha e, assim
+    que o Pix cai, o provisionamento automatico da igreja (banco,
+    subdominio, etc. - Ajuste 15) comeca do mesmo jeito que no cartao.
+  - Igrejas que pagam por Pix recebem uma fatura nova todo mes (nao e
+    debito automatico) - um novo job (`cron/gerar_faturas_pix.php`,
+    precisa ser agendado no "Cron Jobs" do cPanel pra rodar 1x por dia)
+    gera a proxima cobranca com folga antes do vencimento.
+  - O painel mostra um aviso (com link pra pagar) alguns dias antes do
+    vencimento. Se vencer sem pagar, o acesso ao painel fica bloqueado
+    (com uma tela propria mostrando o QR code pra regularizar) ate o
+    pagamento cair - confirmado automaticamente pelo mesmo webhook do
+    Mercado Pago.
+- **Nenhuma configuracao nova e necessaria** alem do que ja estava
+  configurado pro cartao (mesmas credenciais do Mercado Pago) - so
+  precisa cadastrar o cron job mencionado acima no cPanel pra renovacao
+  automatica funcionar (o cadastro/pagamento inicial via Pix ja funciona
+  sem isso).
+- No painel do Mercado Pago, e preciso garantir que a notificacao de
+  webhook do tipo "Pagamentos" (`payment`) esteja habilitada, alem da
+  de assinaturas - sem isso a confirmacao automatica do Pix nao chega.
+
 ## Ajuste 15 - 2026-07-03
 
 **Provisionamento 100% automatico da nova igreja (Fases 2 e 3) - cadastro completo funcionando sozinho**

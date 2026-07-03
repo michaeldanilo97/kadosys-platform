@@ -13,6 +13,7 @@ use Igrejas\Core\Provisionador;
 use Igrejas\Core\Session;
 use Igrejas\Models\Assinatura;
 use Igrejas\Models\ConfiguracaoIgreja;
+use Igrejas\Models\FaturaPix;
 use Igrejas\Models\Plano;
 use Igrejas\Models\Provisionamento;
 
@@ -99,12 +100,23 @@ final class AssinaturaController extends Controller
         $xSignature = $headers['x-signature'] ?? '';
         $xRequestId = $headers['x-request-id'] ?? '';
         $dataId = $this->extrairDataId($corpoBruto);
+        $tipo = $this->extrairTipo($corpoBruto);
 
         $mp = new MercadoPagoClient();
 
         if (!$mp->validarAssinaturaWebhook($xSignature, $xRequestId, $dataId)) {
             Assinatura::registrarEvento(null, 'webhook_assinatura_invalida', $corpoBruto);
             http_response_code(401);
+
+            return;
+        }
+
+        // Notificacao de pagamento avulso (Pix) - cadastro novo ou fatura
+        // de renovacao mensal. Fluxo totalmente separado do preapproval
+        // (cartao) abaixo, porque "data.id" aqui e um id de pagamento, nao
+        // de assinatura.
+        if ($tipo === 'payment') {
+            $this->processarNotificacaoPagamento($mp, $dataId, $corpoBruto);
 
             return;
         }
@@ -199,6 +211,75 @@ final class AssinaturaController extends Controller
         (new Provisionador(new CpanelUapiClient()))->provisionar($provisionamento);
     }
 
+    /**
+     * Notificacao de pagamento avulso (topic/type "payment"). Cobre os
+     * dois casos de cobranca Pix do sistema: o pagamento unico de um
+     * cadastro publico novo (Provisionamento) e a fatura de renovacao
+     * mensal de um tenant ja ativo (FaturaPix) - so um dos dois vai bater
+     * pra um dado id de pagamento.
+     */
+    private function processarNotificacaoPagamento(MercadoPagoClient $mp, string $paymentId, string $corpoBruto): void
+    {
+        try {
+            $resposta = $mp->buscarPagamento($paymentId);
+        } catch (\RuntimeException $exception) {
+            Assinatura::registrarEvento(null, 'webhook_pagamento_erro_comunicacao', $exception->getMessage());
+            http_response_code(502);
+
+            return;
+        }
+
+        if ($resposta['status'] !== 200) {
+            Assinatura::registrarEvento(null, 'webhook_pagamento_ignorado', $corpoBruto);
+            http_response_code(200);
+
+            return;
+        }
+
+        $pagamento = $resposta['body'];
+        $statusPagamento = (string) ($pagamento['status'] ?? '');
+        $statusInterno = match ($statusPagamento) {
+            'approved' => 'autorizada',
+            'cancelled', 'rejected', 'refunded', 'charged_back' => 'cancelada',
+            default => 'pendente',
+        };
+
+        $provisionamento = Provisionamento::buscarPorPaymentId($paymentId);
+
+        if ($provisionamento !== null) {
+            $this->processarProvisionamento($provisionamento, $statusInterno, $corpoBruto);
+            http_response_code(200);
+
+            return;
+        }
+
+        $fatura = FaturaPix::buscarPorPaymentId($paymentId);
+
+        if ($fatura !== null) {
+            $this->processarFaturaPix($fatura, $statusInterno, $corpoBruto);
+            http_response_code(200);
+
+            return;
+        }
+
+        Assinatura::registrarEvento(null, 'webhook_pagamento_desconhecido', $corpoBruto);
+        http_response_code(200);
+    }
+
+    /**
+     * Confirma a fatura de renovacao mensal (ver cron/gerar_faturas_pix.php)
+     * assim que o Pix cai - o que libera o acesso da igreja de volta (ver
+     * tela de Configuracoes) e o proximo ciclo fica por conta do cron.
+     */
+    private function processarFaturaPix(FaturaPix $fatura, string $statusInterno, string $corpoBruto): void
+    {
+        Assinatura::registrarEvento(null, 'webhook_fatura_pix_' . $statusInterno, $corpoBruto);
+
+        if ($statusInterno === 'autorizada' && $fatura->status === 'pendente') {
+            FaturaPix::marcarPaga($fatura->id);
+        }
+    }
+
     /** @return array<string, string> */
     private function cabecalhosEmMinusculo(): array
     {
@@ -229,5 +310,24 @@ final class AssinaturaController extends Controller
         $corpo = json_decode($corpoBruto, true);
 
         return (string) ($corpo['data']['id'] ?? '');
+    }
+
+    /**
+     * O tipo da notificacao ("payment" ou "subscription_preapproval")
+     * vem tanto na query string ("type"/"topic", dependendo da versao do
+     * webhook) quanto, as vezes, no corpo. Sem ponto no nome, entao
+     * $_GET funciona normalmente aqui (diferente de "data.id").
+     */
+    private function extrairTipo(string $corpoBruto): string
+    {
+        $tipo = (string) ($_GET['type'] ?? $_GET['topic'] ?? '');
+
+        if ($tipo !== '') {
+            return $tipo;
+        }
+
+        $corpo = json_decode($corpoBruto, true);
+
+        return (string) ($corpo['type'] ?? $corpo['topic'] ?? '');
     }
 }

@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use Igrejas\Core\Csrf;
+use Igrejas\Core\TenantResolver;
 use Igrejas\Core\View;
 use Igrejas\Models\ConfiguracaoIgreja;
+use Igrejas\Models\FaturaPix;
 use Igrejas\Models\Plano;
 
 /**
@@ -20,6 +22,22 @@ $basePath = $config['base_path'] ?? '';
 $userName = $user?->name ?? 'Usuario';
 $userInitial = mb_strtoupper(mb_substr($userName, 0, 1));
 $planoAtual = ConfiguracaoIgreja::atual()->plano;
+
+// Aviso de fatura Pix perto do vencimento - so aparece pra tenants que
+// pagam por Pix (ver AuthMiddleware pro bloqueio depois que vence). Nao
+// mostra na propria tela de fatura vencida, que ja e dedicada a isso.
+$avisoFaturaPix = null;
+if ($activeMenu !== 'fatura-vencida') {
+    $tenantAtual = TenantResolver::atual();
+
+    if ($tenantAtual !== null && $tenantAtual->metodoPagamento === 'pix') {
+        $ultimaFatura = FaturaPix::ultimaDoTenant($tenantAtual->id);
+
+        if ($ultimaFatura !== null && $ultimaFatura->status === 'pendente') {
+            $avisoFaturaPix = $ultimaFatura;
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -34,6 +52,7 @@ $planoAtual = ConfiguracaoIgreja::atual()->plano;
     <link rel="stylesheet" href="<?= $basePath ?>/assets/css/dashboard.css?v=<?= View::assetVersion('assets/css/dashboard.css') ?>">
     <link rel="stylesheet" href="<?= $basePath ?>/assets/css/crud.css?v=<?= View::assetVersion('assets/css/crud.css') ?>">
     <link rel="stylesheet" href="<?= $basePath ?>/assets/css/biblia-picker.css?v=<?= View::assetVersion('assets/css/biblia-picker.css') ?>">
+    <link rel="stylesheet" href="<?= $basePath ?>/assets/css/auth.css?v=<?= View::assetVersion('assets/css/auth.css') ?>">
 </head>
 <body class="dashboard-body">
 
@@ -121,6 +140,18 @@ $planoAtual = ConfiguracaoIgreja::atual()->plano;
         </header>
 
         <div class="dash-content">
+            <?php if ($avisoFaturaPix !== null): ?>
+                <a href="<?= $basePath ?>/dashboard/fatura-vencida" class="dash-pix-aviso">
+                    <i class="bi bi-qr-code"></i>
+                    <span>
+                        Sua fatura de <?= htmlspecialchars(Plano::label($avisoFaturaPix->plano), ENT_QUOTES, 'UTF-8') ?>
+                        vence em <?= htmlspecialchars((new DateTimeImmutable($avisoFaturaPix->vencimento))->format('d/m/Y'), ENT_QUOTES, 'UTF-8') ?>.
+                        Clique aqui pra pagar com Pix.
+                    </span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            <?php endif; ?>
+
             <?= $content ?>
         </div>
     </div>

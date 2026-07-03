@@ -22,6 +22,8 @@ use Igrejas\Models\Tenant;
  */
 final class TenantResolver
 {
+    private static ?Tenant $atual = null;
+
     public static function resolver(string $host): void
     {
         $cpanelConfig = require dirname(__DIR__, 2) . '/config/cpanel.php';
@@ -46,5 +48,19 @@ final class TenantResolver
         }
 
         Database::usarCredenciais($tenant->dbName, $tenant->dbUser, $tenant->dbPassword);
+        self::$atual = $tenant;
+    }
+
+    /**
+     * O tenant resolvido para a requisicao atual (ver resolver()), ou
+     * null se esta requisicao nao veio de um subdominio de igreja
+     * provisionada automaticamente - o caso da instalacao central
+     * atual e de qualquer requisicao antes do CPANEL_ROOT_DOMAIN ser
+     * configurado. Usado pelo aviso/bloqueio de fatura Pix vencida (ver
+     * AuthMiddleware).
+     */
+    public static function atual(): ?Tenant
+    {
+        return self::$atual;
     }
 }

@@ -33,6 +33,8 @@ $router->get('/', [LandingController::class, 'index']);
 // (criar banco, subdominio) acontece via webhook, nao aqui.
 $router->get('/cadastro', [CadastroController::class, 'form'], [GuestMiddleware::class]);
 $router->post('/cadastro', [CadastroController::class, 'enviar'], [GuestMiddleware::class]);
+$router->get('/cadastro/pix/{id}', [CadastroController::class, 'pix']);
+$router->get('/cadastro/pix/{id}/status', [CadastroController::class, 'pixStatus']);
 $router->get('/cadastro/retorno', [CadastroController::class, 'retorno']);
 
 // Autenticacao.
@@ -103,6 +105,12 @@ $router->get('/dashboard/assinatura/retorno', [AssinaturaController::class, 'ret
 // PlanoMiddleware). Tambem sem PlanoMiddleware, para nao criar um loop de
 // redirecionamento.
 $router->get('/dashboard/plano-bloqueado', [DashboardController::class, 'planoBloqueado'], [AuthMiddleware::class]);
+
+// Tela exibida quando a fatura Pix de renovacao mensal vence sem
+// pagamento (ver AuthMiddleware) - mostra o QR code pra pagar e libera o
+// acesso de volta assim que o webhook confirmar.
+$router->get('/dashboard/fatura-vencida', [ConfiguracaoController::class, 'faturaVencida'], [AuthMiddleware::class]);
+$router->get('/dashboard/fatura-vencida/status', [ConfiguracaoController::class, 'faturaVencidaStatus'], [AuthMiddleware::class]);
 
 // Estrutura "em construcao" dos demais modulos do menu (catch-all).
 // PlanoMiddleware aqui cobre todos os modulos sem controller proprio

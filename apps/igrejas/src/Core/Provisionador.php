@@ -73,6 +73,7 @@ final class Provisionador
                 $provisionamento->slug,
                 $provisionamento->nomeIgreja,
                 $provisionamento->plano,
+                $provisionamento->metodoPagamento,
                 $subdominio,
                 $dbNome,
                 $dbNome,
