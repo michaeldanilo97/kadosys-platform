@@ -8,6 +8,7 @@ use Igrejas\Core\Auth;
 use Igrejas\Core\Controller;
 use Igrejas\Core\Csrf;
 use Igrejas\Core\Session;
+use Igrejas\Core\TenantResolver;
 use Igrejas\Models\ConfiguracaoIgreja;
 use Igrejas\Models\Plano;
 use Igrejas\Models\User;
@@ -81,13 +82,16 @@ final class PermissaoController extends Controller
      * Modulos configuraveis por Permissoes: exclui os exclusivos de
      * admin (nunca configuraveis, ver User::MODULOS_SOMENTE_ADMIN) e os
      * que o plano atual da igreja nem libera (restringir algo ja
-     * bloqueado pelo plano nao faz sentido).
+     * bloqueado pelo plano nao faz sentido) - respeitando o trial
+     * gratis, que libera tudo temporariamente (mesma regra usada em
+     * todo o resto do painel, ver AuthMiddleware/PlanoMiddleware).
      *
      * @return array<string, array{title:string, icon:string}>
      */
     private function modulosConfiguraveis(): array
     {
         $planoAtual = ConfiguracaoIgreja::atual()->plano;
+        $emTrial = TenantResolver::atual()?->metodoPagamento === 'trial';
         $modulos = [];
 
         foreach (DashboardController::modules() as $slug => $modulo) {
@@ -95,7 +99,7 @@ final class PermissaoController extends Controller
                 continue;
             }
 
-            if (!Plano::disponivel($planoAtual, $slug)) {
+            if (!Plano::disponivel($planoAtual, $slug, $emTrial)) {
                 continue;
             }
 
