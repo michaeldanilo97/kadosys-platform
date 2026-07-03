@@ -27,6 +27,7 @@ final class Tenant
         public readonly string $dbUser,
         public readonly string $dbPassword,
         public readonly string $status,
+        public readonly string $criadoEm,
     ) {
     }
 
@@ -133,8 +134,34 @@ final class Tenant
         return array_map(self::fromRow(...), $stmt->fetchAll());
     }
 
+    /**
+     * Todas as igrejas provisionadas, mais recentes primeiro - usada
+     * pelo painel administrativo da plataforma (ver PlataformaController).
+     *
+     * @return array<int, self>
+     */
+    public static function listarTodas(): array
+    {
+        $stmt = Database::central()->prepare(self::SELECT_BASE . ' ORDER BY id DESC');
+        $stmt->execute();
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /**
+     * Remove o registro central da igreja - chamado so depois que
+     * Igrejas\Core\Desprovisionador ja tentou excluir os recursos dela
+     * no cPanel (banco, usuario, subdominio). Libera o slug/subdominio
+     * pra ser reutilizado por outro cadastro no futuro.
+     */
+    public static function excluir(int $id): void
+    {
+        $stmt = Database::central()->prepare('DELETE FROM plataforma_tenants WHERE id = :id');
+        $stmt->execute(['id' => $id]);
+    }
+
     private const SELECT_BASE = 'SELECT id, slug, nome_igreja, plano, metodo_pagamento, subdominio,
-            db_name, db_user, db_password, status
+            db_name, db_user, db_password, status, created_at
         FROM plataforma_tenants';
 
     private static function fromRow(array $row): self
@@ -150,6 +177,7 @@ final class Tenant
             dbUser: $row['db_user'],
             dbPassword: $row['db_password'],
             status: $row['status'],
+            criadoEm: $row['created_at'],
         );
     }
 }

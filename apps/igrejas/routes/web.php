@@ -11,6 +11,7 @@ use Igrejas\Controllers\DashboardController;
 use Igrejas\Controllers\LandingController;
 use Igrejas\Controllers\MembroController;
 use Igrejas\Controllers\MinisterioController;
+use Igrejas\Controllers\PlataformaController;
 use Igrejas\Controllers\PreletorController;
 use Igrejas\Controllers\ProjecaoController;
 use Igrejas\Controllers\ProjecaoEstadoController;
@@ -18,6 +19,7 @@ use Igrejas\Controllers\TelaoController;
 use Igrejas\Core\Middleware\AuthMiddleware;
 use Igrejas\Core\Middleware\GuestMiddleware;
 use Igrejas\Core\Middleware\PlanoMiddleware;
+use Igrejas\Core\Middleware\PlataformaAuthMiddleware;
 
 /**
  * Rotas web - KADOSYS Igrejas.
@@ -147,3 +149,13 @@ $router->post('/projecao/{token}/limpar', [ProjecaoEstadoController::class, 'lim
 // "x-signature" dentro do proprio controller, nao de sessao/CSRF (quem
 // chama e o servidor do Mercado Pago, nao um navegador logado).
 $router->post('/webhooks/mercadopago', [AssinaturaController::class, 'webhook']);
+
+// Painel administrativo da plataforma (dono do sistema) - lista e
+// exclui igrejas provisionadas automaticamente. Autenticacao propria
+// (chave mestra, ver config/plataforma.php), totalmente separada do
+// login normal de cada igreja (AuthMiddleware).
+$router->get('/plataforma/entrar', [PlataformaController::class, 'entrar']);
+$router->post('/plataforma/entrar', [PlataformaController::class, 'autenticar']);
+$router->post('/plataforma/sair', [PlataformaController::class, 'sair'], [PlataformaAuthMiddleware::class]);
+$router->get('/plataforma/igrejas', [PlataformaController::class, 'igrejas'], [PlataformaAuthMiddleware::class]);
+$router->post('/plataforma/igrejas/{id}/excluir', [PlataformaController::class, 'excluirIgreja'], [PlataformaAuthMiddleware::class]);

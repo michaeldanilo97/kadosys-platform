@@ -81,6 +81,35 @@ final class CpanelUapiClient
     }
 
     /**
+     * Usado por Igrejas\Core\Desprovisionador ao excluir uma igreja - o
+     * nome ja precisa vir com o prefixo da conta cPanel incluido (mesmo
+     * nome usado em criarBancoDeDados/criarUsuarioBanco), pelo mesmo
+     * motivo documentado em concederPrivilegios().
+     *
+     * @return array{sucesso:bool, status_http:int, body:array}
+     */
+    public function excluirBancoDeDados(string $nome): array
+    {
+        return $this->chamar('Mysql', 'delete_database', ['name' => $nome]);
+    }
+
+    /**
+     * @return array{sucesso:bool, status_http:int, body:array}
+     */
+    public function excluirUsuarioBanco(string $nome): array
+    {
+        return $this->chamar('Mysql', 'delete_user', ['name' => $nome]);
+    }
+
+    /**
+     * @return array{sucesso:bool, status_http:int, body:array}
+     */
+    public function excluirSubdominio(string $subdominioCompleto): array
+    {
+        return $this->chamar('SubDomain', 'delsubdomain', ['domain' => $subdominioCompleto]);
+    }
+
+    /**
      * @param array<string, string> $params
      * @return array{sucesso:bool, status_http:int, body:array}
      */
