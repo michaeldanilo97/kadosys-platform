@@ -6,9 +6,11 @@ namespace Igrejas\Controllers;
 
 use Igrejas\Core\Auth;
 use Igrejas\Core\Controller;
+use Igrejas\Models\ConfiguracaoIgreja;
 use Igrejas\Models\Culto;
 use Igrejas\Models\Membro;
 use Igrejas\Models\Ministerio;
+use Igrejas\Models\Plano;
 
 /**
  * Controller do Dashboard administrativo.
@@ -27,11 +29,11 @@ final class DashboardController extends Controller
      * Unica fonte de verdade usada tanto para montar o menu quanto para
      * renderizar a pagina de estrutura de cada modulo.
      *
-     * @return array<string, array{title:string, icon:string, description:string}>
+     * @return array<string, array{title:string, icon:string, description:string, planoMinimo:string}>
      */
     public static function modules(): array
     {
-        return [
+        $modules = [
             'membros' => [
                 'title' => 'Membros',
                 'icon' => 'bi-people',
@@ -98,6 +100,12 @@ final class DashboardController extends Controller
                 'description' => 'Dados da igreja, preferencias e configuracoes gerais do sistema.',
             ],
         ];
+
+        foreach ($modules as $slug => &$module) {
+            $module['planoMinimo'] = Plano::minimoParaModulo($slug);
+        }
+
+        return $modules;
     }
 
     public function index(): void
@@ -146,6 +154,32 @@ final class DashboardController extends Controller
             'user' => $user,
             'modules' => $modules,
             'module' => $module,
+        ], 'dashboard');
+    }
+
+    /**
+     * Tela exibida quando o usuario tenta acessar um modulo que nao faz
+     * parte do plano contratado da igreja (ver PlanoMiddleware, que
+     * redireciona pra ca em vez de deixar a pagina do modulo carregar).
+     */
+    public function planoBloqueado(): void
+    {
+        $modules = self::modules();
+        $slug = (string) $this->request->input('modulo', '');
+        $module = $modules[$slug] ?? null;
+
+        if ($module === null) {
+            $this->redirect('/dashboard');
+        }
+
+        echo $this->view('dashboard.plano-bloqueado', [
+            'pageTitle' => $module['title'] . ' - KADOSYS Igrejas',
+            'activeMenu' => $slug,
+            'breadcrumb' => ['Dashboard', $module['title']],
+            'user' => (new Auth($this->config))->user(),
+            'modules' => $modules,
+            'module' => $module,
+            'planoAtual' => ConfiguracaoIgreja::atual()->plano,
         ], 'dashboard');
     }
 }

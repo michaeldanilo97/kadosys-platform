@@ -15,6 +15,7 @@ use Igrejas\Controllers\ProjecaoEstadoController;
 use Igrejas\Controllers\TelaoController;
 use Igrejas\Core\Middleware\AuthMiddleware;
 use Igrejas\Core\Middleware\GuestMiddleware;
+use Igrejas\Core\Middleware\PlanoMiddleware;
 
 /**
  * Rotas web - KADOSYS Igrejas.
@@ -47,14 +48,16 @@ $router->post('/dashboard/membros/{id}', [MembroController::class, 'update'], [A
 $router->post('/dashboard/membros/{id}/excluir', [MembroController::class, 'destroy'], [AuthMiddleware::class]);
 
 // Modulo Ministerios. Mesmo motivo: precisam vir antes do catch-all.
-$router->get('/dashboard/ministerios', [MinisterioController::class, 'index'], [AuthMiddleware::class]);
-$router->get('/dashboard/ministerios/novo', [MinisterioController::class, 'create'], [AuthMiddleware::class]);
-$router->post('/dashboard/ministerios', [MinisterioController::class, 'store'], [AuthMiddleware::class]);
-$router->get('/dashboard/ministerios/{id}/editar', [MinisterioController::class, 'edit'], [AuthMiddleware::class]);
-$router->post('/dashboard/ministerios/{id}', [MinisterioController::class, 'update'], [AuthMiddleware::class]);
-$router->post('/dashboard/ministerios/{id}/excluir', [MinisterioController::class, 'destroy'], [AuthMiddleware::class]);
-$router->post('/dashboard/ministerios/{id}/voluntarios', [MinisterioController::class, 'addVoluntario'], [AuthMiddleware::class]);
-$router->post('/dashboard/ministerios/{id}/voluntarios/{membroId}/remover', [MinisterioController::class, 'removeVoluntario'], [AuthMiddleware::class]);
+// PlanoMiddleware: Ministerios exige plano Premium ou superior (ver
+// Igrejas\Models\Plano).
+$router->get('/dashboard/ministerios', [MinisterioController::class, 'index'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->get('/dashboard/ministerios/novo', [MinisterioController::class, 'create'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/ministerios', [MinisterioController::class, 'store'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->get('/dashboard/ministerios/{id}/editar', [MinisterioController::class, 'edit'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/ministerios/{id}', [MinisterioController::class, 'update'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/ministerios/{id}/excluir', [MinisterioController::class, 'destroy'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/ministerios/{id}/voluntarios', [MinisterioController::class, 'addVoluntario'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/ministerios/{id}/voluntarios/{membroId}/remover', [MinisterioController::class, 'removeVoluntario'], [AuthMiddleware::class, PlanoMiddleware::class]);
 
 // Modulo Cultos. Mesmo motivo: precisam vir antes do catch-all.
 $router->get('/dashboard/cultos', [CultoController::class, 'index'], [AuthMiddleware::class]);
@@ -72,14 +75,26 @@ $router->get('/dashboard/projecao', [ProjecaoController::class, 'index'], [AuthM
 $router->post('/dashboard/projecao/iniciar', [ProjecaoController::class, 'iniciar'], [AuthMiddleware::class]);
 $router->post('/dashboard/projecao/encerrar', [ProjecaoController::class, 'encerrar'], [AuthMiddleware::class]);
 
-// Configuracoes (logo da igreja, usada no fadeout da projecao). Mesmo
-// motivo: precisa vir antes do catch-all.
+// Configuracoes (logo da igreja, usada no fadeout da projecao, e o plano
+// contratado). Mesmo motivo: precisa vir antes do catch-all. Sem
+// PlanoMiddleware de proposito - precisa continuar acessivel mesmo se a
+// igreja estiver num plano que bloquearia outros modulos, senao nao
+// haveria como ver/trocar o plano pela propria interface.
 $router->get('/dashboard/configuracoes', [ConfiguracaoController::class, 'index'], [AuthMiddleware::class]);
 $router->post('/dashboard/configuracoes/logo', [ConfiguracaoController::class, 'atualizarLogo'], [AuthMiddleware::class]);
 $router->post('/dashboard/configuracoes/logo/remover', [ConfiguracaoController::class, 'removerLogo'], [AuthMiddleware::class]);
+$router->post('/dashboard/configuracoes/plano', [ConfiguracaoController::class, 'atualizarPlano'], [AuthMiddleware::class]);
+
+// Tela exibida quando um modulo fora do plano contratado e acessado (ver
+// PlanoMiddleware). Tambem sem PlanoMiddleware, para nao criar um loop de
+// redirecionamento.
+$router->get('/dashboard/plano-bloqueado', [DashboardController::class, 'planoBloqueado'], [AuthMiddleware::class]);
 
 // Estrutura "em construcao" dos demais modulos do menu (catch-all).
-$router->get('/dashboard/{slug}', [DashboardController::class, 'page'], [AuthMiddleware::class]);
+// PlanoMiddleware aqui cobre todos os modulos sem controller proprio
+// (grupos, agenda, financeiro, patrimonio, comunicacao, relatorios,
+// usuarios, permissoes) de uma vez so, com base no slug da propria URI.
+$router->get('/dashboard/{slug}', [DashboardController::class, 'page'], [AuthMiddleware::class, PlanoMiddleware::class]);
 
 // Tela publica do telao (projetor). Acesso direto por link com token,
 // sem exigir login administrativo.

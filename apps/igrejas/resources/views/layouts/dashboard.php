@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use Igrejas\Core\Csrf;
 use Igrejas\Core\View;
+use Igrejas\Models\ConfiguracaoIgreja;
+use Igrejas\Models\Plano;
 
 /**
  * @var string $content
@@ -17,6 +19,7 @@ use Igrejas\Core\View;
 $basePath = $config['base_path'] ?? '';
 $userName = $user?->name ?? 'Usuario';
 $userInitial = mb_strtoupper(mb_substr($userName, 0, 1));
+$planoAtual = ConfiguracaoIgreja::atual()->plano;
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -51,9 +54,13 @@ $userInitial = mb_strtoupper(mb_substr($userName, 0, 1));
 
             <div class="dash-nav-group-label">Modulos</div>
             <?php foreach ($modules as $slug => $module): ?>
-                <a href="<?= $basePath ?>/dashboard/<?= $slug ?>" class="dash-nav-link <?= $activeMenu === $slug ? 'active' : '' ?>">
+                <?php $bloqueado = !Plano::disponivel($planoAtual, $slug); ?>
+                <a href="<?= $basePath ?>/dashboard/<?= $slug ?>" class="dash-nav-link <?= $activeMenu === $slug ? 'active' : '' ?><?= $bloqueado ? ' dash-nav-link-locked' : '' ?>">
                     <i class="bi <?= htmlspecialchars($module['icon'], ENT_QUOTES, 'UTF-8') ?>"></i>
                     <?= htmlspecialchars($module['title'], ENT_QUOTES, 'UTF-8') ?>
+                    <?php if ($bloqueado): ?>
+                        <i class="bi bi-lock-fill dash-nav-lock-icon" title="Disponivel no plano <?= htmlspecialchars(Plano::label($module['planoMinimo']), ENT_QUOTES, 'UTF-8') ?>"></i>
+                    <?php endif; ?>
                 </a>
             <?php endforeach; ?>
         </nav>

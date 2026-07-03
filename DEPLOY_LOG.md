@@ -17,6 +17,31 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 10 - 2026-07-03
+
+**Novo modulo: acesso aos modulos do menu conforme o plano contratado (Essencial/Premium/Enterprise)**
+
+- Em Configuracoes, nova secao "Plano contratado" onde da pra escolher o
+  plano da igreja (Essencial, Premium ou Enterprise) - o mesmo esquema
+  anunciado na pagina de vendas.
+- Cada modulo do menu agora tem um plano minimo:
+  - Essencial: Membros, Agenda, Cultos, Projecao/Telao, Usuarios,
+    Configuracoes.
+  - Premium: tudo do Essencial + Ministerios, Grupos, Financeiro,
+    Comunicacao.
+  - Enterprise: tudo do Premium + Patrimonio, Relatorios, Permissoes.
+- Modulo fora do plano contratado aparece apagado e com um cadeado no
+  menu lateral e nos cartoes do dashboard. Se tentar entrar mesmo assim
+  (clicando ou digitando o link direto), aparece uma tela explicando que
+  aquele recurso e de um plano superior, com um botao direto pra trocar
+  o plano em Configuracoes.
+- Configuracoes continua sempre acessivel, mesmo em planos mais baixos -
+  senao nao teria como ver/trocar o plano pela propria tela.
+- Testado de ponta a ponta com banco de dados real: login, menu com
+  cadeados, bloqueio ao tentar acessar Ministerios/Patrimonio, troca de
+  plano salvando corretamente, e liberacao imediata dos modulos do novo
+  plano.
+
 ## Ajuste 9 - 2026-07-03
 
 **Cache do navegador podia esconder ajustes ja enviados (CSS/JS com versionamento automatico)**

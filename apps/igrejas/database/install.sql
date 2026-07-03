@@ -172,11 +172,12 @@ CREATE TABLE IF NOT EXISTS configuracoes_igreja (
     id TINYINT UNSIGNED PRIMARY KEY,
     nome_igreja VARCHAR(150) NULL,
     logo_path VARCHAR(255) NULL,
+    plano ENUM('essencial', 'premium', 'enterprise') NOT NULL DEFAULT 'essencial',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT IGNORE INTO configuracoes_igreja (id, nome_igreja, logo_path) VALUES (1, NULL, NULL);
+INSERT IGNORE INTO configuracoes_igreja (id, nome_igreja, logo_path, plano) VALUES (1, NULL, NULL, 'essencial');
 
 
 CREATE TABLE IF NOT EXISTS biblia_livros (

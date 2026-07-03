@@ -9,6 +9,7 @@ use Igrejas\Core\Controller;
 use Igrejas\Core\Csrf;
 use Igrejas\Core\Session;
 use Igrejas\Models\ConfiguracaoIgreja;
+use Igrejas\Models\Plano;
 
 /**
  * Controller de Configuracoes gerais da igreja.
@@ -44,6 +45,26 @@ final class ConfiguracaoController extends Controller
             'errors' => Session::flash('config_errors') ?? [],
             'csrf' => Csrf::field(),
         ], 'dashboard');
+    }
+
+    public function atualizarPlano(): void
+    {
+        if (!Csrf::verify($this->request->input('_csrf_token'))) {
+            Session::flash('config_errors', ['Sessao expirada. Tente novamente.']);
+            $this->redirect('/dashboard/configuracoes');
+        }
+
+        $plano = (string) $this->request->input('plano', '');
+
+        if (!isset(Plano::LABELS[$plano])) {
+            Session::flash('config_errors', ['Plano invalido.']);
+            $this->redirect('/dashboard/configuracoes');
+        }
+
+        ConfiguracaoIgreja::atualizarPlano($plano);
+
+        Session::flash('config_success', 'Plano atualizado para ' . Plano::label($plano) . '.');
+        $this->redirect('/dashboard/configuracoes');
     }
 
     public function atualizarLogo(): void

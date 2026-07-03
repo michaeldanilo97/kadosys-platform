@@ -1,4 +1,8 @@
 <?php
+
+use Igrejas\Models\ConfiguracaoIgreja;
+use Igrejas\Models\Plano;
+
 /**
  * @var array $config
  * @var \Igrejas\Models\User|null $user
@@ -10,6 +14,7 @@
  */
 $basePath = $config['base_path'] ?? '';
 $firstName = explode(' ', trim($user?->name ?? 'Usuario'))[0];
+$planoAtual = ConfiguracaoIgreja::atual()->plano;
 ?>
 
 <div class="dash-page-head">
@@ -121,10 +126,16 @@ $firstName = explode(' ', trim($user?->name ?? 'Usuario'))[0];
     </div>
     <div class="module-grid">
         <?php foreach ($modules as $slug => $module): ?>
-            <a href="<?= $basePath ?>/dashboard/<?= $slug ?>" class="module-card">
+            <?php $bloqueado = !Plano::disponivel($planoAtual, $slug); ?>
+            <a href="<?= $basePath ?>/dashboard/<?= $slug ?>" class="module-card<?= $bloqueado ? ' module-card-locked' : '' ?>">
                 <div class="icon"><i class="bi <?= htmlspecialchars($module['icon'], ENT_QUOTES, 'UTF-8') ?>"></i></div>
                 <div>
-                    <div class="name"><?= htmlspecialchars($module['title'], ENT_QUOTES, 'UTF-8') ?></div>
+                    <div class="name">
+                        <?= htmlspecialchars($module['title'], ENT_QUOTES, 'UTF-8') ?>
+                        <?php if ($bloqueado): ?>
+                            <span class="plano-badge"><i class="bi bi-lock-fill"></i> <?= htmlspecialchars(Plano::label($module['planoMinimo']), ENT_QUOTES, 'UTF-8') ?></span>
+                        <?php endif; ?>
+                    </div>
                     <div class="desc"><?= htmlspecialchars($module['description'], ENT_QUOTES, 'UTF-8') ?></div>
                 </div>
                 <i class="bi bi-arrow-right-short arrow"></i>

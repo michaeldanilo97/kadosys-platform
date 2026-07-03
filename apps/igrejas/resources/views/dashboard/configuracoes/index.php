@@ -1,4 +1,7 @@
 <?php
+
+use Igrejas\Models\Plano;
+
 /**
  * @var array $config
  * @var \Igrejas\Models\ConfiguracaoIgreja $configuracao
@@ -31,6 +34,33 @@ $logoUrl = $configuracao->logoPath ? $basePath . '/' . $configuracao->logoPath :
         </div>
     </div>
 <?php endif; ?>
+
+<div class="dash-panel" id="plano-contratado">
+    <div class="dash-panel-head">
+        <h2><i class="bi bi-star"></i> Plano contratado</h2>
+    </div>
+    <p class="dash-page-subtitle" style="margin-bottom: 1.4rem;">
+        Define quais modulos ficam disponiveis no menu lateral. Plano atual:
+        <strong><?= htmlspecialchars(Plano::label($configuracao->plano), ENT_QUOTES, 'UTF-8') ?></strong>.
+    </p>
+
+    <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/plano" class="crud-form">
+        <?= $csrf ?>
+        <div class="crud-field">
+            <label for="plano_select">Plano</label>
+            <select id="plano_select" name="plano">
+                <?php foreach (Plano::LABELS as $valor => $rotulo): ?>
+                    <option value="<?= htmlspecialchars($valor, ENT_QUOTES, 'UTF-8') ?>" <?= $configuracao->plano === $valor ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($rotulo, ENT_QUOTES, 'UTF-8') ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="crud-form-actions" style="justify-content: flex-start;">
+            <button type="submit" class="btn-k btn-k-grad"><i class="bi bi-check2"></i> Salvar plano</button>
+        </div>
+    </form>
+</div>
 
 <div class="dash-panel">
     <div class="dash-panel-head">
