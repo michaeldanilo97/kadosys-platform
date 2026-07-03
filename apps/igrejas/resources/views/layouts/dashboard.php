@@ -26,7 +26,11 @@ $planoAtual = ConfiguracaoIgreja::atual()->plano;
 // Aviso de fatura Pix perto do vencimento - so aparece pra tenants que
 // pagam por Pix (ver AuthMiddleware pro bloqueio depois que vence). Nao
 // mostra na propria tela de fatura vencida, que ja e dedicada a isso.
+// Duas situacoes bem diferentes usam o mesmo aviso: a renovacao normal
+// do plano atual, e um upgrade pra um plano diferente ainda nao pago -
+// o texto muda pra deixar isso claro (ver AssinaturaController::iniciarPix).
 $avisoFaturaPix = null;
+$avisoFaturaPixTexto = '';
 if ($activeMenu !== 'fatura-vencida') {
     $tenantAtual = TenantResolver::atual();
 
@@ -35,6 +39,26 @@ if ($activeMenu !== 'fatura-vencida') {
 
         if ($ultimaFatura !== null && $ultimaFatura->status === 'pendente') {
             $avisoFaturaPix = $ultimaFatura;
+            $ehUpgrade = $ultimaFatura->plano !== $planoAtual;
+
+            if ($ehUpgrade) {
+                $vencimentoAtual = FaturaPix::ultimaPagaDoTenant($tenantAtual->id)?->vencimento;
+                $avisoFaturaPixTexto = sprintf(
+                    'Seu Pix para upgrade para o plano %s expira em %s. Seu plano atual é %s%s. Clique aqui para pagar o upgrade.',
+                    Plano::label($ultimaFatura->plano),
+                    (new DateTimeImmutable($ultimaFatura->vencimento))->format('d/m/Y \à\s H:i'),
+                    Plano::label($planoAtual),
+                    $vencimentoAtual !== null
+                        ? ', com vencimento em ' . (new DateTimeImmutable($vencimentoAtual))->format('d/m/Y')
+                        : ''
+                );
+            } else {
+                $avisoFaturaPixTexto = sprintf(
+                    'Sua fatura de renovação do plano %s vence em %s. Clique aqui para pagar com Pix.',
+                    Plano::label($ultimaFatura->plano),
+                    (new DateTimeImmutable($ultimaFatura->vencimento))->format('d/m/Y')
+                );
+            }
         }
     }
 }
@@ -143,11 +167,7 @@ if ($activeMenu !== 'fatura-vencida') {
             <?php if ($avisoFaturaPix !== null): ?>
                 <a href="<?= $basePath ?>/dashboard/fatura-vencida" class="dash-pix-aviso">
                     <i class="bi bi-qr-code"></i>
-                    <span>
-                        Sua fatura de <?= htmlspecialchars(Plano::label($avisoFaturaPix->plano), ENT_QUOTES, 'UTF-8') ?>
-                        vence em <?= htmlspecialchars((new DateTimeImmutable($avisoFaturaPix->vencimento))->format('d/m/Y'), ENT_QUOTES, 'UTF-8') ?>.
-                        Clique aqui pra pagar com Pix.
-                    </span>
+                    <span><?= htmlspecialchars($avisoFaturaPixTexto, ENT_QUOTES, 'UTF-8') ?></span>
                     <i class="bi bi-arrow-right"></i>
                 </a>
             <?php endif; ?>

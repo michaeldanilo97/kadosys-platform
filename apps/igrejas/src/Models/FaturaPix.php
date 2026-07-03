@@ -85,6 +85,26 @@ final class FaturaPix
         return $row === false ? null : self::fromRow($row);
     }
 
+    /**
+     * Ultima fatura PAGA de um tenant - representa o ciclo/plano
+     * atualmente em vigor (com o vencimento de quando essa cobranca
+     * cobre ate). Usada pelo painel pra diferenciar "aviso de renovacao
+     * do plano atual" de "Pix pendente de upgrade pra outro plano" (ver
+     * layouts/dashboard.php) - nesses dois casos, ultimaDoTenant()
+     * sozinha nao basta porque pode ser uma fatura pendente de um plano
+     * diferente do que esta ativo agora.
+     */
+    public static function ultimaPagaDoTenant(int $tenantId): ?self
+    {
+        $stmt = Database::central()->prepare(
+            self::SELECT_BASE . " WHERE tenant_id = :tenant_id AND status = 'paga' ORDER BY id DESC LIMIT 1"
+        );
+        $stmt->execute(['tenant_id' => $tenantId]);
+        $row = $stmt->fetch();
+
+        return $row === false ? null : self::fromRow($row);
+    }
+
     public static function marcarPaga(int $id): void
     {
         $stmt = Database::central()->prepare(
