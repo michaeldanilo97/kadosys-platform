@@ -17,6 +17,19 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 13 - 2026-07-03
+
+**Alternativa para configurar o Mercado Pago sem variavel de ambiente**
+
+- Alguns provedores de hospedagem (inclusive o servidor atual) nao
+  deixam cadastrar variavel de ambiente customizada pelo MultiPHP INI
+  Editor do cPanel (so os campos fixos tipo display_errors).
+- Agora tambem funciona criar um arquivo
+  `apps/igrejas/config/mercadopago.local.php` direto no servidor (por
+  FTP ou pelo Gerenciador de Arquivos do cPanel - nunca pelo Git) com as
+  credenciais. Esse arquivo esta no `.gitignore`, entao nunca vai
+  aparecer no repositorio.
+
 ## Ajuste 12 - 2026-07-03
 
 **Assinatura recorrente do plano via Mercado Pago (Checkout Pro)**
