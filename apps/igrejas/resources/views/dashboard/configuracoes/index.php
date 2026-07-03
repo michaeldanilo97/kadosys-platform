@@ -98,12 +98,6 @@ $statusAssinaturaLabel = [
                 <?php endif; ?>
             </div>
         <?php endforeach; ?>
-
-        <div class="plano-assinar-card">
-            <strong>Enterprise</strong>
-            <span class="preco">Sob consulta</span>
-            <a href="mailto:contato@kadosys.com.br" class="btn-k btn-k-outline"><i class="bi bi-headset"></i> Fale com o suporte</a>
-        </div>
     </div>
 
     <details class="plano-manual-detalhes">

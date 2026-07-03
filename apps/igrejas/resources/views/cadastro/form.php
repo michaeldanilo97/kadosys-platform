@@ -138,7 +138,7 @@ $basePath = $config['base_path'] ?? '';
                     </label>
                 <?php endforeach; ?>
             </div>
-            <span class="auth-field-hint">Precisa do plano Enterprise? <a href="mailto:contato@kadosys.com.br">Fale com o suporte</a>.</span>
+            <span class="auth-field-hint">Sua igreja e uma rede com necessidades especiais? <a href="mailto:contato@kadosys.com.br">Fale com a gente</a>.</span>
         </div>
 
         <div class="auth-field">
