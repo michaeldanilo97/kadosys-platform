@@ -9,8 +9,10 @@ use Igrejas\Core\View;
  * @var string $content
  * @var string $pageTitle
  * @var array $config
+ * @var string|null $activeMenu
  */
 $basePath = $config['base_path'] ?? '';
+$activeMenu ??= '';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -59,6 +61,15 @@ $basePath = $config['base_path'] ?? '';
         </header>
 
         <div class="dash-content">
+            <div class="plataforma-tabs">
+                <a href="<?= $basePath ?>/plataforma/igrejas" class="plataforma-tab <?= $activeMenu === 'igrejas' ? 'active' : '' ?>">
+                    <i class="bi bi-building"></i> Igrejas
+                </a>
+                <a href="<?= $basePath ?>/plataforma/avisos" class="plataforma-tab <?= $activeMenu === 'avisos' ? 'active' : '' ?>">
+                    <i class="bi bi-megaphone"></i> Avisos
+                </a>
+            </div>
+
             <?= $content ?>
         </div>
     </div>

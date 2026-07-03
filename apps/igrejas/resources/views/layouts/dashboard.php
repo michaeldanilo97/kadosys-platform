@@ -10,6 +10,7 @@ use Igrejas\Models\ConfiguracaoIgreja;
 use Igrejas\Models\Culto;
 use Igrejas\Models\FaturaPix;
 use Igrejas\Models\Plano;
+use Igrejas\Models\PlataformaAviso;
 use Igrejas\Models\User;
 
 /**
@@ -99,6 +100,15 @@ if ($activeMenu !== 'trial-expirado' && $activeMenu !== 'fatura-vencida') {
  * @var array<int, array{icon: string, texto: string, url: string}>
  */
 $notificacoes = [];
+
+// Aviso do dono da plataforma (ver PlataformaAviso/PlataformaController)
+// - vale pra todas as igrejas, independente de plano ou permissao, por
+// isso vem antes de qualquer outro filtro.
+$avisoPlataforma = PlataformaAviso::ativo();
+
+if ($avisoPlataforma !== null) {
+    $notificacoes[] = ['icon' => 'bi-broadcast-pin', 'texto' => $avisoPlataforma->mensagem, 'url' => '#'];
+}
 
 if ($avisoFaturaPixTexto !== '') {
     $notificacoes[] = ['icon' => 'bi-qr-code', 'texto' => $avisoFaturaPixTexto, 'url' => $basePath . '/dashboard/fatura-vencida'];

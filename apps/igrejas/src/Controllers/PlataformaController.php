@@ -10,6 +10,7 @@ use Igrejas\Core\CpanelUapiClient;
 use Igrejas\Core\Desprovisionador;
 use Igrejas\Core\Middleware\PlataformaAuthMiddleware;
 use Igrejas\Core\Session;
+use Igrejas\Models\PlataformaAviso;
 use Igrejas\Models\Tenant;
 
 /**
@@ -64,6 +65,7 @@ final class PlataformaController extends Controller
     {
         echo $this->view('plataforma.igrejas', [
             'pageTitle' => 'Igrejas - Painel da Plataforma',
+            'activeMenu' => 'igrejas',
             'igrejas' => Tenant::listarTodas(),
             'success' => Session::flash('plataforma_success'),
             'errors' => Session::flash('plataforma_errors') ?? [],
@@ -108,5 +110,53 @@ final class PlataformaController extends Controller
         }
 
         $this->redirect('/plataforma/igrejas');
+    }
+
+    /**
+     * Avisos do dono da plataforma pra todas as igrejas cadastradas
+     * (ver PlataformaAviso) - mostrados no sino de notificacoes de
+     * cada uma delas.
+     */
+    public function avisos(): void
+    {
+        echo $this->view('plataforma.avisos', [
+            'pageTitle' => 'Avisos - Painel da Plataforma',
+            'activeMenu' => 'avisos',
+            'avisoAtivo' => PlataformaAviso::ativo(),
+            'historico' => PlataformaAviso::todos(),
+            'success' => Session::flash('plataforma_success'),
+            'errors' => Session::flash('plataforma_errors') ?? [],
+            'csrfToken' => Csrf::token(),
+        ], 'plataforma');
+    }
+
+    public function publicarAviso(): void
+    {
+        if (!Csrf::verify($this->request->input('_csrf_token'))) {
+            Session::flash('plataforma_errors', ['Sessao expirada. Tente novamente.']);
+            $this->redirect('/plataforma/avisos');
+        }
+
+        $mensagem = trim((string) $this->request->input('mensagem', ''));
+
+        if ($mensagem === '') {
+            Session::flash('plataforma_errors', ['Escreva a mensagem do aviso.']);
+            $this->redirect('/plataforma/avisos');
+        }
+
+        PlataformaAviso::publicar($mensagem);
+
+        Session::flash('plataforma_success', ['Aviso publicado - vai aparecer no sino de notificacoes de todas as igrejas.']);
+        $this->redirect('/plataforma/avisos');
+    }
+
+    public function encerrarAviso(string $id): void
+    {
+        if (Csrf::verify($this->request->input('_csrf_token'))) {
+            PlataformaAviso::encerrar((int) $id);
+            Session::flash('plataforma_success', ['Aviso encerrado.']);
+        }
+
+        $this->redirect('/plataforma/avisos');
     }
 }

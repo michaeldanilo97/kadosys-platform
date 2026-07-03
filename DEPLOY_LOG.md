@@ -17,6 +17,28 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 32 - 2026-07-06
+
+**Quadro de avisos publico da igreja + aviso do dono da plataforma pra todas as igrejas**
+
+- Novo link publico `/avisos` (sem login) em cada igreja: mostra os
+  avisos do modulo Comunicacao publicados com publico "todos" - da pra
+  compartilhar com a congregacao (grupo do WhatsApp, QR code no
+  templo, etc.). Avisos marcados "so lideranca" continuam restritos ao
+  painel administrativo, nunca aparecem nesse link.
+- Novo painel "Avisos" dentro do painel da plataforma (o mesmo onde as
+  igrejas sao excluidas) - o dono do sistema pode publicar um aviso que
+  aparece automaticamente no sino de notificacoes do painel de
+  **todas** as igrejas cadastradas (ex.: manutencao programada, novo
+  recurso disponivel). So um aviso fica ativo por vez.
+- **Rode a migracao nova, mas so no banco CENTRAL** (o mesmo banco
+  onde ficam as tabelas `plataforma_tenants`/`plataforma_provisionamentos`
+  - normalmente o banco desta instalacao principal, nao o de cada
+  igreja individual):
+  ```
+  mysql -u seu_usuario -p banco_central < apps/igrejas/database/migrations/021_create_plataforma_avisos.sql
+  ```
+
 ## Ajuste 31 - 2026-07-06
 
 **Sino de notificacoes e menu do usuario funcionais + novo texto do card de IA**

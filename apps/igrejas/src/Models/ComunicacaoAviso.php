@@ -103,6 +103,27 @@ final class ComunicacaoAviso
     }
 
     /**
+     * Avisos publicados pra "todos os membros" (exclui os marcados como
+     * "so lideranca"), usado no quadro publico sem login (ver
+     * AvisoPublicoController) - a congregacao pode ver, mas avisos
+     * internos da lideranca continuam restritos ao painel.
+     *
+     * @return array<int, self>
+     */
+    public static function publicosParaTodos(int $limite = 30): array
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT * FROM comunicacao_avisos WHERE status = 'publicado' AND publico_alvo = 'todos'
+             ORDER BY data_publicacao DESC, created_at DESC
+             LIMIT :limite"
+        );
+        $stmt->bindValue('limite', $limite, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /**
      * @param array<string, mixed> $data
      */
     public static function create(array $data): int
