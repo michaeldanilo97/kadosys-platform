@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(150) NOT NULL,
     email VARCHAR(150) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    role VARCHAR(50) NOT NULL DEFAULT 'admin',
+    role ENUM('admin', 'usuario') NOT NULL DEFAULT 'admin',
     active TINYINT(1) NOT NULL DEFAULT 1,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -418,4 +418,44 @@ CREATE TABLE IF NOT EXISTS grupo_membros (
         FOREIGN KEY (grupo_id) REFERENCES grupos (id) ON DELETE CASCADE,
     CONSTRAINT grupo_membros_membro_id_foreign
         FOREIGN KEY (membro_id) REFERENCES membros (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ----------------------------------------------------------------------------
+-- 017 - Modulo Agenda
+-- ----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS agenda_eventos (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(150) NOT NULL,
+    tipo ENUM('evento', 'reuniao', 'reserva', 'outro') NOT NULL DEFAULT 'evento',
+    data DATE NOT NULL,
+    hora_inicio TIME NULL,
+    hora_fim TIME NULL,
+    local VARCHAR(150) NULL,
+    responsavel_membro_id INT UNSIGNED NULL,
+    descricao TEXT NULL,
+    status ENUM('agendado', 'realizado', 'cancelado') NOT NULL DEFAULT 'agendado',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY agenda_eventos_data_index (data),
+    KEY agenda_eventos_status_index (status),
+    CONSTRAINT agenda_eventos_responsavel_membro_id_foreign
+        FOREIGN KEY (responsavel_membro_id) REFERENCES membros (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ----------------------------------------------------------------------------
+-- 018 - Modulo Usuarios e Permissoes (a coluna "role" de "users" ja
+-- nasce como ENUM, ver secao 001 no topo deste arquivo)
+-- ----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS user_modulos (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
+    modulo_slug VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY user_modulos_unique (user_id, modulo_slug),
+    CONSTRAINT user_modulos_user_id_foreign
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -8,22 +8,23 @@ use Igrejas\Core\Database;
 use PDO;
 
 /**
- * Model de Culto (modulo Cultos).
- *
- * Cada culto pode ter uma lista de presentes (relacao muitos-para-muitos
- * com membros, atraves da tabela pivot culto_frequencias).
+ * Model de AgendaEvento (modulo Agenda: eventos, reunioes e reservas
+ * de espaco da igreja).
  */
-final class Culto
+final class AgendaEvento
 {
     public function __construct(
         public readonly int $id,
         public readonly string $titulo,
+        public readonly string $tipo,
         public readonly string $data,
-        public readonly ?string $hora,
+        public readonly ?string $horaInicio,
+        public readonly ?string $horaFim,
         public readonly ?string $local,
+        public readonly ?int $responsavelMembroId,
+        public readonly ?string $responsavelNome,
         public readonly ?string $descricao,
         public readonly string $status,
-        public readonly int $totalPresentes,
         public readonly string $createdAt,
     ) {
     }
@@ -45,21 +46,21 @@ final class Culto
             // (PDO::ATTR_EMULATE_PREPARES => false, ver Database.php) -
             // cada ocorrencia de LIKE precisa do seu proprio placeholder,
             // mesmo vinculado ao mesmo valor.
-            $where = 'WHERE c.titulo LIKE :search_titulo OR c.local LIKE :search_local';
+            $where = 'WHERE ae.titulo LIKE :search_titulo OR ae.local LIKE :search_local';
             $params['search_titulo'] = '%' . $search . '%';
             $params['search_local'] = '%' . $search . '%';
         }
 
-        $totalStmt = Database::connection()->prepare("SELECT COUNT(*) FROM cultos c {$where}");
+        $totalStmt = Database::connection()->prepare("SELECT COUNT(*) FROM agenda_eventos ae {$where}");
         $totalStmt->execute($params);
         $total = (int) $totalStmt->fetchColumn();
 
         $stmt = Database::connection()->prepare(
-            "SELECT c.*,
-                    (SELECT COUNT(*) FROM culto_frequencias cf WHERE cf.culto_id = c.id) AS total_presentes
-             FROM cultos c
+            "SELECT ae.*, me.nome AS responsavel_nome
+             FROM agenda_eventos ae
+             LEFT JOIN membros me ON me.id = ae.responsavel_membro_id
              {$where}
-             ORDER BY c.data DESC, c.hora DESC
+             ORDER BY ae.data ASC, ae.hora_inicio ASC
              LIMIT :limit OFFSET :offset"
         );
 
@@ -83,11 +84,11 @@ final class Culto
     public static function find(int $id): ?self
     {
         $stmt = Database::connection()->prepare(
-            "SELECT c.*,
-                    (SELECT COUNT(*) FROM culto_frequencias cf WHERE cf.culto_id = c.id) AS total_presentes
-             FROM cultos c
-             WHERE c.id = :id
-             LIMIT 1"
+            'SELECT ae.*, me.nome AS responsavel_nome
+             FROM agenda_eventos ae
+             LEFT JOIN membros me ON me.id = ae.responsavel_membro_id
+             WHERE ae.id = :id
+             LIMIT 1'
         );
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch();
@@ -96,17 +97,17 @@ final class Culto
     }
 
     /**
-     * Proximo culto agendado (data >= hoje, nao cancelado), usado no KPI
-     * do dashboard.
+     * Proximo evento agendado (data >= hoje, nao cancelado), usado no
+     * KPI do dashboard.
      */
     public static function proximoAgendado(): ?self
     {
         $stmt = Database::connection()->prepare(
-            "SELECT c.*,
-                    (SELECT COUNT(*) FROM culto_frequencias cf WHERE cf.culto_id = c.id) AS total_presentes
-             FROM cultos c
-             WHERE c.data >= CURDATE() AND c.status != 'cancelado'
-             ORDER BY c.data ASC, c.hora ASC
+            "SELECT ae.*, me.nome AS responsavel_nome
+             FROM agenda_eventos ae
+             LEFT JOIN membros me ON me.id = ae.responsavel_membro_id
+             WHERE ae.data >= CURDATE() AND ae.status != 'cancelado'
+             ORDER BY ae.data ASC, ae.hora_inicio ASC
              LIMIT 1"
         );
         $stmt->execute();
@@ -121,8 +122,10 @@ final class Culto
     public static function create(array $data): int
     {
         $stmt = Database::connection()->prepare(
-            'INSERT INTO cultos (titulo, data, hora, local, descricao, status, created_at)
-             VALUES (:titulo, :data, :hora, :local, :descricao, :status, NOW())'
+            'INSERT INTO agenda_eventos
+                (titulo, tipo, data, hora_inicio, hora_fim, local, responsavel_membro_id, descricao, status, created_at)
+             VALUES
+                (:titulo, :tipo, :data, :hora_inicio, :hora_fim, :local, :responsavel_membro_id, :descricao, :status, NOW())'
         );
         $stmt->execute(self::bindings($data));
 
@@ -135,8 +138,10 @@ final class Culto
     public static function update(int $id, array $data): void
     {
         $stmt = Database::connection()->prepare(
-            'UPDATE cultos SET titulo = :titulo, data = :data, hora = :hora,
-                local = :local, descricao = :descricao, status = :status
+            'UPDATE agenda_eventos SET
+                titulo = :titulo, tipo = :tipo, data = :data, hora_inicio = :hora_inicio,
+                hora_fim = :hora_fim, local = :local, responsavel_membro_id = :responsavel_membro_id,
+                descricao = :descricao, status = :status
              WHERE id = :id'
         );
         $stmt->execute(self::bindings($data) + ['id' => $id]);
@@ -144,51 +149,20 @@ final class Culto
 
     public static function delete(int $id): void
     {
-        $stmt = Database::connection()->prepare('DELETE FROM cultos WHERE id = :id');
+        $stmt = Database::connection()->prepare('DELETE FROM agenda_eventos WHERE id = :id');
         $stmt->execute(['id' => $id]);
-    }
-
-    /**
-     * Membros presentes no culto, ordenados por nome.
-     *
-     * @return array<int, Membro>
-     */
-    public static function presentes(int $cultoId): array
-    {
-        $stmt = Database::connection()->prepare(
-            'SELECT me.* FROM membros me
-             INNER JOIN culto_frequencias cf ON cf.membro_id = me.id
-             WHERE cf.culto_id = :culto_id
-             ORDER BY me.nome ASC'
-        );
-        $stmt->execute(['culto_id' => $cultoId]);
-
-        return array_map(Membro::fromRow(...), $stmt->fetchAll());
-    }
-
-    public static function addPresenca(int $cultoId, int $membroId): void
-    {
-        $stmt = Database::connection()->prepare(
-            'INSERT IGNORE INTO culto_frequencias (culto_id, membro_id, created_at)
-             VALUES (:culto_id, :membro_id, NOW())'
-        );
-        $stmt->execute(['culto_id' => $cultoId, 'membro_id' => $membroId]);
-    }
-
-    public static function removePresenca(int $cultoId, int $membroId): void
-    {
-        $stmt = Database::connection()->prepare(
-            'DELETE FROM culto_frequencias WHERE culto_id = :culto_id AND membro_id = :membro_id'
-        );
-        $stmt->execute(['culto_id' => $cultoId, 'membro_id' => $membroId]);
     }
 
     public function dataHoraFormatada(): string
     {
         $formatada = (new \DateTimeImmutable($this->data))->format('d/m/Y');
 
-        if ($this->hora !== null) {
-            $formatada .= ' as ' . substr($this->hora, 0, 5);
+        if ($this->horaInicio !== null) {
+            $formatada .= ' as ' . substr($this->horaInicio, 0, 5);
+
+            if ($this->horaFim !== null) {
+                $formatada .= ' - ' . substr($this->horaFim, 0, 5);
+            }
         }
 
         return $formatada;
@@ -200,11 +174,18 @@ final class Culto
      */
     private static function bindings(array $data): array
     {
+        $responsavelId = trim((string) ($data['responsavel_membro_id'] ?? ''));
+        $horaInicio = trim((string) ($data['hora_inicio'] ?? ''));
+        $horaFim = trim((string) ($data['hora_fim'] ?? ''));
+
         return [
             'titulo' => trim((string) $data['titulo']),
+            'tipo' => in_array($data['tipo'] ?? null, ['evento', 'reuniao', 'reserva', 'outro'], true) ? $data['tipo'] : 'evento',
             'data' => (string) $data['data'],
-            'hora' => self::nullable($data['hora'] ?? null),
+            'hora_inicio' => $horaInicio === '' ? null : $horaInicio,
+            'hora_fim' => $horaFim === '' ? null : $horaFim,
             'local' => self::nullable($data['local'] ?? null),
+            'responsavel_membro_id' => $responsavelId === '' ? null : (int) $responsavelId,
             'descricao' => self::nullable($data['descricao'] ?? null),
             'status' => in_array($data['status'] ?? null, ['agendado', 'realizado', 'cancelado'], true)
                 ? $data['status']
@@ -224,12 +205,15 @@ final class Culto
         return new self(
             id: (int) $row['id'],
             titulo: (string) $row['titulo'],
+            tipo: (string) $row['tipo'],
             data: (string) $row['data'],
-            hora: $row['hora'],
+            horaInicio: $row['hora_inicio'],
+            horaFim: $row['hora_fim'],
             local: $row['local'],
+            responsavelMembroId: $row['responsavel_membro_id'] !== null ? (int) $row['responsavel_membro_id'] : null,
+            responsavelNome: $row['responsavel_nome'] ?? null,
             descricao: $row['descricao'],
             status: (string) $row['status'],
-            totalPresentes: (int) ($row['total_presentes'] ?? 0),
             createdAt: (string) $row['created_at'],
         );
     }

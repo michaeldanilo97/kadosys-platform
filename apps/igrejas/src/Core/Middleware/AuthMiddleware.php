@@ -9,6 +9,7 @@ use Igrejas\Core\MiddlewareInterface;
 use Igrejas\Core\Request;
 use Igrejas\Core\TenantResolver;
 use Igrejas\Models\FaturaPix;
+use Igrejas\Models\User;
 
 /**
  * Garante que apenas usuarios autenticados acessem rotas protegidas
@@ -17,10 +18,12 @@ use Igrejas\Models\FaturaPix;
  *
  * Tambem bloqueia o acesso de igrejas que pagam por Pix (ver
  * plataforma_faturas) quando a ultima fatura de renovacao venceu sem
- * pagamento, e de igrejas em teste gratis cujo prazo ja passou sem
- * escolherem um plano pago - unico ponto de entrada comum a todas as
- * rotas do dashboard, entao e o lugar mais simples de aplicar esses
- * bloqueios sem repetir a middleware em cada rota.
+ * pagamento, de igrejas em teste gratis cujo prazo ja passou sem
+ * escolherem um plano pago, e de usuarios (papel 'usuario', modulo
+ * Usuarios e Permissoes) tentando acessar um modulo fora da propria
+ * permissao - unico ponto de entrada comum a todas as rotas do
+ * dashboard, entao e o lugar mais simples de aplicar esses bloqueios
+ * sem repetir a middleware em cada rota.
  */
 final class AuthMiddleware implements MiddlewareInterface
 {
@@ -40,6 +43,7 @@ final class AuthMiddleware implements MiddlewareInterface
 
         $this->bloquearSeFaturaPixVencida($request);
         $this->bloquearSeTrialExpirado($request);
+        $this->bloquearSePermissaoNegada($request, $auth);
     }
 
     private function bloquearSeFaturaPixVencida(Request $request): void
@@ -125,6 +129,39 @@ final class AuthMiddleware implements MiddlewareInterface
         }
 
         return new \DateTimeImmutable() > new \DateTimeImmutable($tenant->trialExpiraEm);
+    }
+
+    private function bloquearSePermissaoNegada(Request $request, Auth $auth): void
+    {
+        $slug = $this->moduloSlugDaUri($this->uriSemBase($request));
+
+        if ($slug === null) {
+            return;
+        }
+
+        // Telas do proprio sistema (nao modulos de verdade) - sempre
+        // acessiveis, senao um usuario restrito ficaria preso sem
+        // conseguir nem ver a propria tela de bloqueio.
+        if (in_array($slug, ['trial-expirado', 'fatura-vencida', 'plano-bloqueado', 'sem-permissao'], true)) {
+            return;
+        }
+
+        if (User::podeAcessarModulo($auth->user(), $slug)) {
+            return;
+        }
+
+        $base = $this->config['base_path'] ?? '';
+        header('Location: ' . $base . '/dashboard/sem-permissao?modulo=' . urlencode($slug));
+        exit;
+    }
+
+    private function moduloSlugDaUri(string $uri): ?string
+    {
+        if (preg_match('#^/dashboard/([a-z\-]+)#', $uri, $matches) !== 1) {
+            return null;
+        }
+
+        return $matches[1];
     }
 
     private function uriSemBase(Request $request): string

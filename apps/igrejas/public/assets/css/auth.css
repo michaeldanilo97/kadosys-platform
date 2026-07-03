@@ -273,11 +273,25 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.14);
 }
 
-.plano-escolha-card input[type="radio"] {
+.plano-escolha-card input[type="radio"],
+.plano-escolha-card input[type="checkbox"] {
   position: absolute;
   top: 0.9rem;
   right: 0.9rem;
   accent-color: var(--primary);
+}
+
+[data-permissoes-grid] {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+[data-permissoes-grid] .plano-escolha-card {
+  padding: 0.9rem 2rem 0.9rem 1rem;
+}
+
+[data-permissoes-grid] .plano-escolha-card .nome {
+  padding-right: 0;
+  word-break: break-word;
 }
 
 .plano-escolha-card .nome {

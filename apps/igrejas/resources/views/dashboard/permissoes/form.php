@@ -1,0 +1,70 @@
+<?php
+
+use Igrejas\Core\View;
+
+/**
+ * @var array $config
+ * @var \Igrejas\Models\User $usuarioEditado
+ * @var array<string, array{title:string, icon:string}> $modulosDisponiveis
+ * @var array<int, string> $modulosPermitidos
+ * @var string|null $success
+ * @var string $csrf
+ */
+$basePath = $config['base_path'] ?? '';
+$semRestricao = $modulosPermitidos === [];
+?>
+
+<div class="dash-page-head">
+    <div>
+        <h1 class="dash-page-title">Permissoes de <?= htmlspecialchars($usuarioEditado->name, ENT_QUOTES, 'UTF-8') ?></h1>
+        <p class="dash-page-subtitle">
+            Escolha quais modulos <?= htmlspecialchars($usuarioEditado->name, ENT_QUOTES, 'UTF-8') ?> pode acessar.
+            Sem nenhum modulo marcado, o acesso e o padrao: tudo que o plano contratado libera.
+        </p>
+    </div>
+    <div class="dash-page-actions">
+        <a href="<?= $basePath ?>/dashboard/permissoes" class="btn-k btn-k-ghost">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+    </div>
+</div>
+
+<?php if (!empty($success)): ?>
+    <div class="crud-alert success"><i class="bi bi-check-circle"></i> <?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8') ?></div>
+<?php endif; ?>
+
+<div class="dash-panel">
+    <form method="POST" action="<?= $basePath ?>/dashboard/permissoes/<?= $usuarioEditado->id ?>">
+        <?= $csrf ?>
+
+        <div class="crud-alert" style="background: rgba(59, 130, 246, 0.08); border-color: rgba(59, 130, 246, 0.3); color: var(--primary-soft);">
+            <i class="bi bi-info-circle"></i>
+            <?= $semRestricao
+                ? 'Nenhuma restricao aplicada agora - o usuario acessa tudo que o plano contratado libera.'
+                : 'Restricao ativa - o usuario so acessa os modulos marcados abaixo.' ?>
+        </div>
+
+        <div class="plano-escolha" data-permissoes-grid style="margin-top: 1rem;">
+            <?php foreach ($modulosDisponiveis as $slug => $modulo): ?>
+                <label class="plano-escolha-card" data-permissao-card>
+                    <input
+                        type="checkbox"
+                        name="modulos[]"
+                        value="<?= htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') ?>"
+                        <?= in_array($slug, $modulosPermitidos, true) ? 'checked' : '' ?>
+                    >
+                    <span class="nome"><i class="bi <?= htmlspecialchars($modulo['icon'], ENT_QUOTES, 'UTF-8') ?>"></i> <?= htmlspecialchars($modulo['title'], ENT_QUOTES, 'UTF-8') ?></span>
+                </label>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="crud-form-actions">
+            <a href="<?= $basePath ?>/dashboard/permissoes" class="btn-k btn-k-ghost">Cancelar</a>
+            <button type="submit" class="btn-k btn-k-grad">
+                <i class="bi bi-check-lg"></i> Salvar permissoes
+            </button>
+        </div>
+    </form>
+</div>
+
+<script src="<?= $basePath ?>/assets/js/permissoes-form.js?v=<?= View::assetVersion('assets/js/permissoes-form.js') ?>"></script>
