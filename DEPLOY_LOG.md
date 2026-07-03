@@ -17,6 +17,25 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 30 - 2026-07-06
+
+**Correcao: redirecionamento prematuro pro subdominio novo (tela "preparando tudo")**
+
+- Depois de criar uma conta de teste gratis, a tela "Estamos preparando
+  tudo" verificava se o subdominio novo ja estava pronto com um
+  `fetch` no modo `no-cors` direto do navegador. Esse modo nunca
+  consegue ler o status/corpo da resposta (bloqueado por CORS) - ai
+  qualquer resposta do servidor contava como "pronto", inclusive uma
+  pagina de erro (subdominio com vhost ainda nao carregado, banco
+  daquela igreja ainda inacessivel, etc.). Resultado: o usuario as
+  vezes era mandado pro login com o site ainda quebrado.
+- Agora essa checagem roda no servidor (`CadastroController::prontoStatus()`),
+  que faz a requisicao de verdade pro subdominio e so confirma
+  "pronto" quando a pagina de login carregou por completo (status 200
+  e o formulario presente no corpo) - nao so quando o servidor
+  respondeu alguma coisa.
+- Sem migracao de banco - e so codigo (controller, rota, view e JS).
+
 ## Ajuste 29 - 2026-07-06
 
 **Ultimos 3 modulos: Patrimonio, Comunicacao e Relatorios (fim dos "em construcao")**

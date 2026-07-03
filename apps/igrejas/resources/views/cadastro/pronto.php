@@ -5,9 +5,11 @@ use Igrejas\Core\View;
 /**
  * @var array $config
  * @var string $subdominio
+ * @var int $provisionamentoId
  */
 $basePath = $config['base_path'] ?? '';
 $loginUrl = 'https://' . $subdominio . '/login';
+$statusUrl = $basePath . '/cadastro/pronto/' . $provisionamentoId . '/status';
 ?>
 <div class="auth-form-card">
     <div class="eyebrow">Quase la</div>
@@ -30,5 +32,6 @@ $loginUrl = 'https://' . $subdominio . '/login';
 
 <script>
   window.KADOSYS_LOGIN_URL = <?= json_encode($loginUrl, JSON_UNESCAPED_SLASHES) ?>;
+  window.KADOSYS_STATUS_URL = <?= json_encode($statusUrl, JSON_UNESCAPED_SLASHES) ?>;
 </script>
 <script src="<?= $basePath ?>/assets/js/cadastro-pronto.js?v=<?= View::assetVersion('assets/js/cadastro-pronto.js') ?>"></script>

@@ -47,6 +47,7 @@ $router->get('/cadastro/pix/{id}', [CadastroController::class, 'pix']);
 $router->get('/cadastro/pix/{id}/status', [CadastroController::class, 'pixStatus']);
 $router->get('/cadastro/retorno', [CadastroController::class, 'retorno']);
 $router->get('/cadastro/pronto/{id}', [CadastroController::class, 'pronto']);
+$router->get('/cadastro/pronto/{id}/status', [CadastroController::class, 'prontoStatus']);
 
 // Autenticacao.
 $router->get('/login', [AuthController::class, 'showLogin'], [GuestMiddleware::class]);
