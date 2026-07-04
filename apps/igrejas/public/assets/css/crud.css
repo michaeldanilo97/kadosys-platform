@@ -752,6 +752,11 @@
   line-height: 1.55;
 }
 
+.projecao-acesso-card .projecao-acesso-alt {
+  margin: 0.8rem 0 0;
+  font-size: 0.78rem;
+}
+
 .projecao-pin {
   font-family: var(--font-mono);
   font-size: 2.1rem;

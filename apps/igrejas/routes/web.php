@@ -182,6 +182,12 @@ $router->post('/dashboard/configuracoes/cadastro-membros', [ConfiguracaoControll
 $router->post('/dashboard/configuracoes/assinatura/{plano}', [AssinaturaController::class, 'iniciar'], [AuthMiddleware::class]);
 $router->get('/dashboard/assinatura/retorno', [AssinaturaController::class, 'retorno'], [AuthMiddleware::class]);
 
+// Tela de QR code de um upgrade proporcional pendente (ver
+// AssinaturaController::iniciarUpgradeProporcional) - diferente da
+// fatura-vencida abaixo, o acesso NAO fica bloqueado enquanto isso.
+$router->get('/dashboard/configuracoes/upgrade-pendente', [AssinaturaController::class, 'upgradePendente'], [AuthMiddleware::class]);
+$router->get('/dashboard/configuracoes/upgrade-pendente/status', [AssinaturaController::class, 'upgradePendenteStatus'], [AuthMiddleware::class]);
+
 // Tela exibida quando um modulo fora do plano contratado e acessado (ver
 // PlanoMiddleware). Tambem sem PlanoMiddleware, para nao criar um loop de
 // redirecionamento.
@@ -237,8 +243,11 @@ $router->get('/dashboard/relatorios', [RelatorioController::class, 'index'], [Au
 // base no slug da propria URI.
 $router->get('/dashboard/{slug}', [DashboardController::class, 'page'], [AuthMiddleware::class, PlanoMiddleware::class]);
 
-// Tela publica do telao (projetor). Acesso direto por link com token,
-// sem exigir login administrativo.
+// Tela publica do telao (projetor). Acesso direto por link com token, ou
+// por PIN de 6 digitos (mais facil de digitar num controle de TV) que
+// redireciona pro link com token - sem exigir login administrativo.
+$router->get('/telao', [TelaoController::class, 'entrar']);
+$router->post('/telao', [TelaoController::class, 'autenticar']);
 $router->get('/telao/{token}', [TelaoController::class, 'show']);
 
 // Quadro de avisos publico da igreja (sem login) - link pra compartilhar

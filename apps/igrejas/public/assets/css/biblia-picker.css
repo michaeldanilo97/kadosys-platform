@@ -110,6 +110,20 @@
 
 .biblia-livro-field {
   position: relative;
+  z-index: 2;
+}
+
+body.livro-combo-lista-aberta .biblia-livro-field {
+  z-index: 21;
+}
+
+body.livro-combo-lista-aberta::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 20, 0.55);
+  z-index: 19;
+  pointer-events: none;
 }
 
 .biblia-livro-field .livro-combo {
@@ -152,6 +166,24 @@
   background: #FFFFFF;
   border-color: rgba(30, 41, 59, 0.15);
   color: #0F172A;
+}
+
+.biblia-livro-dica {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0.55rem 0 0;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.biblia-livro-dica[hidden] {
+  display: none;
+}
+
+.biblia-livro-dica .bi-arrow-up-short {
+  font-size: 1rem;
+  color: var(--accent-soft);
 }
 
 /* ---- Grades de capitulo / versiculo (chips) ------------------------------ */

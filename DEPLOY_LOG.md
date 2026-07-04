@@ -17,6 +17,51 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 41 - 2026-07-04
+
+**Upgrade/downgrade de plano respeitando o ciclo ja pago (sem cobrar tudo de novo)**
+
+- Antes, trocar de plano em Configuracoes sempre gerava uma cobranca
+  nova em valor cheio, mesmo faltando dias pro ciclo atual vencer.
+  Agora:
+  - **Upgrade** (plano mais caro): cobra so a diferenca proporcional
+    aos dias que faltam (ex.: 16 dias de 30 restantes = ~53% da
+    diferenca), sempre via Pix avulso (mesmo pra quem assina por
+    cartao - o Checkout Pro nao permite cobranca avulsa numa
+    assinatura recorrente ja ativa). Assim que o Pix cai, o plano
+    maior e liberado na hora; quem paga por cartao tem o valor da
+    assinatura recorrente atualizado pro valor cheio a partir do
+    proximo ciclo automaticamente.
+  - **Downgrade** (plano mais barato): nao cobra nada agora - fica
+    agendado pra entrar em vigor so quando o ciclo atual (ja pago)
+    vencer. Ate la, os modulos do plano atual continuam liberados
+    normalmente.
+- Essa regra so vale pra quem ja tem um ciclo pago em andamento (nao
+  vale pra quem esta no teste gratis nem pra primeira assinatura -
+  esses continuam cobrando o valor cheio, sem ciclo anterior pra
+  aproveitar).
+- **Rode as migracoes novas no banco CENTRAL** (nao e no banco de cada
+  igreja):
+  ```
+  mysql -u seu_usuario -p seu_banco_central < apps/igrejas/database/migrations/028_add_troca_plano_agendada.sql
+  mysql -u seu_usuario -p seu_banco_central < apps/igrejas/database/migrations/029_add_tipo_fatura_pix.sql
+  ```
+- **Novo Cron Job** a configurar no cPanel (roda 1x por dia), aplicando
+  os downgrades agendados que ja venceram:
+  ```
+  php /home/kadosys1/public_html/apps/igrejas/cron/aplicar_trocas_agendadas.php
+  ```
+  **Importante:** esse cron precisa rodar ANTES do cron ja existente
+  `cron/gerar_faturas_pix.php` no mesmo dia (ex.: 5:00 pra este, 5:10
+  pro outro) - senao uma igreja Pix com downgrade agendado pra hoje
+  ainda receberia a proxima fatura no valor do plano antigo (mais
+  caro).
+- Limitacao conhecida: pra quem paga por cartao, a data exata do
+  proximo ciclo e uma aproximacao (+30 dias a partir da ultima
+  confirmacao), ja que o Mercado Pago nao expoe essa data via webhook -
+  na pratica, isso so afeta o calculo do valor proporcional em poucos
+  dias de diferenca, nunca o valor cobrado no cartao em si.
+
 ## Ajuste 40 - 2026-07-06
 
 **Correcao: video do YouTube no telao so aparecia apos recarregar a pagina + fadeout de verdade**

@@ -57,6 +57,25 @@ final class AssinaturaTenant
         return $row === false ? null : self::fromRow($row);
     }
 
+    /**
+     * Assinatura de cartao autorizada mais recente de um tenant - usada
+     * pra atualizar o valor cobrado no proximo ciclo quando um
+     * upgrade/downgrade entra em vigor (ver
+     * Igrejas\Core\MercadoPagoClient::atualizarAssinatura()), sem
+     * precisar cancelar e recriar a assinatura no Checkout Pro.
+     */
+    public static function ativaDoTenant(int $tenantId): ?self
+    {
+        $stmt = Database::central()->prepare(
+            self::SELECT_BASE . " WHERE tenant_id = :tenant_id AND status = 'autorizada'
+                ORDER BY id DESC LIMIT 1"
+        );
+        $stmt->execute(['tenant_id' => $tenantId]);
+        $row = $stmt->fetch();
+
+        return $row === false ? null : self::fromRow($row);
+    }
+
     public static function atualizarStatus(int $id, string $status): void
     {
         $stmt = Database::central()->prepare(

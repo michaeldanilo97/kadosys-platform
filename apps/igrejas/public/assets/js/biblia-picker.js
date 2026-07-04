@@ -153,14 +153,27 @@
       return { definir: function () {} };
     }
 
+    var dica = raiz.parentElement ? raiz.parentElement.querySelector('[data-livro-dica]') : null;
+
+    function atualizarDica() {
+      if (dica) {
+        dica.hidden = oculto.value !== '';
+      }
+    }
+
+    oculto.addEventListener('change', atualizarDica);
+    atualizarDica();
+
     function abrir() {
       lista.hidden = false;
       input.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('livro-combo-lista-aberta');
     }
 
     function fechar() {
       lista.hidden = true;
       input.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('livro-combo-lista-aberta');
     }
 
     function atualizarGrupos() {

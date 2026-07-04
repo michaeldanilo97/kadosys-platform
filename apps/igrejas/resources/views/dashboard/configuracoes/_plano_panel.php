@@ -24,6 +24,19 @@ use Igrejas\Models\Plano;
 $permiteAlterarPlano ??= true;
 $valorPorPlano = Plano::VALOR_MENSAL;
 
+// Upgrade/downgrade proporcional ao ciclo ja pago - so se aplica a quem
+// ja tem um plano pago em andamento (nao trial, nem primeira
+// assinatura, que nao tem ciclo anterior pra aproveitar). Ver
+// Igrejas\Controllers\AssinaturaController::iniciar() pra regra
+// completa - aqui e so a previa mostrada na tela.
+$diasRestantesCiclo = null;
+
+if (!$emTrial && $tenant !== null && $tenant->proximoVencimento !== null) {
+    $vencimentoCiclo = new DateTimeImmutable($tenant->proximoVencimento);
+    $hoje = new DateTimeImmutable('today');
+    $diasRestantesCiclo = $hoje < $vencimentoCiclo ? $hoje->diff($vencimentoCiclo)->days : 0;
+}
+
 /** @var array<string, string> */
 $statusAssinaturaLabel = [
     'pendente' => 'Pagamento pendente',
@@ -67,13 +80,42 @@ $statusAssinaturaLabel = [
 
     <div class="plano-assinar-grid">
         <?php foreach ($valorPorPlano as $valor => $preco): ?>
-            <?php $ehPlanoAtual = !$emTrial && $configuracao->plano === $valor; ?>
+            <?php
+                $ehPlanoAtual = !$emTrial && $configuracao->plano === $valor;
+                $ehDowngrade = $diasRestantesCiclo !== null && $diasRestantesCiclo > 0 && $preco < ($valorPorPlano[$tenant->plano] ?? $preco);
+                $ehUpgrade = $diasRestantesCiclo !== null && $diasRestantesCiclo > 0 && $preco > ($valorPorPlano[$tenant->plano] ?? $preco);
+                $jaAgendadoPraEsse = $tenant !== null && $tenant->planoAgendado === $valor;
+                $valorProporcional = $ehUpgrade
+                    ? round(($preco - $valorPorPlano[$tenant->plano]) * $diasRestantesCiclo / 30, 2)
+                    : null;
+            ?>
             <div class="plano-assinar-card<?= $ehPlanoAtual ? ' atual' : '' ?>">
                 <strong><?= htmlspecialchars(Plano::label($valor), ENT_QUOTES, 'UTF-8') ?></strong>
                 <span class="preco">R$ <?= number_format($preco, 2, ',', '.') ?><small>/mes</small></span>
                 <?php if ($ehPlanoAtual): ?>
                     <span class="plano-assinar-atual-tag">Plano atual</span>
-                <?php elseif ($permiteAlterarPlano): ?>
+                <?php elseif (!$permiteAlterarPlano): ?>
+                <?php elseif ($jaAgendadoPraEsse): ?>
+                    <span class="plano-assinar-agendado-tag">
+                        <i class="bi bi-clock-history"></i> Agendado para <?= (new DateTimeImmutable($tenant->proximoVencimento))->format('d/m/Y') ?>
+                    </span>
+                <?php elseif ($ehDowngrade): ?>
+                    <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/assinatura/<?= htmlspecialchars($valor, ENT_QUOTES, 'UTF-8') ?>" data-confirm="O plano so muda no fim do ciclo atual (<?= (new DateTimeImmutable($tenant->proximoVencimento))->format('d/m/Y') ?>), sem reembolso do que ja foi pago. Confirma?">
+                        <?= $csrf ?>
+                        <button type="submit" class="btn-k btn-k-ghost">
+                            <i class="bi bi-arrow-down-circle"></i> Agendar downgrade
+                        </button>
+                        <span class="plano-assinar-hint">Passa a valer em <?= (new DateTimeImmutable($tenant->proximoVencimento))->format('d/m/Y') ?>, sem cobrar nada agora.</span>
+                    </form>
+                <?php elseif ($ehUpgrade): ?>
+                    <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/assinatura/<?= htmlspecialchars($valor, ENT_QUOTES, 'UTF-8') ?>">
+                        <?= $csrf ?>
+                        <button type="submit" class="btn-k btn-k-grad" <?= $pagamentoConfigurado ? '' : 'disabled' ?>>
+                            <i class="bi bi-qr-code"></i> Upgrade agora - R$ <?= number_format($valorProporcional, 2, ',', '.') ?>
+                        </button>
+                        <span class="plano-assinar-hint">Valor proporcional aos dias restantes do seu ciclo atual, via Pix. O valor cheio passa a valer so no proximo ciclo.</span>
+                    </form>
+                <?php else: ?>
                     <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/assinatura/<?= htmlspecialchars($valor, ENT_QUOTES, 'UTF-8') ?>">
                         <?= $csrf ?>
                         <?php if ($pixDisponivel): ?>

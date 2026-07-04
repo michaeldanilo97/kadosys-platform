@@ -1289,6 +1289,23 @@ body.dashboard-body[data-theme="light"] {
   letter-spacing: 0.04em;
 }
 
+.plano-assinar-agendado-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent-soft, #d4a13f);
+}
+
+.plano-assinar-hint {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-top: 0.3rem;
+}
+
 /* ---- Placeholder "em construcao" ------------------------------------------------ */
 
 .placeholder-box {

@@ -66,6 +66,25 @@ final class MercadoPagoClient
     }
 
     /**
+     * Atualiza o valor cobrado a cada ciclo de uma assinatura de cartao
+     * ja autorizada - usado quando um downgrade agendado (ver
+     * cron/aplicar_trocas_agendadas.php) ou um upgrade (ver
+     * AssinaturaController) entra em vigor pra quem paga por cartao, sem
+     * precisar cancelar e recriar a assinatura (o que forcaria o cliente
+     * a passar pelo Checkout Pro de novo).
+     *
+     * @return array{status:int, body:array}
+     */
+    public function atualizarAssinatura(string $preapprovalId, float $novoValor): array
+    {
+        return $this->request('PUT', '/preapproval/' . urlencode($preapprovalId), [
+            'auto_recurring' => [
+                'transaction_amount' => $novoValor,
+            ],
+        ]);
+    }
+
+    /**
      * Cria uma cobranca Pix avulsa (QR code + copia-e-cola), com prazo de
      * vencimento. Diferente de criarAssinatura() (cartao recorrente,
      * debitado automaticamente), aqui cada cobranca e paga manualmente

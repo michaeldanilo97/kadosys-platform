@@ -15,6 +15,7 @@
   var botoesVideo = root.querySelectorAll('[data-video-acao]');
   var botaoLogo = document.querySelector('[data-acao-logo]');
   var botaoLimpar = document.querySelector('[data-acao-limpar]');
+  var botaoFullscreen = document.querySelector('[data-acao-fullscreen]');
 
   var navBox = root.querySelector('[data-projecao-nav]');
   var previewRef = root.querySelector('[data-preview-ref]');
@@ -342,6 +343,48 @@
         modoAtual = 'blank';
       });
     });
+  }
+
+  if (botaoFullscreen) {
+    var chamarSePromise = function (valor) {
+      if (valor && typeof valor.catch === 'function') {
+        valor.catch(function () {});
+      }
+    };
+
+    var atualizarIconeFullscreen = function () {
+      var emTelaCheia = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      var icone = botaoFullscreen.querySelector('i');
+
+      botaoFullscreen.classList.toggle('active', emTelaCheia);
+
+      if (icone) {
+        icone.className = emTelaCheia ? 'bi bi-fullscreen-exit' : 'bi bi-arrows-fullscreen';
+      }
+    };
+
+    botaoFullscreen.addEventListener('click', function () {
+      try {
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+          var pedido = document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen;
+
+          if (pedido) {
+            chamarSePromise(pedido.call(document.documentElement));
+          }
+        } else {
+          var saida = document.exitFullscreen || document.webkitExitFullscreen;
+
+          if (saida) {
+            chamarSePromise(saida.call(document));
+          }
+        }
+      } catch (erro) {
+        // Navegador sem suporte a Fullscreen API; nada a fazer.
+      }
+    });
+
+    document.addEventListener('fullscreenchange', atualizarIconeFullscreen);
+    document.addEventListener('webkitfullscreenchange', atualizarIconeFullscreen);
   }
 
   setInterval(poll, 1500);

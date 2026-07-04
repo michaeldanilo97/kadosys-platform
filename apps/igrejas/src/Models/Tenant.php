@@ -26,6 +26,8 @@ final class Tenant
         public readonly string $plano,
         public readonly string $metodoPagamento,
         public readonly ?string $trialExpiraEm,
+        public readonly ?string $proximoVencimento,
+        public readonly ?string $planoAgendado,
         public readonly string $subdominio,
         public readonly string $dbName,
         public readonly string $dbUser,
@@ -120,6 +122,65 @@ final class Tenant
     }
 
     /**
+     * Marca ate quando o ciclo pago atual vale - usado pra calcular o
+     * valor proporcional de um upgrade e pra saber quando aplicar um
+     * downgrade agendado (ver AssinaturaController e
+     * cron/aplicar_trocas_agendadas.php). Atualizado a cada pagamento
+     * confirmado (fatura Pix paga ou assinatura de cartao autorizada).
+     */
+    public static function atualizarProximoVencimento(int $id, \DateTimeImmutable $data): void
+    {
+        $stmt = Database::central()->prepare(
+            'UPDATE plataforma_tenants SET proximo_vencimento = :data WHERE id = :id'
+        );
+        $stmt->execute(['data' => $data->format('Y-m-d'), 'id' => $id]);
+    }
+
+    /**
+     * Agenda um downgrade pra so entrar em vigor no fim do ciclo ja
+     * pago (proximo_vencimento) - a igreja mantem o plano atual (ja
+     * pago) ate la, sem reembolso. Ver cron/aplicar_trocas_agendadas.php
+     * pra quando isso e de fato aplicado.
+     */
+    public static function agendarTrocaPlano(int $id, string $planoAgendado): void
+    {
+        $stmt = Database::central()->prepare(
+            'UPDATE plataforma_tenants SET plano_agendado = :plano_agendado WHERE id = :id'
+        );
+        $stmt->execute(['plano_agendado' => $planoAgendado, 'id' => $id]);
+    }
+
+    /**
+     * Cancela uma troca de plano agendada (ex.: a igreja mudou de ideia
+     * antes do downgrade entrar em vigor, ou pediu um upgrade que
+     * substitui o downgrade agendado).
+     */
+    public static function cancelarTrocaAgendada(int $id): void
+    {
+        $stmt = Database::central()->prepare(
+            'UPDATE plataforma_tenants SET plano_agendado = NULL WHERE id = :id'
+        );
+        $stmt->execute(['id' => $id]);
+    }
+
+    /**
+     * Tenants ativos com uma troca de plano agendada cujo ciclo pago ja
+     * venceu - usado por cron/aplicar_trocas_agendadas.php.
+     *
+     * @return array<int, self>
+     */
+    public static function comTrocaAgendadaVencida(): array
+    {
+        $stmt = Database::central()->prepare(
+            self::SELECT_BASE . " WHERE status = 'ativo' AND plano_agendado IS NOT NULL
+                AND proximo_vencimento IS NOT NULL AND proximo_vencimento <= CURDATE()"
+        );
+        $stmt->execute();
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /**
      * Usado quando um tenant ja ativo troca de metodo de pagamento pela
      * tela de Configuracoes (ver AssinaturaController::iniciar) - ex.:
      * escolhe pagar por Pix ao trocar de plano, mesmo ja tendo sido
@@ -191,7 +252,8 @@ final class Tenant
     }
 
     private const SELECT_BASE = 'SELECT id, slug, nome_igreja, documento_tipo, documento, razao_social, plano,
-            metodo_pagamento, trial_expira_em, subdominio, db_name, db_user, db_password, status, created_at
+            metodo_pagamento, trial_expira_em, proximo_vencimento, plano_agendado, subdominio, db_name, db_user,
+            db_password, status, created_at
         FROM plataforma_tenants';
 
     private static function fromRow(array $row): self
@@ -206,6 +268,8 @@ final class Tenant
             plano: $row['plano'],
             metodoPagamento: $row['metodo_pagamento'],
             trialExpiraEm: $row['trial_expira_em'],
+            proximoVencimento: $row['proximo_vencimento'],
+            planoAgendado: $row['plano_agendado'],
             subdominio: $row['subdominio'],
             dbName: $row['db_name'],
             dbUser: $row['db_user'],

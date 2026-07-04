@@ -18,10 +18,14 @@ use Igrejas\Core\Database;
  */
 final class FaturaPix
 {
+    public const TIPO_RENOVACAO = 'renovacao';
+    public const TIPO_UPGRADE_PROPORCIONAL = 'upgrade_proporcional';
+
     public function __construct(
         public readonly int $id,
         public readonly int $tenantId,
         public readonly string $plano,
+        public readonly string $tipo,
         public readonly float $valor,
         public readonly ?string $mpPaymentId,
         public readonly ?string $pixQrCode,
@@ -40,16 +44,18 @@ final class FaturaPix
         string $pixQrCode,
         string $pixQrCodeBase64,
         \DateTimeImmutable $vencimento,
+        string $tipo = self::TIPO_RENOVACAO,
     ): int {
         $stmt = Database::central()->prepare(
             'INSERT INTO plataforma_faturas
-                (tenant_id, plano, valor, mp_payment_id, pix_qr_code, pix_qr_code_base64, status, vencimento)
+                (tenant_id, plano, tipo, valor, mp_payment_id, pix_qr_code, pix_qr_code_base64, status, vencimento)
              VALUES
-                (:tenant_id, :plano, :valor, :mp_payment_id, :pix_qr_code, :pix_qr_code_base64, "pendente", :vencimento)'
+                (:tenant_id, :plano, :tipo, :valor, :mp_payment_id, :pix_qr_code, :pix_qr_code_base64, "pendente", :vencimento)'
         );
         $stmt->execute([
             'tenant_id' => $tenantId,
             'plano' => $plano,
+            'tipo' => $tipo,
             'valor' => $valor,
             'mp_payment_id' => $mpPaymentId,
             'pix_qr_code' => $pixQrCode,
@@ -121,7 +127,7 @@ final class FaturaPix
         );
     }
 
-    private const SELECT_BASE = 'SELECT id, tenant_id, plano, valor, mp_payment_id, pix_qr_code,
+    private const SELECT_BASE = 'SELECT id, tenant_id, plano, tipo, valor, mp_payment_id, pix_qr_code,
             pix_qr_code_base64, status, vencimento, pago_em
         FROM plataforma_faturas';
 
@@ -131,6 +137,7 @@ final class FaturaPix
             id: (int) $row['id'],
             tenantId: (int) $row['tenant_id'],
             plano: $row['plano'],
+            tipo: $row['tipo'],
             valor: (float) $row['valor'],
             mpPaymentId: $row['mp_payment_id'],
             pixQrCode: $row['pix_qr_code'],

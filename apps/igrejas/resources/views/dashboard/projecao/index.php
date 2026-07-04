@@ -48,11 +48,12 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
 
         <div class="projecao-acessos">
             <div class="projecao-acesso-card">
-                <span class="label"><i class="bi bi-display"></i> Telao (projetor)</span>
-                <p>Abra este link no computador ligado ao projetor.</p>
+                <span class="label"><i class="bi bi-display"></i> Telao (projetor ou TV)</span>
+                <p>No computador ligado ao projetor, abra o link abaixo:</p>
                 <a href="<?= htmlspecialchars($telaoUrl, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener" class="btn-k btn-k-ghost">
                     <i class="bi bi-box-arrow-up-right"></i> Abrir telao
                 </a>
+                <p class="projecao-acesso-alt">Numa Smart TV, digitar esse link pelo controle remoto e dificil - acesse <strong><?= $basePath ?>/telao</strong> e digite o mesmo PIN do preletor ao lado.</p>
             </div>
             <div class="projecao-acesso-card">
                 <span class="label"><i class="bi bi-tablet"></i> Preletor (tablet do pastor)</span>
@@ -109,6 +110,9 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                                     <?php endforeach; ?>
                                 </div>
                             </div>
+                            <p class="biblia-livro-dica" data-livro-dica>
+                                <i class="bi bi-arrow-up-short"></i> Escolha um livro para ver os capitulos e versiculos
+                            </p>
                         </div>
                     </div>
 
@@ -190,6 +194,7 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                 <div class="projecao-video-controles">
                     <button type="button" class="btn-k btn-k-ghost" data-acao-logo><i class="bi bi-image"></i> Mostrar logo</button>
                     <button type="button" class="btn-k btn-k-ghost" data-acao-limpar><i class="bi bi-x-circle"></i> Limpar tela</button>
+                    <button type="button" class="btn-k btn-k-ghost" data-acao-fullscreen><i class="bi bi-arrows-fullscreen"></i> Tela cheia</button>
                 </div>
             </div>
         </div>
