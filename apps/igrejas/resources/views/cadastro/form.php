@@ -154,6 +154,82 @@ $basePath = $config['base_path'] ?? '';
 
         <div class="auth-field-row">
             <div class="auth-field">
+                <label for="cep">CEP</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="cep"
+                    name="cep"
+                    value="<?= htmlspecialchars($old['cep'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                    placeholder="00000-000"
+                    inputmode="numeric"
+                    autocomplete="postal-code"
+                    maxlength="9"
+                    data-cep-input
+                    data-cep-endereco="endereco"
+                    data-cep-cidade="cidade"
+                    data-cep-estado="estado"
+                >
+                <span class="auth-field-hint" data-cep-status></span>
+            </div>
+            <div class="auth-field">
+                <label for="numero">Numero</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="numero"
+                    name="numero"
+                    value="<?= htmlspecialchars($old['numero'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                    placeholder="123"
+                    autocomplete="address-line2"
+                >
+            </div>
+        </div>
+
+        <div class="auth-field">
+            <label for="endereco">Endereco</label>
+            <input
+                type="text"
+                class="form-control"
+                id="endereco"
+                name="endereco"
+                value="<?= htmlspecialchars($old['endereco'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                placeholder="Rua, bairro"
+                autocomplete="address-line1"
+            >
+        </div>
+
+        <div class="auth-field-row">
+            <div class="auth-field">
+                <label for="cidade">Cidade</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="cidade"
+                    name="cidade"
+                    value="<?= htmlspecialchars($old['cidade'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                    placeholder="Cidade"
+                    autocomplete="address-level2"
+                >
+            </div>
+            <div class="auth-field">
+                <label for="estado">Estado</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="estado"
+                    name="estado"
+                    value="<?= htmlspecialchars($old['estado'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                    placeholder="SP"
+                    maxlength="2"
+                    style="text-transform: uppercase;"
+                    autocomplete="address-level1"
+                >
+            </div>
+        </div>
+
+        <div class="auth-field-row">
+            <div class="auth-field">
                 <label for="senha">Senha</label>
                 <input
                     type="password"
@@ -246,3 +322,4 @@ $basePath = $config['base_path'] ?? '';
 </div>
 
 <script src="<?= $basePath ?>/assets/js/cadastro.js?v=<?= View::assetVersion('assets/js/cadastro.js') ?>"></script>
+<script src="<?= $basePath ?>/assets/js/cep-autofill.js?v=<?= View::assetVersion('assets/js/cep-autofill.js') ?>"></script>

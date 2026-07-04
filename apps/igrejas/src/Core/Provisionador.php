@@ -248,12 +248,19 @@ final class Provisionador
     private function inserirDadosIniciais(PDO $pdo, Provisionamento $provisionamento): void
     {
         $pdo->prepare(
-            'INSERT INTO configuracoes_igreja (id, nome_igreja, plano)
-             VALUES (1, :nome_igreja, :plano)
-             ON DUPLICATE KEY UPDATE nome_igreja = VALUES(nome_igreja), plano = VALUES(plano)'
+            'INSERT INTO configuracoes_igreja (id, nome_igreja, plano, cep, endereco, numero, cidade, estado)
+             VALUES (1, :nome_igreja, :plano, :cep, :endereco, :numero, :cidade, :estado)
+             ON DUPLICATE KEY UPDATE nome_igreja = VALUES(nome_igreja), plano = VALUES(plano),
+                 cep = VALUES(cep), endereco = VALUES(endereco), numero = VALUES(numero),
+                 cidade = VALUES(cidade), estado = VALUES(estado)'
         )->execute([
             'nome_igreja' => $provisionamento->nomeIgreja,
             'plano' => $provisionamento->plano,
+            'cep' => $provisionamento->cep,
+            'endereco' => $provisionamento->endereco,
+            'numero' => $provisionamento->numero,
+            'cidade' => $provisionamento->cidade,
+            'estado' => $provisionamento->estado,
         ]);
 
         $pdo->prepare(

@@ -108,9 +108,13 @@ if ($activeMenu !== 'trial-expirado' && $activeMenu !== 'fatura-vencida') {
  * Notificacoes do sino no topo do painel: junta os avisos de
  * pagamento/trial que ja existiam em outros pontos do layout com
  * avisos de Comunicacao publicados e o proximo culto agendado, pra dar
- * uma visao rapida sem precisar entrar em cada modulo.
+ * uma visao rapida sem precisar entrar em cada modulo. Cada item leva
+ * a data mais relevante pra ele (publicacao, vencimento ou data do
+ * evento) - a lista inteira e ordenada por essa data (mais recente
+ * primeiro) antes de renderizar, em vez da ordem fixa em que os blocos
+ * abaixo sao montados.
  *
- * @var array<int, array{icon: string, texto: string, url: string}>
+ * @var array<int, array{icon: string, texto: string, url: string, data: DateTimeImmutable}>
  */
 $notificacoes = [];
 
@@ -120,15 +124,30 @@ $notificacoes = [];
 $avisoPlataforma = PlataformaAviso::ativo();
 
 if ($avisoPlataforma !== null) {
-    $notificacoes[] = ['icon' => 'bi-broadcast-pin', 'texto' => $avisoPlataforma->mensagem, 'url' => '#'];
+    $notificacoes[] = [
+        'icon' => 'bi-broadcast-pin',
+        'texto' => $avisoPlataforma->mensagem,
+        'url' => '#',
+        'data' => new DateTimeImmutable($avisoPlataforma->createdAt),
+    ];
 }
 
-if ($avisoFaturaPixTexto !== '') {
-    $notificacoes[] = ['icon' => 'bi-qr-code', 'texto' => $avisoFaturaPixTexto, 'url' => $basePath . '/dashboard/fatura-vencida'];
+if ($avisoFaturaPixTexto !== '' && $avisoFaturaPix !== null) {
+    $notificacoes[] = [
+        'icon' => 'bi-qr-code',
+        'texto' => $avisoFaturaPixTexto,
+        'url' => $basePath . '/dashboard/fatura-vencida',
+        'data' => new DateTimeImmutable($avisoFaturaPix->vencimento),
+    ];
 }
 
 if ($avisoTrialTexto !== '' && $planoUrl !== null) {
-    $notificacoes[] = ['icon' => 'bi-hourglass-split', 'texto' => $avisoTrialTexto, 'url' => $planoUrl];
+    $notificacoes[] = [
+        'icon' => 'bi-hourglass-split',
+        'texto' => $avisoTrialTexto,
+        'url' => $planoUrl,
+        'data' => new DateTimeImmutable($tenantAtual->trialExpiraEm),
+    ];
 }
 
 $comunicacaoDisponivel = Plano::disponivel($planoAtual, 'comunicacao', $emTrial) && User::podeAcessarModulo($user, 'comunicacao');
@@ -139,6 +158,7 @@ if ($comunicacaoDisponivel) {
             'icon' => 'bi-megaphone',
             'texto' => $aviso->titulo,
             'url' => $basePath . '/dashboard/comunicacao',
+            'data' => new DateTimeImmutable($aviso->dataPublicacao ?? $aviso->createdAt),
         ];
     }
 }
@@ -151,9 +171,12 @@ if (User::podeAcessarModulo($user, 'cultos')) {
             'icon' => 'bi-calendar2-week',
             'texto' => $proximoCulto->titulo . ' - ' . $proximoCulto->dataHoraFormatada(),
             'url' => $basePath . '/dashboard/cultos',
+            'data' => new DateTimeImmutable($proximoCulto->data . ' ' . ($proximoCulto->hora ?? '00:00:00')),
         ];
     }
 }
+
+usort($notificacoes, static fn (array $a, array $b): int => $b['data'] <=> $a['data']);
 
 // Lista de avisos da barra lateral (substitui o antigo card "Assistente
 // IA") - so aparece pra quem realmente tem acesso ao modulo Comunicacao.
@@ -287,7 +310,10 @@ $avisosSidebar = ($comunicacaoDisponivel && $user !== null)
                             <?php foreach ($notificacoes as $notificacao): ?>
                                 <a href="<?= htmlspecialchars($notificacao['url'], ENT_QUOTES, 'UTF-8') ?>" class="notif-item">
                                     <i class="bi <?= htmlspecialchars($notificacao['icon'], ENT_QUOTES, 'UTF-8') ?>"></i>
-                                    <span><?= htmlspecialchars($notificacao['texto'], ENT_QUOTES, 'UTF-8') ?></span>
+                                    <span>
+                                        <?= htmlspecialchars($notificacao['texto'], ENT_QUOTES, 'UTF-8') ?>
+                                        <span class="notif-data"><?= $notificacao['data']->format('d/m/Y') ?></span>
+                                    </span>
                                 </a>
                             <?php endforeach; ?>
                         <?php endif; ?>

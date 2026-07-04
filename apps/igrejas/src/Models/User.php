@@ -31,6 +31,20 @@ final class User
      * @var array<int, string>
      */
     public const MODULOS_SOMENTE_ADMIN = ['usuarios', 'permissoes', 'configuracoes'];
+
+    /**
+     * Slug "fantasma" (nunca corresponde a um modulo de verdade) usado
+     * pra marcar em user_modulos que um usuario foi criado
+     * EXPLICITAMENTE sem nenhum acesso - diferente de simplesmente nao
+     * ter nenhuma linha em user_modulos, que hoje significa "sem
+     * restricao" (acesso a tudo que o plano libera, ver
+     * podeAcessarModulo()). Usado pelo login criado automaticamente no
+     * auto-cadastro publico de membros (ver MembroPublicoController) -
+     * o membro ganha uma conta, mas o admin precisa liberar
+     * manualmente em Permissoes o que ela pode acessar.
+     */
+    public const SEM_ACESSO_PADRAO = '__membro_sem_acesso__';
+
     public function __construct(
         public readonly int $id,
         public readonly string $name,

@@ -174,6 +174,11 @@ CREATE TABLE IF NOT EXISTS configuracoes_igreja (
     nome_igreja VARCHAR(150) NULL,
     logo_path VARCHAR(255) NULL,
     plano ENUM('essencial', 'premium', 'enterprise') NOT NULL DEFAULT 'essencial',
+    cep VARCHAR(9) NULL,
+    endereco VARCHAR(190) NULL,
+    numero VARCHAR(20) NULL,
+    cidade VARCHAR(100) NULL,
+    estado CHAR(2) NULL,
     cadastro_membros_habilitado TINYINT(1) NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
