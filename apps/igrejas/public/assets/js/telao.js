@@ -297,6 +297,61 @@
     }
   }
 
+  // Cache das vozes disponiveis - getVoices() pode devolver uma lista
+  // vazia na primeira chamada em alguns navegadores, so populando de
+  // verdade de forma assincrona (evento voiceschanged). Escuta esse
+  // evento uma vez e guarda a lista, em vez de consultar de novo (e
+  // arriscar lista vazia) toda vez que "Ler agora" for clicado.
+  var vozesDisponiveis = ('speechSynthesis' in window) ? window.speechSynthesis.getVoices() : [];
+
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.addEventListener('voiceschanged', function () {
+      vozesDisponiveis = window.speechSynthesis.getVoices();
+    });
+  }
+
+  /**
+   * Escolhe a melhor voz em portugues disponivel no navegador/aparelho.
+   * A qualidade "realista" depende do que esta instalado no dispositivo
+   * (fora do nosso controle) - vozes de rede (Google/Microsoft Online,
+   * localService === false) soam bem mais naturais que a voz offline
+   * padrao do sistema, entao sao sempre preferidas quando existem.
+   */
+  function melhorVozPtBr() {
+    var candidatas = vozesDisponiveis.filter(function (voz) {
+      return voz.lang && voz.lang.toLowerCase().indexOf('pt') === 0;
+    });
+
+    if (!candidatas.length) {
+      return null;
+    }
+
+    candidatas.sort(function (a, b) {
+      return pontuarVoz(b) - pontuarVoz(a);
+    });
+
+    return candidatas[0];
+  }
+
+  function pontuarVoz(voz) {
+    var pontos = 0;
+    var nome = voz.name.toLowerCase();
+
+    if (voz.lang.toLowerCase() === 'pt-br') {
+      pontos += 2;
+    }
+
+    if (!voz.localService) {
+      pontos += 3;
+    }
+
+    if (nome.indexOf('google') !== -1) {
+      pontos += 2;
+    }
+
+    return pontos;
+  }
+
   /**
    * "Ler agora" (botao no painel do operador): le em voz alta o texto
    * biblico projetado no momento, usando o sintetizador de voz do
@@ -319,6 +374,12 @@
     var fala = new SpeechSynthesisUtterance(texto);
     fala.lang = 'pt-BR';
     fala.rate = 0.95;
+
+    var voz = melhorVozPtBr();
+
+    if (voz) {
+      fala.voice = voz;
+    }
 
     window.speechSynthesis.speak(fala);
   }
