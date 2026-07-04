@@ -5,6 +5,7 @@
     initSlugSugerido();
     initPlanoEscolha();
     initDocumentoTipo();
+    initSubmitLabel();
   });
 
   function normalizarSlug(valor) {
@@ -127,6 +128,35 @@
 
     input.addEventListener('input', function () {
       input.value = aplicarMascara(input.value, tipoSelecionado());
+    });
+
+    atualizar();
+  }
+
+  // So troca o texto do botao pra deixar claro que o teste gratis nao
+  // manda pra nenhum pagamento - o resto (cartao/Pix) continua igual.
+  function initSubmitLabel() {
+    var radios = document.querySelectorAll('input[name="metodo_pagamento"]');
+    var botao = document.querySelector('[data-cadastro-submit]');
+
+    if (!radios.length || !botao) {
+      return;
+    }
+
+    var textos = {
+      cartao: 'Criar conta e ir para o pagamento',
+      pix: 'Criar conta e ir para o pagamento',
+      trial: 'Criar minha conta e testar gratis'
+    };
+
+    function atualizar() {
+      var checked = document.querySelector('input[name="metodo_pagamento"]:checked');
+      var tipo = checked ? checked.value : 'cartao';
+      botao.innerHTML = (textos[tipo] || textos.cartao) + ' <i class="bi bi-arrow-right"></i>';
+    }
+
+    radios.forEach(function (radio) {
+      radio.addEventListener('change', atualizar);
     });
 
     atualizar();
