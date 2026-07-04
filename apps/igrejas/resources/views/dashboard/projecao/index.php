@@ -194,6 +194,7 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                 <div class="projecao-video-controles">
                     <button type="button" class="btn-k btn-k-ghost" data-acao-logo><i class="bi bi-image"></i> Mostrar logo</button>
                     <button type="button" class="btn-k btn-k-ghost" data-acao-limpar><i class="bi bi-x-circle"></i> Limpar tela</button>
+                    <button type="button" class="btn-k btn-k-ghost" data-acao-fullscreen><i class="bi bi-arrows-fullscreen"></i> Tela cheia</button>
                 </div>
             </div>
         </div>
