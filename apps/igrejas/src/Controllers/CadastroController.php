@@ -104,6 +104,11 @@ final class CadastroController extends Controller
         $documentoTipo = (string) $this->request->input('documento_tipo', 'cpf');
         $documentoInformado = trim((string) $this->request->input('documento', ''));
         $razaoSocial = trim((string) $this->request->input('razao_social', ''));
+        $cepInformado = trim((string) $this->request->input('cep', ''));
+        $endereco = trim((string) $this->request->input('endereco', ''));
+        $numero = trim((string) $this->request->input('numero', ''));
+        $cidade = trim((string) $this->request->input('cidade', ''));
+        $estado = mb_strtoupper(trim((string) $this->request->input('estado', '')));
 
         if (!in_array($metodoPagamento, ['cartao', 'pix', 'trial'], true)) {
             $metodoPagamento = 'cartao';
@@ -125,6 +130,11 @@ final class CadastroController extends Controller
             'documento_tipo' => $documentoTipo,
             'documento' => $documentoInformado,
             'razao_social' => $razaoSocial,
+            'cep' => $cepInformado,
+            'endereco' => $endereco,
+            'numero' => $numero,
+            'cidade' => $cidade,
+            'estado' => $estado,
         ];
 
         $slug = $this->normalizarSlug($slugInformado !== '' ? $slugInformado : $nomeIgreja);
@@ -154,7 +164,22 @@ final class CadastroController extends Controller
         $razaoSocialFinal = $documentoTipo === 'cnpj' ? $razaoSocial : null;
 
         if ($metodoPagamento === 'trial') {
-            $this->criarContaTrial($nomeIgreja, $slug, $adminNome, $adminEmail, $documentoTipo, $documento, $razaoSocialFinal, $senha, $plano);
+            $this->criarContaTrial(
+                $nomeIgreja,
+                $slug,
+                $adminNome,
+                $adminEmail,
+                $documentoTipo,
+                $documento,
+                $razaoSocialFinal,
+                self::nullable($cepInformado),
+                self::nullable($endereco),
+                self::nullable($numero),
+                self::nullable($cidade),
+                self::nullable($estado),
+                $senha,
+                $plano,
+            );
         }
 
         $mp = new MercadoPagoClient();
@@ -181,6 +206,11 @@ final class CadastroController extends Controller
             $documentoTipo,
             $documento,
             $razaoSocialFinal,
+            self::nullable($cepInformado),
+            self::nullable($endereco),
+            self::nullable($numero),
+            self::nullable($cidade),
+            self::nullable($estado),
             password_hash($senha, PASSWORD_BCRYPT),
             $plano,
             $metodoPagamento,
@@ -297,6 +327,11 @@ final class CadastroController extends Controller
         string $documentoTipo,
         string $documento,
         ?string $razaoSocial,
+        ?string $cep,
+        ?string $endereco,
+        ?string $numero,
+        ?string $cidade,
+        ?string $estado,
         string $senha,
         string $plano,
     ): void {
@@ -308,6 +343,11 @@ final class CadastroController extends Controller
             $documentoTipo,
             $documento,
             $razaoSocial,
+            $cep,
+            $endereco,
+            $numero,
+            $cidade,
+            $estado,
             password_hash($senha, PASSWORD_BCRYPT),
             $plano,
             'trial',
@@ -540,5 +580,10 @@ final class CadastroController extends Controller
         $valor = preg_replace('/[^a-z0-9]+/', '-', $valor) ?? '';
 
         return trim($valor, '-');
+    }
+
+    private static function nullable(string $valor): ?string
+    {
+        return $valor === '' ? null : $valor;
     }
 }

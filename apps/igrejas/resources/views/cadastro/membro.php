@@ -26,7 +26,7 @@ $estadoCivil = $old['estado_civil'] ?? '';
             <i class="bi bi-check-circle"></i> Cadastro realizado com sucesso! Seja bem-vindo(a).
         </div>
     <?php else: ?>
-        <p class="subtitle">Preencha seus dados para se cadastrar como membro.</p>
+        <p class="subtitle">Preencha seus dados para se cadastrar como membro. Seu e-mail e senha viram seu login de acesso.</p>
 
         <?php if ($errors !== []): ?>
             <div class="auth-alert error">
@@ -65,6 +65,7 @@ $estadoCivil = $old['estado_civil'] ?? '';
                         value="<?= htmlspecialchars($old['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                         placeholder="voce@email.com"
                         autocomplete="email"
+                        required
                     >
                 </div>
                 <div class="auth-field">
@@ -173,6 +174,35 @@ $estadoCivil = $old['estado_civil'] ?? '';
                         value="<?= htmlspecialchars($old['cidade'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                         placeholder="Sua cidade"
                         autocomplete="address-level2"
+                    >
+                </div>
+            </div>
+
+            <div class="auth-field-row">
+                <div class="auth-field">
+                    <label for="senha">Senha</label>
+                    <input
+                        type="password"
+                        class="form-control"
+                        id="senha"
+                        name="senha"
+                        placeholder="Minimo 8 caracteres"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+                </div>
+                <div class="auth-field">
+                    <label for="senha_confirmacao">Confirmar senha</label>
+                    <input
+                        type="password"
+                        class="form-control"
+                        id="senha_confirmacao"
+                        name="senha_confirmacao"
+                        placeholder="Repita a senha"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
                     >
                 </div>
             </div>

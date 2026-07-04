@@ -611,6 +611,13 @@ body.dashboard-body[data-theme="light"] {
   flex-shrink: 0;
 }
 
+.notif-data {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
 .user-menu-panel {
   min-width: 200px;
 }

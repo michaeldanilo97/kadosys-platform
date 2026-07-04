@@ -18,13 +18,19 @@ final class ConfiguracaoIgreja
         public readonly ?string $logoPath,
         public readonly string $plano = Plano::ESSENCIAL,
         public readonly bool $cadastroMembrosHabilitado = false,
+        public readonly ?string $cep = null,
+        public readonly ?string $endereco = null,
+        public readonly ?string $numero = null,
+        public readonly ?string $cidade = null,
+        public readonly ?string $estado = null,
     ) {
     }
 
     public static function atual(): self
     {
         $stmt = Database::connection()->prepare(
-            'SELECT nome_igreja, logo_path, plano, cadastro_membros_habilitado FROM configuracoes_igreja WHERE id = 1 LIMIT 1'
+            'SELECT nome_igreja, logo_path, plano, cadastro_membros_habilitado, cep, endereco, numero, cidade, estado
+             FROM configuracoes_igreja WHERE id = 1 LIMIT 1'
         );
         $stmt->execute();
         $row = $stmt->fetch();
@@ -34,6 +40,11 @@ final class ConfiguracaoIgreja
             logoPath: $row['logo_path'] ?? null,
             plano: $row['plano'] ?? Plano::ESSENCIAL,
             cadastroMembrosHabilitado: (bool) ($row['cadastro_membros_habilitado'] ?? false),
+            cep: $row['cep'] ?? null,
+            endereco: $row['endereco'] ?? null,
+            numero: $row['numero'] ?? null,
+            cidade: $row['cidade'] ?? null,
+            estado: $row['estado'] ?? null,
         );
     }
 

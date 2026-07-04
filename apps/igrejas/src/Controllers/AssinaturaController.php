@@ -13,6 +13,7 @@ use Igrejas\Core\Provisionador;
 use Igrejas\Core\Session;
 use Igrejas\Core\TenantResolver;
 use Igrejas\Models\Assinatura;
+use Igrejas\Models\AssinaturaTenant;
 use Igrejas\Models\ConfiguracaoIgreja;
 use Igrejas\Models\FaturaPix;
 use Igrejas\Models\Plano;
@@ -86,15 +87,23 @@ final class AssinaturaController extends Controller
         $assinaturaId = Assinatura::criar($plano, (string) $resposta['body']['id'], $usuario?->email ?? '');
         Assinatura::registrarEvento($assinaturaId, 'assinatura_criada', json_encode($resposta['body'], JSON_UNESCAPED_UNICODE));
 
-        // Mesmo padrao ja usado por iniciarPix(): marca o metodo de
-        // pagamento assim que a assinatura e iniciada (nao so quando
-        // confirmada) - e o que libera uma igreja em teste gratis do
-        // bloqueio de trial vencido assim que ela parte pra um pagamento
-        // de verdade, sem depender do webhook (que nao consegue mapear
-        // um preapproval de volta pro tenant certo hoje).
         $tenantAtual = TenantResolver::atual();
 
         if ($tenantAtual !== null) {
+            // O registro acima (Assinatura::criar) fica gravado no banco
+            // ISOLADO deste tenant - o webhook do Mercado Pago roda
+            // sempre na instalacao central e nunca enxergaria esse
+            // registro sozinho. AssinaturaTenant e a ponte central que
+            // permite ao webhook achar de qual tenant e essa assinatura
+            // e aplicar a troca de plano no banco certo (ver
+            // AssinaturaController::webhook()/atualizarPlanoNoBancoDoTenant()).
+            AssinaturaTenant::registrar($tenantAtual->id, $plano, (string) $resposta['body']['id']);
+
+            // Marca o metodo de pagamento assim que a assinatura e
+            // iniciada (nao so quando confirmada) - e o que libera uma
+            // igreja em teste gratis do bloqueio de trial vencido assim
+            // que ela parte pra um pagamento de verdade, sem esperar o
+            // webhook confirmar.
             Tenant::atualizarMetodoPagamento($tenantAtual->id, 'cartao');
         }
 
@@ -234,10 +243,13 @@ final class AssinaturaController extends Controller
             default => 'pendente',
         };
 
-        // Duas origens possiveis pro mesmo preapproval_id: um cliente ja
-        // existente trocando de plano (Assinatura, ver Configuracoes), ou
-        // um cadastro publico novo (Provisionamento, ver
-        // CadastroController) - so uma delas vai bater.
+        // Tres origens possiveis pro mesmo preapproval_id: a propria
+        // instalacao original trocando de plano (Assinatura, banco local
+        // - so bate se essa assinatura tiver sido criada sem nenhum
+        // tenant resolvido, ver Configuracoes), uma igreja de SUBDOMINIO
+        // ja existente trocando de plano (AssinaturaTenant, ponte
+        // central - ver AssinaturaController::iniciar()), ou um cadastro
+        // publico novo (Provisionamento) - so uma delas vai bater.
         $assinatura = Assinatura::buscarPorPreapprovalId($dataId);
 
         if ($assinatura !== null) {
@@ -248,6 +260,15 @@ final class AssinaturaController extends Controller
                 ConfiguracaoIgreja::atualizarPlano($assinatura->plano);
             }
 
+            http_response_code(200);
+
+            return;
+        }
+
+        $assinaturaTenant = AssinaturaTenant::buscarPorPreapprovalId($dataId);
+
+        if ($assinaturaTenant !== null) {
+            $this->processarAssinaturaTenant($assinaturaTenant, $statusInterno, $corpoBruto);
             http_response_code(200);
 
             return;
@@ -367,6 +388,27 @@ final class AssinaturaController extends Controller
         // de verdade pro PlanoMiddleware liberar os modulos).
         Tenant::atualizarPlano($fatura->tenantId, $fatura->plano);
         $this->atualizarPlanoNoBancoDoTenant($fatura->tenantId, $fatura->plano);
+    }
+
+    /**
+     * Confirma a troca de plano por CARTAO (Checkout Pro/preapproval) de
+     * uma igreja de SUBDOMINIO ja existente - equivalente a
+     * processarFaturaPix(), mas pro cartao em vez do Pix (ver
+     * AssinaturaTenant pra entender por que essa ponte central e
+     * necessaria).
+     */
+    private function processarAssinaturaTenant(AssinaturaTenant $assinaturaTenant, string $statusInterno, string $corpoBruto): void
+    {
+        Assinatura::registrarEvento(null, 'webhook_assinatura_tenant_' . $statusInterno, $corpoBruto);
+
+        AssinaturaTenant::atualizarStatus($assinaturaTenant->id, $statusInterno);
+
+        if ($statusInterno !== 'autorizada') {
+            return;
+        }
+
+        Tenant::atualizarPlano($assinaturaTenant->tenantId, $assinaturaTenant->plano);
+        $this->atualizarPlanoNoBancoDoTenant($assinaturaTenant->tenantId, $assinaturaTenant->plano);
     }
 
     /**

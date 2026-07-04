@@ -17,6 +17,71 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 39 - 2026-07-06
+
+**Correcao: troca de plano por cartao nao atualizava o plano de igrejas de subdominio**
+
+- Achado revisando o fluxo de pagamentos: quando uma igreja de
+  subdominio ja existente trocava de plano por **cartao** (Checkout
+  Pro, dentro da propria Configuracoes), o webhook do Mercado Pago
+  confirmava o pagamento mas **nunca atualizava o plano de verdade**
+  daquela igreja. Causa: o registro da assinatura fica gravado no
+  banco isolado de cada igreja, mas o webhook sempre roda na
+  instalacao central (o Mercado Pago chama uma unica URL fixa, nunca
+  o subdominio de uma igreja especifica) - sem uma ponte central, ele
+  nunca conseguia achar de qual igreja era aquele pagamento. O mesmo
+  problema **nao acontecia com Pix**, que ja usava uma tabela central
+  (`plataforma_faturas`) desde o inicio.
+- Corrigido com uma nova tabela central (`plataforma_assinaturas`,
+  nao confundir com a tabela `assinaturas` que ja existia dentro de
+  cada igreja) que guarda so o necessario (tenant + plano +
+  preapproval_id) pra o webhook achar a igreja certa e aplicar a troca
+  de plano no banco isolado dela - mesmo padrao ja usado pelo Pix.
+- **So afeta troca de plano por cartao de igrejas de subdominio ja
+  existentes.** Cadastro de igreja nova por cartao e toda a parte de
+  Pix (cadastro novo e renovacao mensal) ja funcionavam certo antes e
+  continuam sem alteracao.
+- Rode a migracao nova SO no banco CENTRAL (o que recebe os cadastros
+  publicos e os webhooks) - nao precisa rodar no banco de nenhuma
+  igreja individual:
+  ```
+  mysql -u seu_usuario -p banco_central < apps/igrejas/database/migrations/027_create_plataforma_assinaturas.sql
+  ```
+
+## Ajuste 38 - 2026-07-06
+
+**Auto-cadastro de membro cria login; endereco+numero no cadastro da igreja; notificacoes com data e ordenadas**
+
+- **Auto-cadastro de membro agora cria um login**: quando o cadastro de
+  membros esta habilitado (Configuracoes) e alguem se cadastra pelo
+  site da igreja, alem de virar um Membro a pessoa tambem ganha uma
+  conta de acesso (e-mail e senha viram o login). Por seguranca, essa
+  conta comeca **sem nenhum modulo liberado** - diferente de um usuario
+  de equipe (que por padrao acessa tudo que o plano libera), o admin
+  precisa liberar manualmente em Permissoes o que o membro pode
+  acessar. E-mail e senha (minimo 8 caracteres) passam a ser
+  obrigatorios nesse formulario.
+- **Endereco no cadastro da igreja nova** (dominio principal,
+  `kadosys.com.br/apps/igrejas/cadastro`): agora tem CEP com
+  autopreenchimento (ViaCEP), numero, endereco, cidade e estado - antes
+  so pedia documento (CPF/CNPJ). O endereco enviado fica registrado no
+  cadastro central e e copiado automaticamente pro banco da igreja
+  (Configuracoes) assim que ela e provisionada.
+- **Notificacoes do sino do painel**: cada notificacao agora mostra sua
+  data (publicacao, vencimento ou data do evento, conforme o caso), e a
+  lista inteira fica ordenada por essa data (mais recente/proxima
+  primeiro) em vez da ordem fixa de antes.
+- Rode as migracoes novas no banco de CADA igreja ja criada e no banco
+  CENTRAL (o que recebe os cadastros publicos):
+  ```
+  mysql -u seu_usuario -p banco_da_igreja < apps/igrejas/database/migrations/026_add_endereco_configuracoes_igreja.sql
+  mysql -u seu_usuario -p banco_central < apps/igrejas/database/migrations/025_add_endereco_provisionamento.sql
+  ```
+  Igrejas novas ja recebem a coluna de endereco automaticamente
+  (`database/install.sql` atualizado) - so a migracao 026 precisa
+  rodar manualmente nas igrejas que ja existiam antes deste ajuste; a
+  025 roda uma unica vez, no banco central.
+
 ## Ajuste 37 - 2026-07-06
 
 **Plano contratado visivel tambem pra quem tem acesso ao Financeiro**

@@ -23,6 +23,11 @@ final class Provisionamento
         public readonly string $documentoTipo,
         public readonly string $documento,
         public readonly ?string $razaoSocial,
+        public readonly ?string $cep,
+        public readonly ?string $endereco,
+        public readonly ?string $numero,
+        public readonly ?string $cidade,
+        public readonly ?string $estado,
         public readonly string $adminSenhaHash,
         public readonly string $plano,
         public readonly string $metodoPagamento,
@@ -45,6 +50,11 @@ final class Provisionamento
         string $documentoTipo,
         string $documento,
         ?string $razaoSocial,
+        ?string $cep,
+        ?string $endereco,
+        ?string $numero,
+        ?string $cidade,
+        ?string $estado,
         string $adminSenhaHash,
         string $plano,
         string $metodoPagamento,
@@ -52,9 +62,11 @@ final class Provisionamento
         $stmt = Database::central()->prepare(
             'INSERT INTO plataforma_provisionamentos
                 (nome_igreja, slug, admin_nome, admin_email, documento_tipo, documento, razao_social,
+                 cep, endereco, numero, cidade, estado,
                  admin_senha_hash, plano, metodo_pagamento, status)
              VALUES
                 (:nome_igreja, :slug, :admin_nome, :admin_email, :documento_tipo, :documento, :razao_social,
+                 :cep, :endereco, :numero, :cidade, :estado,
                  :admin_senha_hash, :plano, :metodo_pagamento, "aguardando_pagamento")'
         );
         $stmt->execute([
@@ -65,6 +77,11 @@ final class Provisionamento
             'documento_tipo' => $documentoTipo,
             'documento' => $documento,
             'razao_social' => $razaoSocial,
+            'cep' => $cep,
+            'endereco' => $endereco,
+            'numero' => $numero,
+            'cidade' => $cidade,
+            'estado' => $estado,
             'admin_senha_hash' => $adminSenhaHash,
             'plano' => $plano,
             'metodo_pagamento' => $metodoPagamento,
@@ -193,7 +210,8 @@ final class Provisionamento
     }
 
     private const SELECT_BASE = 'SELECT id, nome_igreja, slug, admin_nome, admin_email, documento_tipo, documento,
-            razao_social, admin_senha_hash, plano, metodo_pagamento, mp_preapproval_id, mp_payment_id, pix_qr_code,
+            razao_social, cep, endereco, numero, cidade, estado, admin_senha_hash, plano, metodo_pagamento,
+            mp_preapproval_id, mp_payment_id, pix_qr_code,
             pix_qr_code_base64, pix_vencimento, status, erro_mensagem, tenant_id
         FROM plataforma_provisionamentos';
 
@@ -208,6 +226,11 @@ final class Provisionamento
             documentoTipo: $row['documento_tipo'],
             documento: $row['documento'],
             razaoSocial: $row['razao_social'],
+            cep: $row['cep'],
+            endereco: $row['endereco'],
+            numero: $row['numero'],
+            cidade: $row['cidade'],
+            estado: $row['estado'],
             adminSenhaHash: $row['admin_senha_hash'],
             plano: $row['plano'],
             metodoPagamento: $row['metodo_pagamento'],
