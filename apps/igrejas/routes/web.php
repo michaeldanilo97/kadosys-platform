@@ -237,8 +237,11 @@ $router->get('/dashboard/relatorios', [RelatorioController::class, 'index'], [Au
 // base no slug da propria URI.
 $router->get('/dashboard/{slug}', [DashboardController::class, 'page'], [AuthMiddleware::class, PlanoMiddleware::class]);
 
-// Tela publica do telao (projetor). Acesso direto por link com token,
-// sem exigir login administrativo.
+// Tela publica do telao (projetor). Acesso direto por link com token, ou
+// por PIN de 6 digitos (mais facil de digitar num controle de TV) que
+// redireciona pro link com token - sem exigir login administrativo.
+$router->get('/telao', [TelaoController::class, 'entrar']);
+$router->post('/telao', [TelaoController::class, 'autenticar']);
 $router->get('/telao/{token}', [TelaoController::class, 'show']);
 
 // Quadro de avisos publico da igreja (sem login) - link pra compartilhar

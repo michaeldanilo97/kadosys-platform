@@ -48,11 +48,12 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
 
         <div class="projecao-acessos">
             <div class="projecao-acesso-card">
-                <span class="label"><i class="bi bi-display"></i> Telao (projetor)</span>
-                <p>Abra este link no computador ligado ao projetor.</p>
+                <span class="label"><i class="bi bi-display"></i> Telao (projetor ou TV)</span>
+                <p>No computador ligado ao projetor, abra o link abaixo:</p>
                 <a href="<?= htmlspecialchars($telaoUrl, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener" class="btn-k btn-k-ghost">
                     <i class="bi bi-box-arrow-up-right"></i> Abrir telao
                 </a>
+                <p class="projecao-acesso-alt">Numa Smart TV, digitar esse link pelo controle remoto e dificil - acesse <strong><?= $basePath ?>/telao</strong> e digite o mesmo PIN do preletor ao lado.</p>
             </div>
             <div class="projecao-acesso-card">
                 <span class="label"><i class="bi bi-tablet"></i> Preletor (tablet do pastor)</span>
