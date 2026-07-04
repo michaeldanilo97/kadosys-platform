@@ -30,6 +30,7 @@
   var pendingVideoId = null;
   var ultimoEstadoVideo = null;
   var audioDesbloqueado = false;
+  var vozDestravada = false;
   var avisoAudio = root.querySelector('[data-telao-audio-unlock]');
 
   function extrairIdYoutube(url) {
@@ -224,6 +225,60 @@
     }
   }
 
+  var RECARREGAR_CHAVE_PREFIXO = 'kadosys_telao_recarregou_';
+
+  function jaRecarregouPara(videoId) {
+    try {
+      return window.sessionStorage.getItem(RECARREGAR_CHAVE_PREFIXO + videoId) === '1';
+    } catch (erro) {
+      return false;
+    }
+  }
+
+  function marcarRecarregadoPara(videoId) {
+    try {
+      window.sessionStorage.setItem(RECARREGAR_CHAVE_PREFIXO + videoId, '1');
+    } catch (erro) {
+      // sessionStorage indisponivel (ex.: navegacao privada) - sem guarda
+      // contra reload repetido, mas melhor arriscar isso do que deixar o
+      // video travado sem tocar.
+    }
+  }
+
+  /**
+   * Alguns navegadores mobile (confirmado: precisava de F5 manual pro
+   * video tocar) so permitem autoplay de um video carregado durante a
+   * inicializacao da propria pagina - loadVideoById() chamado bem
+   * depois, via polling e sem nenhum gesto do usuario, fica bloqueado
+   * silenciosamente (o video nunca sai do estado "nao iniciado"), tanto
+   * pro video quanto pro audio. Um reload da pagina refaz o carregamento
+   * pelo caminho que sabidamente funciona (o video ja vem certo desde o
+   * estado inicial, aplicado no onReady do player - ver criarPlayer()).
+   * So tenta recarregar UMA vez por video (sessionStorage), pra nao
+   * entrar num loop caso o proprio reload nao resolva por algum outro
+   * motivo.
+   */
+  function agendarChecagemReproducao(videoId) {
+    setTimeout(function () {
+      if (!player || typeof player.getPlayerState !== 'function' || ultimoEstadoVideo !== 'tocando') {
+        return;
+      }
+
+      var estadoAtual;
+
+      try {
+        estadoAtual = player.getPlayerState();
+      } catch (erro) {
+        return;
+      }
+
+      if (estadoAtual !== 1 && !jaRecarregouPara(videoId)) {
+        marcarRecarregadoPara(videoId);
+        window.location.reload();
+      }
+    }, 1800);
+  }
+
   function aplicarVideo(video) {
     var videoId = extrairIdYoutube(video.url);
 
@@ -243,6 +298,7 @@
 
       try {
         player.loadVideoById(videoId);
+        agendarChecagemReproducao(videoId);
       } catch (erro) {
         currentVideoId = null;
       }
@@ -636,6 +692,25 @@
         player.setVolume(100);
       } catch (erro) {
         // Ignora; sera reaplicado no proximo poll ou proximo toque.
+      }
+    }
+
+    // "Destrava" tambem o sintetizador de voz ("Ler agora") - no
+    // iOS/Android, speechSynthesis.speak() so funciona se disparado
+    // dentro de um gesto direto do usuario; chamado depois via polling
+    // (sem gesto nenhum, como e o caso aqui) fica mudo/ignorado. Falar
+    // uma vez algo bem curto e quase inaudivel, dentro deste clique,
+    // "destrava" o motor de voz pro resto da sessao - chamadas
+    // posteriores (via lerBibliaEmVoz) passam a funcionar normalmente.
+    if (!vozDestravada && 'speechSynthesis' in window) {
+      vozDestravada = true;
+
+      try {
+        var destrava = new SpeechSynthesisUtterance(' ');
+        destrava.volume = 0;
+        window.speechSynthesis.speak(destrava);
+      } catch (erro) {
+        vozDestravada = false;
       }
     }
   });
