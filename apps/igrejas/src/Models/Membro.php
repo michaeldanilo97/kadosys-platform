@@ -26,6 +26,7 @@ final class Membro
         public readonly ?string $genero,
         public readonly ?string $estadoCivil,
         public readonly ?string $endereco,
+        public readonly ?string $cep,
         public readonly ?string $cidade,
         public readonly ?string $estado,
         public readonly ?string $dataMembresia,
@@ -117,9 +118,9 @@ final class Membro
     {
         $stmt = Database::connection()->prepare(
             'INSERT INTO membros
-                (nome, email, telefone, data_nascimento, genero, estado_civil, endereco, cidade, estado, data_membresia, status, observacoes, created_at)
+                (nome, email, telefone, data_nascimento, genero, estado_civil, endereco, cep, cidade, estado, data_membresia, status, observacoes, created_at)
              VALUES
-                (:nome, :email, :telefone, :data_nascimento, :genero, :estado_civil, :endereco, :cidade, :estado, :data_membresia, :status, :observacoes, NOW())'
+                (:nome, :email, :telefone, :data_nascimento, :genero, :estado_civil, :endereco, :cep, :cidade, :estado, :data_membresia, :status, :observacoes, NOW())'
         );
         $stmt->execute(self::bindings($data));
 
@@ -134,7 +135,7 @@ final class Membro
         $stmt = Database::connection()->prepare(
             'UPDATE membros SET
                 nome = :nome, email = :email, telefone = :telefone, data_nascimento = :data_nascimento,
-                genero = :genero, estado_civil = :estado_civil, endereco = :endereco, cidade = :cidade,
+                genero = :genero, estado_civil = :estado_civil, endereco = :endereco, cep = :cep, cidade = :cidade,
                 estado = :estado, data_membresia = :data_membresia, status = :status, observacoes = :observacoes
              WHERE id = :id'
         );
@@ -163,6 +164,19 @@ final class Membro
         return (int) $stmt->fetchColumn();
     }
 
+    /**
+     * Usado pelo auto-cadastro publico de membros (ver
+     * MembroPublicoController) pra evitar duplicidade obvia quando o
+     * e-mail informado ja pertence a um membro existente.
+     */
+    public static function emailEmUso(string $email): bool
+    {
+        $stmt = Database::connection()->prepare('SELECT 1 FROM membros WHERE email = :email LIMIT 1');
+        $stmt->execute(['email' => $email]);
+
+        return $stmt->fetchColumn() !== false;
+    }
+
     public function idade(): ?int
     {
         if ($this->dataNascimento === null) {
@@ -186,6 +200,7 @@ final class Membro
             'genero' => self::nullable($data['genero'] ?? null),
             'estado_civil' => self::nullable($data['estado_civil'] ?? null),
             'endereco' => self::nullable($data['endereco'] ?? null),
+            'cep' => self::nullable($data['cep'] ?? null),
             'cidade' => self::nullable($data['cidade'] ?? null),
             'estado' => self::nullable($data['estado'] ?? null),
             'data_membresia' => self::nullable($data['data_membresia'] ?? null),
@@ -217,6 +232,7 @@ final class Membro
             genero: $row['genero'],
             estadoCivil: $row['estado_civil'],
             endereco: $row['endereco'],
+            cep: $row['cep'],
             cidade: $row['cidade'],
             estado: $row['estado'],
             dataMembresia: $row['data_membresia'],

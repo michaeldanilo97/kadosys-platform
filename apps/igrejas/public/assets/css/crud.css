@@ -900,3 +900,69 @@
 [data-theme="light"] .aviso-show-conteudo {
   color: #1E293B;
 }
+
+/* ---- Toggle switch (ex.: liga/desliga do auto-cadastro de membros) ------- */
+
+.toggle-switch-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  cursor: pointer;
+}
+
+.toggle-switch-field input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-switch {
+  flex-shrink: 0;
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--surface-strong);
+  border: 1px solid var(--glass-border-strong);
+  transition: var(--transition);
+  margin-top: 0.1rem;
+}
+
+.toggle-switch::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: var(--transition);
+}
+
+.toggle-switch-field input:checked + .toggle-switch {
+  background: var(--gradient);
+  border-color: transparent;
+}
+
+.toggle-switch-field input:checked + .toggle-switch::before {
+  transform: translateX(20px);
+  background: var(--white);
+}
+
+.toggle-switch-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+[data-theme="light"] .toggle-switch-label {
+  color: #1E293B;
+}
+
+.toggle-switch-label .auth-field-hint {
+  display: block;
+  font-weight: 400;
+  margin-top: 0.3rem;
+}

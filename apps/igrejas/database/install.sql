@@ -83,6 +83,7 @@ CREATE TABLE IF NOT EXISTS membros (
     genero ENUM('feminino', 'masculino', 'outro') NULL,
     estado_civil ENUM('solteiro', 'casado', 'divorciado', 'viuvo', 'outro') NULL,
     endereco VARCHAR(255) NULL,
+    cep VARCHAR(9) NULL,
     cidade VARCHAR(100) NULL,
     estado CHAR(2) NULL,
     data_membresia DATE NULL,
@@ -173,6 +174,7 @@ CREATE TABLE IF NOT EXISTS configuracoes_igreja (
     nome_igreja VARCHAR(150) NULL,
     logo_path VARCHAR(255) NULL,
     plano ENUM('essencial', 'premium', 'enterprise') NOT NULL DEFAULT 'essencial',
+    cadastro_membros_habilitado TINYINT(1) NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

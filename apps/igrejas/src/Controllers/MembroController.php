@@ -20,7 +20,7 @@ final class MembroController extends Controller
 
     private const FIELDS = [
         'nome', 'email', 'telefone', 'data_nascimento', 'genero',
-        'estado_civil', 'endereco', 'cidade', 'estado', 'data_membresia',
+        'estado_civil', 'endereco', 'cep', 'cidade', 'estado', 'data_membresia',
         'status', 'observacoes',
     ];
 

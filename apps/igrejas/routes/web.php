@@ -39,14 +39,12 @@ use Igrejas\Core\Middleware\PlataformaAuthMiddleware;
 // Landing page publica.
 $router->get('/', [LandingController::class, 'index']);
 
-// Cadastro publico autoatendido (igreja + administrador + plano),
-// redireciona pro checkout do Mercado Pago. O provisionamento em si
-// (criar banco, subdominio) acontece via webhook, nao aqui.
+// Cadastro publico autoatendido de uma igreja nova (igreja +
+// administrador, sem plano/pagamento - ver CadastroController). O
+// provisionamento (criar banco, subdominio) acontece na hora, de forma
+// sincrona - sem pagamento nenhum pra esperar.
 $router->get('/cadastro', [CadastroController::class, 'form'], [GuestMiddleware::class]);
 $router->post('/cadastro', [CadastroController::class, 'enviar'], [GuestMiddleware::class]);
-$router->get('/cadastro/pix/{id}', [CadastroController::class, 'pix']);
-$router->get('/cadastro/pix/{id}/status', [CadastroController::class, 'pixStatus']);
-$router->get('/cadastro/retorno', [CadastroController::class, 'retorno']);
 $router->get('/cadastro/pronto/{id}', [CadastroController::class, 'pronto']);
 $router->get('/cadastro/pronto/{id}/status', [CadastroController::class, 'prontoStatus']);
 
@@ -165,6 +163,7 @@ $router->post('/dashboard/permissoes/{id}', [PermissaoController::class, 'update
 $router->get('/dashboard/configuracoes', [ConfiguracaoController::class, 'index'], [AuthMiddleware::class]);
 $router->post('/dashboard/configuracoes/logo', [ConfiguracaoController::class, 'atualizarLogo'], [AuthMiddleware::class]);
 $router->post('/dashboard/configuracoes/logo/remover', [ConfiguracaoController::class, 'removerLogo'], [AuthMiddleware::class]);
+$router->post('/dashboard/configuracoes/cadastro-membros', [ConfiguracaoController::class, 'atualizarCadastroMembros'], [AuthMiddleware::class]);
 
 // Assinatura recorrente do plano via Mercado Pago (Checkout Pro). Sem
 // PlanoMiddleware pelo mesmo motivo das rotas de Configuracoes acima.
