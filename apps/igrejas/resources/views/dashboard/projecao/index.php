@@ -148,6 +148,9 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                             Proximo <i class="bi bi-arrow-right"></i>
                         </button>
                     </div>
+                    <button type="button" class="btn-k btn-k-ghost" data-acao-ler-agora hidden style="width: 100%; margin-top: 0.6rem;">
+                        <i class="bi bi-megaphone-fill"></i> Ler agora no telao
+                    </button>
                     <p class="projecao-nav-dica">Atalhos: <kbd>&larr;</kbd> anterior &middot; <kbd>&rarr;</kbd> proximo (fora dos campos de busca)</p>
                 </div>
             </div>
