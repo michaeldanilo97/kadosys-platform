@@ -269,6 +269,7 @@ $router->post('/projecao/{token}/biblia', [ProjecaoEstadoController::class, 'def
 $router->post('/projecao/{token}/biblia/navegar', [ProjecaoEstadoController::class, 'navegarBiblia']);
 $router->get('/projecao/{token}/biblia/capitulo', [ProjecaoEstadoController::class, 'capituloInfo']);
 $router->post('/projecao/{token}/biblia/marcacao', [ProjecaoEstadoController::class, 'definirMarcacao']);
+$router->post('/projecao/{token}/biblia/ler', [ProjecaoEstadoController::class, 'lerBiblia']);
 $router->post('/projecao/{token}/video', [ProjecaoEstadoController::class, 'definirVideo']);
 $router->post('/projecao/{token}/video/estado', [ProjecaoEstadoController::class, 'definirEstadoVideo']);
 $router->post('/projecao/{token}/video/tempo', [ProjecaoEstadoController::class, 'atualizarTempoVideo']);

@@ -150,6 +150,17 @@ final class ProjecaoEstadoController extends Controller
         $this->jsonResponse(['ok' => true]);
     }
 
+    /**
+     * "Ler agora" - pede pro telao ler em voz alta o texto biblico
+     * projetado no momento (ver ProjecaoEstado::lerAgora() e telao.js).
+     */
+    public function lerBiblia(string $token): void
+    {
+        $sessao = $this->sessaoOuErro($token);
+        ProjecaoEstado::lerAgora($sessao->id);
+        $this->jsonResponse(['ok' => true]);
+    }
+
     public function definirVideo(string $token): void
     {
         $sessao = $this->sessaoOuErro($token);

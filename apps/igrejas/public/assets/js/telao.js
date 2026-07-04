@@ -22,6 +22,7 @@
   var marcacaoCtx = marcacaoCanvas ? marcacaoCanvas.getContext('2d') : null;
 
   var lastVersao = null;
+  var lastLeituraId = null;
   var player = null;
   var ytReady = false;
   var currentVideoId = null;
@@ -266,17 +267,78 @@
     } else if (video.estado === 'tocando') {
       try {
         player.playVideo();
+
+        // O comando de play chega aqui via polling, sem gesto direto do
+        // usuario (o telao normalmente fica numa TV, sem ninguem pra
+        // tocar na tela) - navegadores so permitem autoplay COM SOM sem
+        // gesto se o video comecar mudo. Por isso o player e criado com
+        // mute:1 (ver criarPlayer()), e aqui tenta desmutar logo em
+        // seguida - desmutar um video que ja esta tocando (mesmo que
+        // mudo) geralmente e permitido, diferente de comecar tocando
+        // com som direto. Tenta de novo a cada poll (1.5s) ate
+        // conseguir, caso a primeira tentativa seja ignorada.
+        player.unMute();
+        player.setVolume(100);
       } catch (erro) {
         // Player ainda nao pronto; sera reaplicado no proximo poll.
       }
 
-      // O comando de play chega aqui via polling, sem gesto direto do
-      // usuario nesta pagina - navegadores podem bloquear silenciosamente
-      // esse play() ate haver uma interacao real na tela do telao. Se
-      // ainda nao houve nenhum toque, mostra o aviso pedindo um toque.
-      if (!audioDesbloqueado && avisoAudio) {
+      // Se mesmo assim o navegador manteve o video mudo (politica mais
+      // rigorosa que exige mesmo um toque), mostra o aviso - inofensivo
+      // numa TV sem toque (so fica ali), mas resolve o caso de abrir o
+      // telao num notebook/tablet com toque disponivel.
+      var aindaMudo = typeof player.isMuted === 'function' && player.isMuted();
+
+      if (aindaMudo && !audioDesbloqueado && avisoAudio) {
         avisoAudio.classList.add('is-visivel');
+      } else if (avisoAudio) {
+        avisoAudio.classList.remove('is-visivel');
       }
+    }
+  }
+
+  /**
+   * "Ler agora" (botao no painel do operador): le em voz alta o texto
+   * biblico projetado no momento, usando o sintetizador de voz do
+   * proprio navegador (Web Speech API) - sem custo, sem depender de
+   * nenhum servico externo. So funciona aqui no telao porque e a unica
+   * tela com uma "audiencia" ouvindo (o preletor/operador tem os
+   * proprios controles, nao precisam de leitura em voz alta).
+   */
+  function lerBibliaEmVoz(biblia) {
+    if (!('speechSynthesis' in window) || !biblia || !biblia.versiculos || !biblia.versiculos.length) {
+      return;
+    }
+
+    var texto = biblia.versiculos.map(function (versiculo) {
+      return versiculo.texto;
+    }).join(' ');
+
+    window.speechSynthesis.cancel();
+
+    var fala = new SpeechSynthesisUtterance(texto);
+    fala.lang = 'pt-BR';
+    fala.rate = 0.95;
+
+    window.speechSynthesis.speak(fala);
+  }
+
+  /**
+   * Detecta um pedido novo de "Ler agora" (ver lerBibliaEmVoz() acima) -
+   * verificado tanto quando o estado muda quanto quando so o poll
+   * repete sem mudanca de versao, ja que uma releitura do MESMO
+   * versiculo nao muda "versao" de proposito (ver
+   * ProjecaoEstado::lerAgora()).
+   */
+  function verificarLeitura(dados) {
+    if (dados.leituraId === undefined || dados.leituraId === lastLeituraId) {
+      return;
+    }
+
+    lastLeituraId = dados.leituraId;
+
+    if (dados.modo === 'biblia') {
+      lerBibliaEmVoz(dados.biblia);
     }
   }
 
@@ -348,6 +410,12 @@
     player = new YT.Player('telao-player', {
       playerVars: {
         autoplay: 0,
+        // Comeca mudo de proposito - navegadores sempre permitem
+        // autoplay mudo sem gesto do usuario (essencial pro telao, que
+        // roda numa TV sem ninguem pra tocar na tela). O desmute
+        // acontece logo em seguida, em aplicarVideo() - ver o
+        // comentario la pra entender por que isso funciona sem gesto.
+        mute: 1,
         controls: 0,
         modestbranding: 1,
         rel: 0,
@@ -421,11 +489,14 @@
             aplicarVideo(dados.video);
           }
 
+          verificarLeitura(dados);
+
           return;
         }
 
         lastVersao = dados.versao;
         aplicarEstado(dados);
+        verificarLeitura(dados);
       })
       .catch(function () {
         // Falha de rede pontual; tenta novamente no proximo ciclo.
@@ -440,6 +511,7 @@
 
       if (estadoInicial) {
         lastVersao = estadoInicial.versao;
+        lastLeituraId = estadoInicial.leituraId;
         aplicarEstado(Object.assign({ ativo: true }, estadoInicial));
       }
     } catch (erro) {
@@ -499,6 +571,8 @@
     if (player && ultimoEstadoVideo === 'tocando') {
       try {
         player.playVideo();
+        player.unMute();
+        player.setVolume(100);
       } catch (erro) {
         // Ignora; sera reaplicado no proximo poll ou proximo toque.
       }

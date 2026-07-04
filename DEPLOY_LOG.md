@@ -17,6 +17,31 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 42 - 2026-07-04
+
+**Audio automatico no telao (TV sem toque na tela) + "Ler agora" (leitura em voz alta da biblia)**
+
+- Corrigido: no telao (TV/projetor), o video do YouTube tocava mas o
+  som ficava mudo, e nao tinha como "tocar na tela" pra liberar o
+  audio (o telao normalmente fica numa TV sem ninguem por perto). O
+  player agora comeca mudo de proposito (navegadores sempre permitem
+  isso sem gesto do usuario) e desmuta sozinho logo em seguida - esse
+  segundo passo (desmutar algo que ja esta tocando) e permitido sem
+  gesto na maioria dos navegadores, diferente de comecar tocando com
+  som direto. O aviso de "toque a tela" so aparece agora se, mesmo
+  assim, o navegador continuar mudo (fica so como reforco pra quem usa
+  o telao num notebook/tablet com toque).
+- **Novo: botao "Ler agora no telao"** no painel de Projecao (perto de
+  Anterior/Proximo) - le em voz alta o texto biblico que esta em
+  projecao, usando o sintetizador de voz do proprio navegador (sem
+  custo, sem depender de nenhum servico externo). So aparece quando ha
+  uma referencia biblica em projecao no momento.
+- **Rode a migracao nova no banco de CADA igreja ja criada** (nao e no
+  banco central):
+  ```
+  mysql -u seu_usuario -p banco_da_igreja < apps/igrejas/database/migrations/030_add_leitura_projecao.sql
+  ```
+
 ## Ajuste 41 - 2026-07-04
 
 **Upgrade/downgrade de plano respeitando o ciclo ja pago (sem cobrar tudo de novo)**

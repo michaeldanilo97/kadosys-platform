@@ -18,6 +18,7 @@
   var botaoFullscreen = document.querySelector('[data-acao-fullscreen]');
 
   var navBox = root.querySelector('[data-projecao-nav]');
+  var botaoLerAgora = root.querySelector('[data-acao-ler-agora]');
   var previewRef = root.querySelector('[data-preview-ref]');
   var previewTexto = root.querySelector('[data-preview-texto]');
   var previewProximo = root.querySelector('[data-preview-proximo]');
@@ -147,6 +148,10 @@
         navBox.hidden = true;
       }
 
+      if (botaoLerAgora) {
+        botaoLerAgora.hidden = true;
+      }
+
       if (previewRef) {
         previewRef.innerHTML = '<i class="bi bi-broadcast"></i> Nada em projecao';
       }
@@ -175,6 +180,10 @@
 
     if (navBox) {
       navBox.hidden = false;
+    }
+
+    if (botaoLerAgora) {
+      botaoLerAgora.hidden = false;
     }
 
     if (previewRef) {
@@ -341,6 +350,16 @@
 
       enviar('/limpar').then(function () {
         modoAtual = 'blank';
+      });
+    });
+  }
+
+  if (botaoLerAgora) {
+    botaoLerAgora.addEventListener('click', function () {
+      botaoLerAgora.disabled = true;
+
+      enviar('/biblia/ler').finally(function () {
+        botaoLerAgora.disabled = false;
       });
     });
   }

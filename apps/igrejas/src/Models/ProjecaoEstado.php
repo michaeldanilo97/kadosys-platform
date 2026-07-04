@@ -35,6 +35,7 @@ final class ProjecaoEstado
         public readonly ?int $videoTempoAtual,
         public readonly ?int $videoDuracao,
         public readonly int $versao,
+        public readonly int $leituraId,
         public readonly string $updatedAt,
     ) {
     }
@@ -162,6 +163,24 @@ final class ProjecaoEstado
     }
 
     /**
+     * Pede pro telao ler em voz alta (sintetizador de voz do navegador,
+     * ver telao.js) o texto biblico projetado agora - "Ler agora" no
+     * painel do operador. So incrementa um contador dedicado
+     * (leitura_id), sem mexer em "versao"/modo/conteudo, ja que uma
+     * leitura pode ser pedida de novo pro MESMO versiculo (releitura) e
+     * o telao precisa perceber o pedido mesmo sem nenhuma outra mudanca
+     * de estado.
+     */
+    public static function lerAgora(int $sessaoId): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE projecao_estados SET leitura_id = leitura_id + 1
+             WHERE sessao_id = :sessao_id AND modo = "biblia"'
+        );
+        $stmt->execute(['sessao_id' => $sessaoId]);
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function paraJson(): array
@@ -186,6 +205,7 @@ final class ProjecaoEstado
 
         return [
             'versao' => $this->versao,
+            'leituraId' => $this->leituraId,
             'modo' => $this->modo,
             'biblia' => [
                 'livroId' => $this->livroId,
@@ -266,6 +286,7 @@ final class ProjecaoEstado
             videoTempoAtual: $row['video_tempo_atual'] !== null ? (int) $row['video_tempo_atual'] : null,
             videoDuracao: $row['video_duracao'] !== null ? (int) $row['video_duracao'] : null,
             versao: (int) $row['versao'],
+            leituraId: (int) ($row['leitura_id'] ?? 0),
             updatedAt: (string) $row['updated_at'],
         );
     }

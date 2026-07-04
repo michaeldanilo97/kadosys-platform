@@ -312,6 +312,7 @@ CREATE TABLE IF NOT EXISTS projecao_estados (
     video_tempo_atual SMALLINT UNSIGNED NULL,
     video_duracao SMALLINT UNSIGNED NULL,
     versao INT UNSIGNED NOT NULL DEFAULT 1,
+    leitura_id INT UNSIGNED NOT NULL DEFAULT 0,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT projecao_estados_sessao_id_foreign
         FOREIGN KEY (sessao_id) REFERENCES projecao_sessoes (id) ON DELETE CASCADE,
