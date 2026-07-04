@@ -154,6 +154,11 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                 <div class="dash-panel-head">
                     <h2><i class="bi bi-youtube"></i> Video (YouTube)</h2>
                 </div>
+                <div class="crud-alert" style="background: rgba(59, 130, 246, 0.08); border-color: rgba(59, 130, 246, 0.3); color: var(--primary-soft);">
+                    <i class="bi bi-info-circle"></i>
+                    Recomendamos usar uma conta com YouTube Premium para reproduzir os videos aqui - sem ele, o video pode exibir anuncios durante a exibicao no telao.
+                </div>
+
                 <form class="crud-form" data-form-video onsubmit="return false;">
                     <div class="crud-field">
                         <label for="video_url">Link do video</label>

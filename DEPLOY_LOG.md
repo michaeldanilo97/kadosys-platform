@@ -17,6 +17,35 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 40 - 2026-07-06
+
+**Correcao: video do YouTube no telao so aparecia apos recarregar a pagina + fadeout de verdade**
+
+- Achado o bug: o telao so reaplicava o comando de video quando a
+  "versao" do estado mudava - se a primeira tentativa de carregar um
+  video novo falhasse silenciosamente (o player as vezes ainda esta
+  terminando de inicializar, principalmente quando nenhum video foi
+  carregado antes na sessao), nada tentava de novo, e o telao ficava
+  preso sem video ate alguem recarregar a pagina manualmente.
+  Corrigido: agora, sempre que o telao esta em modo video, cada ciclo
+  de verificacao (a cada 1.5s) confirma se o player realmente esta com
+  o video certo carregado e tenta de novo se nao estiver - autocorrige
+  sozinho, sem precisar de reload.
+- **Fadeout de verdade**: o botao "Fadeout" do operador antes so
+  pausava o video na hora e sobrepunha a logo. Agora baixa o volume
+  aos poucos (ao longo de ~2 segundos), so depois encerra o video de
+  verdade e mostra a logo - e o volume volta a 100% automaticamente
+  assim que um novo video for tocado depois.
+- Adicionado um aviso no painel de Projecao recomendando o uso de uma
+  conta com YouTube Premium, ja que sem ela o video pode exibir
+  anuncios durante a exibicao no telao.
+- Testado com Playwright simulando a API do YouTube (sem depender de
+  rede externa): confirma que uma falha simulada na primeira carga do
+  video e corrigida sozinha nos ciclos seguintes, que o fadeout baixa o
+  volume gradualmente ate 0 antes de encerrar, e que retomar o video
+  depois restaura o volume a 100%.
+- Nenhuma migracao de banco nesta mudanca.
+
 ## Ajuste 39 - 2026-07-06
 
 **Correcao: troca de plano por cartao nao atualizava o plano de igrejas de subdominio**

@@ -136,6 +136,93 @@
     });
   }
 
+  var FADEOUT_PASSOS = 10;
+  var FADEOUT_INTERVALO_MS = 200;
+  var fadeoutTimer = null;
+
+  /**
+   * Cancela um fadeout em andamento (se houver) - chamado sempre que um
+   * comando novo de play/pausa/video chega, pra nao deixar o volume
+   * baixo depois de um fadeout interrompido por um "play" seguinte.
+   */
+  function cancelarFadeout(restaurarVolume) {
+    if (fadeoutTimer) {
+      clearInterval(fadeoutTimer);
+      fadeoutTimer = null;
+    }
+
+    if (restaurarVolume && player && typeof player.setVolume === 'function') {
+      try {
+        player.setVolume(100);
+      } catch (erro) {
+        // Ignora; o proximo play tenta de novo.
+      }
+    }
+  }
+
+  /**
+   * Fadeout de verdade: baixa o volume aos poucos (nao so pausa na
+   * hora) e, no final, encerra o video e volta o volume a 100% (pronto
+   * pra proxima vez que um video for carregado).
+   */
+  function iniciarFadeout() {
+    if (fadeoutTimer || !player) {
+      return;
+    }
+
+    var passosRestantes = FADEOUT_PASSOS;
+
+    fadeoutTimer = setInterval(function () {
+      passosRestantes--;
+
+      try {
+        player.setVolume(Math.max(0, Math.round((passosRestantes / FADEOUT_PASSOS) * 100)));
+      } catch (erro) {
+        // Ignora; tenta de novo no proximo passo.
+      }
+
+      if (passosRestantes <= 0) {
+        clearInterval(fadeoutTimer);
+        fadeoutTimer = null;
+
+        try {
+          player.stopVideo();
+          player.setVolume(100);
+        } catch (erro) {
+          // Ignora.
+        }
+      }
+    }, FADEOUT_INTERVALO_MS);
+  }
+
+  /**
+   * Confirma se o player REALMENTE esta com o video certo carregado -
+   * nao so compara com a variavel local currentVideoId, que e marcada
+   * de forma otimista antes de loadVideoById() ser confirmado. Sem essa
+   * checagem, uma falha silenciosa na primeira tentativa (ex.: o player
+   * ainda terminando de inicializar, sem nenhum video anterior
+   * carregado) deixava o telao preso sem video pra sempre, so
+   * resolvendo com um reload manual da pagina - com essa checagem, o
+   * proximo poll (1.5s depois) detecta a divergencia e tenta de novo.
+   */
+  function precisaRecarregar(videoId) {
+    if (videoId !== currentVideoId) {
+      return true;
+    }
+
+    if (typeof player.getVideoData !== 'function') {
+      return false;
+    }
+
+    try {
+      var dados = player.getVideoData();
+
+      return !dados || !dados.video_id || dados.video_id !== videoId;
+    } catch (erro) {
+      return false;
+    }
+  }
+
   function aplicarVideo(video) {
     var videoId = extrairIdYoutube(video.url);
 
@@ -146,21 +233,31 @@
       return;
     }
 
-    if (videoId && videoId !== currentVideoId) {
-      currentVideoId = videoId;
-
-      if (player) {
-        player.loadVideoById(videoId);
-      }
-    }
-
     if (!player) {
       return;
     }
 
+    if (videoId && precisaRecarregar(videoId)) {
+      currentVideoId = videoId;
+
+      try {
+        player.loadVideoById(videoId);
+      } catch (erro) {
+        currentVideoId = null;
+      }
+    }
+
     ultimoEstadoVideo = video.estado;
 
-    if (video.estado === 'pausado' || video.estado === 'fadeout') {
+    if (video.estado === 'fadeout') {
+      iniciarFadeout();
+
+      return;
+    }
+
+    cancelarFadeout(true);
+
+    if (video.estado === 'pausado') {
       try {
         player.pauseVideo();
       } catch (erro) {
@@ -313,6 +410,17 @@
       })
       .then(function (dados) {
         if (dados.versao === lastVersao && dados.ativo !== false) {
+          // Sem mudanca de versao, mas em modo video reaplica mesmo
+          // assim a cada poll - e o que garante a autocorrecao de
+          // precisaRecarregar() quando a primeira tentativa de carregar
+          // o video falha silenciosamente (ver aplicarVideo()). Sem
+          // isso, so um proximo comando do operador (que muda a versao)
+          // daria outra chance, deixando o telao preso sem video ate
+          // isso acontecer ou a pagina ser recarregada manualmente.
+          if (modoAtual === 'video' && dados.video) {
+            aplicarVideo(dados.video);
+          }
+
           return;
         }
 
