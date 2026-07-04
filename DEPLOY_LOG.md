@@ -17,6 +17,37 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 39 - 2026-07-06
+
+**Correcao: troca de plano por cartao nao atualizava o plano de igrejas de subdominio**
+
+- Achado revisando o fluxo de pagamentos: quando uma igreja de
+  subdominio ja existente trocava de plano por **cartao** (Checkout
+  Pro, dentro da propria Configuracoes), o webhook do Mercado Pago
+  confirmava o pagamento mas **nunca atualizava o plano de verdade**
+  daquela igreja. Causa: o registro da assinatura fica gravado no
+  banco isolado de cada igreja, mas o webhook sempre roda na
+  instalacao central (o Mercado Pago chama uma unica URL fixa, nunca
+  o subdominio de uma igreja especifica) - sem uma ponte central, ele
+  nunca conseguia achar de qual igreja era aquele pagamento. O mesmo
+  problema **nao acontecia com Pix**, que ja usava uma tabela central
+  (`plataforma_faturas`) desde o inicio.
+- Corrigido com uma nova tabela central (`plataforma_assinaturas`,
+  nao confundir com a tabela `assinaturas` que ja existia dentro de
+  cada igreja) que guarda so o necessario (tenant + plano +
+  preapproval_id) pra o webhook achar a igreja certa e aplicar a troca
+  de plano no banco isolado dela - mesmo padrao ja usado pelo Pix.
+- **So afeta troca de plano por cartao de igrejas de subdominio ja
+  existentes.** Cadastro de igreja nova por cartao e toda a parte de
+  Pix (cadastro novo e renovacao mensal) ja funcionavam certo antes e
+  continuam sem alteracao.
+- Rode a migracao nova SO no banco CENTRAL (o que recebe os cadastros
+  publicos e os webhooks) - nao precisa rodar no banco de nenhuma
+  igreja individual:
+  ```
+  mysql -u seu_usuario -p banco_central < apps/igrejas/database/migrations/027_create_plataforma_assinaturas.sql
+  ```
+
 ## Ajuste 38 - 2026-07-06
 
 **Auto-cadastro de membro cria login; endereco+numero no cadastro da igreja; notificacoes com data e ordenadas**
