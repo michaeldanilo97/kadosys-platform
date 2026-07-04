@@ -307,19 +307,34 @@
     };
   }
 
+  /**
+   * Reconstroi a grade de chips SO quando o total muda (ex.: trocou de
+   * capitulo) - trocar so o versiculo ativo dentro do MESMO capitulo
+   * (ex.: navegacao Anterior/Proximo, ou sincronizacao do poll) reusa
+   * os botoes ja existentes, so alternando a classe "is-active" neles.
+   * Sem isso, container.innerHTML = '' destruia e recriava todos os
+   * botoes a cada troca de versiculo - o browser nunca conseguia
+   * animar a transicao de cor (definida em .biblia-chip no CSS) porque
+   * o botao "ativo" era sempre um elemento novo, sem estado anterior
+   * pra transicionar a partir dele - dava a impressao de "piscar".
+   */
   function popularChips(container, total, valorAtivo, valorFim, onClick) {
-    container.innerHTML = '';
+    var existentes = container.querySelectorAll('.biblia-chip');
 
-    for (var i = 1; i <= total; i++) {
-      var chip = document.createElement('button');
-      chip.type = 'button';
-      chip.className = 'biblia-chip';
-      chip.textContent = String(i);
-      chip.setAttribute('data-valor', String(i));
-      chip.addEventListener('click', function (evento) {
-        onClick(Number(this.getAttribute('data-valor')), evento);
-      });
-      container.appendChild(chip);
+    if (existentes.length !== total) {
+      container.innerHTML = '';
+
+      for (var i = 1; i <= total; i++) {
+        var chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'biblia-chip';
+        chip.textContent = String(i);
+        chip.setAttribute('data-valor', String(i));
+        chip.addEventListener('click', function (evento) {
+          onClick(Number(this.getAttribute('data-valor')), evento);
+        });
+        container.appendChild(chip);
+      }
     }
 
     marcarChipsAtivos(container, valorAtivo, valorFim);
