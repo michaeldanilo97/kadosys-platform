@@ -1,7 +1,5 @@
 <?php
 
-use Igrejas\Models\Plano;
-
 /**
  * @var array $config
  * @var \Igrejas\Models\ConfiguracaoIgreja $configuracao
@@ -16,21 +14,11 @@ use Igrejas\Models\Plano;
 $basePath = $config['base_path'] ?? '';
 $logoUrl = $configuracao->logoPath ? $basePath . '/' . $configuracao->logoPath : null;
 
-$valorPorPlano = Plano::VALOR_MENSAL;
-
 // Durante o teste gratis nenhum plano foi de fato contratado ainda -
 // mesmo que a igreja tenha "escolhido" um plano no cadastro, nenhum
 // deles pode aparecer como "atual" (o botao Assinar precisa continuar
 // disponivel pros 3, inclusive pro que ela esta testando agora).
 $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
-
-/** @var array<string, string> */
-$statusAssinaturaLabel = [
-    'pendente' => 'Pagamento pendente',
-    'autorizada' => 'Assinatura ativa',
-    'pausada' => 'Assinatura pausada',
-    'cancelada' => 'Assinatura cancelada',
-];
 ?>
 
 <div class="dash-page-head">
@@ -55,66 +43,16 @@ $statusAssinaturaLabel = [
     </div>
 <?php endif; ?>
 
-<div class="dash-panel" id="plano-contratado">
-    <div class="dash-panel-head">
-        <h2><i class="bi bi-star"></i> Plano contratado</h2>
-    </div>
-    <?php if ($emTrial): ?>
-        <p class="dash-page-subtitle" style="margin-bottom: 0.6rem;">
-            Voce esta no teste gratis, com todos os modulos liberados<?php if ($tenant->trialExpiraEm !== null): ?> ate <strong><?= (new DateTimeImmutable($tenant->trialExpiraEm))->format('d/m/Y') ?></strong><?php endif; ?>.
-            Escolha um plano abaixo para continuar usando o sistema depois do teste.
-        </p>
-    <?php else: ?>
-        <p class="dash-page-subtitle" style="margin-bottom: 0.6rem;">
-            Define quais modulos ficam disponiveis no menu lateral. Plano atual:
-            <strong><?= htmlspecialchars(Plano::label($configuracao->plano), ENT_QUOTES, 'UTF-8') ?></strong>.
-            <?php if ($assinatura !== null): ?>
-                <span class="plano-status-badge plano-status-<?= htmlspecialchars($assinatura->status, ENT_QUOTES, 'UTF-8') ?>">
-                    <?= htmlspecialchars($statusAssinaturaLabel[$assinatura->status] ?? $assinatura->status, ENT_QUOTES, 'UTF-8') ?>
-                </span>
-            <?php endif; ?>
-        </p>
-    <?php endif; ?>
-
-    <?php if (!$pagamentoConfigurado): ?>
-        <div class="crud-alert" style="background: rgba(212, 161, 63, 0.1); border-color: rgba(212, 161, 63, 0.35); color: #d4a13f;">
-            <i class="bi bi-info-circle"></i>
-            Pagamento online ainda nao foi configurado neste servidor. Fale com o suporte para habilitar a assinatura automatica.
-        </div>
-    <?php endif; ?>
-
-    <div class="plano-assinar-grid">
-        <?php foreach ($valorPorPlano as $valor => $preco): ?>
-            <?php $ehPlanoAtual = !$emTrial && $configuracao->plano === $valor; ?>
-            <div class="plano-assinar-card<?= $ehPlanoAtual ? ' atual' : '' ?>">
-                <strong><?= htmlspecialchars(Plano::label($valor), ENT_QUOTES, 'UTF-8') ?></strong>
-                <span class="preco">R$ <?= number_format($preco, 2, ',', '.') ?><small>/mes</small></span>
-                <?php if ($ehPlanoAtual): ?>
-                    <span class="plano-assinar-atual-tag">Plano atual</span>
-                <?php else: ?>
-                    <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/assinatura/<?= htmlspecialchars($valor, ENT_QUOTES, 'UTF-8') ?>">
-                        <?= $csrf ?>
-                        <?php if ($pixDisponivel): ?>
-                            <div class="plano-assinar-metodo">
-                                <label>
-                                    <input type="radio" name="metodo_pagamento" value="cartao" checked>
-                                    Cartao
-                                </label>
-                                <label>
-                                    <input type="radio" name="metodo_pagamento" value="pix">
-                                    Pix
-                                </label>
-                            </div>
-                        <?php endif; ?>
-                        <button type="submit" class="btn-k btn-k-grad" <?= $pagamentoConfigurado ? '' : 'disabled' ?>>
-                            <i class="bi bi-credit-card"></i> Assinar
-                        </button>
-                    </form>
-                <?php endif; ?>
-            </div>
-        <?php endforeach; ?>
-    </div>
-</div>
+<?= \Igrejas\Core\View::render('dashboard.configuracoes._plano_panel', [
+    'configuracao' => $configuracao,
+    'emTrial' => $emTrial,
+    'tenant' => $tenant,
+    'assinatura' => $assinatura,
+    'pagamentoConfigurado' => $pagamentoConfigurado,
+    'pixDisponivel' => $pixDisponivel,
+    'csrf' => $csrf,
+    'basePath' => $basePath,
+]) ?>
 
 <div class="dash-panel">
     <div class="dash-panel-head">

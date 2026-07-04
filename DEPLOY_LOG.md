@@ -17,6 +17,26 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 37 - 2026-07-06
+
+**Plano contratado visivel tambem pra quem tem acesso ao Financeiro**
+
+- Antes, a secao "Plano contratado" (plano atual, status da assinatura,
+  botao Assinar) so existia dentro de Configuracoes - tela 100% restrita
+  ao admin. Agora quem tem acesso ao modulo Financeiro (mas nao e admin)
+  tambem consegue **ver** o plano contratado e o status da assinatura,
+  numa tela nova (`/dashboard/financeiro/plano`, com link "Plano
+  contratado" no menu do usuario).
+- Essa tela e so de consulta: quem nao e admin ve o plano e o status,
+  mas nao pode assinar/trocar de plano por ali (aparece um aviso "Fale
+  com o administrador da igreja"). Alterar o plano continua sendo so
+  pelo admin, em Configuracoes.
+- O aviso de contagem regressiva do teste gratis (banner no topo do
+  painel e no sino de notificacoes) agora so aparece pra quem realmente
+  pode fazer algo a respeito (admin ou Financeiro) - o resto da equipe
+  nao ve mais um aviso de cobranca que nao consegue resolver.
+- Nenhuma migracao de banco nesta mudanca.
+
 ## Ajuste 36 - 2026-07-06
 
 **Correcao do Ajuste 35: plano/pagamento volta pro cadastro do dominio principal**

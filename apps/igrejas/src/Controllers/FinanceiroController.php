@@ -7,7 +7,11 @@ namespace Igrejas\Controllers;
 use Igrejas\Core\Auth;
 use Igrejas\Core\Controller;
 use Igrejas\Core\Csrf;
+use Igrejas\Core\MercadoPagoClient;
 use Igrejas\Core\Session;
+use Igrejas\Core\TenantResolver;
+use Igrejas\Models\Assinatura;
+use Igrejas\Models\ConfiguracaoIgreja;
 use Igrejas\Models\FinanceiroCategoria;
 use Igrejas\Models\FinanceiroLancamento;
 use Igrejas\Models\Membro;
@@ -50,6 +54,36 @@ final class FinanceiroController extends Controller
             'categorias' => FinanceiroCategoria::all(),
             'success' => Session::flash('financeiro_success'),
             'csrfToken' => Csrf::token(),
+        ], 'dashboard');
+    }
+
+    /**
+     * Tela de "Plano contratado" pra quem tem acesso ao modulo
+     * Financeiro mas nao e admin - Configuracoes como um todo continua
+     * sendo so pra admin (ver User::MODULOS_SOMENTE_ADMIN), mas quem
+     * cuida do financeiro da igreja precisa poder ao menos VER o plano
+     * atual e o status da assinatura, mesmo sem poder altera-la (ver
+     * $permiteAlterarPlano na view). Sem PlanoMiddleware de proposito,
+     * mesmo motivo das rotas de Configuracoes: precisa continuar
+     * acessivel mesmo se a igreja estiver num plano que bloquearia o
+     * resto do Financeiro.
+     */
+    public function plano(): void
+    {
+        $auth = new Auth($this->config);
+
+        echo $this->view('dashboard.financeiro.plano', [
+            'pageTitle' => 'Plano contratado - KADOSYS Igrejas',
+            'activeMenu' => 'financeiro',
+            'breadcrumb' => ['Dashboard', 'Financeiro', 'Plano contratado'],
+            'user' => $auth->user(),
+            'modules' => DashboardController::modules(),
+            'configuracao' => ConfiguracaoIgreja::atual(),
+            'assinatura' => Assinatura::ultima(),
+            'pagamentoConfigurado' => (new MercadoPagoClient())->configurado(),
+            'pixDisponivel' => TenantResolver::atual() !== null,
+            'tenant' => TenantResolver::atual(),
+            'csrf' => Csrf::field(),
         ], 'dashboard');
     }
 

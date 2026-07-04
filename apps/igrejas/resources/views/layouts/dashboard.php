@@ -28,6 +28,19 @@ $userInitial = mb_strtoupper(mb_substr($userName, 0, 1));
 $planoAtual = ConfiguracaoIgreja::atual()->plano;
 $emTrial = TenantResolver::atual()?->metodoPagamento === 'trial';
 
+// Quem pode ver informacao de plano/assinatura: admin (tela completa,
+// em Configuracoes) ou quem tem acesso ao modulo Financeiro sem ser
+// admin (tela so de consulta, ver FinanceiroController::plano()) - o
+// resto da equipe (ex.: um voluntario so com acesso a Cultos) nao
+// precisa nem ver avisos de cobranca que nao pode resolver.
+$isAdmin = $user?->role === User::ROLE_ADMIN;
+$temAcessoFinanceiro = User::podeAcessarModulo($user, 'financeiro');
+$planoUrl = match (true) {
+    $isAdmin => $basePath . '/dashboard/configuracoes#plano-contratado',
+    $temAcessoFinanceiro => $basePath . '/dashboard/financeiro/plano',
+    default => null,
+};
+
 // Aviso de fatura Pix perto do vencimento - so aparece pra tenants que
 // pagam por Pix (ver AuthMiddleware pro bloqueio depois que vence). Nao
 // mostra na propria tela de fatura vencida, que ja e dedicada a isso.
@@ -114,8 +127,8 @@ if ($avisoFaturaPixTexto !== '') {
     $notificacoes[] = ['icon' => 'bi-qr-code', 'texto' => $avisoFaturaPixTexto, 'url' => $basePath . '/dashboard/fatura-vencida'];
 }
 
-if ($avisoTrialTexto !== '') {
-    $notificacoes[] = ['icon' => 'bi-hourglass-split', 'texto' => $avisoTrialTexto, 'url' => $basePath . '/dashboard/configuracoes#plano-contratado'];
+if ($avisoTrialTexto !== '' && $planoUrl !== null) {
+    $notificacoes[] = ['icon' => 'bi-hourglass-split', 'texto' => $avisoTrialTexto, 'url' => $planoUrl];
 }
 
 $comunicacaoDisponivel = Plano::disponivel($planoAtual, 'comunicacao', $emTrial) && User::podeAcessarModulo($user, 'comunicacao');
@@ -293,9 +306,15 @@ $avisosSidebar = ($comunicacaoDisponivel && $user !== null)
                     </button>
 
                     <div class="topbar-dropdown-panel user-menu-panel" data-dropdown-panel hidden>
-                        <a href="<?= $basePath ?>/dashboard/configuracoes" class="user-menu-item">
-                            <i class="bi bi-gear"></i> Configuracoes
-                        </a>
+                        <?php if ($isAdmin): ?>
+                            <a href="<?= $basePath ?>/dashboard/configuracoes" class="user-menu-item">
+                                <i class="bi bi-gear"></i> Configuracoes
+                            </a>
+                        <?php elseif ($temAcessoFinanceiro): ?>
+                            <a href="<?= $basePath ?>/dashboard/financeiro/plano" class="user-menu-item">
+                                <i class="bi bi-star"></i> Plano contratado
+                            </a>
+                        <?php endif; ?>
                         <form method="POST" action="<?= $basePath ?>/logout">
                             <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars(Csrf::token(), ENT_QUOTES, 'UTF-8') ?>">
                             <button type="submit" class="user-menu-item user-menu-item-danger">
@@ -308,8 +327,8 @@ $avisosSidebar = ($comunicacaoDisponivel && $user !== null)
         </header>
 
         <div class="dash-content">
-            <?php if ($avisoTrialTexto !== ''): ?>
-                <a href="<?= $basePath ?>/dashboard/configuracoes#plano-contratado" class="dash-pix-aviso">
+            <?php if ($avisoTrialTexto !== '' && $planoUrl !== null): ?>
+                <a href="<?= $planoUrl ?>" class="dash-pix-aviso">
                     <i class="bi bi-hourglass-split"></i>
                     <span><?= htmlspecialchars($avisoTrialTexto, ENT_QUOTES, 'UTF-8') ?></span>
                     <i class="bi bi-arrow-right"></i>

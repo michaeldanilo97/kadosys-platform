@@ -108,7 +108,15 @@ final class AuthMiddleware implements MiddlewareInterface
         // inicia a assinatura) precisa continuar acessivel mesmo
         // bloqueado - e la que a igreja escolhe um plano pago pra sair
         // do trial. Sem essa excecao viraria um loop de redirecionamento.
-        if ($uri === '/dashboard/trial-expirado' || $uri === '/logout' || str_starts_with($uri, '/dashboard/configuracoes')) {
+        // "/dashboard/financeiro/plano" e a mesma consulta de plano, so
+        // que pra quem tem acesso ao Financeiro sem ser admin (ver
+        // FinanceiroController::plano()) - precisa da mesma excecao.
+        if (
+            $uri === '/dashboard/trial-expirado'
+            || $uri === '/logout'
+            || str_starts_with($uri, '/dashboard/configuracoes')
+            || $uri === '/dashboard/financeiro/plano'
+        ) {
             return;
         }
 

@@ -126,6 +126,13 @@ $router->post('/dashboard/agenda/{id}/excluir', [AgendaController::class, 'destr
 // "categorias" como um {id} de lancamento.
 $router->get('/dashboard/financeiro', [FinanceiroController::class, 'index'], [AuthMiddleware::class, PlanoMiddleware::class]);
 $router->get('/dashboard/financeiro/novo', [FinanceiroController::class, 'create'], [AuthMiddleware::class, PlanoMiddleware::class]);
+
+// Consulta (sem alterar) do plano contratado, pra quem tem acesso ao
+// Financeiro mas nao e admin - ver FinanceiroController::plano(). Sem
+// PlanoMiddleware de proposito, mesmo motivo das rotas de
+// Configuracoes: precisa continuar acessivel mesmo num plano que
+// bloquearia o resto do Financeiro.
+$router->get('/dashboard/financeiro/plano', [FinanceiroController::class, 'plano'], [AuthMiddleware::class]);
 $router->post('/dashboard/financeiro', [FinanceiroController::class, 'store'], [AuthMiddleware::class, PlanoMiddleware::class]);
 $router->get('/dashboard/financeiro/categorias', [FinanceiroController::class, 'categorias'], [AuthMiddleware::class, PlanoMiddleware::class]);
 $router->post('/dashboard/financeiro/categorias', [FinanceiroController::class, 'storeCategoria'], [AuthMiddleware::class, PlanoMiddleware::class]);
