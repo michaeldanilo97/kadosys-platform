@@ -17,6 +17,41 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 35 - 2026-07-06
+
+**Cadastro publico simplificado (sem plano/pagamento) + auto-cadastro de membros + novidades no Dashboard**
+
+- **Cadastro de igreja nova, sem plano/pagamento**: a tela publica de
+  cadastro (`/cadastro` no dominio principal) nao pede mais plano nem
+  forma de pagamento - toda igreja nova comeca direto com 7 dias de
+  teste gratis. Escolher e pagar um plano agora e feito so depois, de
+  dentro do proprio painel (Configuracoes), pra nao passar a impressao
+  de que a KADOSYS esta revendendo planos na propria tela de criacao
+  da conta. As telas antigas de Pix/retorno do cadastro foram removidas
+  (ficaram sem uso).
+- **Auto-cadastro de membros**: nova opcao em Configuracoes pra ligar/
+  desligar um link publico de cadastro de membros. Quando ligado, a
+  mesma URL `/cadastro` (agora dentro do subdominio da igreja, nao no
+  dominio principal) mostra um formulario onde qualquer pessoa se
+  cadastra como membro sozinha - com autopreenchimento de endereco a
+  partir do CEP (API do ViaCEP). Quando desligado (padrao), nada muda:
+  a secretaria continua cadastrando cada membro manualmente pelo
+  modulo Membros. O link "Cadastre-se" ja existente na tela de login
+  agora aponta pra esse formulario quando acessado dentro do
+  subdominio de uma igreja.
+- **Novidades no Dashboard**: o painel "Insights da IA" do conteudo
+  principal do Dashboard (nao o da barra lateral, ja trocado no ajuste
+  34) agora mostra os avisos mais recentes do dono da plataforma (os
+  mesmos publicados em `/plataforma/avisos`) em vez do texto fixo
+  sobre recursos futuros de IA.
+- Rode as migracoes novas no banco de CADA igreja ja criada (nao e o
+  banco central da plataforma). Igrejas novas ja recebem as tabelas/
+  colunas automaticamente (`database/install.sql` atualizado):
+  ```
+  mysql -u seu_usuario -p banco_da_igreja < apps/igrejas/database/migrations/023_add_cadastro_membros_configuracoes_igreja.sql
+  mysql -u seu_usuario -p banco_da_igreja < apps/igrejas/database/migrations/024_add_cep_membros.sql
+  ```
+
 ## Ajuste 34 - 2026-07-06
 
 **Avisos na barra lateral (no lugar do card "Insights da IA") + pagina de detalhe com controle de lido**

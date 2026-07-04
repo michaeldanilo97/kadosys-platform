@@ -13,6 +13,7 @@ use Igrejas\Models\FinanceiroLancamento;
 use Igrejas\Models\Membro;
 use Igrejas\Models\Ministerio;
 use Igrejas\Models\Plano;
+use Igrejas\Models\PlataformaAviso;
 
 /**
  * Controller do Dashboard administrativo.
@@ -135,6 +136,7 @@ final class DashboardController extends Controller
             'proximoCulto' => Culto::proximoAgendado(),
             'financeiroDisponivel' => $financeiroDisponivel,
             'financeiroTotais' => $financeiroDisponivel ? FinanceiroLancamento::totaisMesAtual() : null,
+            'novidades' => PlataformaAviso::recentes(5),
         ], 'dashboard');
     }
 

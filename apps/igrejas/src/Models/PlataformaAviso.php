@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Igrejas\Models;
 
 use Igrejas\Core\Database;
+use PDO;
 
 /**
  * Aviso do dono da plataforma (KADOSYS) para todas as igrejas
@@ -40,6 +41,22 @@ final class PlataformaAviso
     public static function todos(): array
     {
         $stmt = Database::central()->query('SELECT * FROM plataforma_avisos ORDER BY id DESC');
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /**
+     * Ultimos avisos (ativos ou ja encerrados), usado no painel de
+     * "novidades" do Dashboard de cada igreja - diferente de todos(),
+     * que e a lista completa (sem limite) do historico administrativo.
+     *
+     * @return array<int, self>
+     */
+    public static function recentes(int $limite = 5): array
+    {
+        $stmt = Database::central()->prepare('SELECT * FROM plataforma_avisos ORDER BY id DESC LIMIT :limite');
+        $stmt->bindValue('limite', $limite, PDO::PARAM_INT);
+        $stmt->execute();
 
         return array_map(self::fromRow(...), $stmt->fetchAll());
     }

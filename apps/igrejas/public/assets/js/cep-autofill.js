@@ -1,0 +1,75 @@
+(function () {
+  'use strict';
+
+  document.addEventListener('DOMContentLoaded', function () {
+    initCepAutofill();
+  });
+
+  function initCepAutofill() {
+    var cepInput = document.querySelector('[data-cep-input]');
+
+    if (!cepInput) {
+      return;
+    }
+
+    var statusEl = document.querySelector('[data-cep-status]');
+    var enderecoInput = document.getElementById(cepInput.getAttribute('data-cep-endereco') || 'endereco');
+    var cidadeInput = document.getElementById(cepInput.getAttribute('data-cep-cidade') || 'cidade');
+    var estadoInput = document.getElementById(cepInput.getAttribute('data-cep-estado') || 'estado');
+
+    function aplicarMascara(valor) {
+      var digitos = valor.replace(/\D/g, '').slice(0, 8);
+
+      return digitos.replace(/(\d{5})(\d)/, '$1-$2');
+    }
+
+    function definirStatus(texto) {
+      if (statusEl) {
+        statusEl.textContent = texto;
+      }
+    }
+
+    cepInput.addEventListener('input', function () {
+      cepInput.value = aplicarMascara(cepInput.value);
+    });
+
+    cepInput.addEventListener('blur', function () {
+      var digitos = cepInput.value.replace(/\D/g, '');
+
+      if (digitos.length !== 8) {
+        return;
+      }
+
+      definirStatus('Buscando endereco...');
+
+      fetch('https://viacep.com.br/ws/' + digitos + '/json/')
+        .then(function (resposta) {
+          return resposta.json();
+        })
+        .then(function (dados) {
+          if (dados.erro) {
+            definirStatus('CEP nao encontrado - preencha o endereco manualmente.');
+
+            return;
+          }
+
+          if (enderecoInput && !enderecoInput.value) {
+            enderecoInput.value = [dados.logradouro, dados.bairro].filter(Boolean).join(', ');
+          }
+
+          if (cidadeInput) {
+            cidadeInput.value = dados.localidade || cidadeInput.value;
+          }
+
+          if (estadoInput) {
+            estadoInput.value = dados.uf || estadoInput.value;
+          }
+
+          definirStatus('Endereco preenchido automaticamente.');
+        })
+        .catch(function () {
+          definirStatus('Nao foi possivel buscar o CEP agora - preencha o endereco manualmente.');
+        });
+    });
+  }
+})();

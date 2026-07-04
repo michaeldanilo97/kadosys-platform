@@ -150,3 +150,29 @@ $statusAssinaturaLabel = [
         </form>
     <?php endif; ?>
 </div>
+
+<div class="dash-panel">
+    <div class="dash-panel-head">
+        <h2><i class="bi bi-person-plus"></i> Cadastro de membros</h2>
+    </div>
+    <p class="dash-page-subtitle" style="margin-bottom: 1.4rem;">
+        Escolha como novos membros entram no sistema: cadastrados manualmente pela secretaria, ou se cadastrando sozinhos.
+    </p>
+
+    <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/cadastro-membros" class="crud-form">
+        <?= $csrf ?>
+        <label class="toggle-switch-field">
+            <input type="checkbox" name="cadastro_membros_habilitado" value="1" <?= $configuracao->cadastroMembrosHabilitado ? 'checked' : '' ?>>
+            <span class="toggle-switch"></span>
+            <span class="toggle-switch-label">
+                Permitir que membros se cadastrem sozinhos
+                <span class="auth-field-hint">
+                    Quando ligado, um link "Cadastre-se" aparece na tela de login desta igreja - qualquer pessoa pode preencher os proprios dados (com autopreenchimento de endereco pelo CEP) e virar um membro, sem precisar de acesso ao painel. Quando desligado, so a secretaria cadastra membros pelo modulo Membros.
+                </span>
+            </span>
+        </label>
+        <div class="crud-form-actions" style="justify-content: flex-start;">
+            <button type="submit" class="btn-k btn-k-grad"><i class="bi bi-check-lg"></i> Salvar</button>
+        </div>
+    </form>
+</div>

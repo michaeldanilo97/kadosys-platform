@@ -255,6 +255,24 @@ final class ConfiguracaoController extends Controller
         $this->redirect('/dashboard/configuracoes');
     }
 
+    /**
+     * Liga/desliga o auto-cadastro publico de membros (ver
+     * MembroPublicoController) - quando desligado (padrao), a igreja
+     * continua cadastrando cada membro manualmente pelo modulo Membros.
+     */
+    public function atualizarCadastroMembros(): void
+    {
+        if (Csrf::verify($this->request->input('_csrf_token'))) {
+            $habilitado = (string) $this->request->input('cadastro_membros_habilitado', '') === '1';
+            ConfiguracaoIgreja::atualizarCadastroMembros($habilitado);
+            Session::flash('config_success', $habilitado
+                ? 'Auto-cadastro de membros habilitado - o link ja aparece na tela de login.'
+                : 'Auto-cadastro de membros desabilitado.');
+        }
+
+        $this->redirect('/dashboard/configuracoes');
+    }
+
     private function removerArquivosLogo(string $destinoDir): void
     {
         foreach (glob($destinoDir . '/logo.*') ?: [] as $arquivoAntigo) {

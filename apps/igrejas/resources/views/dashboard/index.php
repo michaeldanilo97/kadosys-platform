@@ -15,6 +15,7 @@ use Igrejas\Models\User;
  * @var \Igrejas\Models\Culto|null $proximoCulto
  * @var bool $financeiroDisponivel
  * @var array{entradas: float, saidas: float, saldo: float}|null $financeiroTotais
+ * @var array<int, \Igrejas\Models\PlataformaAviso> $novidades
  */
 $basePath = $config['base_path'] ?? '';
 $firstName = explode(' ', trim($user?->name ?? 'Usuario'))[0];
@@ -95,23 +96,25 @@ $emTrial = TenantResolver::atual()?->metodoPagamento === 'trial';
 <div class="dash-panels-row">
     <div class="dash-panel dash-ai-panel">
         <div class="dash-panel-head">
-            <h2><i class="bi bi-stars"></i> Insights da IA</h2>
-            <span class="panel-badge">em breve</span>
+            <h2><i class="bi bi-newspaper"></i> Novidades</h2>
         </div>
-        <div class="ai-insight-list">
-            <div class="ai-insight">
-                <div class="glyph"><i class="bi bi-graph-up-arrow"></i></div>
-                <p>Resumos automaticos de frequencia e crescimento da congregacao.</p>
+        <?php if ($novidades === []): ?>
+            <p class="crud-text-dim">Nenhuma novidade por enquanto.</p>
+        <?php else: ?>
+            <div class="ai-insight-list">
+                <?php foreach ($novidades as $novidade): ?>
+                    <div class="ai-insight">
+                        <div class="glyph"><i class="bi bi-broadcast-pin"></i></div>
+                        <p>
+                            <?= htmlspecialchars($novidade->mensagem, ENT_QUOTES, 'UTF-8') ?>
+                            <span class="crud-text-dim" style="display: block; font-size: 0.74rem; margin-top: 0.2rem;">
+                                <?= (new DateTimeImmutable($novidade->createdAt))->format('d/m/Y') ?>
+                            </span>
+                        </p>
+                    </div>
+                <?php endforeach; ?>
             </div>
-            <div class="ai-insight">
-                <div class="glyph"><i class="bi bi-cash-stack"></i></div>
-                <p>Alertas inteligentes sobre dizimos, ofertas e despesas fora do padrao.</p>
-            </div>
-            <div class="ai-insight">
-                <div class="glyph"><i class="bi bi-chat-square-text"></i></div>
-                <p>Sugestoes de comunicacao para engajar membros e voluntarios.</p>
-            </div>
-        </div>
+        <?php endif; ?>
     </div>
 
     <div class="dash-panel">
