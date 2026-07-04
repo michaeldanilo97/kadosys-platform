@@ -62,13 +62,13 @@ $basePath = $config['base_path'] ?? '';
             <div class="preletor-field preletor-field-sm">
                 <label for="preletor_capitulo">Cap.</label>
                 <select id="preletor_capitulo" data-campo="capitulo" required>
-                    <option value="" selected disabled>Cap...</option>
+                    <option value="" selected disabled>Cap.</option>
                 </select>
             </div>
             <div class="preletor-field preletor-field-sm">
                 <label for="preletor_versiculo_inicio">Vers.</label>
                 <select id="preletor_versiculo_inicio" data-campo="versiculo_inicio" required>
-                    <option value="" selected disabled>Vers...</option>
+                    <option value="" selected disabled>Vers.</option>
                 </select>
             </div>
             <div class="preletor-field preletor-field-sm">

@@ -109,6 +109,9 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                                     <?php endforeach; ?>
                                 </div>
                             </div>
+                            <p class="biblia-livro-dica" data-livro-dica>
+                                <i class="bi bi-arrow-up-short"></i> Escolha um livro para ver os capitulos e versiculos
+                            </p>
                         </div>
                     </div>
 
