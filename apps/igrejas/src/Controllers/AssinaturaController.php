@@ -57,6 +57,39 @@ final class AssinaturaController extends Controller
 
         $usuario = (new Auth($this->config))->user();
         $metodoPagamento = (string) $this->request->input('metodo_pagamento', 'cartao');
+        $tenantAtual = TenantResolver::atual();
+
+        // Upgrade/downgrade proporcional ao ciclo ja pago - so faz
+        // sentido pra quem ja tem um plano pago em andamento (nao
+        // trial, que e gratis, e nao a primeira assinatura, que nao tem
+        // ciclo anterior pra aproveitar). Fora isso, cai no fluxo de
+        // sempre logo abaixo (cobranca cheia, assinatura nova).
+        if (
+            $tenantAtual !== null
+            && $tenantAtual->metodoPagamento !== 'trial'
+            && $tenantAtual->proximoVencimento !== null
+            && $plano !== $tenantAtual->plano
+            && isset(Plano::VALOR_MENSAL[$tenantAtual->plano])
+        ) {
+            $vencimentoCiclo = new \DateTimeImmutable($tenantAtual->proximoVencimento);
+            $hoje = new \DateTimeImmutable('today');
+            $diasRestantes = $hoje < $vencimentoCiclo ? $hoje->diff($vencimentoCiclo)->days : 0;
+
+            if ($diasRestantes > 0) {
+                $valorAtual = Plano::VALOR_MENSAL[$tenantAtual->plano];
+                $valorNovo = Plano::VALOR_MENSAL[$plano];
+
+                if ($valorNovo < $valorAtual) {
+                    $this->agendarDowngrade($tenantAtual, $plano, $vencimentoCiclo);
+                }
+
+                if ($valorNovo > $valorAtual) {
+                    $valorProporcional = round(($valorNovo - $valorAtual) * $diasRestantes / 30, 2);
+
+                    $this->iniciarUpgradeProporcional($mp, $tenantAtual, $plano, $valorProporcional, $usuario?->email ?? '');
+                }
+            }
+        }
 
         if ($metodoPagamento === 'pix') {
             $this->iniciarPix($mp, $plano, $usuario?->email ?? '');
@@ -87,8 +120,6 @@ final class AssinaturaController extends Controller
         $assinaturaId = Assinatura::criar($plano, (string) $resposta['body']['id'], $usuario?->email ?? '');
         Assinatura::registrarEvento($assinaturaId, 'assinatura_criada', json_encode($resposta['body'], JSON_UNESCAPED_UNICODE));
 
-        $tenantAtual = TenantResolver::atual();
-
         if ($tenantAtual !== null) {
             // O registro acima (Assinatura::criar) fica gravado no banco
             // ISOLADO deste tenant - o webhook do Mercado Pago roda
@@ -105,6 +136,12 @@ final class AssinaturaController extends Controller
             // que ela parte pra um pagamento de verdade, sem esperar o
             // webhook confirmar.
             Tenant::atualizarMetodoPagamento($tenantAtual->id, 'cartao');
+
+            // Uma assinatura nova por cima de qualquer coisa anterior
+            // (trial, primeira assinatura) substitui um downgrade que
+            // porventura estivesse agendado - nao faz sentido manter
+            // agendado.
+            Tenant::cancelarTrocaAgendada($tenantAtual->id);
         }
 
         header('Location: ' . $resposta['body']['init_point']);
@@ -165,8 +202,90 @@ final class AssinaturaController extends Controller
         );
 
         Tenant::atualizarMetodoPagamento($tenant->id, 'pix');
+        Tenant::cancelarTrocaAgendada($tenant->id);
 
         $this->redirect('/dashboard/fatura-vencida');
+    }
+
+    /**
+     * Downgrade (plano mais barato que o atual): nao cobra nada agora -
+     * a igreja ja pagou pelo ciclo atual, entao mantem o plano/modulos
+     * de hoje ate o ciclo vencer (proximo_vencimento). So entao a troca
+     * e aplicada de fato (ver cron/aplicar_trocas_agendadas.php).
+     */
+    private function agendarDowngrade(Tenant $tenant, string $novoPlano, \DateTimeImmutable $vencimentoCiclo): never
+    {
+        Tenant::agendarTrocaPlano($tenant->id, $novoPlano);
+
+        Session::flash('config_success', sprintf(
+            'Seu plano vai mudar de %s para %s a partir de %s (fim do ciclo ja pago) - ate la, os modulos do plano %s continuam liberados normalmente.',
+            Plano::label($tenant->plano),
+            Plano::label($novoPlano),
+            $vencimentoCiclo->format('d/m/Y'),
+            Plano::label($tenant->plano)
+        ));
+        $this->redirect('/dashboard/configuracoes');
+    }
+
+    /**
+     * Upgrade (plano mais caro que o atual): em vez de cobrar o valor
+     * cheio de novo (o que faria a igreja pagar o mes que ja tinha
+     * pago), gera uma cobranca avulsa via Pix so da diferenca
+     * proporcional aos dias que faltam pro ciclo atual vencer. Sempre
+     * via Pix (mesmo pra quem assina por cartao) porque o Checkout Pro
+     * nao tem como cobrar um valor avulso numa assinatura recorrente ja
+     * ativa sem cancela-la. O plano so muda de fato quando o webhook
+     * confirma o pagamento (ver processarFaturaPix()), que tambem
+     * atualiza o valor da assinatura de cartao pro proximo ciclo, se
+     * for o caso.
+     */
+    private function iniciarUpgradeProporcional(
+        MercadoPagoClient $mp,
+        Tenant $tenant,
+        string $novoPlano,
+        float $valorProporcional,
+        string $payerEmail,
+    ): never {
+        Tenant::cancelarTrocaAgendada($tenant->id);
+
+        $vencimento = new \DateTimeImmutable('+3 days');
+        $referenciaExterna = 'kadosys-upgrade-' . $tenant->id . '-' . bin2hex(random_bytes(4));
+
+        try {
+            $resposta = $mp->criarPagamentoPix([
+                'description' => 'KADOSYS Igrejas - Upgrade proporcional para ' . Plano::label($novoPlano),
+                'amount' => $valorProporcional,
+                'payerEmail' => $payerEmail,
+                'externalReference' => $referenciaExterna,
+                'expiraEm' => $vencimento,
+            ]);
+        } catch (\RuntimeException $exception) {
+            Assinatura::registrarEvento(null, 'erro_criar_pagamento_pix_upgrade', $exception->getMessage());
+            Session::flash('config_errors', ['Nao foi possivel gerar a cobranca do upgrade agora. Tente novamente em instantes.']);
+            $this->redirect('/dashboard/configuracoes');
+        }
+
+        $qrCode = $resposta['body']['point_of_interaction']['transaction_data']['qr_code'] ?? null;
+        $qrCodeBase64 = $resposta['body']['point_of_interaction']['transaction_data']['qr_code_base64'] ?? null;
+
+        if ($resposta['status'] >= 300 || !isset($resposta['body']['id']) || $qrCode === null) {
+            Assinatura::registrarEvento(null, 'erro_criar_pagamento_pix_upgrade', json_encode($resposta, JSON_UNESCAPED_UNICODE));
+            Session::flash('config_errors', ['O Mercado Pago recusou a cobranca do upgrade. Tente novamente.']);
+            $this->redirect('/dashboard/configuracoes');
+        }
+
+        FaturaPix::criar(
+            $tenant->id,
+            $novoPlano,
+            $valorProporcional,
+            (string) $resposta['body']['id'],
+            $qrCode,
+            (string) $qrCodeBase64,
+            $vencimento,
+            FaturaPix::TIPO_UPGRADE_PROPORCIONAL,
+        );
+
+        $this->redirect('/dashboard/configuracoes/upgrade-pendente');
     }
 
     /**
@@ -178,6 +297,50 @@ final class AssinaturaController extends Controller
     {
         Session::flash('config_success', 'Pagamento em processamento no Mercado Pago. Assim que for aprovado, o plano e liberado automaticamente aqui em Configuracoes.');
         $this->redirect('/dashboard/configuracoes');
+    }
+
+    /**
+     * Tela de QR code da cobranca avulsa de upgrade proporcional (ver
+     * iniciarUpgradeProporcional()) - diferente de /dashboard/fatura-vencida,
+     * deixa claro que o acesso NAO esta bloqueado (a igreja ja pagou o
+     * ciclo atual, isso e so um complemento pra liberar o plano maior
+     * antes do fim do ciclo).
+     */
+    public function upgradePendente(): void
+    {
+        $tenant = TenantResolver::atual();
+
+        if ($tenant === null) {
+            $this->redirect('/dashboard');
+        }
+
+        $fatura = FaturaPix::ultimaDoTenant($tenant->id);
+
+        if ($fatura === null || $fatura->tipo !== FaturaPix::TIPO_UPGRADE_PROPORCIONAL || $fatura->status !== 'pendente') {
+            $this->redirect('/dashboard/configuracoes');
+        }
+
+        echo $this->view('dashboard.configuracoes.upgrade-pendente', [
+            'pageTitle' => 'Upgrade pendente - KADOSYS Igrejas',
+            'activeMenu' => 'configuracoes',
+            'breadcrumb' => ['Dashboard', 'Configuracoes', 'Upgrade pendente'],
+            'user' => (new Auth($this->config))->user(),
+            'modules' => DashboardController::modules(),
+            'fatura' => $fatura,
+        ], 'dashboard');
+    }
+
+    /**
+     * Endpoint de polling (reusa o mesmo JS de /dashboard/fatura-vencida).
+     */
+    public function upgradePendenteStatus(): void
+    {
+        $tenant = TenantResolver::atual();
+        $fatura = $tenant !== null ? FaturaPix::ultimaDoTenant($tenant->id) : null;
+
+        $this->jsonResponse([
+            'status' => $fatura?->status ?? 'desconhecido',
+        ]);
     }
 
     public function webhook(): void
@@ -355,7 +518,7 @@ final class AssinaturaController extends Controller
         $fatura = FaturaPix::buscarPorPaymentId($paymentId);
 
         if ($fatura !== null) {
-            $this->processarFaturaPix($fatura, $statusInterno, $corpoBruto);
+            $this->processarFaturaPix($mp, $fatura, $statusInterno, $corpoBruto);
             http_response_code(200);
 
             return;
@@ -370,7 +533,7 @@ final class AssinaturaController extends Controller
      * assim que o Pix cai - o que libera o acesso da igreja de volta (ver
      * tela de Configuracoes) e o proximo ciclo fica por conta do cron.
      */
-    private function processarFaturaPix(FaturaPix $fatura, string $statusInterno, string $corpoBruto): void
+    private function processarFaturaPix(MercadoPagoClient $mp, FaturaPix $fatura, string $statusInterno, string $corpoBruto): void
     {
         Assinatura::registrarEvento(null, 'webhook_fatura_pix_' . $statusInterno, $corpoBruto);
 
@@ -388,6 +551,28 @@ final class AssinaturaController extends Controller
         // de verdade pro PlanoMiddleware liberar os modulos).
         Tenant::atualizarPlano($fatura->tenantId, $fatura->plano);
         $this->atualizarPlanoNoBancoDoTenant($fatura->tenantId, $fatura->plano);
+
+        if ($fatura->tipo === FaturaPix::TIPO_RENOVACAO) {
+            // Renovacao normal: esta fatura cobre ate o seu proprio
+            // vencimento - vira o novo fim de ciclo.
+            Tenant::atualizarProximoVencimento($fatura->tenantId, new \DateTimeImmutable($fatura->vencimento));
+        } else {
+            // Upgrade proporcional: so cobriu a diferenca dos dias que
+            // faltavam no ciclo atual - o fim do ciclo (proximo_vencimento)
+            // nao muda. Se a igreja normalmente paga por cartao, o valor
+            // da assinatura recorrente precisa subir pro valor cheio do
+            // novo plano a partir do proximo ciclo (o Pix so cobriu o
+            // upgrade deste mes).
+            $assinaturaCartao = AssinaturaTenant::ativaDoTenant($fatura->tenantId);
+
+            if ($assinaturaCartao !== null && isset(Plano::VALOR_MENSAL[$fatura->plano])) {
+                try {
+                    $mp->atualizarAssinatura($assinaturaCartao->mpPreapprovalId, Plano::VALOR_MENSAL[$fatura->plano]);
+                } catch (\RuntimeException $exception) {
+                    Assinatura::registrarEvento(null, 'erro_atualizar_valor_assinatura_' . $fatura->tenantId, $exception->getMessage());
+                }
+            }
+        }
     }
 
     /**
@@ -409,6 +594,13 @@ final class AssinaturaController extends Controller
 
         Tenant::atualizarPlano($assinaturaTenant->tenantId, $assinaturaTenant->plano);
         $this->atualizarPlanoNoBancoDoTenant($assinaturaTenant->tenantId, $assinaturaTenant->plano);
+
+        // O Mercado Pago nao expoe um jeito simples de sabermos a data
+        // exata do proximo debito recorrente por aqui - usa +30 dias
+        // como aproximacao do ciclo mensal, so pra ter uma data de
+        // referencia pra calcular upgrade proporcional/aplicar downgrade
+        // agendado (ver iniciar() e cron/aplicar_trocas_agendadas.php).
+        Tenant::atualizarProximoVencimento($assinaturaTenant->tenantId, new \DateTimeImmutable('+30 days'));
     }
 
     /**

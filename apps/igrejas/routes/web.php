@@ -182,6 +182,12 @@ $router->post('/dashboard/configuracoes/cadastro-membros', [ConfiguracaoControll
 $router->post('/dashboard/configuracoes/assinatura/{plano}', [AssinaturaController::class, 'iniciar'], [AuthMiddleware::class]);
 $router->get('/dashboard/assinatura/retorno', [AssinaturaController::class, 'retorno'], [AuthMiddleware::class]);
 
+// Tela de QR code de um upgrade proporcional pendente (ver
+// AssinaturaController::iniciarUpgradeProporcional) - diferente da
+// fatura-vencida abaixo, o acesso NAO fica bloqueado enquanto isso.
+$router->get('/dashboard/configuracoes/upgrade-pendente', [AssinaturaController::class, 'upgradePendente'], [AuthMiddleware::class]);
+$router->get('/dashboard/configuracoes/upgrade-pendente/status', [AssinaturaController::class, 'upgradePendenteStatus'], [AuthMiddleware::class]);
+
 // Tela exibida quando um modulo fora do plano contratado e acessado (ver
 // PlanoMiddleware). Tambem sem PlanoMiddleware, para nao criar um loop de
 // redirecionamento.
