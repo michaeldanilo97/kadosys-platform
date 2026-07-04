@@ -17,6 +17,26 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 36 - 2026-07-06
+
+**Correcao do Ajuste 35: plano/pagamento volta pro cadastro do dominio principal**
+
+- O Ajuste 35 removeu plano e forma de pagamento da tela `/cadastro`
+  do dominio principal (`kadosys.com.br/apps/igrejas`) por engano -
+  essa e a tela onde uma igreja **nova** contrata a KADOSYS de
+  verdade, entao ela precisa continuar pedindo plano e forma de
+  pagamento (cartao, Pix ou teste gratis), exatamente como antes.
+- O que continua certo do Ajuste 35 (nao foi mexido): dentro do
+  subdominio de uma igreja **ja existente**, a mesma URL `/cadastro`
+  continua sem nenhuma opcao de plano/pagamento - la e so o
+  auto-cadastro de membros (com CEP), porque a igreja ja contratou o
+  plano dela com a gente e escolher/trocar plano so faz sentido de
+  dentro do painel (Configuracoes), nao numa tela publica.
+- Voltaram: os campos de plano e forma de pagamento no formulario de
+  cadastro do dominio principal, as telas de Pix e de retorno do
+  Checkout Pro, e os links "Comecar agora"/"Testar gratis" da landing
+  page com o plano/metodo pre-selecionado.
+
 ## Ajuste 35 - 2026-07-06
 
 **Cadastro publico simplificado (sem plano/pagamento) + auto-cadastro de membros + novidades no Dashboard**

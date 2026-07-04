@@ -290,7 +290,7 @@ $modulosComparacao = array_filter(
                 <h3>Teste gratis por 7 dias</h3>
                 <p>Experimente o sistema completo, sem cartao de credito e sem compromisso. Depois escolha o plano que combina com a sua igreja.</p>
             </div>
-            <a href="<?= $basePath ?>/cadastro" class="btn-k btn-k-grad">
+            <a href="<?= $basePath ?>/cadastro?metodo_pagamento=trial" class="btn-k btn-k-grad">
                 Testar gratis agora <i class="bi bi-arrow-right"></i>
             </a>
         </div>
@@ -309,7 +309,7 @@ $modulosComparacao = array_filter(
                     <li class="plan-feature"><i class="bi bi-check2"></i> Backup automatico</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Suporte por e-mail</li>
                 </ul>
-                <a href="<?= $basePath ?>/cadastro" class="btn-k btn-k-outline">Comecar agora</a>
+                <a href="<?= $basePath ?>/cadastro?plano=essencial" class="btn-k btn-k-outline">Comecar agora</a>
             </div>
 
             <div class="plan-card glass-card featured reveal">
@@ -324,7 +324,7 @@ $modulosComparacao = array_filter(
                     <li class="plan-feature"><i class="bi bi-check2"></i> Usuarios administradores ilimitados</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Suporte prioritario</li>
                 </ul>
-                <a href="<?= $basePath ?>/cadastro" class="btn-k btn-k-grad">Comecar agora</a>
+                <a href="<?= $basePath ?>/cadastro?plano=premium" class="btn-k btn-k-grad">Comecar agora</a>
             </div>
 
             <div class="plan-card glass-card reveal">
@@ -338,7 +338,7 @@ $modulosComparacao = array_filter(
                     <li class="plan-feature"><i class="bi bi-check2"></i> Playbacks: mudar o tom da musica em tempo real</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Atendimento dedicado</li>
                 </ul>
-                <a href="<?= $basePath ?>/cadastro" class="btn-k btn-k-outline">Comecar agora</a>
+                <a href="<?= $basePath ?>/cadastro?plano=enterprise" class="btn-k btn-k-outline">Comecar agora</a>
             </div>
         </div>
 

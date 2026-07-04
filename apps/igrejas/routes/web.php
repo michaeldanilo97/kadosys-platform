@@ -39,12 +39,17 @@ use Igrejas\Core\Middleware\PlataformaAuthMiddleware;
 // Landing page publica.
 $router->get('/', [LandingController::class, 'index']);
 
-// Cadastro publico autoatendido de uma igreja nova (igreja +
-// administrador, sem plano/pagamento - ver CadastroController). O
-// provisionamento (criar banco, subdominio) acontece na hora, de forma
-// sincrona - sem pagamento nenhum pra esperar.
+// Cadastro publico autoatendido (igreja + administrador + plano),
+// redireciona pro checkout do Mercado Pago. O provisionamento em si
+// (criar banco, subdominio) acontece via webhook, nao aqui (exceto no
+// teste gratis, que e sincrono - ver CadastroController::criarContaTrial()).
+// Dentro do subdominio de uma igreja ja existente, a mesma URL delega
+// pro auto-cadastro publico de membros (ver MembroPublicoController).
 $router->get('/cadastro', [CadastroController::class, 'form'], [GuestMiddleware::class]);
 $router->post('/cadastro', [CadastroController::class, 'enviar'], [GuestMiddleware::class]);
+$router->get('/cadastro/pix/{id}', [CadastroController::class, 'pix']);
+$router->get('/cadastro/pix/{id}/status', [CadastroController::class, 'pixStatus']);
+$router->get('/cadastro/retorno', [CadastroController::class, 'retorno']);
 $router->get('/cadastro/pronto/{id}', [CadastroController::class, 'pronto']);
 $router->get('/cadastro/pronto/{id}/status', [CadastroController::class, 'prontoStatus']);
 

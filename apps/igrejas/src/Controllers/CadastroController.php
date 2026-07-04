@@ -8,6 +8,7 @@ use Igrejas\Core\Controller;
 use Igrejas\Core\CpanelUapiClient;
 use Igrejas\Core\Csrf;
 use Igrejas\Core\Documento;
+use Igrejas\Core\MercadoPagoClient;
 use Igrejas\Core\Provisionador;
 use Igrejas\Core\Session;
 use Igrejas\Core\TenantResolver;
@@ -16,21 +17,25 @@ use Igrejas\Models\Provisionamento;
 use Igrejas\Models\Tenant;
 
 /**
- * Cadastro publico autoatendido de uma igreja nova: so os dados da
- * igreja + administrador, sem escolha de plano/pagamento aqui - toda
- * igreja nova comeca com 7 dias de teste gratis (acesso completo,
- * ver Plano::disponivel()) e so escolhe/paga um plano depois, de
- * dentro do proprio painel (Configuracoes, ver AssinaturaController) -
- * pagamento nunca acontece nesta tela publica, pra nao parecer que a
- * KADOSYS esta revendendo planos na propria tela de criacao da conta.
+ * Cadastro publico autoatendido: igreja + administrador + plano, com
+ * assinatura via Mercado Pago. Diferente do resto do sistema (pensado
+ * pra uma igreja ja existente e logada), aqui ainda nao existe conta
+ * nenhuma - o acesso so e criado depois que o pagamento e confirmado
+ * (ver PlanoMiddleware/AssinaturaController para o fluxo de quem ja e
+ * cliente, e o webhook do Mercado Pago para o provisionamento em si).
  *
  * A mesma URL (/cadastro) serve dois propositos bem diferentes,
  * dependendo do dominio: no dominio principal (nenhum tenant
- * resolvido) e esta tela, de criar uma igreja nova. Ja dentro do
- * subdominio de uma igreja ja existente (TenantResolver::atual() != null)
- * uma igreja nova NAO faz sentido - delega pro auto-cadastro publico de
- * membros (ver MembroPublicoController), a mesma tela acessada pelo
- * link "Cadastre-se" na tela de login daquela igreja.
+ * resolvido, ex.: kadosys.com.br) e esta tela, de criar uma igreja
+ * nova - com plano e forma de pagamento, exatamente como uma pessoa
+ * contratando o sistema pela primeira vez. Ja dentro do subdominio de
+ * uma igreja ja existente (TenantResolver::atual() != null), plano e
+ * pagamento nao fazem sentido nenhum aqui - essa mesma URL delega pro
+ * auto-cadastro publico de MEMBROS da igreja (ver
+ * MembroPublicoController), a mesma tela acessada pelo link
+ * "Cadastre-se" na tela de login daquela igreja. Escolher/pagar um
+ * plano pra uma igreja que ja existe e feito de dentro do painel
+ * (Configuracoes/Assinatura), nao aqui.
  */
 final class CadastroController extends Controller
 {
@@ -44,11 +49,34 @@ final class CadastroController extends Controller
             return;
         }
 
+        $old = Session::flash('cadastro_old') ?? [];
+
+        // Permite pre-selecionar o plano vindo dos botoes "Comecar agora"
+        // de cada card de plano na landing page (?plano=essencial).
+        if (!isset($old['plano'])) {
+            $planoQuery = (string) $this->request->input('plano', '');
+
+            if (isset(Plano::VALOR_MENSAL[$planoQuery])) {
+                $old['plano'] = $planoQuery;
+            }
+        }
+
+        // Permite pre-selecionar o teste gratis vindo do botao "Teste
+        // gratis" do topo da landing page (?metodo_pagamento=trial).
+        if (!isset($old['metodo_pagamento'])) {
+            $metodoQuery = (string) $this->request->input('metodo_pagamento', '');
+
+            if (in_array($metodoQuery, ['cartao', 'pix', 'trial'], true)) {
+                $old['metodo_pagamento'] = $metodoQuery;
+            }
+        }
+
         echo $this->view('cadastro.form', [
             'pageTitle' => 'Criar conta - KADOSYS Igrejas',
             'csrf' => Csrf::field(),
             'errors' => Session::flash('cadastro_errors') ?? [],
-            'old' => Session::flash('cadastro_old') ?? [],
+            'old' => $old,
+            'planos' => Plano::VALOR_MENSAL,
         ], 'auth');
     }
 
@@ -71,9 +99,15 @@ final class CadastroController extends Controller
         $adminEmail = trim((string) $this->request->input('admin_email', ''));
         $senha = (string) $this->request->input('senha', '');
         $senhaConfirmacao = (string) $this->request->input('senha_confirmacao', '');
+        $plano = (string) $this->request->input('plano', '');
+        $metodoPagamento = (string) $this->request->input('metodo_pagamento', 'cartao');
         $documentoTipo = (string) $this->request->input('documento_tipo', 'cpf');
         $documentoInformado = trim((string) $this->request->input('documento', ''));
         $razaoSocial = trim((string) $this->request->input('razao_social', ''));
+
+        if (!in_array($metodoPagamento, ['cartao', 'pix', 'trial'], true)) {
+            $metodoPagamento = 'cartao';
+        }
 
         if (!in_array($documentoTipo, ['cpf', 'cnpj'], true)) {
             $documentoTipo = 'cpf';
@@ -86,6 +120,8 @@ final class CadastroController extends Controller
             'slug' => $slugInformado,
             'admin_nome' => $adminNome,
             'admin_email' => $adminEmail,
+            'plano' => $plano,
+            'metodo_pagamento' => $metodoPagamento,
             'documento_tipo' => $documentoTipo,
             'documento' => $documentoInformado,
             'razao_social' => $razaoSocial,
@@ -99,13 +135,14 @@ final class CadastroController extends Controller
             $adminEmail,
             $senha,
             $senhaConfirmacao,
+            $plano,
             $documentoTipo,
             $documento,
             $razaoSocial,
         );
 
-        if ($documento !== '' && Tenant::documentoJaUsouTrial($documento)) {
-            $errors[] = 'Esse CPF/CNPJ ja usou o teste gratis antes. Fale com a gente pra continuar.';
+        if ($metodoPagamento === 'trial' && $documento !== '' && Tenant::documentoJaUsouTrial($documento)) {
+            $errors[] = 'Esse CPF/CNPJ ja usou o teste gratis antes. Escolha um plano pago pra continuar.';
         }
 
         if ($errors !== []) {
@@ -116,20 +153,141 @@ final class CadastroController extends Controller
 
         $razaoSocialFinal = $documentoTipo === 'cnpj' ? $razaoSocial : null;
 
-        $this->criarContaTrial($nomeIgreja, $slug, $adminNome, $adminEmail, $documentoTipo, $documento, $razaoSocialFinal, $senha, Plano::ESSENCIAL);
+        if ($metodoPagamento === 'trial') {
+            $this->criarContaTrial($nomeIgreja, $slug, $adminNome, $adminEmail, $documentoTipo, $documento, $razaoSocialFinal, $senha, $plano);
+        }
+
+        $mp = new MercadoPagoClient();
+
+        if (!$mp->configurado()) {
+            Session::flash('cadastro_errors', ['Cadastro com pagamento online indisponivel no momento. Tente novamente mais tarde.']);
+            Session::flash('cadastro_old', $old);
+            $this->redirect('/cadastro');
+        }
+
+        $mpConfig = require dirname(__DIR__, 2) . '/config/mercadopago.php';
+
+        if ($mpConfig['app_url'] === '') {
+            Session::flash('cadastro_errors', ['Cadastro temporariamente indisponivel. Tente novamente mais tarde.']);
+            Session::flash('cadastro_old', $old);
+            $this->redirect('/cadastro');
+        }
+
+        $provisionamentoId = Provisionamento::criar(
+            $nomeIgreja,
+            $slug,
+            $adminNome,
+            $adminEmail,
+            $documentoTipo,
+            $documento,
+            $razaoSocialFinal,
+            password_hash($senha, PASSWORD_BCRYPT),
+            $plano,
+            $metodoPagamento,
+        );
+
+        $referenciaExterna = 'kadosys-cadastro-' . $provisionamentoId . '-' . bin2hex(random_bytes(4));
+
+        if ($metodoPagamento === 'pix') {
+            $this->criarCobrancaPix($mp, $provisionamentoId, $plano, $adminEmail, $referenciaExterna, $old);
+        }
+
+        try {
+            $resposta = $mp->criarAssinatura([
+                // O Mercado Pago limita "reason" a 40 caracteres - nao da
+                // pra incluir o nome da igreja aqui com seguranca (nomes
+                // longos estourariam o limite e a API rejeitaria a
+                // criacao da assinatura). O nome da igreja fica registrado
+                // em plataforma_provisionamentos mesmo assim.
+                'reason' => 'KADOSYS Igrejas - Plano ' . Plano::label($plano),
+                'amount' => Plano::VALOR_MENSAL[$plano],
+                'payerEmail' => $adminEmail,
+                'backUrl' => $mpConfig['app_url'] . $this->url('/cadastro/retorno'),
+                'externalReference' => $referenciaExterna,
+            ]);
+        } catch (\RuntimeException $exception) {
+            Provisionamento::atualizarStatus($provisionamentoId, 'erro', $exception->getMessage());
+            Session::flash('cadastro_errors', ['Nao foi possivel iniciar o pagamento agora. Tente novamente em instantes.']);
+            Session::flash('cadastro_old', $old);
+            $this->redirect('/cadastro');
+        }
+
+        if ($resposta['status'] >= 300 || !isset($resposta['body']['init_point'], $resposta['body']['id'])) {
+            Provisionamento::atualizarStatus($provisionamentoId, 'erro', json_encode($resposta, JSON_UNESCAPED_UNICODE));
+            Session::flash('cadastro_errors', ['O Mercado Pago recusou a assinatura. Tente novamente.']);
+            Session::flash('cadastro_old', $old);
+            $this->redirect('/cadastro');
+        }
+
+        Provisionamento::definirPreapprovalId($provisionamentoId, (string) $resposta['body']['id']);
+
+        header('Location: ' . $resposta['body']['init_point']);
+        exit;
     }
 
     /**
-     * Teste gratis de 7 dias, unico caminho possivel nesta tela (ver
-     * classe): sem Mercado Pago nenhum envolvido - cria o
+     * Cria a cobranca Pix avulsa (chamada so quando metodo_pagamento =
+     * pix) e redireciona pra tela com o QR code - nunca retorna (redireciona
+     * ou aborta a execucao), diferente do fluxo por cartao que continua
+     * na mesma funcao enviar().
+     */
+    private function criarCobrancaPix(
+        MercadoPagoClient $mp,
+        int $provisionamentoId,
+        string $plano,
+        string $adminEmail,
+        string $referenciaExterna,
+        array $old,
+    ): void {
+        $vencimento = new \DateTimeImmutable('+3 days');
+
+        try {
+            $resposta = $mp->criarPagamentoPix([
+                'description' => 'KADOSYS Igrejas - Plano ' . Plano::label($plano),
+                'amount' => Plano::VALOR_MENSAL[$plano],
+                'payerEmail' => $adminEmail,
+                'externalReference' => $referenciaExterna,
+                'expiraEm' => $vencimento,
+            ]);
+        } catch (\RuntimeException $exception) {
+            Provisionamento::atualizarStatus($provisionamentoId, 'erro', $exception->getMessage());
+            Session::flash('cadastro_errors', ['Nao foi possivel gerar a cobranca Pix agora. Tente novamente em instantes.']);
+            Session::flash('cadastro_old', $old);
+            $this->redirect('/cadastro');
+        }
+
+        $qrCode = $resposta['body']['point_of_interaction']['transaction_data']['qr_code'] ?? null;
+        $qrCodeBase64 = $resposta['body']['point_of_interaction']['transaction_data']['qr_code_base64'] ?? null;
+
+        if ($resposta['status'] >= 300 || !isset($resposta['body']['id']) || $qrCode === null) {
+            Provisionamento::atualizarStatus($provisionamentoId, 'erro', json_encode($resposta, JSON_UNESCAPED_UNICODE));
+            Session::flash('cadastro_errors', ['O Mercado Pago recusou a cobranca Pix. Tente novamente.']);
+            Session::flash('cadastro_old', $old);
+            $this->redirect('/cadastro');
+        }
+
+        Provisionamento::definirPagamentoPix(
+            $provisionamentoId,
+            (string) $resposta['body']['id'],
+            $qrCode,
+            (string) $qrCodeBase64,
+            $vencimento,
+        );
+
+        $this->redirect('/cadastro/pix/' . $provisionamentoId);
+    }
+
+    /**
+     * Teste gratis de 7 dias: sem Mercado Pago nenhum envolvido - cria o
      * provisionamento e ja dispara o provisionamento de verdade (banco,
-     * subdominio, etc.) na hora, de forma sincrona, sem pagamento nenhum
-     * pra esperar. Como e sincrono, ja sabemos o resultado final antes
-     * de responder - mas o subdominio recem-criado no cPanel pode levar
-     * um tempo pro DNS propagar (confirmado num teste real: "pagina nao
-     * existe" mesmo com o subdominio ja existindo no painel), entao
-     * manda pra tela de espera (pronto()) em vez de redirecionar direto
-     * pra ele.
+     * subdominio, etc.) na hora, de forma sincrona (diferente do fluxo
+     * por cartao/Pix, que so provisiona depois do webhook confirmar o
+     * pagamento - aqui nao ha pagamento nenhum pra esperar). Como e
+     * sincrono, ja sabemos o resultado final antes de responder - mas o
+     * subdominio recem-criado no cPanel pode levar um tempo pro DNS
+     * propagar (confirmado num teste real: "pagina nao existe" mesmo
+     * com o subdominio ja existindo no painel), entao manda pra tela de
+     * espera (pronto()) em vez de redirecionar direto pra ele.
      */
     private function criarContaTrial(
         string $nomeIgreja,
@@ -266,6 +424,55 @@ final class CadastroController extends Controller
         return $status === 200 && $body !== null && str_contains($body, 'name="_csrf_token"');
     }
 
+    /**
+     * Tela com o QR code / copia-e-cola da cobranca Pix do cadastro. So
+     * mostra dados nao sensiveis (nada de senha/hash) - o id na URL nao
+     * precisa de autenticacao porque o unico jeito de "adivinhar" o id de
+     * outra pessoa e forca bruta num numero sequencial, e o pior que
+     * exporia e o nome da igreja + QR code de uma cobranca que so aquele
+     * CPF/conta consegue pagar mesmo.
+     */
+    public function pix(string $id): void
+    {
+        $provisionamento = Provisionamento::buscarPorId((int) $id);
+
+        if ($provisionamento === null || $provisionamento->metodoPagamento !== 'pix' || $provisionamento->pixQrCode === null) {
+            $this->redirect('/cadastro');
+        }
+
+        echo $this->view('cadastro.pix', [
+            'pageTitle' => 'Pagar com Pix - KADOSYS Igrejas',
+            'provisionamento' => $provisionamento,
+        ], 'auth');
+    }
+
+    /**
+     * Endpoint de polling (JS da tela de Pix) - so devolve o status,
+     * nada sensivel.
+     */
+    public function pixStatus(string $id): void
+    {
+        $provisionamento = Provisionamento::buscarPorId((int) $id);
+
+        $this->jsonResponse([
+            'status' => $provisionamento?->status ?? 'desconhecido',
+        ]);
+    }
+
+    /**
+     * Pagina de retorno do Checkout Pro. O provisionamento em si (criar
+     * banco, subdominio, etc.) e disparado pelo webhook do Mercado Pago
+     * de forma assincrona - pode nao ter terminado (ou nem comecado)
+     * ainda quando o navegador volta pra ca, entao esta tela nunca
+     * promete "pronto", so confirma que o pedido foi recebido.
+     */
+    public function retorno(): void
+    {
+        echo $this->view('cadastro.retorno', [
+            'pageTitle' => 'Cadastro em processamento - KADOSYS Igrejas',
+        ], 'auth');
+    }
+
     /** @return array<int, string> */
     private function validar(
         string $nomeIgreja,
@@ -274,6 +481,7 @@ final class CadastroController extends Controller
         string $adminEmail,
         string $senha,
         string $senhaConfirmacao,
+        string $plano,
         string $documentoTipo,
         string $documento,
         string $razaoSocial,
@@ -302,6 +510,10 @@ final class CadastroController extends Controller
             $errors[] = 'A senha precisa ter pelo menos ' . self::SENHA_MINIMA . ' caracteres.';
         } elseif ($senha !== $senhaConfirmacao) {
             $errors[] = 'A confirmacao de senha nao confere.';
+        }
+
+        if (!isset(Plano::VALOR_MENSAL[$plano])) {
+            $errors[] = 'Escolha um plano valido.';
         }
 
         if (!Documento::validar($documentoTipo, $documento)) {

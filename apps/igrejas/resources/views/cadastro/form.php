@@ -1,19 +1,21 @@
 <?php
 
 use Igrejas\Core\View;
+use Igrejas\Models\Plano;
 
 /**
  * @var array $config
  * @var string $csrf
  * @var array $errors
  * @var array $old
+ * @var array<string, float> $planos
  */
 $basePath = $config['base_path'] ?? '';
 ?>
 <div class="auth-form-card auth-form-card-wide">
     <div class="eyebrow">Comece agora</div>
     <h1>Criar minha conta</h1>
-    <p class="subtitle">Cadastre sua igreja e comece a usar o KADOSYS hoje mesmo, com 7 dias de teste gratis - sem cartao de credito. Escolha um plano depois, direto do seu painel.</p>
+    <p class="subtitle">Cadastre sua igreja, escolha um plano e comece a usar o KADOSYS hoje mesmo.</p>
 
     <?php if ($errors !== []): ?>
         <div class="auth-alert error">
@@ -179,12 +181,63 @@ $basePath = $config['base_path'] ?? '';
             </div>
         </div>
 
-        <div class="auth-field-hint" style="margin: -0.4rem 0 0.2rem;">
-            <i class="bi bi-gift"></i> Sua conta comeca com 7 dias de teste gratis, sem cartao de credito.
-            Escolha e pague um plano quando quiser, direto do seu painel.
+        <div class="auth-field">
+            <label>Escolha o plano</label>
+            <div class="plano-escolha">
+                <?php foreach ($planos as $valor => $preco): ?>
+                    <label class="plano-escolha-card" data-plano-card>
+                        <input
+                            type="radio"
+                            name="plano"
+                            value="<?= htmlspecialchars($valor, ENT_QUOTES, 'UTF-8') ?>"
+                            <?= ($old['plano'] ?? Plano::ESSENCIAL) === $valor ? 'checked' : '' ?>
+                            required
+                        >
+                        <span class="nome"><?= htmlspecialchars(Plano::label($valor), ENT_QUOTES, 'UTF-8') ?></span>
+                        <span class="preco">R$ <?= number_format($preco, 2, ',', '.') ?><small>/mes</small></span>
+                    </label>
+                <?php endforeach; ?>
+            </div>
+            <span class="auth-field-hint">Sua igreja e uma rede com necessidades especiais? <a href="mailto:contato@kadosys.com.br">Fale com a gente</a>.</span>
         </div>
 
-        <button type="submit" class="btn-k btn-k-grad">Criar minha conta e testar gratis <i class="bi bi-arrow-right"></i></button>
+        <div class="auth-field">
+            <label>Forma de pagamento</label>
+            <div class="plano-escolha">
+                <label class="plano-escolha-card" data-plano-card>
+                    <input
+                        type="radio"
+                        name="metodo_pagamento"
+                        value="cartao"
+                        <?= ($old['metodo_pagamento'] ?? 'cartao') === 'cartao' ? 'checked' : '' ?>
+                    >
+                    <span class="nome"><i class="bi bi-credit-card"></i> Cartao</span>
+                    <span class="desc">Cobranca automatica todo mes</span>
+                </label>
+                <label class="plano-escolha-card" data-plano-card>
+                    <input
+                        type="radio"
+                        name="metodo_pagamento"
+                        value="pix"
+                        <?= ($old['metodo_pagamento'] ?? '') === 'pix' ? 'checked' : '' ?>
+                    >
+                    <span class="nome"><i class="bi bi-qr-code"></i> Pix</span>
+                    <span class="desc">Fatura nova todo mes, paga na hora</span>
+                </label>
+                <label class="plano-escolha-card" data-plano-card>
+                    <input
+                        type="radio"
+                        name="metodo_pagamento"
+                        value="trial"
+                        <?= ($old['metodo_pagamento'] ?? '') === 'trial' ? 'checked' : '' ?>
+                    >
+                    <span class="nome"><i class="bi bi-gift"></i> Teste gratis</span>
+                    <span class="desc">7 dias gratis, sem cartao</span>
+                </label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-k btn-k-grad" data-cadastro-submit>Criar conta e ir para o pagamento <i class="bi bi-arrow-right"></i></button>
     </form>
 
     <a href="<?= $basePath ?>/login" class="auth-back-link">
