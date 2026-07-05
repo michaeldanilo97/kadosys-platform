@@ -19,6 +19,7 @@ use Igrejas\Controllers\MinisterioController;
 use Igrejas\Controllers\PatrimonioController;
 use Igrejas\Controllers\PermissaoController;
 use Igrejas\Controllers\PlataformaController;
+use Igrejas\Controllers\PlaybackController;
 use Igrejas\Controllers\PreletorController;
 use Igrejas\Controllers\ProjecaoController;
 use Igrejas\Controllers\ProjecaoEstadoController;
@@ -107,6 +108,17 @@ $router->post('/dashboard/cultos/{id}', [CultoController::class, 'update'], [Aut
 $router->post('/dashboard/cultos/{id}/excluir', [CultoController::class, 'destroy'], [AuthMiddleware::class]);
 $router->post('/dashboard/cultos/{id}/presencas', [CultoController::class, 'addPresenca'], [AuthMiddleware::class]);
 $router->post('/dashboard/cultos/{id}/presencas/{membroId}/remover', [CultoController::class, 'removePresenca'], [AuthMiddleware::class]);
+
+// Modulo Playbacks. Mesmo motivo: precisa vir antes do catch-all. Sem
+// PlanoMiddleware - Playbacks (biblioteca de audios) esta liberado em
+// todos os planos; so o controle de tom dentro do player e restrito ao
+// Plus (ver Igrejas\Models\Plano::MODULO_MINIMO, slug "playbacks_tom").
+$router->get('/dashboard/playbacks', [PlaybackController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/playbacks/novo', [PlaybackController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/playbacks', [PlaybackController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/playbacks/{id}/editar', [PlaybackController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/dashboard/playbacks/{id}', [PlaybackController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/playbacks/{id}/excluir', [PlaybackController::class, 'destroy'], [AuthMiddleware::class]);
 
 // Modulo Agenda. Mesmo motivo: precisa vir antes do catch-all. Sem
 // PlanoMiddleware - Agenda esta liberada em todos os planos, mesmo
