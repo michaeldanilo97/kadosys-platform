@@ -9,16 +9,12 @@ use Igrejas\Core\Controller;
 use Igrejas\Core\Csrf;
 use Igrejas\Core\Session;
 use Igrejas\Core\TenantResolver;
-use Igrejas\Models\ConfiguracaoIgreja;
-use Igrejas\Models\Plano;
 use Igrejas\Models\Playback;
 
 /**
  * Controller do modulo Playbacks: biblioteca de audios (backing tracks) do
  * ministerio de louvor - upload, listagem com busca/paginacao, edicao de
- * metadados e remocao. O controle de tom (subir/abaixar semitons) e feito
- * inteiramente no navegador (ver assets/js/playback-player.js) - aqui so
- * cuida do arquivo em si.
+ * metadados e remocao.
  */
 final class PlaybackController extends Controller
 {
@@ -64,7 +60,6 @@ final class PlaybackController extends Controller
             'page' => $result['page'],
             'lastPage' => $result['lastPage'],
             'search' => $search,
-            'tomDisponivel' => $this->tomDisponivel(),
             'success' => Session::flash('playback_success'),
             'errors' => Session::flash('playback_errors') ?? [],
             'csrfToken' => Csrf::token(),
@@ -225,19 +220,6 @@ final class PlaybackController extends Controller
         }
 
         $this->redirect('/dashboard/playbacks');
-    }
-
-    /**
-     * O controle de tom (subir/abaixar semitons) e um recurso extra sobre
-     * o modulo Playbacks - que em si continua liberado em todos os planos
-     * (ver Igrejas\Controllers\DashboardController::modules()).
-     */
-    private function tomDisponivel(): bool
-    {
-        $planoAtual = ConfiguracaoIgreja::atual()->plano;
-        $emTrial = TenantResolver::atual()?->metodoPagamento === 'trial';
-
-        return Plano::disponivel($planoAtual, 'playbacks_tom', $emTrial);
     }
 
     private function tenantSlugOuCentral(): string

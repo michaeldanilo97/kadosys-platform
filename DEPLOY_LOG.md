@@ -17,6 +17,16 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 45 - 2026-07-05
+
+**Removido o controle de tom do Playbacks**
+
+- Mesmo com a correcao do Ajuste 44 (tom sem mudar velocidade), a
+  qualidade do resultado em musicas reais nao ficou boa o suficiente -
+  removido o recurso a pedido do usuario. O modulo Playbacks continua
+  normal (upload, player, busca, edicao, exclusao), so sem o "Tom" no
+  player. Nenhuma migracao nova.
+
 ## Ajuste 44 - 2026-07-05
 
 **Corrige o controle de tom do Playbacks (mudava velocidade tambem) e o select transparente**
