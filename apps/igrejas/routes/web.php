@@ -111,8 +111,7 @@ $router->post('/dashboard/cultos/{id}/presencas/{membroId}/remover', [CultoContr
 
 // Modulo Playbacks. Mesmo motivo: precisa vir antes do catch-all. Sem
 // PlanoMiddleware - Playbacks (biblioteca de audios) esta liberado em
-// todos os planos; so o controle de tom dentro do player e restrito ao
-// Plus (ver Igrejas\Models\Plano::MODULO_MINIMO, slug "playbacks_tom").
+// todos os planos.
 $router->get('/dashboard/playbacks', [PlaybackController::class, 'index'], [AuthMiddleware::class]);
 $router->get('/dashboard/playbacks/novo', [PlaybackController::class, 'create'], [AuthMiddleware::class]);
 $router->post('/dashboard/playbacks', [PlaybackController::class, 'store'], [AuthMiddleware::class]);

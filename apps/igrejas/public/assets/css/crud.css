@@ -972,18 +972,6 @@
   margin-top: 0.3rem;
 }
 
-/* ---- Alerta informativo (ex.: aviso de recurso restrito por plano) ------- */
-
-.crud-alert.info {
-  background: rgba(59, 130, 246, 0.1);
-  color: #93C5FD;
-  border: 1px solid rgba(59, 130, 246, 0.3);
-}
-
-[data-theme="light"] .crud-alert.info {
-  color: #1D4ED8;
-}
-
 /* ---- Modulo Playbacks ---------------------------------------------------- */
 
 .playback-list {
@@ -1044,53 +1032,3 @@
   height: 36px;
 }
 
-.playback-tom {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  color: var(--text-dim);
-}
-
-.playback-tom select {
-  padding: 0.35rem 0.6rem;
-  border-radius: 8px;
-  border: 1px solid var(--glass-border-strong);
-  background: rgba(15, 23, 42, 0.55);
-  color: var(--white);
-  font-size: 0.85rem;
-  cursor: pointer;
-  color-scheme: dark;
-}
-
-[data-theme="light"] .playback-tom select {
-  background: #FFFFFF;
-  border-color: rgba(30, 41, 59, 0.15);
-  color: #0F172A;
-  color-scheme: light;
-}
-
-.playback-tom select:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.playback-tom-status {
-  font-size: 0.78rem;
-  color: var(--text-dim);
-  white-space: nowrap;
-}
-
-.playback-tom-status i {
-  animation: playback-tom-spin 1s linear infinite;
-  display: inline-block;
-}
-
-@keyframes playback-tom-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}

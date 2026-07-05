@@ -1,7 +1,5 @@
 <?php
 
-use Igrejas\Core\View;
-
 /**
  * @var array $config
  * @var array<int, \Igrejas\Models\Playback> $playbacks
@@ -9,7 +7,6 @@ use Igrejas\Core\View;
  * @var int $page
  * @var int $lastPage
  * @var string $search
- * @var bool $tomDisponivel
  * @var string|null $success
  * @var string $csrfToken
  */
@@ -32,13 +29,6 @@ $basePath = $config['base_path'] ?? '';
 
 <?php if (!empty($success)): ?>
     <div class="crud-alert success"><i class="bi bi-check-circle"></i> <?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8') ?></div>
-<?php endif; ?>
-
-<?php if (!$tomDisponivel): ?>
-    <div class="crud-alert info">
-        <i class="bi bi-lock-fill"></i>
-        <div>O controle de tom (subir/abaixar semitons) esta disponivel a partir do plano Plus.</div>
-    </div>
 <?php endif; ?>
 
 <div class="dash-panel">
@@ -118,33 +108,8 @@ $basePath = $config['base_path'] ?? '';
                         <audio
                             controls
                             preload="none"
-                            data-playback-audio
                             src="<?= $basePath ?>/<?= htmlspecialchars($playback->arquivoPath, ENT_QUOTES, 'UTF-8') ?>"
                         ></audio>
-
-                        <?php if ($tomDisponivel): ?>
-                            <div class="playback-tom" data-playback-tom-wrapper>
-                                <label>Tom</label>
-                                <select data-playback-tom>
-                                    <option value="-6">-6</option>
-                                    <option value="-5">-5</option>
-                                    <option value="-4">-4</option>
-                                    <option value="-3">-3</option>
-                                    <option value="-2">-2</option>
-                                    <option value="-1">-1</option>
-                                    <option value="0" selected>Original</option>
-                                    <option value="1">+1</option>
-                                    <option value="2">+2</option>
-                                    <option value="3">+3</option>
-                                    <option value="4">+4</option>
-                                    <option value="5">+5</option>
-                                    <option value="6">+6</option>
-                                </select>
-                                <span class="playback-tom-status" data-playback-tom-status hidden>
-                                    <i class="bi bi-arrow-repeat"></i> Processando...
-                                </span>
-                            </div>
-                        <?php endif; ?>
                     </div>
                 </li>
             <?php endforeach; ?>
@@ -162,5 +127,3 @@ $basePath = $config['base_path'] ?? '';
         <?php endif; ?>
     <?php endif; ?>
 </div>
-
-<script src="<?= $basePath ?>/assets/js/playback-player.js?v=<?= View::assetVersion('assets/js/playback-player.js') ?>"></script>
