@@ -1056,7 +1056,41 @@
   padding: 0.35rem 0.6rem;
   border-radius: 8px;
   border: 1px solid var(--glass-border-strong);
-  background: var(--surface-strong);
-  color: var(--text);
+  background: rgba(15, 23, 42, 0.55);
+  color: var(--white);
   font-size: 0.85rem;
+  cursor: pointer;
+  color-scheme: dark;
+}
+
+[data-theme="light"] .playback-tom select {
+  background: #FFFFFF;
+  border-color: rgba(30, 41, 59, 0.15);
+  color: #0F172A;
+  color-scheme: light;
+}
+
+.playback-tom select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.playback-tom-status {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.playback-tom-status i {
+  animation: playback-tom-spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes playback-tom-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

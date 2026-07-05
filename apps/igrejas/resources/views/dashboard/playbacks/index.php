@@ -140,6 +140,9 @@ $basePath = $config['base_path'] ?? '';
                                     <option value="5">+5</option>
                                     <option value="6">+6</option>
                                 </select>
+                                <span class="playback-tom-status" data-playback-tom-status hidden>
+                                    <i class="bi bi-arrow-repeat"></i> Processando...
+                                </span>
                             </div>
                         <?php endif; ?>
                     </div>

@@ -17,6 +17,22 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 44 - 2026-07-05
+
+**Corrige o controle de tom do Playbacks (mudava velocidade tambem) e o select transparente**
+
+- O controle de tom (Ajuste 43) mudava o `playbackRate` do audio - isso
+  altera o tom, mas tambem acelera/desacelera a musica junto (efeito de
+  toca-discos). Trocado por um algoritmo de verdade (time-stretch +
+  reamostragem, tecnica WSOLA) que muda so o tom, mantendo a musica na
+  MESMA velocidade - processado num Web Worker (nao trava a tela) e
+  verificado matematicamente (frequencia resultante bate com o
+  esperado, duracao continua identica).
+- Corrigido tambem o select do tom que ficava praticamente transparente
+  no tema claro (usava uma cor pensada so pro tema escuro) - agora
+  segue o mesmo padrao ja usado nos outros campos de formulario do
+  sistema.
+
 ## Ajuste 43 - 2026-07-04
 
 **Novo modulo Playbacks (upload de audios + controle de tom)**
