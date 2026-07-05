@@ -522,3 +522,21 @@ CREATE TABLE IF NOT EXISTS comunicacao_aviso_leituras (
     CONSTRAINT comunicacao_aviso_leituras_user_id_foreign
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ----------------------------------------------------------------------------
+-- 031 - Modulo Playbacks
+-- ----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS playbacks (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(150) NOT NULL,
+    artista VARCHAR(150) NULL,
+    arquivo_path VARCHAR(255) NOT NULL,
+    tamanho_bytes INT UNSIGNED NOT NULL,
+    status ENUM('ativo', 'inativo') NOT NULL DEFAULT 'ativo',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY playbacks_titulo_index (titulo),
+    KEY playbacks_status_index (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

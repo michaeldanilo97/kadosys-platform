@@ -17,6 +17,32 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 43 - 2026-07-04
+
+**Novo modulo Playbacks (upload de audios + controle de tom)**
+
+- **Novo modulo "Playbacks"** no menu (ja existia so como pagina "em
+  construcao") - biblioteca de audios do ministerio de louvor: enviar
+  (MP3, WAV, OGG, M4A ou AAC, ate 25MB), buscar, tocar, editar
+  titulo/artista e excluir. Liberado em todos os planos.
+- **Controle de tom** (subir/abaixar semitons, de -6 a +6) no player de
+  cada playback - muda a velocidade de reproducao e desliga a
+  preservacao automatica de tom do navegador, como o pitch control de
+  um toca-discos. Disponivel a partir do plano Plus (quem esta no
+  Essencial ve o player normal, sem o controle).
+- Os arquivos ficam separados por igreja dentro de
+  `public/uploads/playbacks/{subdominio}/` com nome aleatorio - como
+  todos os subdominios compartilham o mesmo servidor de arquivos (so o
+  banco de dados muda por igreja), isso evita que uma igreja
+  sobrescreva ou acesse o audio de outra pelo nome do arquivo.
+- Aumentado o limite de upload do PHP via `public/.user.ini` (30MB) -
+  o padrao do cPanel costuma ser bem menor que isso.
+- **Rode a migracao nova no banco de CADA igreja ja criada** (nao e no
+  banco central):
+  ```
+  mysql -u seu_usuario -p banco_da_igreja < apps/igrejas/database/migrations/031_create_playbacks.sql
+  ```
+
 ## Ajuste 42 - 2026-07-04
 
 **Audio automatico no telao (TV sem toque na tela) + "Ler agora" (leitura em voz alta da biblia)**

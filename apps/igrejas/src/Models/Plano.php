@@ -64,6 +64,11 @@ final class Plano
         'patrimonio' => self::ENTERPRISE,
         'relatorios' => self::ENTERPRISE,
         'permissoes' => self::ENTERPRISE,
+
+        // Nao e um modulo do menu (Playbacks continua liberado em todos os
+        // planos) - so um slug "fantasma" usado pra restringir o controle
+        // de tom (subir/abaixar semitons) do player, ver PlaybackController.
+        'playbacks_tom' => self::PREMIUM,
     ];
 
     public static function minimoParaModulo(string $slug): string
