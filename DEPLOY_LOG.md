@@ -17,6 +17,24 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 46 - 2026-07-05
+
+**Corrige video que travava no PC (recarregava cedo demais) + retorno visual dos botoes do video**
+
+- O mecanismo que recarrega o telao sozinho quando o video trava
+  (Ajuste 42) estava dando so 1,8s pro video comecar antes de decidir
+  que "travou" e recarregar - no PC, um video que so demora um pouco
+  mais pra bufferizar (conexao mais lenta, anuncio do YouTube antes do
+  video) era recarregado a toa, e como so recarregava UMA vez por
+  video, se a lentidao se repetisse ele ficava travado ate um F5
+  manual. Agora ele verifica ao longo de ~6s antes de desistir, e nao
+  recarrega se o video comecar nesse meio tempo.
+- Os botoes Play / Pausar / Fadeout no painel de Projecao agora
+  respondem visualmente na hora do clique (antes o destaque so aparecia
+  depois da resposta do servidor, dando a sensacao de que "nao faziam
+  nada").
+- Nenhuma migracao nova.
+
 ## Ajuste 45 - 2026-07-05
 
 **Removido o controle de tom do Playbacks**

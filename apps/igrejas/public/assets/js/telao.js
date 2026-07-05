@@ -254,13 +254,29 @@
    * pro video quanto pro audio. Um reload da pagina refaz o carregamento
    * pelo caminho que sabidamente funciona (o video ja vem certo desde o
    * estado inicial, aplicado no onReady do player - ver criarPlayer()).
-   * So tenta recarregar UMA vez por video (sessionStorage), pra nao
-   * entrar num loop caso o proprio reload nao resolva por algum outro
-   * motivo.
+   *
+   * Verifica varias vezes ao longo de alguns segundos (nao so uma vez
+   * logo apos o load) antes de desistir e recarregar - um video que so
+   * demora um pouco mais pra "bufferizar" (conexao mais lenta, anuncio
+   * do YouTube antes do video, PC menos potente) NAO esta travado, so
+   * mais lento, e uma checagem unica cedo demais forcava um reload
+   * desnecessario nesse caso (regressao real, reportada num PC onde o
+   * video sempre funcionou) - pior ainda, a trava de "so recarrega uma
+   * vez por video" (abaixo) impedia uma segunda tentativa automatica se
+   * a MESMA lentidao se repetisse apos esse reload forcado, deixando o
+   * telao preso ate um F5 manual - exatamente o problema que este
+   * mecanismo deveria evitar.
    */
   function agendarChecagemReproducao(videoId) {
-    setTimeout(function () {
-      if (!player || typeof player.getPlayerState !== 'function' || ultimoEstadoVideo !== 'tocando') {
+    var tentativas = 0;
+    var maxTentativas = 6; // ~1s cada = ate 6s de tolerancia antes de desistir
+
+    var intervalo = setInterval(function () {
+      tentativas++;
+
+      if (!player || typeof player.getPlayerState !== 'function' || ultimoEstadoVideo !== 'tocando' || videoId !== currentVideoId) {
+        clearInterval(intervalo);
+
         return;
       }
 
@@ -269,14 +285,28 @@
       try {
         estadoAtual = player.getPlayerState();
       } catch (erro) {
+        clearInterval(intervalo);
+
         return;
       }
 
-      if (estadoAtual !== 1 && !jaRecarregouPara(videoId)) {
-        marcarRecarregadoPara(videoId);
-        window.location.reload();
+      if (estadoAtual === 1) {
+        // Comecou a tocar normalmente (so estava demorando um pouco) -
+        // nao precisa recarregar.
+        clearInterval(intervalo);
+
+        return;
       }
-    }, 1800);
+
+      if (tentativas >= maxTentativas) {
+        clearInterval(intervalo);
+
+        if (!jaRecarregouPara(videoId)) {
+          marcarRecarregadoPara(videoId);
+          window.location.reload();
+        }
+      }
+    }, 1000);
   }
 
   function aplicarVideo(video) {
