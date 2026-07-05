@@ -318,15 +318,20 @@
 
   botoesVideo.forEach(function (botao) {
     botao.addEventListener('click', function () {
+      // Retorno visual imediato: marca o botao como ativo assim que e
+      // clicado, sem esperar a resposta do servidor - antes, o "active"
+      // so aparecia depois do fetch resolver, o que dava a sensacao de
+      // que o botao "nao fazia nada" ao ser clicado (ainda mais se a
+      // rede estivesse lenta ou o efeito real no telao demorasse).
+      botoesVideo.forEach(function (b) {
+        b.classList.remove('active');
+      });
+      botao.classList.add('active');
+
       var dados = new URLSearchParams();
       dados.set('estado', botao.getAttribute('data-video-acao'));
 
-      enviar('/video/estado', dados).then(function () {
-        botoesVideo.forEach(function (b) {
-          b.classList.remove('active');
-        });
-        botao.classList.add('active');
-      });
+      enviar('/video/estado', dados);
     });
   });
 
