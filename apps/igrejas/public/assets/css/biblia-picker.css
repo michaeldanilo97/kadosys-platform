@@ -122,6 +122,25 @@ body.livro-combo-lista-aberta .biblia-livro-field {
   z-index: 21;
 }
 
+/* Sem nenhum overlay, a lista sobrepunha o painel de video logo abaixo
+   sem nenhuma separacao visual (os dois com fundo branco no tema claro,
+   virando uma mancha confusa) - mas escurecer a pagina inteira (sidebar,
+   topbar, outros paineis) era exagerado demais para um autocomplete.
+   Meio-termo: um esmaecimento bem sutil, so o suficiente pra destacar
+   a lista sem apagar o resto da tela. */
+body.livro-combo-lista-aberta::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 20, 0.12);
+  z-index: 19;
+  pointer-events: none;
+}
+
+body.livro-combo-lista-aberta[data-theme="light"]::after {
+  background: rgba(15, 23, 42, 0.08);
+}
+
 .biblia-livro-field .livro-combo {
   position: relative;
 }
