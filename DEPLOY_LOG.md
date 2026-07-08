@@ -17,6 +17,31 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 47 - 2026-07-05
+
+**Tela preta do video corrigida + voz masculina na leitura + popups modernos**
+
+- **Tela preta do video no telao**: a checagem de "video travado" tratava
+  um video so BUFFERIZANDO (carregando) como travado e recarregava a
+  pagina no meio do carregamento - e depois do unico reload permitido
+  por video, ficava preso numa tela preta ate um F5 manual. Agora so
+  conta como travado o video parado em "nao iniciado" (o sintoma real
+  de autoplay bloqueado); bufferizando/pausado nunca recarrega. Se
+  travar de verdade com o reload ja gasto, aparece o aviso de "toque na
+  tela" como saida (o toque destrava o play na hora). A checagem tambem
+  passou a cobrir o video carregado logo na abertura da pagina (antes
+  esse caminho ficava sem vigia nenhum).
+- **Leitura em voz alta ("Ler agora")**: agora prefere voz MASCULINA em
+  portugues quando o aparelho tiver uma instalada (Daniel, Antonio,
+  Felipe, Ricardo, etc.) - a voz exata depende do que existe no
+  aparelho/navegador do telao.
+- **Popups modernos**: todas as confirmacoes que usavam a janelinha
+  nativa do navegador (excluir membro/culto/grupo/etc., trocar o que
+  esta em exibicao no telao, encerrar sessao de projecao) agora usam um
+  popup proprio do sistema, no estilo do painel (novo
+  assets/js/kadosys-modal.js).
+- Nenhuma migracao nova.
+
 ## Ajuste 46 - 2026-07-05
 
 **Corrige video que travava no PC (recarregava cedo demais) + retorno visual dos botoes do video**

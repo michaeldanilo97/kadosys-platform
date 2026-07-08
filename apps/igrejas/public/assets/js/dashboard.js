@@ -101,9 +101,27 @@
   function initConfirmForms() {
     document.querySelectorAll('form[data-confirm]').forEach(function (form) {
       form.addEventListener('submit', function (event) {
-        if (!window.confirm(form.getAttribute('data-confirm'))) {
-          event.preventDefault();
+        // Popup proprio no lugar do window.confirm() nativo. Sempre
+        // bloqueia o envio primeiro (o popup e assincrono) e reenvia por
+        // codigo se o usuario confirmar - form.submit() programatico nao
+        // dispara o evento "submit" de novo, entao nao entra em loop.
+        event.preventDefault();
+
+        if (!window.KadosysModal) {
+          form.submit(); // fallback improvavel: script do modal nao carregou
+
+          return;
         }
+
+        // Rotulo "perigo" (vermelho) porque todo data-confirm do sistema
+        // guarda uma acao com consequencia (remover, encerrar, trocar
+        // plano) - o texto do botao fica generico porque nem todas sao
+        // remocoes.
+        window.KadosysModal.confirmar(form.getAttribute('data-confirm'), { perigo: true }).then(function (ok) {
+          if (ok) {
+            form.submit();
+          }
+        });
       });
     });
   }

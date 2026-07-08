@@ -255,27 +255,40 @@
    * pelo caminho que sabidamente funciona (o video ja vem certo desde o
    * estado inicial, aplicado no onReady do player - ver criarPlayer()).
    *
-   * Verifica varias vezes ao longo de alguns segundos (nao so uma vez
-   * logo apos o load) antes de desistir e recarregar - um video que so
-   * demora um pouco mais pra "bufferizar" (conexao mais lenta, anuncio
-   * do YouTube antes do video, PC menos potente) NAO esta travado, so
-   * mais lento, e uma checagem unica cedo demais forcava um reload
-   * desnecessario nesse caso (regressao real, reportada num PC onde o
-   * video sempre funcionou) - pior ainda, a trava de "so recarrega uma
-   * vez por video" (abaixo) impedia uma segunda tentativa automatica se
-   * a MESMA lentidao se repetisse apos esse reload forcado, deixando o
-   * telao preso ate um F5 manual - exatamente o problema que este
-   * mecanismo deveria evitar.
+   * So considera "travado" o video que fica parado no estado "nao
+   * iniciado" (-1) ou "na fila" (5) - que e exatamente o sintoma do
+   * autoplay bloqueado. "Bufferizando" (3), "pausado" (2) ou "tocando"
+   * (1) significam que o player ACEITOU o comando e esta trabalhando -
+   * recarregar a pagina nesses casos e sempre errado (era a causa da
+   * tela preta/reinicios no PC: um video so bufferizando era tratado
+   * como travado, recarregado no meio do carregamento, e depois do
+   * unico reload permitido por video ficava preso numa tela preta ate
+   * um F5 manual).
+   *
+   * Se o video estiver mesmo travado mas o reload unico por video ja
+   * tiver sido gasto, mostra o aviso de "toque na tela" como saida -
+   * o clique (ver o handler de click no final do arquivo) reaplica o
+   * play com gesto do usuario, que os navegadores sempre aceitam.
    */
+  var checagemVideoId = null;
+
   function agendarChecagemReproducao(videoId) {
-    var tentativas = 0;
-    var maxTentativas = 6; // ~1s cada = ate 6s de tolerancia antes de desistir
+    // Idempotente: chamada a cada poll enquanto o estado for "tocando"
+    // (ver aplicarVideo), mas so uma checagem fica ativa por vez - e um
+    // video ja rodando nao precisa de vigia nenhum.
+    if (!videoId || checagemVideoId === videoId || videoEstaTocandoDeVerdade()) {
+      return;
+    }
+
+    checagemVideoId = videoId;
+
+    var observacoesTravado = 0;
+    var LIMITE_TRAVADO = 6; // ~1s cada = 6s parado em "nao iniciado" pra concluir que travou
 
     var intervalo = setInterval(function () {
-      tentativas++;
-
       if (!player || typeof player.getPlayerState !== 'function' || ultimoEstadoVideo !== 'tocando' || videoId !== currentVideoId) {
         clearInterval(intervalo);
+        checagemVideoId = null;
 
         return;
       }
@@ -286,24 +299,39 @@
         estadoAtual = player.getPlayerState();
       } catch (erro) {
         clearInterval(intervalo);
+        checagemVideoId = null;
 
         return;
       }
 
       if (estadoAtual === 1) {
-        // Comecou a tocar normalmente (so estava demorando um pouco) -
-        // nao precisa recarregar.
+        // Comecou a tocar normalmente - nao precisa recarregar.
         clearInterval(intervalo);
+        checagemVideoId = null;
 
         return;
       }
 
-      if (tentativas >= maxTentativas) {
+      if (estadoAtual === -1 || estadoAtual === 5) {
+        observacoesTravado++;
+      } else {
+        // Bufferizando/pausado/etc: o player aceitou o comando, so esta
+        // trabalhando - zera a contagem e continua observando.
+        observacoesTravado = 0;
+      }
+
+      if (observacoesTravado >= LIMITE_TRAVADO) {
         clearInterval(intervalo);
+        checagemVideoId = null;
 
         if (!jaRecarregouPara(videoId)) {
           marcarRecarregadoPara(videoId);
           window.location.reload();
+        } else if (avisoAudio) {
+          // Reload unico ja gasto e o video continua travado - mostra o
+          // aviso de toque como ultima saida (um clique reaplica o play
+          // com gesto, que sempre e aceito).
+          avisoAudio.classList.add('is-visivel');
         }
       }
     }, 1000);
@@ -369,6 +397,12 @@
         // Player ainda nao pronto; sera reaplicado no proximo poll.
       }
 
+      // Vigia o inicio da reproducao tambem por este caminho - cobre o
+      // video que veio pelo estado inicial da pagina (pos-reload), que
+      // nao passa pelo loadVideoById acima e antes ficava sem nenhuma
+      // checagem (tela preta sem recuperacao se o autoplay bloqueasse).
+      agendarChecagemReproducao(videoId);
+
       // Se mesmo assim o navegador manteve o video mudo (politica mais
       // rigorosa que exige mesmo um toque), mostra o aviso - inofensivo
       // numa TV sem toque (so fica ali), mas resolve o caso de abrir o
@@ -377,9 +411,26 @@
 
       if (aindaMudo && !audioDesbloqueado && avisoAudio) {
         avisoAudio.classList.add('is-visivel');
-      } else if (avisoAudio) {
+      } else if (avisoAudio && videoEstaTocandoDeVerdade()) {
+        // So esconde o aviso quando o video REALMENTE esta rodando -
+        // sem essa condicao, o poll apagava (1.5s depois) o aviso de
+        // toque mostrado pela checagem de travamento (ver
+        // agendarChecagemReproducao), tirando a unica saida visivel do
+        // usuario num video travado.
         avisoAudio.classList.remove('is-visivel');
       }
+    }
+  }
+
+  function videoEstaTocandoDeVerdade() {
+    if (!player || typeof player.getPlayerState !== 'function') {
+      return false;
+    }
+
+    try {
+      return player.getPlayerState() === 1;
+    } catch (erro) {
+      return false;
     }
   }
 
@@ -419,6 +470,25 @@
     return candidatas[0];
   }
 
+  // A Web Speech API nao informa o "genero" da voz - a unica pista e o
+  // proprio nome (ex.: "Microsoft Daniel", "Luciana", "Felipe"). Listas
+  // dos nomes conhecidos das vozes em portugues nos principais sistemas
+  // (Windows/Microsoft, Google/Android, Apple), pra dar preferencia a
+  // uma voz masculina na leitura biblica (pedido do usuario: soa mais
+  // proximo de um pregador).
+  var NOMES_VOZ_MASCULINA = ['daniel', 'antonio', 'antônio', 'felipe', 'ricardo', 'thiago', 'fabio', 'fábio', 'donato', 'reed', 'male'];
+  var NOMES_VOZ_FEMININA = ['maria', 'francisca', 'camila', 'vitoria', 'vitória', 'leticia', 'letícia', 'fernanda', 'luciana', 'joana', 'catarina', 'yara', 'brenda', 'female', 'feminino'];
+
+  function nomeContemAlgum(nome, lista) {
+    for (var i = 0; i < lista.length; i++) {
+      if (nome.indexOf(lista[i]) !== -1) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   function pontuarVoz(voz) {
     var pontos = 0;
     var nome = voz.name.toLowerCase();
@@ -433,6 +503,16 @@
 
     if (nome.indexOf('google') !== -1) {
       pontos += 2;
+    }
+
+    // Preferencia por voz masculina, com peso maior que a soma maxima
+    // dos criterios de qualidade acima (2+3+2=7) - garante que uma voz
+    // masculina, mesmo local/offline, sempre ganha de qualquer voz
+    // feminina, por melhor que seja.
+    if (nomeContemAlgum(nome, NOMES_VOZ_MASCULINA)) {
+      pontos += 8;
+    } else if (nomeContemAlgum(nome, NOMES_VOZ_FEMININA)) {
+      pontos -= 2;
     }
 
     return pontos;

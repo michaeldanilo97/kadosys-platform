@@ -19,6 +19,7 @@ $basePath = $config['base_path'] ?? '';
     <link rel="stylesheet" href="<?= $basePath ?>/assets/css/telao.css?v=<?= View::assetVersion('assets/css/telao.css') ?>">
 </head>
 <body>
+<script src="<?= $basePath ?>/assets/js/kadosys-modal.js?v=<?= View::assetVersion('assets/js/kadosys-modal.js') ?>"></script>
 <script src="<?= $basePath ?>/assets/js/biblia-picker.js?v=<?= View::assetVersion('assets/js/biblia-picker.js') ?>"></script>
 <?= $content ?>
 </body>
