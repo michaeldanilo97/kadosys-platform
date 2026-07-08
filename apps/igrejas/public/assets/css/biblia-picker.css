@@ -14,12 +14,15 @@
   grid-template-columns: 1.5fr 1fr;
   gap: 1.8rem;
   align-items: start;
+  overflow: visible;
 }
 
 .biblia-picker-controles {
   display: grid;
   gap: 1.15rem;
   min-width: 0;
+  overflow: visible;
+  position: relative;
 }
 
 .biblia-linha-topo {
@@ -27,6 +30,8 @@
   grid-template-columns: minmax(190px, 240px) 1fr;
   gap: 1.1rem;
   align-items: start;
+  overflow: visible;
+  position: relative;
 }
 
 .biblia-picker-sidebar {

@@ -207,10 +207,15 @@ $avisosSidebar = ($comunicacaoDisponivel && $user !== null)
     <div class="sidebar-overlay" data-sidebar-overlay></div>
 
     <aside class="dash-sidebar" data-dash-sidebar>
-        <a href="<?= $basePath ?>/dashboard" class="dash-sidebar-brand">
-            <span class="seal">K</span>
-            <span><span class="text-gradient">KADOSYS</span> Igrejas</span>
-        </a>
+        <div class="dash-sidebar-header">
+            <a href="<?= $basePath ?>/dashboard" class="dash-sidebar-brand">
+                <span class="seal">K</span>
+                <span><span class="text-gradient">KADOSYS</span> Igrejas</span>
+            </a>
+            <button type="button" class="dash-sidebar-collapse-btn" data-sidebar-collapse aria-label="Recolher menu" title="Recolher menu">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+        </div>
 
         <nav class="dash-nav">
             <div class="dash-nav-group-label">Geral</div>
