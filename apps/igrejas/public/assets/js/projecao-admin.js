@@ -150,8 +150,26 @@
     });
   }
 
+  /**
+   * Mantem o botao Play/Pausar/Fadeout marcado como "active" de acordo
+   * com o que REALMENTE esta sendo exibido no telao (reportado pelo
+   * poll), nao so com o ultimo botao clicado neste painel - sem isso,
+   * o destaque ficava errado ao reabrir a pagina, ao trocar de video
+   * (o backend sempre volta pra "tocando" ao carregar um novo link,
+   * ver ProjecaoEstado::definirVideo) ou quando outra pessoa opera o
+   * telao por uma sessao diferente.
+   */
+  function sincronizarBotoesVideo(dados) {
+    var estadoAtivo = (dados && dados.modo === 'video' && dados.video) ? dados.video.estado : null;
+
+    botoesVideo.forEach(function (botao) {
+      botao.classList.toggle('active', botao.getAttribute('data-video-acao') === estadoAtivo);
+    });
+  }
+
   function aplicarEstado(dados) {
     modoAtual = dados ? dados.modo : null;
+    sincronizarBotoesVideo(dados);
 
     if (!dados || dados.modo !== 'biblia' || !dados.biblia || !dados.biblia.livroId) {
       if (navBox) {

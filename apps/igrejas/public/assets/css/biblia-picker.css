@@ -122,15 +122,6 @@ body.livro-combo-lista-aberta .biblia-livro-field {
   z-index: 21;
 }
 
-body.livro-combo-lista-aberta::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: rgba(5, 8, 20, 0.55);
-  z-index: 19;
-  pointer-events: none;
-}
-
 .biblia-livro-field .livro-combo {
   position: relative;
 }
