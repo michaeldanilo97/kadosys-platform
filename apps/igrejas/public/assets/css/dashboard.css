@@ -135,7 +135,7 @@ body.dashboard-body[data-theme="light"] {
 
 .dash-sidebar.is-collapsed .dash-sidebar-header .dash-sidebar-brand span:last-child,
 .dash-sidebar.is-collapsed .dash-nav-group-label,
-.dash-sidebar.is-collapsed .dash-nav-link > span:not(.dash-nav-lock-icon),
+.dash-sidebar.is-collapsed .dash-nav-link-label,
 .dash-sidebar.is-collapsed .dash-sidebar-footer > * {
   display: none;
 }
@@ -1536,7 +1536,7 @@ body.dashboard-body[data-theme="light"] {
   }
 
   .dash-main {
-    margin-left: 0;
+    margin-left: 0 !important;
   }
 
   .sidebar-toggle-btn {
@@ -1545,6 +1545,32 @@ body.dashboard-body[data-theme="light"] {
 
   .dash-topbar-search {
     display: none;
+  }
+
+  /* O recolher de sidebar e um recurso so de desktop - no mobile o menu
+     ja funciona como overlay (ver .dash-sidebar.show acima), entao o
+     botao de recolher fica escondido e qualquer estado "collapsed"
+     salvo no localStorage (de quando o usuario usou em desktop) e
+     ignorado aqui, senao o menu abre com os icones sem texto. */
+  .dash-sidebar-collapse-btn {
+    display: none;
+  }
+
+  .dash-sidebar.is-collapsed {
+    width: var(--sidebar-width);
+  }
+
+  .dash-sidebar.is-collapsed .dash-sidebar-header .dash-sidebar-brand span:last-child,
+  .dash-sidebar.is-collapsed .dash-nav-group-label,
+  .dash-sidebar.is-collapsed .dash-nav-link-label,
+  .dash-sidebar.is-collapsed .dash-sidebar-footer > * {
+    display: revert;
+  }
+
+  .dash-sidebar.is-collapsed .dash-nav-link {
+    justify-content: flex-start;
+    gap: 0.8rem;
+    padding: 0.6rem 0.75rem;
   }
 }
 
