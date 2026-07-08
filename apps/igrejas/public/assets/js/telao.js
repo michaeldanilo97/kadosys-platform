@@ -213,7 +213,7 @@
     }
 
     if (typeof player.getVideoData !== 'function') {
-      return false;
+      return true;
     }
 
     try {
@@ -221,7 +221,7 @@
 
       return !dados || !dados.video_id || dados.video_id !== videoId;
     } catch (erro) {
-      return false;
+      return true;
     }
   }
 
