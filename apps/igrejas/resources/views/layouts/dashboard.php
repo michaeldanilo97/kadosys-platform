@@ -220,7 +220,7 @@ $avisosSidebar = ($comunicacaoDisponivel && $user !== null)
         <nav class="dash-nav">
             <div class="dash-nav-group-label">Geral</div>
             <a href="<?= $basePath ?>/dashboard" class="dash-nav-link <?= $activeMenu === 'dashboard' ? 'active' : '' ?>">
-                <i class="bi bi-speedometer2"></i> Dashboard
+                <i class="bi bi-speedometer2"></i> <span class="dash-nav-link-label">Dashboard</span>
             </a>
 
             <div class="dash-nav-group-label">Modulos</div>
@@ -232,7 +232,7 @@ $avisosSidebar = ($comunicacaoDisponivel && $user !== null)
                 ?>
                 <a href="<?= $basePath ?>/dashboard/<?= $slug ?>" class="dash-nav-link <?= $activeMenu === $slug ? 'active' : '' ?><?= $bloqueado ? ' dash-nav-link-locked' : '' ?>">
                     <i class="bi <?= htmlspecialchars($module['icon'], ENT_QUOTES, 'UTF-8') ?>"></i>
-                    <?= htmlspecialchars($module['title'], ENT_QUOTES, 'UTF-8') ?>
+                    <span class="dash-nav-link-label"><?= htmlspecialchars($module['title'], ENT_QUOTES, 'UTF-8') ?></span>
                     <?php if ($bloqueadoPeloPlano): ?>
                         <i class="bi bi-lock-fill dash-nav-lock-icon" title="Disponivel no plano <?= htmlspecialchars(Plano::label($module['planoMinimo']), ENT_QUOTES, 'UTF-8') ?>"></i>
                     <?php elseif ($bloqueadoPelaPermissao): ?>

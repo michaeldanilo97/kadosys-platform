@@ -32,6 +32,48 @@
   var audioDesbloqueado = false;
   var vozDestravada = false;
   var avisoAudio = root.querySelector('[data-telao-audio-unlock]');
+  var videoOverlay = root.querySelector('[data-telao-video-overlay]');
+
+  /**
+   * Mensagens de erro do YouTube (ver onError no criarPlayer) e do
+   * timeout de buffering (ver agendarChecagemReproducao) - mostradas
+   * dentro do proprio overlay do video (que ja cobria a camada pra
+   * bloquear clique), em vez de deixar a tela muda sobre o motivo real
+   * de o video nao tocar.
+   */
+  function mostrarErroVideo(mensagem) {
+    if (!videoOverlay) {
+      return;
+    }
+
+    videoOverlay.textContent = mensagem;
+    videoOverlay.classList.add('tem-erro');
+  }
+
+  function esconderErroVideo() {
+    if (!videoOverlay) {
+      return;
+    }
+
+    videoOverlay.textContent = '';
+    videoOverlay.classList.remove('tem-erro');
+  }
+
+  // Mapa dos codigos de erro documentados da API do YouTube - ver
+  // https://developers.google.com/youtube/iframe_api_reference#onError.
+  // Sem isso, um link invalido ou um video com incorporacao desabilitada
+  // pelo dono (bem comum em videoclipes oficiais, trechos de filme etc.)
+  // ficava com o player mudo e preso pra sempre - o video "aparecia"
+  // (a camada preta do player) mas nunca tocava, sem nenhuma pista do
+  // motivo real (nao era travamento de autoplay, o unico caso que os
+  // outros mecanismos de recuperacao tratavam).
+  var MENSAGENS_ERRO_YOUTUBE = {
+    2: 'Link de video invalido.',
+    5: 'Este video nao pode ser reproduzido neste navegador.',
+    100: 'Video nao encontrado ou removido.',
+    101: 'O dono deste video nao permite reproduzi-lo em outros sites. Escolha outro video.',
+    150: 'O dono deste video nao permite reproduzi-lo em outros sites. Escolha outro video.',
+  };
 
   function extrairIdYoutube(url) {
     if (!url) {
@@ -272,6 +314,17 @@
    */
   var checagemVideoId = null;
 
+  /**
+   * "Bufferizando" (estado 3) sozinho nao significa travado - um video
+   * que so esta carregando de verdade eventualmente comeca a tocar. Mas
+   * bufferizar PARA SEMPRE, sem o tempo de reproducao avancar nem um
+   * segundo, e outro sintoma real de travamento (ex.: rede da igreja
+   * bloqueando o CDN de video do YouTube, mesmo com youtube.com
+   * acessivel) - so que mais lento de confirmar que o autoplay
+   * bloqueado (por isso um limite bem mais alto que LIMITE_TRAVADO).
+   */
+  var LIMITE_BUFFER_SEM_PROGRESSO = 25; // ~1s cada = 25s bufferizando sem tocar nada
+
   function agendarChecagemReproducao(videoId) {
     // Idempotente: chamada a cada poll enquanto o estado for "tocando"
     // (ver aplicarVideo), mas so uma checagem fica ativa por vez - e um
@@ -281,8 +334,10 @@
     }
 
     checagemVideoId = videoId;
+    esconderErroVideo();
 
     var observacoesTravado = 0;
+    var observacoesBufferParado = 0;
     var LIMITE_TRAVADO = 6; // ~1s cada = 6s parado em "nao iniciado" pra concluir que travou
 
     var intervalo = setInterval(function () {
@@ -314,10 +369,31 @@
 
       if (estadoAtual === -1 || estadoAtual === 5) {
         observacoesTravado++;
-      } else {
-        // Bufferizando/pausado/etc: o player aceitou o comando, so esta
-        // trabalhando - zera a contagem e continua observando.
+        observacoesBufferParado = 0;
+      } else if (estadoAtual === 3) {
+        // Bufferizando: so e "travado" se o tempo de reproducao continuar
+        // em zero por muito tempo - bufferizar de verdade avanca o
+        // tempo assim que os primeiros segundos chegam.
         observacoesTravado = 0;
+
+        var tempoAtual = 0;
+
+        try {
+          tempoAtual = player.getCurrentTime() || 0;
+        } catch (erro) {
+          tempoAtual = 0;
+        }
+
+        if (tempoAtual > 0) {
+          observacoesBufferParado = 0;
+        } else {
+          observacoesBufferParado++;
+        }
+      } else {
+        // Pausado/etc: o player aceitou o comando, so esta trabalhando -
+        // zera as duas contagens e continua observando.
+        observacoesTravado = 0;
+        observacoesBufferParado = 0;
       }
 
       if (observacoesTravado >= LIMITE_TRAVADO) {
@@ -333,6 +409,15 @@
           // com gesto, que sempre e aceito).
           avisoAudio.classList.add('is-visivel');
         }
+      } else if (observacoesBufferParado >= LIMITE_BUFFER_SEM_PROGRESSO) {
+        // Bufferizando ha muito tempo sem tocar nem um segundo - nao e
+        // um problema de autoplay bloqueado (o player ja aceitou o
+        // comando), entao um reload da pagina nao ajuda; mais provavel
+        // ser rede bloqueando o video em si. Mostra isso na tela em vez
+        // de deixar travado pra sempre sem nenhuma pista.
+        clearInterval(intervalo);
+        checagemVideoId = null;
+        mostrarErroVideo('O video esta demorando demais para carregar. Verifique a conexao com a internet ou se o link e valido.');
       }
     }, 1000);
   }
@@ -660,6 +745,20 @@
 
           pendingVideo = null;
           pendingVideoId = null;
+        },
+        onStateChange: function (evento) {
+          // Assim que o video realmente comeca a tocar, some com
+          // qualquer erro/aviso mostrado antes (ex.: um video anterior
+          // com problema, ou o proprio timeout de buffering) - nao faz
+          // sentido continuar exibindo isso sobre um video que esta
+          // funcionando.
+          if (evento.data === 1) {
+            esconderErroVideo();
+          }
+        },
+        onError: function (evento) {
+          var mensagem = MENSAGENS_ERRO_YOUTUBE[evento.data] || 'Nao foi possivel reproduzir este video.';
+          mostrarErroVideo(mensagem);
         },
       },
     });

@@ -82,6 +82,22 @@ html, body {
   cursor: default;
 }
 
+/* Erro real do player (video removido/incorporacao desabilitada, ou
+   buffering sem fim - ver onError/agendarChecagemReproducao em
+   telao.js): sem isso, um video com problema so mostrava uma tela
+   preta muda, sem nenhuma pista de que precisava trocar o link. */
+.telao-video-overlay.tem-erro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3vw 6vw;
+  text-align: center;
+  font-size: clamp(1rem, 2.2vw, 1.6rem);
+  font-weight: 600;
+  color: var(--telao-text);
+  background: rgba(5, 7, 13, 0.88);
+}
+
 .telao-biblia {
   z-index: 3;
 }
