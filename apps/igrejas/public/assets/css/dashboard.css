@@ -81,6 +81,92 @@ body.dashboard-body[data-theme="light"] {
   flex-shrink: 0;
 }
 
+.dash-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+[data-theme="light"] .dash-sidebar-header {
+  border-bottom-color: rgba(30, 41, 59, 0.1);
+}
+
+.dash-sidebar-header .dash-sidebar-brand {
+  border-bottom: none;
+  padding: 1.4rem;
+  flex: 1;
+}
+
+.dash-sidebar-collapse-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  margin-right: 0.6rem;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dash-sidebar-collapse-btn:hover {
+  background: var(--surface-strong);
+  color: var(--primary-soft);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+[data-theme="light"] .dash-sidebar-collapse-btn:hover {
+  background: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.15);
+}
+
+/* Collapsed sidebar state */
+.dash-sidebar.is-collapsed {
+  width: 80px;
+}
+
+.dash-sidebar.is-collapsed .dash-sidebar-header .dash-sidebar-brand span:last-child,
+.dash-sidebar.is-collapsed .dash-nav-group-label,
+.dash-sidebar.is-collapsed .dash-nav-link > span:not(.dash-nav-lock-icon),
+.dash-sidebar.is-collapsed .dash-sidebar-footer > * {
+  display: none;
+}
+
+.dash-sidebar.is-collapsed .dash-nav-link {
+  justify-content: center;
+  gap: 0;
+  padding: 0.6rem 0.5rem;
+}
+
+.dash-sidebar.is-collapsed .dash-nav-link i {
+  margin: 0;
+}
+
+.dash-sidebar.is-collapsed .dash-sidebar-collapse-btn i {
+  transform: scaleX(-1);
+}
+
+.dash-shell {
+  --sidebar-active-width: var(--sidebar-width);
+}
+
+.dash-shell.sidebar-collapsed {
+  --sidebar-active-width: 80px;
+}
+
+.dash-main {
+  margin-left: var(--sidebar-active-width, var(--sidebar-width));
+  transition: margin-left 0.25s ease;
+}
+
 .dash-nav {
   flex: 1;
   overflow-y: auto;

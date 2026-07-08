@@ -61,6 +61,9 @@
     var sidebar = document.querySelector('[data-dash-sidebar]');
     var overlay = document.querySelector('[data-sidebar-overlay]');
     var openBtn = document.querySelector('[data-sidebar-open]');
+    var collapseBtn = document.querySelector('[data-sidebar-collapse]');
+    var shell = document.querySelector('.dash-shell');
+    var COLLAPSE_STORAGE_KEY = 'kadosys_igrejas_sidebar_collapsed';
 
     if (!sidebar || !overlay || !openBtn) {
       return;
@@ -74,6 +77,33 @@
     function close() {
       sidebar.classList.remove('show');
       overlay.classList.remove('show');
+    }
+
+    // Restore collapsed state from localStorage
+    if (collapseBtn && shell) {
+      var isCollapsed = false;
+      try {
+        isCollapsed = window.localStorage.getItem(COLLAPSE_STORAGE_KEY) === '1';
+      } catch (error) {
+        isCollapsed = false;
+      }
+
+      if (isCollapsed) {
+        sidebar.classList.add('is-collapsed');
+        shell.classList.add('sidebar-collapsed');
+      }
+
+      collapseBtn.addEventListener('click', function () {
+        var willBeCollapsed = !sidebar.classList.contains('is-collapsed');
+        sidebar.classList.toggle('is-collapsed');
+        shell.classList.toggle('sidebar-collapsed');
+
+        try {
+          window.localStorage.setItem(COLLAPSE_STORAGE_KEY, willBeCollapsed ? '1' : '0');
+        } catch (error) {
+          // Armazenamento indisponivel; ignora.
+        }
+      });
     }
 
     openBtn.addEventListener('click', open);
