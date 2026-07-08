@@ -254,8 +254,15 @@
       return true;
     }
 
+    // Nao consegue confirmar o video carregado (metodo indisponivel ou
+    // erro ao consultar) - assume que NAO precisa recarregar. A
+    // alternativa (assumir que precisa) e mais perigosa: aplicarVideo()
+    // roda a cada poll (~1.5s) enquanto o modo for video, entao um
+    // "true" persistente aqui forcaria loadVideoById() de novo a cada
+    // poll, reiniciando um video que na verdade JA estava tocando bem -
+    // preso num loop que nunca deixa a reproducao real comecar.
     if (typeof player.getVideoData !== 'function') {
-      return true;
+      return false;
     }
 
     try {
@@ -263,7 +270,7 @@
 
       return !dados || !dados.video_id || dados.video_id !== videoId;
     } catch (erro) {
-      return true;
+      return false;
     }
   }
 
