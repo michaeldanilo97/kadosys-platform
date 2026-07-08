@@ -42,16 +42,24 @@
    * diferente do novo modo realmente em exibicao (nao pede nada na
    * primeira vez, com a tela em branco, ou ao continuar no mesmo modo -
    * ex.: navegar entre versiculos com a biblia ja em exibicao).
+   *
+   * Assincrono (Promise<boolean>) porque usa o popup proprio do sistema
+   * (ver kadosys-modal.js) no lugar do window.confirm nativo.
    */
   function confirmarTroca(novoModo) {
     if (!modoAtual || modoAtual === 'blank' || modoAtual === novoModo) {
-      return true;
+      return Promise.resolve(true);
     }
 
     var atual = NOMES_MODO[modoAtual] || 'outro conteudo';
     var proximo = NOMES_MODO[novoModo] || 'outro conteudo';
+    var mensagem = 'Ja tem ' + atual + ' em exibicao no telao. Trocar para ' + proximo + ' agora?';
 
-    return window.confirm('Ja tem ' + atual + ' em exibicao no telao. Trocar para ' + proximo + ' agora?');
+    if (!window.KadosysModal) {
+      return Promise.resolve(window.confirm(mensagem));
+    }
+
+    return window.KadosysModal.confirmar(mensagem, { confirmar: 'Trocar', icone: 'bi-easel2' });
   }
 
   function escapeHtml(value) {
@@ -96,26 +104,28 @@
         return;
       }
 
-      if (!confirmarTroca('biblia')) {
-        return;
-      }
+      confirmarTroca('biblia').then(function (ok) {
+        if (!ok) {
+          return;
+        }
 
-      var dados = new URLSearchParams();
-      dados.set('biblia_versao', formBiblia.querySelector('[data-campo="biblia_versao"]').value);
-      dados.set('livro_id', livroSelect.value);
-      dados.set('capitulo', capituloInput.value);
-      dados.set('versiculo_inicio', versiculoInicioSelect.value);
+        var dados = new URLSearchParams();
+        dados.set('biblia_versao', formBiblia.querySelector('[data-campo="biblia_versao"]').value);
+        dados.set('livro_id', livroSelect.value);
+        dados.set('capitulo', capituloInput.value);
+        dados.set('versiculo_inicio', versiculoInicioSelect.value);
 
-      if (versiculoFimSelect.value) {
-        dados.set('versiculo_fim', versiculoFimSelect.value);
-      }
+        if (versiculoFimSelect.value) {
+          dados.set('versiculo_fim', versiculoFimSelect.value);
+        }
 
-      enviar('/biblia', dados).then(function (resposta) {
-        return resposta.json();
-      }).then(function (dadosResposta) {
-        lastVersao = dadosResposta.versao;
-        aplicarEstado(dadosResposta);
-      }).catch(function () {});
+        enviar('/biblia', dados).then(function (resposta) {
+          return resposta.json();
+        }).then(function (dadosResposta) {
+          lastVersao = dadosResposta.versao;
+          aplicarEstado(dadosResposta);
+        }).catch(function () {});
+      });
     };
 
     // Clicar num chip de versiculo ja projeta direto no telao, sem
@@ -302,16 +312,18 @@
     formVideo.addEventListener('submit', function (evento) {
       evento.preventDefault();
 
-      if (!confirmarTroca('video')) {
-        return;
-      }
+      confirmarTroca('video').then(function (ok) {
+        if (!ok) {
+          return;
+        }
 
-      var url = formVideo.querySelector('#video_url').value;
-      var dados = new URLSearchParams();
-      dados.set('url', url);
+        var url = formVideo.querySelector('#video_url').value;
+        var dados = new URLSearchParams();
+        dados.set('url', url);
 
-      enviar('/video', dados).then(function () {
-        modoAtual = 'video';
+        enviar('/video', dados).then(function () {
+          modoAtual = 'video';
+        });
       });
     });
   }
@@ -337,24 +349,28 @@
 
   if (botaoLogo) {
     botaoLogo.addEventListener('click', function () {
-      if (!confirmarTroca('logo')) {
-        return;
-      }
+      confirmarTroca('logo').then(function (ok) {
+        if (!ok) {
+          return;
+        }
 
-      enviar('/logo').then(function () {
-        modoAtual = 'logo';
+        enviar('/logo').then(function () {
+          modoAtual = 'logo';
+        });
       });
     });
   }
 
   if (botaoLimpar) {
     botaoLimpar.addEventListener('click', function () {
-      if (!confirmarTroca('blank')) {
-        return;
-      }
+      confirmarTroca('blank').then(function (ok) {
+        if (!ok) {
+          return;
+        }
 
-      enviar('/limpar').then(function () {
-        modoAtual = 'blank';
+        enviar('/limpar').then(function () {
+          modoAtual = 'blank';
+        });
       });
     });
   }

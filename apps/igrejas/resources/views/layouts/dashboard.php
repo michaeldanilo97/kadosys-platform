@@ -375,6 +375,7 @@ $avisosSidebar = ($comunicacaoDisponivel && $user !== null)
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="<?= $basePath ?>/assets/js/kadosys-modal.js?v=<?= View::assetVersion('assets/js/kadosys-modal.js') ?>"></script>
 <script src="<?= $basePath ?>/assets/js/dashboard.js?v=<?= View::assetVersion('assets/js/dashboard.js') ?>"></script>
 </body>
 </html>

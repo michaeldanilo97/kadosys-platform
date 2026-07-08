@@ -315,13 +315,21 @@
   // Trocar para a biblia interrompe o que ja esta sendo exibido ao vivo
   // no telao (video ou logo) - confirma antes, para evitar trocar por
   // engano no meio de um culto. Nao pede nada se a biblia ja e o que
-  // esta em exibicao (so navegando entre versiculos).
+  // esta em exibicao (so navegando entre versiculos). Assincrono
+  // (Promise<boolean>) porque usa o popup proprio do sistema (ver
+  // kadosys-modal.js) no lugar do window.confirm nativo.
   function confirmarTroca() {
     if (!modoAtual || modoAtual === 'blank' || modoAtual === 'biblia') {
-      return true;
+      return Promise.resolve(true);
     }
 
-    return window.confirm('Ja tem ' + (NOMES_MODO[modoAtual] || 'outro conteudo') + ' em exibicao no telao. Trocar para a Biblia agora?');
+    var mensagem = 'Ja tem ' + (NOMES_MODO[modoAtual] || 'outro conteudo') + ' em exibicao no telao. Trocar para a Biblia agora?';
+
+    if (!window.KadosysModal) {
+      return Promise.resolve(window.confirm(mensagem));
+    }
+
+    return window.KadosysModal.confirmar(mensagem, { confirmar: 'Trocar', icone: 'bi-book' });
   }
 
   function projetar() {
@@ -329,30 +337,32 @@
       return;
     }
 
-    if (!confirmarTroca()) {
-      return;
-    }
+    confirmarTroca().then(function (ok) {
+      if (!ok) {
+        return;
+      }
 
-    var dados = new URLSearchParams();
-    dados.set('biblia_versao', form.querySelector('[data-campo="biblia_versao"]').value);
-    dados.set('livro_id', livroSelect.value);
-    dados.set('capitulo', capituloSelect.value);
-    dados.set('versiculo_inicio', versiculoInicioSelect.value);
+      var dados = new URLSearchParams();
+      dados.set('biblia_versao', form.querySelector('[data-campo="biblia_versao"]').value);
+      dados.set('livro_id', livroSelect.value);
+      dados.set('capitulo', capituloSelect.value);
+      dados.set('versiculo_inicio', versiculoInicioSelect.value);
 
-    if (versiculoFimSelect.value) {
-      dados.set('versiculo_fim', versiculoFimSelect.value);
-    }
+      if (versiculoFimSelect.value) {
+        dados.set('versiculo_fim', versiculoFimSelect.value);
+      }
 
-    fetch(bibliaUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: dados.toString(),
-    })
-      .then(function () {
-        lastVersao = null;
-        poll();
+      fetch(bibliaUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: dados.toString(),
       })
-      .catch(function () {});
+        .then(function () {
+          lastVersao = null;
+          poll();
+        })
+        .catch(function () {});
+    });
   }
 
   form.addEventListener('submit', function (evento) {
