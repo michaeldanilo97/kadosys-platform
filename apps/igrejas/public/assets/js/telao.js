@@ -254,8 +254,15 @@
       return true;
     }
 
+    // Nao consegue confirmar o video carregado (metodo indisponivel ou
+    // erro ao consultar) - assume que NAO precisa recarregar. A
+    // alternativa (assumir que precisa) e mais perigosa: aplicarVideo()
+    // roda a cada poll (~1.5s) enquanto o modo for video, entao um
+    // "true" persistente aqui forcaria loadVideoById() de novo a cada
+    // poll, reiniciando um video que na verdade JA estava tocando bem -
+    // preso num loop que nunca deixa a reproducao real comecar.
     if (typeof player.getVideoData !== 'function') {
-      return true;
+      return false;
     }
 
     try {
@@ -263,7 +270,7 @@
 
       return !dados || !dados.video_id || dados.video_id !== videoId;
     } catch (erro) {
-      return true;
+      return false;
     }
   }
 
@@ -774,9 +781,12 @@
   // por conta propria enquanto o player nao existir, e como ultimo
   // recurso reinjeta o script apos alguns segundos sem sucesso.
   var tentativasPlayer = 0;
+  var LIMITE_TENTATIVAS_PLAYER = 25; // ~800ms cada = 20s tentando antes de avisar
+
   var intervaloPlayer = setInterval(function () {
     if (player) {
       clearInterval(intervaloPlayer);
+      esconderErroVideo();
 
       return;
     }
@@ -784,7 +794,13 @@
     tentativasPlayer++;
     criarPlayer();
 
-    if (!player && tentativasPlayer === 6) {
+    if (player) {
+      esconderErroVideo();
+
+      return;
+    }
+
+    if (tentativasPlayer === 6) {
       var scriptAntigo = document.querySelector('script[src*="youtube.com/iframe_api"]');
 
       if (scriptAntigo) {
@@ -794,6 +810,14 @@
       var novoScript = document.createElement('script');
       novoScript.src = 'https://www.youtube.com/iframe_api';
       document.body.appendChild(novoScript);
+    } else if (tentativasPlayer === LIMITE_TENTATIVAS_PLAYER) {
+      // Depois de ~20s sem conseguir nem criar o player (nao e so um
+      // video especifico com problema - aqui e a propria API do
+      // YouTube que nunca respondeu), o mais provavel e a rede estar
+      // bloqueando o dominio do YouTube por completo. Sem isso, os
+      // botoes de play/pause do operador ficavam sem efeito nenhum e
+      // sem nenhuma explicacao visivel na tela.
+      mostrarErroVideo('Nao foi possivel carregar o player do YouTube. Verifique se este dispositivo tem acesso a internet e se o YouTube nao esta bloqueado na rede.');
     }
   }, 800);
 
