@@ -38,13 +38,21 @@ final class ConfiguracaoController extends Controller
 
     public function index(): void
     {
+        $configuracao = ConfiguracaoIgreja::atual();
+
         echo $this->view('dashboard.configuracoes.index', [
             'pageTitle' => 'Configuracoes - KADOSYS Igrejas',
             'activeMenu' => 'configuracoes',
             'breadcrumb' => ['Dashboard', 'Configuracoes'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
-            'configuracao' => ConfiguracaoIgreja::atual(),
+            'configuracao' => $configuracao,
+            // Link publico da pagina de doacao, pronto pra compartilhar
+            // (WhatsApp, redes sociais etc.) - precisa do host de verdade
+            // (subdominio da igreja), nao da APP_URL fixa da plataforma
+            // (essa e usada so pro retorno do Mercado Pago, ver
+            // config/mercadopago.php).
+            'linkDoacao' => $this->urlAbsoluta('/doar'),
             'assinatura' => Assinatura::ultima(),
             'pagamentoConfigurado' => (new MercadoPagoClient())->configurado(),
             // Pix so esta disponivel pra igrejas provisionadas
@@ -271,6 +279,45 @@ final class ConfiguracaoController extends Controller
         }
 
         $this->redirect('/dashboard/configuracoes');
+    }
+
+    /**
+     * Cadastra/atualiza a chave Pix da igreja para doacoes publicas via
+     * Pix estatico (ver DoacaoController) - dinheiro cai direto na
+     * conta da igreja, sem passar pela plataforma.
+     */
+    public function atualizarChavePix(): void
+    {
+        if (Csrf::verify($this->request->input('_csrf_token'))) {
+            $chave = trim((string) $this->request->input('pix_chave', ''));
+            $nomeBeneficiario = trim((string) $this->request->input('pix_nome_beneficiario', ''));
+
+            if ($chave === '') {
+                ConfiguracaoIgreja::removerChavePix();
+                Session::flash('config_success', 'Chave Pix removida - a pagina de doacao fica indisponivel ate cadastrar uma nova.');
+            } else {
+                $nomeBeneficiario = $nomeBeneficiario !== '' ? $nomeBeneficiario : (string) (ConfiguracaoIgreja::atual()->nomeIgreja ?? 'Igreja');
+                ConfiguracaoIgreja::atualizarChavePix($chave, $nomeBeneficiario);
+                Session::flash('config_success', 'Chave Pix salva - a pagina de doacao ja esta disponivel.');
+            }
+        }
+
+        $this->redirect('/dashboard/configuracoes');
+    }
+
+    /**
+     * URL absoluta (com protocolo e host) da requisicao atual - usa o
+     * host de verdade (subdominio da igreja) em vez de qualquer valor
+     * fixo de configuracao, pra funcionar automaticamente em qualquer
+     * ambiente (producao, staging, dominio customizado).
+     */
+    private function urlAbsoluta(string $path): string
+    {
+        $https = !empty($this->request->server['HTTPS']) && $this->request->server['HTTPS'] !== 'off';
+        $protocolo = $https ? 'https' : 'http';
+        $host = (string) ($this->request->server['HTTP_HOST'] ?? 'localhost');
+
+        return $protocolo . '://' . $host . $this->url($path);
     }
 
     private function removerArquivosLogo(string $destinoDir): void

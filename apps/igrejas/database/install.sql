@@ -179,6 +179,8 @@ CREATE TABLE IF NOT EXISTS configuracoes_igreja (
     numero VARCHAR(20) NULL,
     cidade VARCHAR(100) NULL,
     estado CHAR(2) NULL,
+    pix_chave VARCHAR(140) NULL,
+    pix_nome_beneficiario VARCHAR(25) NULL,
     cadastro_membros_habilitado TINYINT(1) NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -392,6 +394,28 @@ INSERT INTO financeiro_categorias (nome, tipo) VALUES
     ('Eventos', 'saida'),
     ('Missoes e acoes sociais', 'saida'),
     ('Outros', 'saida');
+
+-- 032 - Doacao via Pix estatico (chave da propria igreja, ver
+-- Igrejas\Core\PixEstatico) - sem gateway, entao sem webhook: o doador
+-- confirma manualmente que fez o Pix, o que gera o financeiro_lancamentos
+-- correspondente (ver Igrejas\Models\FinanceiroDoacao::confirmar()).
+CREATE TABLE IF NOT EXISTS financeiro_doacoes (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nome_doador VARCHAR(150) NULL,
+    categoria_id INT UNSIGNED NULL,
+    valor DECIMAL(10,2) NOT NULL,
+    mensagem VARCHAR(255) NULL,
+    txid VARCHAR(25) NOT NULL UNIQUE,
+    status ENUM('pendente', 'confirmada') NOT NULL DEFAULT 'pendente',
+    lancamento_id INT UNSIGNED NULL,
+    confirmada_em TIMESTAMP NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY financeiro_doacoes_status_index (status),
+    CONSTRAINT financeiro_doacoes_categoria_id_foreign
+        FOREIGN KEY (categoria_id) REFERENCES financeiro_categorias (id) ON DELETE SET NULL,
+    CONSTRAINT financeiro_doacoes_lancamento_id_foreign
+        FOREIGN KEY (lancamento_id) REFERENCES financeiro_lancamentos (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- ----------------------------------------------------------------------------

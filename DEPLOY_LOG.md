@@ -17,6 +17,50 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 48 - 2026-07-09
+
+**Doacao via Pix estatico (novo) + loop de reload do video corrigido + menu lateral recolhivel + ajustes de UI**
+
+- **Doacao via Pix (nova funcionalidade)**: a igreja agora pode
+  cadastrar a propria chave Pix em Configuracoes e ganhar uma pagina
+  publica (`/doar`, sem login, pra compartilhar no WhatsApp/redes) onde
+  qualquer pessoa escolhe um valor, categoria (dizimo/oferta/etc.) e
+  recebe um QR code Pix pra pagar direto pelo app do banco - o dinheiro
+  cai direto na conta da igreja, sem passar pela plataforma nem por
+  nenhum gateway de pagamento. Como e Pix por chave (sem gateway), o
+  Banco Central nao avisa ninguem quando o pagamento e feito - o doador
+  confirma manualmente ("Ja fiz o Pix"), o que ja cria o lancamento
+  correspondente no Financeiro automaticamente. O payload do QR
+  (padrao BR Code do Banco Central) e montado no servidor
+  (`Igrejas\Core\PixEstatico`, com CRC16 validado contra uma
+  implementacao independente) e renderizado como imagem inteiramente no
+  navegador (biblioteca `qrcode-generator` de Kazuhiko Arase,
+  vendorizada em `assets/js/vendor/`, MIT) - nenhum servico externo
+  envolvido. Nova migracao 032 (chave Pix em `configuracoes_igreja` +
+  tabela `financeiro_doacoes`).
+- **Video do telao preso num loop de reload**: uma correcao anterior
+  (Ajuste 47) fazia o telao assumir "precisa recarregar o video" sempre
+  que nao conseguia confirmar 100% que o video certo estava carregado -
+  como essa checagem roda a cada poll (~1,5s) enquanto o modo for
+  video, isso podia forcar o video a recomecar do zero repetidamente,
+  mesmo quando ja estava tocando direitinho, e ele nunca chegava a
+  reproduzir de verdade. Revertido para o comportamento conservador
+  (so recarrega quando ha certeza real de que o video errado - ou
+  nenhum - esta carregado).
+- **Menu lateral recolhivel**: novo botao no topo da sidebar do painel
+  pra recolher/expandir o menu (preferencia salva no navegador). O
+  mobile continua funcionando como overlay de tela cheia, ignorando
+  esse estado.
+- **Dropdown de busca de livro da Biblia**: tinha um overlay escuro
+  cobrindo a pagina inteira (sidebar, topbar, outros paineis) ao abrir
+  a busca - trocado por um esmaecimento bem mais sutil, so o
+  suficiente pra separar visualmente o dropdown do painel de video
+  logo abaixo.
+- **Botoes Play/Pausar/Fadeout (painel de Projecao)**: agora refletem o
+  estado real reportado pelo telao a cada poll, nao so o ultimo clique
+  local - carregar um video novo ja marca "Play" sozinho, e mudancas
+  de outra sessao/operador tambem sincronizam.
+
 ## Ajuste 47 - 2026-07-05
 
 **Tela preta do video corrigida + voz masculina na leitura + popups modernos**

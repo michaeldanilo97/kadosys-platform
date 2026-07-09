@@ -11,6 +11,7 @@ use Igrejas\Controllers\ComunicacaoController;
 use Igrejas\Controllers\ConfiguracaoController;
 use Igrejas\Controllers\CultoController;
 use Igrejas\Controllers\DashboardController;
+use Igrejas\Controllers\DoacaoController;
 use Igrejas\Controllers\FinanceiroController;
 use Igrejas\Controllers\GrupoController;
 use Igrejas\Controllers\LandingController;
@@ -187,6 +188,7 @@ $router->get('/dashboard/configuracoes', [ConfiguracaoController::class, 'index'
 $router->post('/dashboard/configuracoes/logo', [ConfiguracaoController::class, 'atualizarLogo'], [AuthMiddleware::class]);
 $router->post('/dashboard/configuracoes/logo/remover', [ConfiguracaoController::class, 'removerLogo'], [AuthMiddleware::class]);
 $router->post('/dashboard/configuracoes/cadastro-membros', [ConfiguracaoController::class, 'atualizarCadastroMembros'], [AuthMiddleware::class]);
+$router->post('/dashboard/configuracoes/chave-pix', [ConfiguracaoController::class, 'atualizarChavePix'], [AuthMiddleware::class]);
 
 // Assinatura recorrente do plano via Mercado Pago (Checkout Pro). Sem
 // PlanoMiddleware pelo mesmo motivo das rotas de Configuracoes acima.
@@ -265,6 +267,15 @@ $router->get('/telao/{token}', [TelaoController::class, 'show']);
 // com a congregacao (grupo do WhatsApp, QR code no templo, etc.). Mostra
 // so os avisos de Comunicacao publicados com publico "todos".
 $router->get('/avisos', [AvisoPublicoController::class, 'index']);
+
+// Doacao publica via Pix estatico (chave da propria igreja, sem login)
+// - link pra compartilhar com a congregacao, mesmo padrao do quadro de
+// avisos acima. Ver DoacaoController pro porque nao ha confirmacao
+// automatica de pagamento aqui.
+$router->get('/doar', [DoacaoController::class, 'formulario']);
+$router->post('/doar', [DoacaoController::class, 'criar']);
+$router->get('/doar/{id}', [DoacaoController::class, 'mostrar']);
+$router->post('/doar/{id}/confirmar', [DoacaoController::class, 'confirmar']);
 
 // Tela publica do preletor (tablet do pastor). Acesso por PIN de 6
 // digitos, sem exigir login administrativo.
