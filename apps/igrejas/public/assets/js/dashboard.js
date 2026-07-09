@@ -9,6 +9,7 @@
     initSearchShortcut();
     initConfirmForms();
     initTopbarDropdowns();
+    initCopiarLink();
   });
 
   function initTheme() {
@@ -209,6 +210,63 @@
     document.addEventListener('keydown', function (event) {
       if (event.key === 'Escape') {
         closeAll(null);
+      }
+    });
+  }
+
+  /**
+   * Botao generico de "copiar" um campo readonly pro clipboard - usado
+   * hoje no link publico de doacao (Configuracoes), mas serve pra
+   * qualquer campo futuro que precise disso: data-copiar-link aponta
+   * pro id do input com o texto a copiar.
+   */
+  function initCopiarLink() {
+    var botoes = document.querySelectorAll('[data-copiar-link]');
+
+    botoes.forEach(function (botao) {
+      var input = document.getElementById(botao.getAttribute('data-copiar-link'));
+
+      if (!input) {
+        return;
+      }
+
+      botao.addEventListener('click', function () {
+        copiarTexto(input.value).then(function () {
+          var iconeOriginal = botao.innerHTML;
+          botao.classList.add('copiado');
+          botao.innerHTML = '<i class="bi bi-check2"></i>';
+
+          setTimeout(function () {
+            botao.classList.remove('copiado');
+            botao.innerHTML = iconeOriginal;
+          }, 1800);
+        }).catch(function () {
+          input.select();
+        });
+      });
+    });
+  }
+
+  function copiarTexto(texto) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(texto);
+    }
+
+    return new Promise(function (resolve, reject) {
+      var campoTemp = document.createElement('textarea');
+      campoTemp.value = texto;
+      campoTemp.style.position = 'fixed';
+      campoTemp.style.opacity = '0';
+      document.body.appendChild(campoTemp);
+      campoTemp.select();
+
+      try {
+        document.execCommand('copy');
+        resolve();
+      } catch (erro) {
+        reject(erro);
+      } finally {
+        document.body.removeChild(campoTemp);
       }
     });
   }

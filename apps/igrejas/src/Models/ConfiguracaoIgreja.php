@@ -23,13 +23,16 @@ final class ConfiguracaoIgreja
         public readonly ?string $numero = null,
         public readonly ?string $cidade = null,
         public readonly ?string $estado = null,
+        public readonly ?string $pixChave = null,
+        public readonly ?string $pixNomeBeneficiario = null,
     ) {
     }
 
     public static function atual(): self
     {
         $stmt = Database::connection()->prepare(
-            'SELECT nome_igreja, logo_path, plano, cadastro_membros_habilitado, cep, endereco, numero, cidade, estado
+            'SELECT nome_igreja, logo_path, plano, cadastro_membros_habilitado, cep, endereco, numero, cidade, estado,
+                    pix_chave, pix_nome_beneficiario
              FROM configuracoes_igreja WHERE id = 1 LIMIT 1'
         );
         $stmt->execute();
@@ -45,7 +48,37 @@ final class ConfiguracaoIgreja
             numero: $row['numero'] ?? null,
             cidade: $row['cidade'] ?? null,
             estado: $row['estado'] ?? null,
+            pixChave: $row['pix_chave'] ?? null,
+            pixNomeBeneficiario: $row['pix_nome_beneficiario'] ?? null,
         );
+    }
+
+    /**
+     * Doacao via Pix estatico so fica disponivel depois que a igreja
+     * cadastra a propria chave (ver DoacaoController) - sem isso nao
+     * ha pra quem mandar o dinheiro.
+     */
+    public function doacaoPixHabilitada(): bool
+    {
+        return $this->pixChave !== null && trim($this->pixChave) !== '';
+    }
+
+    public static function atualizarChavePix(string $chave, string $nomeBeneficiario): void
+    {
+        $stmt = Database::connection()->prepare(
+            'INSERT INTO configuracoes_igreja (id, pix_chave, pix_nome_beneficiario)
+             VALUES (1, :chave, :nome)
+             ON DUPLICATE KEY UPDATE pix_chave = VALUES(pix_chave), pix_nome_beneficiario = VALUES(pix_nome_beneficiario)'
+        );
+        $stmt->execute(['chave' => $chave, 'nome' => $nomeBeneficiario]);
+    }
+
+    public static function removerChavePix(): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE configuracoes_igreja SET pix_chave = NULL, pix_nome_beneficiario = NULL WHERE id = 1'
+        );
+        $stmt->execute();
     }
 
     public static function atualizarPlano(string $plano): void

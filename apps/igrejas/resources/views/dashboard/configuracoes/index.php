@@ -114,3 +114,55 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
         </div>
     </form>
 </div>
+
+<div class="dash-panel">
+    <div class="dash-panel-head">
+        <h2><i class="bi bi-qr-code"></i> Doacao via Pix</h2>
+    </div>
+    <p class="dash-page-subtitle" style="margin-bottom: 1.4rem;">
+        Cadastre a chave Pix da igreja para gerar uma pagina publica de doacao (dizimos, ofertas) - o dinheiro cai
+        direto na conta da igreja, sem passar pela plataforma. Como e um Pix por chave (sem gateway), nao ha
+        confirmacao automatica de pagamento - o doador confirma manualmente que fez o Pix.
+    </p>
+
+    <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/chave-pix" class="crud-form">
+        <?= $csrf ?>
+        <div class="crud-field">
+            <label for="pix_chave">Chave Pix</label>
+            <input
+                type="text"
+                id="pix_chave"
+                name="pix_chave"
+                value="<?= htmlspecialchars($configuracao->pixChave ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatoria"
+            >
+        </div>
+        <div class="crud-field">
+            <label for="pix_nome_beneficiario">Nome exibido no Pix (opcional)</label>
+            <input
+                type="text"
+                id="pix_nome_beneficiario"
+                name="pix_nome_beneficiario"
+                value="<?= htmlspecialchars($configuracao->pixNomeBeneficiario ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                placeholder="Padrao: nome da igreja"
+                maxlength="25"
+            >
+            <span class="auth-field-hint">Maximo 25 caracteres, sem acentos (limitacao do padrao Pix).</span>
+        </div>
+        <div class="crud-form-actions" style="justify-content: flex-start;">
+            <button type="submit" class="btn-k btn-k-grad"><i class="bi bi-check-lg"></i> Salvar</button>
+        </div>
+    </form>
+
+    <?php if ($configuracao->doacaoPixHabilitada()): ?>
+        <div class="auth-field" style="margin-top: 1.2rem;">
+            <label for="link_doacao">Link publico para compartilhar</label>
+            <div class="auth-slug-input">
+                <input type="text" class="form-control" id="link_doacao" value="<?= htmlspecialchars($linkDoacao, ENT_QUOTES, 'UTF-8') ?>" readonly>
+                <button type="button" class="pix-copiar-btn" data-copiar-link="link_doacao" aria-label="Copiar link">
+                    <i class="bi bi-clipboard"></i>
+                </button>
+            </div>
+        </div>
+    <?php endif; ?>
+</div>
