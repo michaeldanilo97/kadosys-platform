@@ -302,9 +302,10 @@
   }
 
   if (window.KadosysBiblia) {
+    window.KadosysBiblia.montarVersaoPills(form.querySelector('[data-versao-pills]'));
     window.KadosysBiblia.montarComboLivro(root.querySelector('[data-livro-combo]'));
-    window.KadosysBiblia.montarCapitulo(form);
-    window.KadosysBiblia.montarVersiculos(form, capituloInfoUrl);
+    window.KadosysBiblia.montarPreletorCapitulo(form);
+    window.KadosysBiblia.montarPreletorVersiculos(form, capituloInfoUrl);
   }
 
   var versiculoInicioSelect = form.querySelector('[data-campo="versiculo_inicio"]');

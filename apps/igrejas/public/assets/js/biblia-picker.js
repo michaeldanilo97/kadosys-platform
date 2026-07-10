@@ -520,6 +520,244 @@
   }
 
   /**
+   * Dropdown numerico 100% customizado (botao + lista de chips que abre
+   * por cima do conteudo) - usado no Preletor no lugar de <select>
+   * nativo pra Capitulo/Versiculo/Ate. Motivo: o navegador nao deixa
+   * estilizar de forma confiavel a LISTA que abre de um <select> (a
+   * caixa fechada ate da pra temer com color-scheme, mas o popup em si
+   * ignora o tema em varios navegadores/SOs), o que deixava a lista
+   * branca, sem contraste, e as vezes ate sobrepondo o texto da tela
+   * de forma confusa.
+   */
+  function montarNumeroCombo(container) {
+    var toggle = container.querySelector('[data-num-combo-toggle]');
+    var lista = container.querySelector('[data-num-combo-lista]');
+    var grid = container.querySelector('[data-num-combo-grid]');
+
+    if (!toggle || !lista || !grid) {
+      return null;
+    }
+
+    function abrir() {
+      lista.hidden = false;
+      toggle.setAttribute('aria-expanded', 'true');
+    }
+
+    function fechar() {
+      lista.hidden = true;
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+
+    toggle.addEventListener('click', function (evento) {
+      evento.stopPropagation();
+
+      if (lista.hidden) {
+        abrir();
+      } else {
+        fechar();
+      }
+    });
+
+    document.addEventListener('click', function (evento) {
+      if (!container.contains(evento.target)) {
+        fechar();
+      }
+    });
+
+    document.addEventListener('keydown', function (evento) {
+      if (evento.key === 'Escape' && !lista.hidden) {
+        fechar();
+      }
+    });
+
+    return {
+      setToggleTexto: function (texto) {
+        toggle.textContent = texto;
+      },
+      popular: function (total, valorAtivo, valorFim, onSelecionar) {
+        popularChips(grid, total, valorAtivo, valorFim, function (numero, evento) {
+          onSelecionar(numero, evento);
+          fechar();
+        });
+      },
+    };
+  }
+
+  /**
+   * Capitulo do Preletor - mesma dependencia de montarCapituloChips
+   * (repovoa quando o livro muda), so que escrevendo no dropdown
+   * customizado (montarNumeroCombo) em vez do container de chips
+   * sempre visivel usado no painel do operador.
+   */
+  function montarPreletorCapitulo(raiz) {
+    var oculto = raiz.querySelector('[data-campo="livro_id"]');
+    var capituloOculto = raiz.querySelector('[data-campo="capitulo"]');
+    var comboEl = raiz.querySelector('[data-num-combo="capitulo"]');
+    var itens = Array.prototype.slice.call(raiz.querySelectorAll('[data-livro-combo-item]'));
+    var combo = comboEl ? montarNumeroCombo(comboEl) : null;
+
+    if (!oculto || !capituloOculto || !combo) {
+      return { definir: function () {} };
+    }
+
+    function popular(valorAtivo) {
+      var item = itens.filter(function (i) {
+        return i.getAttribute('data-livro-id') === oculto.value;
+      })[0];
+      var total = item ? parseInt(item.getAttribute('data-total-capitulos'), 10) : 0;
+
+      if (!total) {
+        combo.setToggleTexto('Cap...');
+
+        return;
+      }
+
+      combo.popular(total, valorAtivo, null, function (numero) {
+        capituloOculto.value = String(numero);
+        combo.setToggleTexto(String(numero));
+        dispararChange(capituloOculto);
+      });
+    }
+
+    oculto.addEventListener('change', function () {
+      capituloOculto.value = '';
+      combo.setToggleTexto('Cap...');
+      popular(null);
+    });
+
+    return {
+      definir: function (capitulo) {
+        capituloOculto.value = String(capitulo);
+        combo.setToggleTexto(String(capitulo));
+        popular(capitulo);
+      },
+    };
+  }
+
+  /**
+   * Versiculo inicio/fim do Preletor - mesma dependencia/logica de
+   * montarVersiculoChips (livro+versao+capitulo, busca o total real no
+   * servidor, reprojeta ao trocar de versao), so que com DOIS dropdowns
+   * numericos separados (em vez de uma unica grade com shift+clique) -
+   * mantem o mesmo layout de 2 campos (Vers./Ate) que ja existia no
+   * Preletor antes desta troca.
+   */
+  function montarPreletorVersiculos(raiz, capituloInfoUrl) {
+    var oculto = raiz.querySelector('[data-campo="livro_id"]');
+    var versaoOculto = raiz.querySelector('[data-campo="biblia_versao"]');
+    var capituloOculto = raiz.querySelector('[data-campo="capitulo"]');
+    var inicioOculto = raiz.querySelector('[data-campo="versiculo_inicio"]');
+    var fimOculto = raiz.querySelector('[data-campo="versiculo_fim"]');
+    var comboInicioEl = raiz.querySelector('[data-num-combo="versiculo_inicio"]');
+    var comboFimEl = raiz.querySelector('[data-num-combo="versiculo_fim"]');
+    var comboInicio = comboInicioEl ? montarNumeroCombo(comboInicioEl) : null;
+    var comboFim = comboFimEl ? montarNumeroCombo(comboFimEl) : null;
+
+    if (!oculto || !capituloOculto || !inicioOculto || !comboInicio || !comboFim) {
+      return { definir: function () { return Promise.resolve(); } };
+    }
+
+    function atualizar() {
+      var livroId = oculto.value;
+      var capitulo = capituloOculto.value;
+      var versao = versaoOculto ? versaoOculto.value : '';
+
+      if (!livroId || !capitulo || !versao) {
+        comboInicio.setToggleTexto('Vers...');
+        comboFim.setToggleTexto('Opcional');
+
+        return Promise.resolve();
+      }
+
+      var url = capituloInfoUrl
+        + '?livro_id=' + encodeURIComponent(livroId)
+        + '&capitulo=' + encodeURIComponent(capitulo)
+        + '&versao=' + encodeURIComponent(versao);
+
+      return fetch(url, { cache: 'no-store' })
+        .then(function (resposta) {
+          return resposta.json();
+        })
+        .then(function (dados) {
+          var total = dados.totalVersiculos || 0;
+
+          if (!total) {
+            comboInicio.setToggleTexto('Sem texto');
+            comboFim.setToggleTexto('Opcional');
+
+            return;
+          }
+
+          var inicioAtual = inicioOculto.value ? Number(inicioOculto.value) : null;
+          var fimAtual = fimOculto.value ? Number(fimOculto.value) : null;
+
+          comboInicio.popular(total, inicioAtual, null, function (numero) {
+            inicioOculto.value = String(numero);
+            comboInicio.setToggleTexto(String(numero));
+            dispararChange(inicioOculto);
+          });
+
+          comboFim.popular(total, fimAtual, null, function (numero) {
+            fimOculto.value = String(numero);
+            comboFim.setToggleTexto(String(numero));
+            dispararChange(fimOculto);
+          });
+
+          if (inicioAtual) {
+            comboInicio.setToggleTexto(String(inicioAtual));
+          }
+
+          if (fimAtual) {
+            comboFim.setToggleTexto(String(fimAtual));
+          }
+        })
+        .catch(function () {});
+    }
+
+    oculto.addEventListener('change', function () {
+      inicioOculto.value = '';
+      fimOculto.value = '';
+      comboInicio.setToggleTexto('Vers...');
+      comboFim.setToggleTexto('Opcional');
+      atualizar();
+    });
+    capituloOculto.addEventListener('change', function () {
+      inicioOculto.value = '';
+      fimOculto.value = '';
+      comboInicio.setToggleTexto('Vers...');
+      comboFim.setToggleTexto('Opcional');
+      atualizar();
+    });
+
+    if (versaoOculto) {
+      // Trocar a versao/traducao mantem o mesmo versiculo que ja estava
+      // selecionado (so busca o texto na nova traducao) e reprojeta
+      // automaticamente - sem isso, trocar a versao no preletor nao
+      // tinha nenhum efeito ate o usuario reclicar em um versiculo.
+      versaoOculto.addEventListener('change', function () {
+        var inicioAtual = inicioOculto.value;
+
+        atualizar().then(function () {
+          if (inicioAtual) {
+            dispararChange(inicioOculto);
+          }
+        });
+      });
+    }
+
+    return {
+      definir: function (inicio, fim) {
+        inicioOculto.value = inicio ? String(inicio) : '';
+        fimOculto.value = fim && fim !== inicio ? String(fim) : '';
+        comboInicio.setToggleTexto(inicio ? String(inicio) : 'Vers...');
+        comboFim.setToggleTexto(fim && fim !== inicio ? String(fim) : 'Opcional');
+
+        return atualizar();
+      },
+    };
+  }
+
+  /**
    * Redimensiona `stage` (em pixels, letterboxed) para caber em
    * `container` mantendo proporcao 16:9 - usado tanto no telao quanto no
    * preletor, para que os dois exibam o texto na mesma proporcao e as
@@ -558,6 +796,8 @@
     montarVersaoPills: montarVersaoPills,
     montarCapituloChips: montarCapituloChips,
     montarVersiculoChips: montarVersiculoChips,
+    montarPreletorCapitulo: montarPreletorCapitulo,
+    montarPreletorVersiculos: montarPreletorVersiculos,
     ajustarPalco: ajustarPalco,
   };
 })(window);

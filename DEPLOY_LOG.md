@@ -17,6 +17,34 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 55 - 2026-07-10
+
+**Preletor: troca os selects nativos de Versao/Capitulo/Versiculo/Ate por widgets customizados escuros**
+
+- Bug reportado ao vivo (com screenshots): no tablet do preletor, ao
+  abrir os campos Versao/Cap./Vers./Ate, a lista de opcoes aparecia
+  branca, sem nenhum estilo, sobrepondo o texto biblico e a previa do
+  telao de forma confusa - mesmo com `color-scheme: dark` ja aplicado
+  na caixa fechada do `<select>`. Causa: o POPUP de um `<select>`
+  nativo e renderizado pelo proprio navegador/SO em varios casos
+  (principalmente fora do Chromium), ignorando o tema definido via
+  CSS - uma limitacao conhecida da plataforma web, nao um bug de
+  codigo corrigivel so com mais CSS.
+- Corrigido substituindo os 4 campos por componentes 100% customizados
+  (mesma linguagem visual do resto do app):
+  - **Versao**: pills (NVI/ACF/AA), reaproveitando o mesmo componente
+    `montarVersaoPills` ja usado no painel do operador.
+  - **Capitulo/Versiculo/Ate**: novo dropdown numerico
+    (`montarNumeroCombo` em `biblia-picker.js`) - um botao que abre uma
+    grade de numeros clicaveis, com a mesma casca escura ja usada pelo
+    combo de busca de livro (fundo solido, borda, sombra).
+- Ao trocar a versao/traducao, o texto no preletor agora reprojeta
+  automaticamente no telao (mesmo comportamento ja existente no painel
+  do operador) - antes exigia reclicar num versiculo pra ver o efeito.
+- Validado o fluxo completo (livro -> capitulo -> versiculo -> texto
+  projetado -> troca de versao -> texto atualizado automaticamente) e
+  o fechamento do dropdown ao clicar fora.
+
 ## Ajuste 54 - 2026-07-10
 
 **Corrige lista de livros da Biblia sobrepondo o painel de Video de forma confusa**
