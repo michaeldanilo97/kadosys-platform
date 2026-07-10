@@ -22,6 +22,7 @@ $basePath = $config['base_path'] ?? '';
 >
     <header class="preletor-topbar">
         <span class="brand"><span class="dot"></span> Preletor &middot; ao vivo</span>
+        <span class="preletor-comando-indicador" data-comando-indicador hidden><i class="bi bi-person-fill"></i> <span data-comando-indicador-texto></span></span>
         <form method="POST" action="<?= $basePath ?>/preletor/sair">
             <button type="submit" class="preletor-sair"><i class="bi bi-box-arrow-right"></i> Sair</button>
         </form>
@@ -81,9 +82,9 @@ $basePath = $config['base_path'] ?? '';
                 </div>
             </div>
             <div class="preletor-field preletor-field-sm">
-                <label>Ate</label>
+                <label>Ate <i class="bi bi-info-circle" title="Intervalos longos (muitos versiculos de uma vez) diminuem automaticamente a letra no telao pra caber tudo - prefira intervalos curtos se a legibilidade for importante."></i></label>
                 <div class="num-combo" data-num-combo="versiculo_fim">
-                    <button type="button" class="num-combo-toggle" data-num-combo-toggle aria-expanded="false">Opcional</button>
+                    <button type="button" class="num-combo-toggle" data-num-combo-toggle aria-expanded="false" title="Intervalos longos diminuem a letra no telao pra caber tudo.">Opcional</button>
                     <input type="hidden" data-campo="versiculo_fim">
                     <div class="livro-combo-lista num-combo-lista" data-num-combo-lista hidden>
                         <div class="biblia-chips" data-num-combo-grid></div>

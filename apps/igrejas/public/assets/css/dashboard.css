@@ -1046,6 +1046,19 @@ body.dashboard-body[data-theme="light"] {
   color: #6D28D9;
 }
 
+/* Indicador de "quem esta no comando" (operador vs preletor) - cor
+   distinta da badge padrao pra chamar atencao quando o OUTRO lado
+   esta controlando o telao agora. */
+.panel-badge-comando {
+  background: rgba(212, 161, 63, 0.14);
+  border-color: rgba(212, 161, 63, 0.4);
+  color: #d4a13f;
+}
+
+[data-theme="light"] .panel-badge-comando {
+  color: #92650f;
+}
+
 /* Painel IA */
 
 .dash-ai-panel {

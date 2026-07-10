@@ -789,6 +789,49 @@
     stage.style.height = Math.floor(h) + 'px';
   }
 
+  var ESCALA_MINIMA_TEXTO = 0.4;
+  var PASSO_ESCALA_TEXTO = 0.06;
+
+  /**
+   * Reduz o tamanho do texto biblico (via a variavel CSS
+   * --biblia-escala, ver .stage-biblia-texto em telao.css) ate ele
+   * caber inteiro dentro do palco - sem isso, um intervalo de varios
+   * versiculos (campo "Ate" da busca) podia estourar o palco 16:9 e
+   * ter o final do texto cortado, tanto no telao quanto no preletor.
+   * Chamado toda vez que o texto exibido muda (ver renderBiblia() no
+   * telao.js e a funcao equivalente no preletor.js), sempre comecando
+   * de novo em escala 1 (tamanho normal) - um versiculo unico
+   * normalmente nao precisa reduzir nada.
+   *
+   * @param {HTMLElement} stage - o palco 16:9 (limite de altura/largura)
+   * @param {HTMLElement} textoEl - o elemento com o texto biblico (filho do palco)
+   */
+  function ajustarTamanhoTexto(stage, textoEl) {
+    if (!stage || !textoEl) {
+      return;
+    }
+
+    stage.style.setProperty('--biblia-escala', '1');
+
+    if (!textoEl.textContent || !textoEl.textContent.trim()) {
+      return;
+    }
+
+    var escala = 1;
+
+    // scrollHeight/Width do proprio texto comparado ao espaco
+    // disponivel no palco (ja com o padding do .stage-biblia
+    // descontado, por isso mede o palco inteiro - o padding e uma
+    // fracao fixa dele, cqw/cqh - e nao so o elemento do texto).
+    while (
+      escala > ESCALA_MINIMA_TEXTO
+      && (textoEl.scrollHeight > stage.clientHeight || textoEl.scrollWidth > stage.clientWidth)
+    ) {
+      escala = Math.max(ESCALA_MINIMA_TEXTO, escala - PASSO_ESCALA_TEXTO);
+      stage.style.setProperty('--biblia-escala', String(escala));
+    }
+  }
+
   window.KadosysBiblia = {
     montarComboLivro: montarComboLivro,
     montarCapitulo: montarCapitulo,
@@ -799,5 +842,6 @@
     montarPreletorCapitulo: montarPreletorCapitulo,
     montarPreletorVersiculos: montarPreletorVersiculos,
     ajustarPalco: ajustarPalco,
+    ajustarTamanhoTexto: ajustarTamanhoTexto,
   };
 })(window);

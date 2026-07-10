@@ -31,10 +31,14 @@
   var previewRef = root.querySelector('[data-nav-preview-ref]');
   var previewTexto = root.querySelector('[data-nav-preview-texto]');
   var botoesNav = root.querySelectorAll('[data-nav-acao]');
+  var comandoIndicador = root.querySelector('[data-comando-indicador]');
+  var comandoIndicadorTexto = root.querySelector('[data-comando-indicador-texto]');
 
   var lastVersao = null;
   var lastReferenciaChave = null;
   var modoAtual = null;
+  var controladoPorAtual = null;
+  var MEU_PAPEL = 'preletor';
   var desenhando = false;
   var caneteAtiva = false;
   var ultimoPonto = null;
@@ -218,8 +222,31 @@
     previewTexto.textContent = biblia.proximaPreview.texto || '';
   }
 
+  /**
+   * Mostra "Operador no comando" no topo quando o painel do operador
+   * foi quem definiu por ultimo o conteudo em exibicao - avisa o
+   * pastor antes mesmo dele tentar mexer em algo (a confirmacao de
+   * "assumir comando" so aparece DEPOIS de tentar projetar; este
+   * indicador avisa ANTES).
+   */
+  function sincronizarIndicadorComando() {
+    if (!comandoIndicador || !comandoIndicadorTexto) {
+      return;
+    }
+
+    var outroTemComando = !!controladoPorAtual && controladoPorAtual !== MEU_PAPEL;
+
+    comandoIndicador.hidden = !outroTemComando;
+
+    if (outroTemComando) {
+      comandoIndicadorTexto.textContent = 'Operador no comando';
+    }
+  }
+
   function aplicarEstado(dados) {
     modoAtual = dados ? dados.modo : null;
+    controladoPorAtual = dados ? dados.controladoPor : null;
+    sincronizarIndicadorComando();
 
     if (!dados || dados.ativo === false || dados.modo !== 'biblia') {
       return;
@@ -230,6 +257,10 @@
 
     renderTexto(biblia);
     renderPreview(biblia);
+
+    if (window.KadosysBiblia) {
+      window.KadosysBiblia.ajustarTamanhoTexto(stage, texto);
+    }
 
     // Referencia mudou: as marcacoes a lapis sao efemeras por versiculo
     // (o servidor ja zera biblia_marcacao ao trocar a referencia). Excecao:
@@ -261,26 +292,33 @@
   }
 
   function navegar(direcao) {
-    var dados = new URLSearchParams();
-    dados.set('direcao', direcao);
+    confirmarTroca().then(function (ok) {
+      if (!ok) {
+        return;
+      }
 
-    fetch(navegarUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: dados.toString(),
-    })
-      .then(function (resposta) {
-        return resposta.json();
-      })
-      .then(function (dadosResposta) {
-        if (dadosResposta.erro) {
-          return;
-        }
+      var dados = new URLSearchParams();
+      dados.set('direcao', direcao);
+      dados.set('origem', MEU_PAPEL);
 
-        lastVersao = dadosResposta.versao;
-        aplicarEstado(dadosResposta);
+      fetch(navegarUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: dados.toString(),
       })
-      .catch(function () {});
+        .then(function (resposta) {
+          return resposta.json();
+        })
+        .then(function (dadosResposta) {
+          if (dadosResposta.erro) {
+            return;
+          }
+
+          lastVersao = dadosResposta.versao;
+          aplicarEstado(dadosResposta);
+        })
+        .catch(function () {});
+    });
   }
 
   function poll() {
@@ -312,25 +350,44 @@
   var versiculoFimSelect = form.querySelector('[data-campo="versiculo_fim"]');
 
   var NOMES_MODO = { biblia: 'a Bíblia', video: 'o vídeo', logo: 'a logo' };
+  var NOMES_ORIGEM = { operador: 'O painel do operador', preletor: 'O preletor' };
 
   // Trocar para a biblia interrompe o que ja esta sendo exibido ao vivo
   // no telao (video ou logo) - confirma antes, para evitar trocar por
   // engano no meio de um culto. Nao pede nada se a biblia ja e o que
-  // esta em exibicao (so navegando entre versiculos). Assincrono
-  // (Promise<boolean>) porque usa o popup proprio do sistema (ver
-  // kadosys-modal.js) no lugar do window.confirm nativo.
+  // esta em exibicao (so navegando entre versiculos).
+  //
+  // Tambem cobre "quem esta no comando": o painel do operador pode
+  // estar controlando o mesmo telao ao mesmo tempo que este tablet -
+  // sem isso, um lado sobrescrevia silenciosamente o que o outro
+  // estava exibindo. Quando o OUTRO lado esta no comando, pede
+  // confirmacao mesmo so navegando entre versiculos.
+  //
+  // Assincrono (Promise<boolean>) porque usa o popup proprio do
+  // sistema (ver kadosys-modal.js) no lugar do window.confirm nativo.
   function confirmarTroca() {
-    if (!modoAtual || modoAtual === 'blank' || modoAtual === 'biblia') {
+    var outroTemComando = !!controladoPorAtual && controladoPorAtual !== MEU_PAPEL;
+    var mudandoModo = !!modoAtual && modoAtual !== 'blank' && modoAtual !== 'biblia';
+
+    if (!outroTemComando && !mudandoModo) {
       return Promise.resolve(true);
     }
 
-    var mensagem = 'Ja tem ' + (NOMES_MODO[modoAtual] || 'outro conteudo') + ' em exibicao no telao. Trocar para a Biblia agora?';
+    var mensagem;
+
+    if (outroTemComando && mudandoModo) {
+      mensagem = NOMES_ORIGEM[controladoPorAtual] + ' esta no comando agora, exibindo ' + (NOMES_MODO[modoAtual] || 'outro conteudo') + '. Assumir o comando e trocar para a Biblia?';
+    } else if (outroTemComando) {
+      mensagem = NOMES_ORIGEM[controladoPorAtual] + ' esta no comando agora. Assumir o comando e continuar?';
+    } else {
+      mensagem = 'Ja tem ' + (NOMES_MODO[modoAtual] || 'outro conteudo') + ' em exibicao no telao. Trocar para a Biblia agora?';
+    }
 
     if (!window.KadosysModal) {
       return Promise.resolve(window.confirm(mensagem));
     }
 
-    return window.KadosysModal.confirmar(mensagem, { confirmar: 'Trocar', icone: 'bi-book' });
+    return window.KadosysModal.confirmar(mensagem, { confirmar: outroTemComando ? 'Assumir comando' : 'Trocar', icone: 'bi-book' });
   }
 
   function projetar() {
@@ -352,6 +409,8 @@
       if (versiculoFimSelect.value) {
         dados.set('versiculo_fim', versiculoFimSelect.value);
       }
+
+      dados.set('origem', MEU_PAPEL);
 
       fetch(bibliaUrl, {
         method: 'POST',

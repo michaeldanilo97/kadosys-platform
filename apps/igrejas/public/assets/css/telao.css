@@ -128,8 +128,14 @@ html, body {
   gap: 2.4cqh;
 }
 
+/* --biblia-escala e reduzido via JS (ver KadosysBiblia.ajustarTamanhoTexto)
+   quando o texto nao cabe no palco de uma vez - acontece com
+   intervalos de varios versiculos (campo "Ate" da busca), onde o
+   tamanho de fonte "normal" pra 1 versiculo cortaria o final do texto
+   fora da tela. Comeca em 1 (tamanho normal) sempre que a referencia
+   muda - ver render*() no telao.js/preletor.js. */
 .stage-biblia-texto {
-  font-size: clamp(1rem, 3.6cqw, 4rem);
+  font-size: calc(clamp(1rem, 3.6cqw, 4rem) * var(--biblia-escala, 1));
   line-height: 1.45;
   font-weight: 500;
   max-width: 92%;
@@ -536,6 +542,22 @@ html, body {
   cursor: pointer;
 }
 
+/* Indicador de "quem esta no comando" - avisa o preletor ANTES de ele
+   tentar projetar algo, sem precisar esperar a confirmacao de
+   "assumir comando" que so aparece depois de um clique. */
+.preletor-comando-indicador {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(212, 161, 63, 0.14);
+  border: 1px solid rgba(212, 161, 63, 0.4);
+  color: var(--telao-accent);
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
 .preletor-body {
   flex: 1;
   display: grid;
@@ -584,6 +606,14 @@ html, body {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--telao-muted);
+}
+
+.preletor-field label .bi-info-circle {
+  font-size: 0.85rem;
+  text-transform: none;
+  letter-spacing: normal;
+  cursor: help;
+  color: var(--telao-accent);
 }
 
 .preletor-field-actions {

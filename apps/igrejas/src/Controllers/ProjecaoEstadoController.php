@@ -50,7 +50,7 @@ final class ProjecaoEstadoController extends Controller
             $this->jsonResponse(['erro' => 'Dados invalidos.'], 422);
         }
 
-        ProjecaoEstado::definirBiblia($sessao->id, $bibliaVersao, $livroId, $capitulo, $inicio, $fim);
+        ProjecaoEstado::definirBiblia($sessao->id, $bibliaVersao, $livroId, $capitulo, $inicio, $fim, $this->origemDaRequisicao());
         $this->jsonResponse(['ok' => true] + (ProjecaoEstado::atual($sessao->id)?->paraJson() ?? []));
     }
 
@@ -86,7 +86,8 @@ final class ProjecaoEstadoController extends Controller
             $nova['livro_id'],
             $nova['capitulo'],
             $nova['versiculo'],
-            $nova['versiculo']
+            $nova['versiculo'],
+            $this->origemDaRequisicao()
         );
 
         $this->jsonResponse(['ok' => true] + (ProjecaoEstado::atual($sessao->id)?->paraJson() ?? []));
@@ -171,7 +172,7 @@ final class ProjecaoEstadoController extends Controller
             $this->jsonResponse(['erro' => 'Informe um link valido do YouTube.'], 422);
         }
 
-        ProjecaoEstado::definirVideo($sessao->id, $url);
+        ProjecaoEstado::definirVideo($sessao->id, $url, $this->origemDaRequisicao());
         $this->jsonResponse(['ok' => true]);
     }
 
@@ -206,14 +207,14 @@ final class ProjecaoEstadoController extends Controller
     public function mostrarLogo(string $token): void
     {
         $sessao = $this->sessaoOuErro($token);
-        ProjecaoEstado::mostrarLogo($sessao->id);
+        ProjecaoEstado::mostrarLogo($sessao->id, $this->origemDaRequisicao());
         $this->jsonResponse(['ok' => true]);
     }
 
     public function limpar(string $token): void
     {
         $sessao = $this->sessaoOuErro($token);
-        ProjecaoEstado::limpar($sessao->id);
+        ProjecaoEstado::limpar($sessao->id, $this->origemDaRequisicao());
         $this->jsonResponse(['ok' => true]);
     }
 
@@ -223,7 +224,7 @@ final class ProjecaoEstadoController extends Controller
     public function mostrarPix(string $token): void
     {
         $sessao = $this->sessaoOuErro($token);
-        ProjecaoEstado::mostrarPix($sessao->id);
+        ProjecaoEstado::mostrarPix($sessao->id, $this->origemDaRequisicao());
         $this->jsonResponse(['ok' => true]);
     }
 
@@ -236,7 +237,7 @@ final class ProjecaoEstadoController extends Controller
             $this->jsonResponse(['erro' => 'Imagem invalida.'], 422);
         }
 
-        ProjecaoEstado::mostrarImagem($sessao->id, $imagemId);
+        ProjecaoEstado::mostrarImagem($sessao->id, $imagemId, $this->origemDaRequisicao());
         $this->jsonResponse(['ok' => true]);
     }
 
@@ -249,6 +250,20 @@ final class ProjecaoEstadoController extends Controller
         }
 
         return $sessao;
+    }
+
+    /**
+     * Quem esta fazendo a chamada (painel do operador ou tablet do
+     * preletor) - enviado explicitamente pelo cliente (ver
+     * projecao-admin.js/preletor.js), ja que estas rotas nao tem
+     * sessao/login proprios pra inferir isso (autorizacao e so pelo
+     * token na URL). Usado pra registrar "quem esta no comando" (ver
+     * ProjecaoEstado::normalizarOrigem()) - a normalizacao final (so
+     * aceitar "operador"/"preletor") acontece no model.
+     */
+    private function origemDaRequisicao(): string
+    {
+        return (string) $this->request->input('origem', 'operador');
     }
 
     public static function extrairIdYoutube(string $url): ?string

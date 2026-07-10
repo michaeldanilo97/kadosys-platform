@@ -17,6 +17,39 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 56 - 2026-07-10
+
+**"Quem esta no comando": operador e preletor param de sobrescrever um ao outro silenciosamente**
+
+- O painel do operador e o tablet do preletor podem controlar o mesmo
+  telao ao mesmo tempo, sem nenhuma coordenacao entre eles ate aqui -
+  um lado podia trocar o versiculo/video/logo em exibicao sem nenhum
+  aviso de que o outro estava com aquele conteudo ativo.
+- Adicionada uma nova coluna `controlado_por` (operador/preletor) em
+  `projecao_estados`, atualizada a cada acao que muda o conteudo
+  principal (biblia, video, logo, pix, imagem, limpar). Agora, quando
+  o OUTRO lado esta no comando, aparece uma confirmacao "Assumir
+  comando?" antes de agir por cima - mesmo se o modo nao estiver
+  mudando (ex.: os dois em "biblia", so trocando de versiculo). Cada
+  painel tambem mostra uma badge ("Preletor no comando" / "Operador no
+  comando") avisando ANTES mesmo de tentar fazer alguma coisa.
+
+**Texto biblico com intervalo longo ("Ate") nao corta mais no telao/preletor**
+
+- Selecionar um intervalo grande de versiculos (campo "Ate" da busca)
+  podia fazer o texto estourar o palco 16:9 e cortar o final fora da
+  tela, sem nenhum aviso. Corrigido com auto-ajuste de tamanho de
+  fonte (`KadosysBiblia.ajustarTamanhoTexto`, nova variavel CSS
+  `--biblia-escala`): o texto e medido apos renderizar e a fonte
+  diminui em passos ate caber inteiro no palco (com um piso minimo de
+  legibilidade). Validado com um intervalo de 7 versiculos que antes
+  estouraria a tela - agora cabe todo, com fonte menor. Um versiculo
+  unico continua no tamanho normal (sem reducao desnecessaria).
+- Adicionado tambem um aviso textual perto do campo "Ate" (dashboard e
+  preletor) explicando que intervalos longos reduzem a fonte
+  automaticamente, pra quem prefere manter os intervalos curtos por
+  legibilidade.
+
 ## Ajuste 55 - 2026-07-10
 
 **Preletor: troca os selects nativos de Versao/Capitulo/Versiculo/Ate por widgets customizados escuros**

@@ -31,11 +31,16 @@
   var videoProgressoPreenchido = root.querySelector('[data-video-progresso-preenchido]');
   var videoProgressoTempo = root.querySelector('[data-video-progresso-tempo]');
 
+  var comandoIndicador = document.querySelector('[data-comando-indicador]');
+  var comandoIndicadorTexto = document.querySelector('[data-comando-indicador-texto]');
+
   var lastVersao = null;
   var sincronizando = false;
   var modoAtual = null;
+  var controladoPorAtual = null;
 
   var NOMES_MODO = { biblia: 'a Bíblia', video: 'o vídeo', logo: 'a logo', blank: 'a tela em branco', pix: 'o Pix', imagem: 'a imagem' };
+  var NOMES_ORIGEM = { operador: 'O painel do operador', preletor: 'O preletor' };
 
   /**
    * Troca de modo (biblia/video/logo/blank) interrompe o que ja esta
@@ -45,23 +50,42 @@
    * primeira vez, com a tela em branco, ou ao continuar no mesmo modo -
    * ex.: navegar entre versiculos com a biblia ja em exibicao).
    *
+   * Tambem cobre o cenario de "quem esta no comando": o preletor
+   * (tablet do pastor) pode estar controlando o telao ao mesmo tempo
+   * que este painel - sem isso, um lado sobrescrevia silenciosamente o
+   * que o outro estava exibindo (ex.: o pastor navegando versiculos
+   * enquanto o operador troca pra outro versiculo sem perceber que
+   * atropelou o pastor). Quando o OUTRO lado esta no comando, pede
+   * confirmacao mesmo que o modo em si nao esteja mudando.
+   *
    * Assincrono (Promise<boolean>) porque usa o popup proprio do sistema
    * (ver kadosys-modal.js) no lugar do window.confirm nativo.
    */
   function confirmarTroca(novoModo) {
-    if (!modoAtual || modoAtual === 'blank' || modoAtual === novoModo) {
+    var outroTemComando = !!controladoPorAtual && controladoPorAtual !== MEU_PAPEL;
+    var mudandoModo = !!modoAtual && modoAtual !== 'blank' && modoAtual !== novoModo;
+
+    if (!outroTemComando && !mudandoModo) {
       return Promise.resolve(true);
     }
 
     var atual = NOMES_MODO[modoAtual] || 'outro conteudo';
     var proximo = NOMES_MODO[novoModo] || 'outro conteudo';
-    var mensagem = 'Ja tem ' + atual + ' em exibicao no telao. Trocar para ' + proximo + ' agora?';
+    var mensagem;
+
+    if (outroTemComando && mudandoModo) {
+      mensagem = NOMES_ORIGEM[controladoPorAtual] + ' esta no comando agora, exibindo ' + atual + '. Assumir o comando e trocar para ' + proximo + '?';
+    } else if (outroTemComando) {
+      mensagem = NOMES_ORIGEM[controladoPorAtual] + ' esta no comando agora. Assumir o comando e continuar?';
+    } else {
+      mensagem = 'Ja tem ' + atual + ' em exibicao no telao. Trocar para ' + proximo + ' agora?';
+    }
 
     if (!window.KadosysModal) {
       return Promise.resolve(window.confirm(mensagem));
     }
 
-    return window.KadosysModal.confirmar(mensagem, { confirmar: 'Trocar', icone: 'bi-easel2' });
+    return window.KadosysModal.confirmar(mensagem, { confirmar: outroTemComando ? 'Assumir comando' : 'Trocar', icone: 'bi-easel2' });
   }
 
   function escapeHtml(value) {
@@ -71,11 +95,20 @@
     return div.innerHTML;
   }
 
+  // Identifica quem esta mandando o comando (ver "assumir comando"
+  // abaixo) - o painel do operador e o tablet do preletor podem
+  // controlar o mesmo telao ao mesmo tempo, sem sessao/login em comum
+  // pra o servidor inferir isso sozinho.
+  var MEU_PAPEL = 'operador';
+
   function enviar(caminho, corpo) {
+    var dados = corpo || new URLSearchParams();
+    dados.set('origem', MEU_PAPEL);
+
     return fetch(baseUrl + caminho, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: corpo ? corpo.toString() : '',
+      body: dados.toString(),
     });
   }
 
@@ -201,8 +234,31 @@
     });
   }
 
+  /**
+   * Mostra "Preletor no comando" no painel quando o tablet do pastor
+   * foi quem definiu por ultimo o conteudo em exibicao - avisa o
+   * operador antes mesmo dele tentar mexer em algo (a confirmacao de
+   * "assumir comando" so aparece DEPOIS de clicar; este indicador
+   * avisa ANTES).
+   */
+  function sincronizarIndicadorComando() {
+    if (!comandoIndicador || !comandoIndicadorTexto) {
+      return;
+    }
+
+    var outroTemComando = !!controladoPorAtual && controladoPorAtual !== MEU_PAPEL;
+
+    comandoIndicador.hidden = !outroTemComando;
+
+    if (outroTemComando) {
+      comandoIndicadorTexto.textContent = 'Preletor no comando';
+    }
+  }
+
   function aplicarEstado(dados) {
     modoAtual = dados ? dados.modo : null;
+    controladoPorAtual = dados ? dados.controladoPor : null;
+    sincronizarIndicadorComando();
     sincronizarBotoesVideo(dados);
     sincronizarBotoesExibicao(dados);
 
@@ -323,19 +379,25 @@
   }
 
   function navegar(direcao) {
-    var dados = new URLSearchParams();
-    dados.set('direcao', direcao);
-
-    enviar('/biblia/navegar', dados).then(function (resposta) {
-      return resposta.json();
-    }).then(function (dadosResposta) {
-      if (dadosResposta.erro) {
+    confirmarTroca('biblia').then(function (ok) {
+      if (!ok) {
         return;
       }
 
-      lastVersao = dadosResposta.versao;
-      aplicarEstado(dadosResposta);
-    }).catch(function () {});
+      var dados = new URLSearchParams();
+      dados.set('direcao', direcao);
+
+      enviar('/biblia/navegar', dados).then(function (resposta) {
+        return resposta.json();
+      }).then(function (dadosResposta) {
+        if (dadosResposta.erro) {
+          return;
+        }
+
+        lastVersao = dadosResposta.versao;
+        aplicarEstado(dadosResposta);
+      }).catch(function () {});
+    });
   }
 
   botoesNav.forEach(function (botao) {
@@ -376,6 +438,8 @@
 
         enviar('/video', dados).then(function () {
           modoAtual = 'video';
+          controladoPorAtual = MEU_PAPEL;
+          sincronizarIndicadorComando();
         });
       });
     });
@@ -409,6 +473,8 @@
 
         enviar('/logo').then(function () {
           modoAtual = 'logo';
+          controladoPorAtual = MEU_PAPEL;
+          sincronizarIndicadorComando();
         });
       });
     });
@@ -423,6 +489,8 @@
 
         enviar('/pix').then(function () {
           modoAtual = 'pix';
+          controladoPorAtual = MEU_PAPEL;
+          sincronizarIndicadorComando();
         });
       });
     });
@@ -442,6 +510,8 @@
 
         enviar('/imagem', dados).then(function () {
           modoAtual = 'imagem';
+          controladoPorAtual = MEU_PAPEL;
+          sincronizarIndicadorComando();
         });
       });
     });
@@ -456,6 +526,8 @@
 
         enviar('/limpar').then(function () {
           modoAtual = 'blank';
+          controladoPorAtual = MEU_PAPEL;
+          sincronizarIndicadorComando();
         });
       });
     });
