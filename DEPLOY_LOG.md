@@ -17,6 +17,32 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 52 - 2026-07-10
+
+**Corrige tela preta permanente no video quando o embed do YouTube nao carrega**
+
+- Bug real reportado: video carregado no operador, telao fica com tela
+  preta pra sempre, sem nenhuma mensagem de erro (mesmo esperando).
+  Causa raiz: o vigia de "video travado" (`agendarChecagemReproducao`
+  em `telao.js`) consultava `player.getPlayerState()` a cada segundo,
+  mas quando o objeto do player e criado com sucesso (o script da API
+  do YouTube carrega) e o IFRAME do embed em si nunca termina de
+  conectar (dominio do embed bloqueado por firewall/rede da igreja,
+  por exemplo), esse metodo passa a retornar `undefined` para sempre -
+  e o codigo tratava qualquer valor desconhecido como "o player esta
+  funcionando normalmente", zerando os contadores de falha a cada
+  tick e nunca deixando o timeout de travamento disparar.
+- Corrigido tratando `undefined`/`null` como os demais estados
+  "travados" (nao iniciado/na fila) - agora, depois de ~6s parado
+  assim, tenta um reload automatico (unico por video) e, se persistir,
+  mostra a mensagem clara "Nao foi possivel carregar o player do
+  YouTube..." em vez de deixar a tela preta sem nenhuma explicacao.
+- Validado com um mock do player do YouTube reproduzindo exatamente o
+  cenario do bug (construtor funciona, metodos nunca respondem) -
+  confirmado que a mensagem aparece corretamente - e com um mock de
+  player saudavel, confirmando que nenhum reload/erro falso e
+  disparado quando o video carrega normalmente.
+
 ## Ajuste 51 - 2026-07-10
 
 **Descricao "Dizimo"/"Oferta" visivel no app do banco, QR nas pontas da tela, logo e mensagem/versiculo no centro, botoes de exibicao com estado ativo, URL completa no telao, menu lateral corrigido**
