@@ -695,11 +695,22 @@
             inicioOculto.value = String(numero);
             comboInicio.setToggleTexto(String(numero));
             dispararChange(inicioOculto);
+            aplicarMinimoFim();
           });
 
           comboFim.popular(total, fimAtual, null, function (numero) {
-            fimOculto.value = String(numero);
-            comboFim.setToggleTexto(String(numero));
+            // Clicar de novo no mesmo numero ja selecionado limpa o "Ate"
+            // (volta a ser opcional) - sem isso, uma vez escolhido nao
+            // tinha como voltar atras sem trocar o versiculo inicial ou
+            // o capitulo inteiro.
+            if (fimOculto.value && Number(fimOculto.value) === numero) {
+              fimOculto.value = '';
+              comboFim.setToggleTexto('Opcional');
+            } else {
+              fimOculto.value = String(numero);
+              comboFim.setToggleTexto(String(numero));
+            }
+
             dispararChange(fimOculto);
           });
 
@@ -710,8 +721,38 @@
           if (fimAtual) {
             comboFim.setToggleTexto(String(fimAtual));
           }
+
+          aplicarMinimoFim();
         })
         .catch(function () {});
+    }
+
+    /**
+     * O "Ate" so faz sentido como o FIM de um intervalo que comeca no
+     * versiculo ja escolhido - por isso os numeros menores que o
+     * inicio ficam desabilitados na grade (em vez de deixar escolher
+     * uma combinacao invertida, tipo inicio 5 e ate 3). Se o inicio
+     * mudar pra um numero maior que o "Ate" ja escolhido, o "Ate"
+     * anterior fica invalido e e limpo automaticamente.
+     */
+    function aplicarMinimoFim() {
+      if (!comboFimEl) {
+        return;
+      }
+
+      var minimo = inicioOculto.value ? Number(inicioOculto.value) : null;
+
+      if (minimo !== null && fimOculto.value && Number(fimOculto.value) < minimo) {
+        fimOculto.value = '';
+        comboFim.setToggleTexto('Opcional');
+      }
+
+      Array.prototype.forEach.call(comboFimEl.querySelectorAll('.biblia-chip'), function (chip) {
+        var valor = Number(chip.getAttribute('data-valor'));
+        var bloqueado = minimo !== null && valor < minimo;
+        chip.disabled = bloqueado;
+        chip.classList.toggle('is-desabilitado', bloqueado);
+      });
     }
 
     oculto.addEventListener('change', function () {

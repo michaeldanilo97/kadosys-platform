@@ -792,6 +792,18 @@ html, body {
   color: var(--telao-accent);
 }
 
+/* Numeros menores que o versiculo inicial, no dropdown "Ate" - um
+   intervalo so faz sentido terminando depois de onde comeca. */
+.preletor-picker .biblia-chip.is-desabilitado {
+  opacity: 0.28;
+  cursor: not-allowed;
+}
+
+.preletor-picker .biblia-chip.is-desabilitado:hover {
+  border-color: rgba(245, 247, 250, 0.16);
+  color: var(--telao-text);
+}
+
 .preletor-picker button {
   border: none;
   border-radius: 10px;

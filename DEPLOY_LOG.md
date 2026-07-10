@@ -17,6 +17,45 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 57 - 2026-07-10
+
+**Preletor: campo "Ate" (versiculo final) agora pode ser limpo e nao aceita valor menor que o inicial**
+
+- Bug reportado ao vivo: uma vez escolhido um numero no "Ate", nao
+  tinha como voltar atras (o dropdown nao oferecia opcao de limpar) -
+  e era possivel escolher um "Ate" MENOR que o versiculo inicial (ex.:
+  inicio 5, ate 3), o que o servidor entao reordenava sozinho
+  (min/max), gerando um intervalo diferente do que a pessoa queria.
+- Corrigido: clicar de novo no mesmo numero ja selecionado no "Ate"
+  limpa a selecao (volta a "Opcional"). Numeros menores que o
+  versiculo inicial agora ficam desabilitados (visualmente apagados)
+  na grade do "Ate" - impossivel escolher uma combinacao invertida. Se
+  o inicio mudar pra um numero maior que o "Ate" ja escolhido, o "Ate"
+  e limpo automaticamente (ficaria invalido).
+
+**Video: audio continuava tocando por baixo do texto biblico ao trocar de modo**
+
+- Bug reportado ao vivo: com um video em exibicao, ao trocar pra
+  Biblia (inclusive pelo fluxo de "assumir comando" do preletor), o
+  telao mostrava o texto biblico normalmente, mas o AUDIO do video
+  continuava tocando por baixo - a troca de camada so escondia o
+  video visualmente (CSS), sem pausar o player de verdade.
+- Corrigido: toda vez que o modo deixa de ser "video" (biblia, logo,
+  Pix, imagem ou tela em branco), o telao agora pausa o player do
+  YouTube de verdade. Validado com um mock do player confirmando a
+  chamada a `pauseVideo()` exatamente no momento da troca de modo.
+
+**Aviso de teste gratis mostrava "2 dias" quando faltava so 1**
+
+- Bug reportado ao vivo: com o teste vencendo amanha, o aviso dizia
+  "termina em 2 dias" - o calculo usava a diferenca EXATA de
+  timestamps (incluindo a hora do dia) com `ceil()`, entao qualquer
+  sobra de horas alem de 24h arredondava pra cima (ex.: 10/07 as 13h55
+  ate 11/07 as 23h59 sao ~34h, que è mais de 1 dia mas menos de 2,
+  arredondando errado pra "2"). Corrigido calculando a diferenca por
+  DATA de calendario (ignorando a hora), que da o resultado esperado:
+  1 dia de diferenca entre 10/07 e 11/07.
+
 ## Ajuste 56 - 2026-07-10
 
 **"Quem esta no comando": operador e preletor param de sobrescrever um ao outro silenciosamente**
