@@ -7,6 +7,20 @@
 
 .biblia-panel-full {
   width: 100%;
+  position: relative;
+}
+
+/* O painel Biblia e o painel de Video logo abaixo (".dash-panel", ver
+   dashboard.css) usam "backdrop-filter" pro efeito de vidro fosco -
+   isso cria um stacking context PROPRIO pra cada painel. Resultado: um
+   z-index alto so no campo de busca (".biblia-livro-field" abaixo) nao
+   e suficiente pra fazer a lista de livros flutuar por cima do painel
+   de Video, porque a disputa de camadas entre os dois PAINEIS (cada
+   um seu proprio contexto) e decidida pela ordem no HTML, nao pelo
+   z-index de algo dentro de um deles. Precisa subir o z-index do
+   painel INTEIRO enquanto a lista estiver aberta. */
+body.livro-combo-lista-aberta .biblia-panel-full {
+  z-index: 22;
 }
 
 .biblia-picker {
