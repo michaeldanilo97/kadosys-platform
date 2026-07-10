@@ -43,11 +43,24 @@ $logoUrl = $logoPath ? $basePath . '/' . $logoPath : null;
         <?php endif; ?>
     </div>
 
+    <div class="telao-layer telao-pix" data-telao-layer="pix">
+        <div class="telao-pix-card">
+            <div class="telao-pix-titulo" data-telao-pix-titulo></div>
+            <div class="telao-pix-qr" data-telao-pix-qr></div>
+            <div class="telao-pix-instrucao" data-telao-pix-instrucao></div>
+        </div>
+    </div>
+
+    <div class="telao-layer telao-imagem" data-telao-layer="imagem">
+        <img data-telao-imagem-img alt="">
+    </div>
+
     <div class="telao-aviso-audio" data-telao-audio-unlock>
         <i class="bi bi-volume-up-fill"></i> Toque na tela uma vez para habilitar o audio do video e a leitura em voz alta
     </div>
 </div>
 
 <script type="application/json" id="telao-estado-inicial"><?= json_encode($estadoInicial) ?: 'null' ?></script>
+<script src="<?= $basePath ?>/assets/js/vendor/qrcode-generator.js?v=<?= View::assetVersion('assets/js/vendor/qrcode-generator.js') ?>"></script>
 <script src="<?= $basePath ?>/assets/js/telao.js?v=<?= View::assetVersion('assets/js/telao.js') ?>"></script>
 <script src="https://www.youtube.com/iframe_api"></script>

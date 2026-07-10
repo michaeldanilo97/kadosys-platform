@@ -300,9 +300,18 @@ CREATE TABLE IF NOT EXISTS projecao_sessoes (
         FOREIGN KEY (criado_por) REFERENCES users (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS projecao_imagens (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nome_arquivo VARCHAR(190) NOT NULL,
+    path VARCHAR(255) NOT NULL,
+    favorita TINYINT(1) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY projecao_imagens_favorita_index (favorita)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS projecao_estados (
     sessao_id INT UNSIGNED PRIMARY KEY,
-    modo ENUM('biblia', 'video', 'logo', 'blank') NOT NULL DEFAULT 'blank',
+    modo ENUM('biblia', 'video', 'logo', 'blank', 'pix', 'imagem') NOT NULL DEFAULT 'blank',
     livro_id TINYINT UNSIGNED NULL,
     biblia_versao VARCHAR(10) NULL DEFAULT 'nvi',
     biblia_marcacao TEXT NULL,
@@ -313,13 +322,17 @@ CREATE TABLE IF NOT EXISTS projecao_estados (
     video_estado ENUM('parado', 'tocando', 'pausado', 'fadeout') NOT NULL DEFAULT 'parado',
     video_tempo_atual SMALLINT UNSIGNED NULL,
     video_duracao SMALLINT UNSIGNED NULL,
+    pix_categoria VARCHAR(20) NULL,
+    imagem_id INT UNSIGNED NULL,
     versao INT UNSIGNED NOT NULL DEFAULT 1,
     leitura_id INT UNSIGNED NOT NULL DEFAULT 0,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT projecao_estados_sessao_id_foreign
         FOREIGN KEY (sessao_id) REFERENCES projecao_sessoes (id) ON DELETE CASCADE,
     CONSTRAINT projecao_estados_livro_id_foreign
-        FOREIGN KEY (livro_id) REFERENCES biblia_livros (id) ON DELETE SET NULL
+        FOREIGN KEY (livro_id) REFERENCES biblia_livros (id) ON DELETE SET NULL,
+    CONSTRAINT projecao_estados_imagem_id_foreign
+        FOREIGN KEY (imagem_id) REFERENCES projecao_imagens (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 

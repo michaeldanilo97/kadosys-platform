@@ -17,6 +17,25 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 49 - 2026-07-10
+
+**Exibicoes rapidas no telao: Pix de dizimo/oferta + galeria de imagens favoritas**
+
+- **Pix de dizimo/oferta com um clique**: novo painel "Exibicoes rapidas"
+  em Projecao com botoes Logo/Dizimo/Oferta - clicar em Dizimo ou Oferta
+  ja mostra o QR code Pix da igreja em tela cheia no telao (sem valor
+  fixo, cada pessoa digita o proprio valor no banco), com o titulo
+  "Dízimo"/"Oferta" em destaque e uma instrucao embaixo com o link
+  publico (`/doar`) pra quem preferir doar depois do proprio celular.
+  Os botoes ficam desabilitados se a igreja ainda nao cadastrou uma
+  chave Pix em Configuracoes.
+- **Galeria de imagens**: novo painel "Imagens" em Projecao - a igreja
+  sobe cartazes/avisos (PNG, JPG, WEBP ou GIF, ate 8MB), marca os que
+  usa com mais frequencia como favoritos (estrela) e exibe qualquer um
+  deles em tela cheia no telao com um clique.
+- Nova migracao 033 (`pix`/`imagem` no modo de `projecao_estados`,
+  tabela `projecao_imagens`).
+
 ## Ajuste 48 - 2026-07-09
 
 **Doacao via Pix estatico (novo) + loop de reload do video corrigido + menu lateral recolhivel + ajustes de UI**

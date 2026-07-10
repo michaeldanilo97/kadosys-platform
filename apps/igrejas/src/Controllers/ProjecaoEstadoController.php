@@ -8,6 +8,7 @@ use Igrejas\Core\Controller;
 use Igrejas\Models\BibliaVersao;
 use Igrejas\Models\BibliaVersiculo;
 use Igrejas\Models\ProjecaoEstado;
+use Igrejas\Models\ProjecaoImagem;
 use Igrejas\Models\ProjecaoSessao;
 
 /**
@@ -213,6 +214,35 @@ final class ProjecaoEstadoController extends Controller
     {
         $sessao = $this->sessaoOuErro($token);
         ProjecaoEstado::limpar($sessao->id);
+        $this->jsonResponse(['ok' => true]);
+    }
+
+    /**
+     * Exibicao rapida de Pix (dizimo/oferta) - ver ProjecaoEstado::mostrarPix().
+     */
+    public function mostrarPix(string $token): void
+    {
+        $sessao = $this->sessaoOuErro($token);
+        $categoria = (string) $this->request->input('categoria', '');
+
+        if (!in_array($categoria, ['dizimo', 'oferta'], true)) {
+            $this->jsonResponse(['erro' => 'Categoria invalida.'], 422);
+        }
+
+        ProjecaoEstado::mostrarPix($sessao->id, $categoria);
+        $this->jsonResponse(['ok' => true]);
+    }
+
+    public function mostrarImagem(string $token): void
+    {
+        $sessao = $this->sessaoOuErro($token);
+        $imagemId = (int) $this->request->input('imagem_id', 0);
+
+        if ($imagemId <= 0 || !ProjecaoImagem::find($imagemId)) {
+            $this->jsonResponse(['erro' => 'Imagem invalida.'], 422);
+        }
+
+        ProjecaoEstado::mostrarImagem($sessao->id, $imagemId);
         $this->jsonResponse(['ok' => true]);
     }
 

@@ -159,6 +159,9 @@ $router->post('/dashboard/financeiro/{id}/excluir', [FinanceiroController::class
 $router->get('/dashboard/projecao', [ProjecaoController::class, 'index'], [AuthMiddleware::class]);
 $router->post('/dashboard/projecao/iniciar', [ProjecaoController::class, 'iniciar'], [AuthMiddleware::class]);
 $router->post('/dashboard/projecao/encerrar', [ProjecaoController::class, 'encerrar'], [AuthMiddleware::class]);
+$router->post('/dashboard/projecao/imagens', [ProjecaoController::class, 'enviarImagem'], [AuthMiddleware::class]);
+$router->post('/dashboard/projecao/imagens/{id}/favoritar', [ProjecaoController::class, 'favoritarImagem'], [AuthMiddleware::class]);
+$router->post('/dashboard/projecao/imagens/{id}/excluir', [ProjecaoController::class, 'excluirImagem'], [AuthMiddleware::class]);
 
 // Modulo Usuarios. Mesmo motivo: precisa vir antes do catch-all. Sem
 // PlanoMiddleware - disponivel em todos os planos, mas so 'admin'
@@ -297,6 +300,8 @@ $router->post('/projecao/{token}/video/estado', [ProjecaoEstadoController::class
 $router->post('/projecao/{token}/video/tempo', [ProjecaoEstadoController::class, 'atualizarTempoVideo']);
 $router->post('/projecao/{token}/logo', [ProjecaoEstadoController::class, 'mostrarLogo']);
 $router->post('/projecao/{token}/limpar', [ProjecaoEstadoController::class, 'limpar']);
+$router->post('/projecao/{token}/pix', [ProjecaoEstadoController::class, 'mostrarPix']);
+$router->post('/projecao/{token}/imagem', [ProjecaoEstadoController::class, 'mostrarImagem']);
 
 // Webhook do Mercado Pago (notificacoes de assinatura/pagamento). Publica
 // de proposito - a seguranca aqui vem da validacao da assinatura

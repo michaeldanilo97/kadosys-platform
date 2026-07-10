@@ -14,12 +14,25 @@
     video: root.querySelector('[data-telao-layer="video"]'),
     biblia: root.querySelector('[data-telao-layer="biblia"]'),
     logo: root.querySelector('[data-telao-layer="logo"]'),
+    pix: root.querySelector('[data-telao-layer="pix"]'),
+    imagem: root.querySelector('[data-telao-layer="imagem"]'),
   };
   var bibliaTexto = root.querySelector('[data-telao-biblia-texto]');
   var bibliaRef = root.querySelector('[data-telao-biblia-ref]');
   var stage = root.querySelector('[data-telao-stage]');
   var marcacaoCanvas = root.querySelector('[data-telao-marcacao]');
   var marcacaoCtx = marcacaoCanvas ? marcacaoCanvas.getContext('2d') : null;
+  var pixTitulo = root.querySelector('[data-telao-pix-titulo]');
+  var pixQrWrap = root.querySelector('[data-telao-pix-qr]');
+  var pixInstrucao = root.querySelector('[data-telao-pix-instrucao]');
+  var imagemImg = root.querySelector('[data-telao-imagem-img]');
+  // O link publico de doacao (ver DoacaoController) e derivado do
+  // proprio poll-url (que ja carrega o base-path certo da instalacao),
+  // trocando o sufixo "/projecao/{token}/estado" por "/doar" - evita
+  // ter que passar essa informacao a parte do servidor pro telao.
+  var linkDoacao = pollUrl.replace(/\/projecao\/.*$/, '/doar');
+  var NOMES_PIX_CATEGORIA = { dizimo: 'Dízimo', oferta: 'Oferta' };
+  var ultimoPayloadPixRenderizado = null;
 
   var lastVersao = null;
   var lastLeituraId = null;
@@ -127,6 +140,65 @@
     }
 
     bibliaRef.textContent = referencia;
+  }
+
+  /**
+   * Exibicao rapida de Pix (dizimo/oferta, ver painel "Exibicoes
+   * rapidas" no operador) - o QR e desenhado no proprio navegador do
+   * telao (mesma biblioteca vendorizada usada em doacao-pix.js), a
+   * partir do payload BR Code ja montado no servidor (ver
+   * ProjecaoEstado::montarPixJson()). So redesenha o QR quando o
+   * payload realmente muda (dizimo -> oferta, ou reload da chave Pix),
+   * nao a cada poll - redesenhar sem necessidade some visualmente por
+   * uma fracao de segundo e pisca a tela.
+   */
+  function renderPix(pix) {
+    if (!pixTitulo || !pixQrWrap || !pixInstrucao) {
+      return;
+    }
+
+    pixTitulo.textContent = NOMES_PIX_CATEGORIA[pix && pix.categoria] || 'Pix';
+
+    if (!pix || !pix.payload) {
+      pixQrWrap.innerHTML = '';
+      pixInstrucao.innerHTML = 'Esta igreja ainda não configurou uma chave Pix.';
+      ultimoPayloadPixRenderizado = null;
+
+      return;
+    }
+
+    if (pix.payload !== ultimoPayloadPixRenderizado) {
+      ultimoPayloadPixRenderizado = pix.payload;
+
+      try {
+        var qr = window.qrcode(0, 'M');
+        qr.addData(pix.payload);
+        qr.make();
+        pixQrWrap.innerHTML = qr.createImgTag(8, 4, 'QR code Pix');
+      } catch (erro) {
+        pixQrWrap.innerHTML = '';
+      }
+    }
+
+    pixInstrucao.innerHTML = 'Prefere fazer depois? Acesse <strong>' + escapeHtml(linkDoacao.replace(/^https?:\/\//, '')) + '</strong> do seu celular.';
+  }
+
+  function renderImagem(path) {
+    if (!imagemImg) {
+      return;
+    }
+
+    if (!path) {
+      imagemImg.removeAttribute('src');
+
+      return;
+    }
+
+    var urlCompleta = linkDoacao.replace(/\/doar$/, '/' + path);
+
+    if (imagemImg.getAttribute('src') !== urlCompleta) {
+      imagemImg.setAttribute('src', urlCompleta);
+    }
   }
 
   function ajustarStage() {
@@ -691,6 +763,12 @@
       mostrarSomente(camadasVideo);
     } else if (estado.modo === 'logo') {
       mostrarSomente(['logo']);
+    } else if (estado.modo === 'pix') {
+      renderPix(estado.pix);
+      mostrarSomente(['pix']);
+    } else if (estado.modo === 'imagem') {
+      renderImagem(estado.imagem ? estado.imagem.path : null);
+      mostrarSomente(['imagem']);
     }
   }
 
