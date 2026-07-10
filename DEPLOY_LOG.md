@@ -17,6 +17,27 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 59 - 2026-07-10
+
+**So clicar em "Assinar" (mesmo sem terminar o pagamento) ja derrubava o teste gratis**
+
+- Bug reportado ao vivo: com o teste gratis ainda valido, o admin clicou
+  em "Assinar" no plano Essencial so pra ver a tela do Mercado Pago (sem
+  chegar a pagar) - e o painel de Configuracoes ja mostrava o plano como
+  contratado, com "Pagamento pendente", perdendo o aviso de dias restantes
+  do teste gratis. Causa: o metodo de pagamento (cartao/Pix) era marcado
+  no banco assim que a assinatura/cobranca era CRIADA, e nao quando o
+  pagamento de fato era CONFIRMADO pelo Mercado Pago (webhook) - a
+  intencao original era so liberar quem ja estava com o teste VENCIDO e
+  bloqueado, mas a marcacao acontecia sempre, mesmo com teste ainda
+  valido.
+- Corrigido: a marcacao imediata (antes da confirmacao) so acontece
+  agora quando o teste gratis ja estava realmente vencido (pra nao deixar
+  quem ja estava bloqueado esperando o webhook). Fora esse caso, o metodo
+  de pagamento so muda de fato quando o Mercado Pago confirma o
+  pagamento via webhook - clicar em "Assinar" e nao terminar o pagamento
+  agora nao afeta o teste gratis em andamento.
+
 ## Ajuste 58 - 2026-07-10
 
 **Telao ainda ficava com tela preta no YouTube - agora tenta recarregar sozinho antes de so avisar**
