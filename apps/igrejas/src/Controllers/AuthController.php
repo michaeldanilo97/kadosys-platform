@@ -8,6 +8,8 @@ use Igrejas\Core\Auth;
 use Igrejas\Core\Controller;
 use Igrejas\Core\Csrf;
 use Igrejas\Core\Session;
+use Igrejas\Core\TenantResolver;
+use Igrejas\Models\Tenant;
 use Igrejas\Models\User;
 
 /**
@@ -55,6 +57,16 @@ final class AuthController extends Controller
             Session::flash('login_error', 'E-mail ou senha invalidos.');
             Session::flash('login_old', ['email' => $email]);
             $this->redirect('/login');
+        }
+
+        // So um timestamp central por igreja (nao por usuario) - da ao
+        // dono da plataforma uma nocao de quais igrejas estao ativas de
+        // verdade (ver PlataformaController::igrejas()). So existe pra
+        // igrejas de subdominio (com registro central, ver TenantResolver).
+        $tenant = TenantResolver::atual();
+
+        if ($tenant !== null) {
+            Tenant::atualizarUltimoAcesso($tenant->id);
         }
 
         $this->redirect('/dashboard');

@@ -5,6 +5,7 @@ use Igrejas\Models\Plano;
 /**
  * @var array $config
  * @var array<int, \Igrejas\Models\Tenant> $igrejas
+ * @var array<int, array{label:string, classe:string}> $situacoesPagamento
  * @var array<int, string>|null $success
  * @var array $errors
  * @var string $csrfToken
@@ -68,8 +69,10 @@ $statusLabel = [
                         <th>Igreja</th>
                         <th>Subdominio</th>
                         <th>Plano</th>
-                        <th>Pagamento</th>
+                        <th>Metodo</th>
+                        <th>Situacao do pagamento</th>
                         <th>Status</th>
+                        <th>Ultimo acesso</th>
                         <th>Criada em</th>
                         <th class="actions-col">Acoes</th>
                     </tr>
@@ -91,11 +94,29 @@ $statusLabel = [
                                 </a>
                             </td>
                             <td><?= htmlspecialchars(Plano::label($igreja->plano), ENT_QUOTES, 'UTF-8') ?></td>
-                            <td><?= $igreja->metodoPagamento === 'pix' ? 'Pix' : 'Cartao' ?></td>
+                            <td>
+                                <?= match ($igreja->metodoPagamento) {
+                                    'pix' => 'Pix',
+                                    'cartao' => 'Cartao',
+                                    'trial' => 'Teste gratis',
+                                    default => htmlspecialchars($igreja->metodoPagamento, ENT_QUOTES, 'UTF-8'),
+                                } ?>
+                            </td>
+                            <td>
+                                <?php $situacao = $situacoesPagamento[$igreja->id] ?? ['label' => '-', 'classe' => 'pendente']; ?>
+                                <span class="plano-status-badge plano-status-<?= htmlspecialchars($situacao['classe'], ENT_QUOTES, 'UTF-8') ?>">
+                                    <?= htmlspecialchars($situacao['label'], ENT_QUOTES, 'UTF-8') ?>
+                                </span>
+                            </td>
                             <td>
                                 <span class="status-badge <?= $igreja->status === 'ativo' ? 'is-ativo' : 'is-inativo' ?>">
                                     <?= htmlspecialchars($statusLabel[$igreja->status] ?? $igreja->status, ENT_QUOTES, 'UTF-8') ?>
                                 </span>
+                            </td>
+                            <td class="crud-text-dim">
+                                <?= $igreja->ultimoAcessoEm !== null
+                                    ? (new DateTimeImmutable($igreja->ultimoAcessoEm))->format('d/m/Y H:i')
+                                    : 'Nunca acessou' ?>
                             </td>
                             <td class="crud-text-dim"><?= (new DateTimeImmutable($igreja->criadoEm))->format('d/m/Y') ?></td>
                             <td class="actions-col">
