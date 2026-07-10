@@ -169,9 +169,42 @@
     });
   }
 
+  /**
+   * Mesma logica do video acima, mas pros botoes de "Exibicoes
+   * rapidas" (Logo, Dizimo e Oferta, e cada imagem da galeria) - o
+   * botao correspondente ao que esta REALMENTE no telao agora fica
+   * marcado como ativo, nao so o ultimo clicado.
+   */
+  function sincronizarBotoesExibicao(dados) {
+    var modo = dados ? dados.modo : null;
+
+    if (botaoLogo) {
+      botaoLogo.classList.toggle('active', modo === 'logo');
+    }
+
+    if (botaoPix) {
+      botaoPix.classList.toggle('active', modo === 'pix');
+    }
+
+    var imagemAtivaId = (modo === 'imagem' && dados.imagem) ? String(dados.imagem.id) : null;
+
+    botoesImagem.forEach(function (botao) {
+      var ativo = botao.getAttribute('data-acao-imagem') === imagemAtivaId;
+
+      botao.classList.toggle('active', ativo);
+
+      var card = botao.closest('[data-imagem-card]');
+
+      if (card) {
+        card.classList.toggle('is-exibindo', ativo);
+      }
+    });
+  }
+
   function aplicarEstado(dados) {
     modoAtual = dados ? dados.modo : null;
     sincronizarBotoesVideo(dados);
+    sincronizarBotoesExibicao(dados);
 
     if (!dados || dados.modo !== 'biblia' || !dados.biblia || !dados.biblia.livroId) {
       if (navBox) {

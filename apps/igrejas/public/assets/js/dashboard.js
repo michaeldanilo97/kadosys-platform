@@ -10,6 +10,7 @@
     initConfirmForms();
     initTopbarDropdowns();
     initCopiarLink();
+    initPixMensagemForm();
   });
 
   function initTheme() {
@@ -212,6 +213,38 @@
         closeAll(null);
       }
     });
+  }
+
+  /**
+   * Mensagem da tela de Pix (Configuracoes): mostra so o bloco de
+   * campos (texto livre ou versiculo biblico) que corresponde ao tipo
+   * selecionado nos radios - os outros ficam no DOM (hidden), sem
+   * precisar de nenhuma chamada ao servidor so pra alternar a tela.
+   */
+  function initPixMensagemForm() {
+    var form = document.querySelector('[data-pix-mensagem-form]');
+
+    if (!form) {
+      return;
+    }
+
+    var radios = form.querySelectorAll('[data-pix-mensagem-tipo]');
+    var blocos = form.querySelectorAll('[data-pix-mensagem-bloco]');
+
+    function atualizar() {
+      var selecionado = form.querySelector('[data-pix-mensagem-tipo]:checked');
+      var tipo = selecionado ? selecionado.value : 'nenhuma';
+
+      blocos.forEach(function (bloco) {
+        bloco.hidden = bloco.getAttribute('data-pix-mensagem-bloco') !== tipo;
+      });
+    }
+
+    radios.forEach(function (radio) {
+      radio.addEventListener('change', atualizar);
+    });
+
+    atualizar();
   }
 
   /**

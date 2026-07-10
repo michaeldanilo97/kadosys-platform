@@ -264,41 +264,48 @@ final class ProjecaoEstado
                 'tempoAtual' => $this->videoTempoAtual,
                 'duracao' => $this->videoDuracao,
             ],
-            'pix' => $this->modo === 'pix' ? $this->montarPixJson() : [],
+            'pix' => $this->modo === 'pix' ? $this->montarPixJson() : ['qrCodes' => [], 'mensagem' => null],
             'imagem' => [
+                'id' => $this->imagemId,
                 'path' => $this->imagemPath,
             ],
         ];
     }
 
     /**
-     * Payload dos DOIS QR (BR Code, ver PixEstatico) montados na hora
-     * que o telao pede o estado - sempre sem valor fixo (cada pessoa
-     * digita o proprio valor no banco). Dizimo e oferta usam a mesma
-     * chave Pix da igreja (o dinheiro cai na mesma conta de qualquer
-     * jeito) - so o txid dentro do payload muda, pra facilitar
-     * identificar cada um depois no extrato. Exibidos juntos porque
-     * normalmente sao recolhidos no mesmo momento do culto.
+     * Estado completo da tela de Pix: os DOIS QR (BR Code, ver
+     * PixEstatico), a logo da igreja e a mensagem opcional configurada
+     * em Configuracoes (texto livre ou versiculo biblico resolvido na
+     * hora). QR sempre sem valor fixo (cada pessoa digita o proprio
+     * valor no banco). Dizimo e oferta usam a mesma chave Pix da igreja
+     * (o dinheiro cai na mesma conta de qualquer jeito) - so o txid e a
+     * descricao visivel ao pagador dentro do payload mudam, pra
+     * facilitar identificar cada um depois no extrato/no app do banco.
+     * Exibidos juntos porque normalmente sao recolhidos no mesmo
+     * momento do culto.
      *
      * Se a igreja nunca cadastrou uma chave Pix (ver
-     * ConfiguracaoIgreja::doacaoPixHabilitada()), volta com a lista
-     * vazia - o telao mostra um aviso em vez de um QR quebrado.
+     * ConfiguracaoIgreja::doacaoPixHabilitada()), volta com "qrCodes"
+     * vazio - o telao mostra um aviso em vez de um QR quebrado. A logo
+     * nao entra aqui: o telao reaproveita a mesma logo ja carregada na
+     * pagina (data-logo-url, ver telao/show.php), sem precisar mandar
+     * de novo a cada poll.
      *
-     * @return array<int, array{categoria: string, label: string, payload: string}>
+     * @return array{qrCodes: array<int, array{categoria: string, label: string, payload: string}>, mensagem: ?string}
      */
     private function montarPixJson(): array
     {
         $configuracao = ConfiguracaoIgreja::atual();
 
         if (!$configuracao->doacaoPixHabilitada()) {
-            return [];
+            return ['qrCodes' => [], 'mensagem' => null];
         }
 
         $categorias = ['dizimo' => 'Dízimo', 'oferta' => 'Oferta'];
-        $pix = [];
+        $qrCodes = [];
 
         foreach ($categorias as $categoria => $label) {
-            $pix[] = [
+            $qrCodes[] = [
                 'categoria' => $categoria,
                 'label' => $label,
                 'payload' => PixEstatico::montarPayload(
@@ -307,11 +314,62 @@ final class ProjecaoEstado
                     cidade: (string) ($configuracao->cidade ?? 'BRASIL'),
                     valor: null,
                     txid: strtoupper($categoria),
+                    descricao: $label,
                 ),
             ];
         }
 
-        return $pix;
+        return [
+            'qrCodes' => $qrCodes,
+            'mensagem' => $this->resolverMensagemPix($configuracao),
+        ];
+    }
+
+    /**
+     * Resolve a mensagem configurada pra tela de Pix: texto livre
+     * digitado pela igreja, ou o texto do versiculo biblico escolhido
+     * (buscado agora, igual a leitura biblica normal do telao - assim
+     * a mensagem sempre reflete a traducao/texto atual da tabela
+     * biblia_versiculos, sem precisar duplicar o texto em
+     * configuracoes_igreja).
+     */
+    private function resolverMensagemPix(ConfiguracaoIgreja $configuracao): ?string
+    {
+        if ($configuracao->pixMensagemTipo === 'texto') {
+            $texto = trim((string) $configuracao->pixMensagemTexto);
+
+            return $texto !== '' ? $texto : null;
+        }
+
+        if ($configuracao->pixMensagemTipo === 'versiculo'
+            && $configuracao->pixMensagemLivroId !== null
+            && $configuracao->pixMensagemBibliaVersao !== null
+            && $configuracao->pixMensagemCapitulo !== null
+        ) {
+            $inicio = $configuracao->pixMensagemVersiculoInicio ?? 1;
+            $fim = $configuracao->pixMensagemVersiculoFim ?? $inicio;
+
+            $versiculos = BibliaVersiculo::doIntervalo(
+                $configuracao->pixMensagemBibliaVersao,
+                $configuracao->pixMensagemLivroId,
+                $configuracao->pixMensagemCapitulo,
+                $inicio,
+                $fim
+            );
+
+            if ($versiculos === []) {
+                return null;
+            }
+
+            $texto = implode(' ', array_map(static fn (BibliaVersiculo $v) => $v->texto, $versiculos));
+            $livro = BibliaLivro::find($configuracao->pixMensagemLivroId);
+            $referencia = trim(($livro?->nome ?? '') . ' ' . $configuracao->pixMensagemCapitulo
+                . ':' . $inicio . ($fim !== $inicio ? '-' . $fim : ''));
+
+            return trim($texto) . ' (' . $referencia . ')';
+        }
+
+        return null;
     }
 
     /**

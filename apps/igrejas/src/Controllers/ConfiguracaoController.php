@@ -11,6 +11,8 @@ use Igrejas\Core\MercadoPagoClient;
 use Igrejas\Core\Session;
 use Igrejas\Core\TenantResolver;
 use Igrejas\Models\Assinatura;
+use Igrejas\Models\BibliaLivro;
+use Igrejas\Models\BibliaVersao;
 use Igrejas\Models\ConfiguracaoIgreja;
 use Igrejas\Models\FaturaPix;
 use Igrejas\Models\Plano;
@@ -62,6 +64,8 @@ final class ConfiguracaoController extends Controller
             // pagamento. A instalacao original continua so com cartao.
             'pixDisponivel' => TenantResolver::atual() !== null,
             'tenant' => TenantResolver::atual(),
+            'livros' => BibliaLivro::all(),
+            'versoesBiblia' => BibliaVersao::todas(),
             'success' => Session::flash('config_success'),
             'errors' => Session::flash('config_errors') ?? [],
             'csrf' => Csrf::field(),
@@ -300,6 +304,74 @@ final class ConfiguracaoController extends Controller
                 ConfiguracaoIgreja::atualizarChavePix($chave, $nomeBeneficiario);
                 Session::flash('config_success', 'Chave Pix salva - a pagina de doacao ja esta disponivel.');
             }
+        }
+
+        $this->redirect('/dashboard/configuracoes');
+    }
+
+    /**
+     * Mensagem opcional exibida ao lado da logo na tela de Pix do
+     * telao (junto com os QR de dizimo/oferta) - texto livre digitado
+     * pela igreja ou uma referencia biblica, resolvida na hora em que
+     * o telao busca o estado (ver ProjecaoEstado::montarPixJson()).
+     */
+    public function atualizarMensagemPix(): void
+    {
+        if (Csrf::verify($this->request->input('_csrf_token'))) {
+            $tipo = (string) $this->request->input('pix_mensagem_tipo', 'nenhuma');
+
+            if (!in_array($tipo, ['nenhuma', 'texto', 'versiculo'], true)) {
+                $tipo = 'nenhuma';
+            }
+
+            $texto = null;
+            $bibliaVersao = null;
+            $livroId = null;
+            $capitulo = null;
+            $versiculoInicio = null;
+            $versiculoFim = null;
+
+            if ($tipo === 'texto') {
+                $texto = trim((string) $this->request->input('pix_mensagem_texto', ''));
+                $tipo = $texto !== '' ? 'texto' : 'nenhuma';
+            } elseif ($tipo === 'versiculo') {
+                $bibliaVersao = (string) $this->request->input('pix_mensagem_biblia_versao', '');
+                $livroIdInput = trim((string) $this->request->input('pix_mensagem_livro_id', ''));
+                $capituloInput = trim((string) $this->request->input('pix_mensagem_capitulo', ''));
+                $inicioInput = trim((string) $this->request->input('pix_mensagem_versiculo_inicio', ''));
+                $fimInput = trim((string) $this->request->input('pix_mensagem_versiculo_fim', ''));
+
+                $valido = BibliaVersao::valida($bibliaVersao)
+                    && $livroIdInput !== '' && ctype_digit($livroIdInput)
+                    && $capituloInput !== '' && ctype_digit($capituloInput)
+                    && $inicioInput !== '' && ctype_digit($inicioInput);
+
+                if ($valido) {
+                    $livroId = (int) $livroIdInput;
+                    $capitulo = (int) $capituloInput;
+                    $versiculoInicio = (int) $inicioInput;
+                    $versiculoFim = ($fimInput !== '' && ctype_digit($fimInput)) ? (int) $fimInput : $versiculoInicio;
+
+                    if ($versiculoFim < $versiculoInicio) {
+                        [$versiculoInicio, $versiculoFim] = [$versiculoFim, $versiculoInicio];
+                    }
+                } else {
+                    $tipo = 'nenhuma';
+                    $bibliaVersao = null;
+                }
+            }
+
+            ConfiguracaoIgreja::atualizarMensagemPix(
+                $tipo,
+                $texto,
+                $bibliaVersao,
+                $livroId,
+                $capitulo,
+                $versiculoInicio,
+                $versiculoFim
+            );
+
+            Session::flash('config_success', 'Mensagem da tela de Pix atualizada.');
         }
 
         $this->redirect('/dashboard/configuracoes');

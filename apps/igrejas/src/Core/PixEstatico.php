@@ -25,16 +25,22 @@ final class PixEstatico
      * @param string $nomeBeneficiario Nome exibido no app do banco de quem paga (max 25 chars)
      * @param string $cidade Cidade do beneficiario (max 15 chars)
      * @param float|null $valor Valor fixo (null = doador digita o valor no proprio banco)
-     * @param string $txid Identificador da transacao (alfanumerico, max 25 chars)
+     * @param string $txid Identificador da transacao (alfanumerico, max 25 chars) - uso interno/extrato, MUITOS apps de banco nao mostram isso com destaque pro pagador
+     * @param string|null $descricao Descricao visivel ao pagador na hora de confirmar o Pix (campo 26/02 do BR Code - diferente do txid) - max 50 chars
      */
     public static function montarPayload(
         string $chave,
         string $nomeBeneficiario,
         string $cidade,
         ?float $valor,
-        string $txid
+        string $txid,
+        ?string $descricao = null
     ): string {
         $merchantAccountInfo = self::campo('00', self::GUI_PIX) . self::campo('01', $chave);
+
+        if ($descricao !== null && trim($descricao) !== '') {
+            $merchantAccountInfo .= self::campo('02', self::normalizarTexto($descricao, 50));
+        }
 
         $partes = self::campo('00', '01')
             . self::campo('26', $merchantAccountInfo)

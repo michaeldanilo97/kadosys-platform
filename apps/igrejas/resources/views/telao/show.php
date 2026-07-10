@@ -46,16 +46,22 @@ $logoUrl = $logoPath ? $basePath . '/' . $logoPath : null;
     <div class="telao-layer telao-pix" data-telao-layer="pix">
         <div class="telao-pix-aviso" data-telao-pix-aviso hidden></div>
         <div class="telao-pix-grupo" data-telao-pix-grupo>
-            <div class="telao-pix-card">
+            <div class="telao-pix-card telao-pix-card-esquerda">
                 <div class="telao-pix-titulo">Dízimo</div>
                 <div class="telao-pix-qr" data-telao-pix-qr="dizimo"></div>
             </div>
-            <div class="telao-pix-card">
+            <div class="telao-pix-centro">
+                <?php if ($logoUrl): ?>
+                    <img class="telao-pix-logo" src="<?= htmlspecialchars($logoUrl, ENT_QUOTES, 'UTF-8') ?>" alt="Logo">
+                <?php endif; ?>
+                <div class="telao-pix-mensagem" data-telao-pix-mensagem hidden></div>
+                <div class="telao-pix-instrucao" data-telao-pix-instrucao></div>
+            </div>
+            <div class="telao-pix-card telao-pix-card-direita">
                 <div class="telao-pix-titulo">Oferta</div>
                 <div class="telao-pix-qr" data-telao-pix-qr="oferta"></div>
             </div>
         </div>
-        <div class="telao-pix-instrucao" data-telao-pix-instrucao></div>
     </div>
 
     <div class="telao-layer telao-imagem" data-telao-layer="imagem">

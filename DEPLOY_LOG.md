@@ -17,6 +17,42 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 51 - 2026-07-10
+
+**Descricao "Dizimo"/"Oferta" visivel no app do banco, QR nas pontas da tela, logo e mensagem/versiculo no centro, botoes de exibicao com estado ativo, URL completa no telao, menu lateral corrigido**
+
+- Bug real encontrado por validacao pedida: os QR de Dizimo e Oferta so
+  gravavam o txid (campo 62/05 do BR Code) diferenciando um do outro -
+  esse campo e uso interno/extrato e a MAIORIA dos apps de banco NAO
+  mostra ele com destaque pro pagador na hora de confirmar. Adicionado
+  o campo correto pra isso, o 26/02 (`PixEstatico::montarPayload()`
+  ganhou um parametro `$descricao` opcional), agora preenchido com
+  "Dízimo"/"Oferta" em `ProjecaoEstado::montarPixJson()` - validado
+  gerando os payloads reais da aplicacao e decodificando com uma
+  biblioteca Pix independente (`pix-utils`), confirmando
+  `infoAdicional: "Dizimo"` / `"Oferta"` distintos. O mesmo parametro
+  foi aplicado tambem na doacao publica (`/doar`), usando a categoria
+  escolhida pelo doador como descricao.
+- Tela de Pix do telao redesenhada: os dois QR agora ficam nas pontas
+  OPOSTAS da tela (antes so tinham um espacamento grande no meio) -
+  perto demais, a camera do celular as vezes le o QR errado com a
+  congregacao de pe. Entre eles, uma coluna central mostra a logo da
+  igreja e uma mensagem opcional configuravel em Configuracoes: texto
+  livre ou um versiculo biblico (resolvido na hora, buscando o texto
+  atual da tabela `biblia_versiculos` - migracao 034 adiciona os
+  campos `pix_mensagem_*` em `configuracoes_igreja`).
+- A instrucao "prefere fazer depois" no telao agora mostra a URL
+  publica COMPLETA (com dominio da igreja), nao so o caminho `/doar` -
+  facil de digitar/lembrar quando alguem le de longe.
+- Os botoes "Logo"/"Dizimo e Oferta"/imagens no painel de Projecao
+  agora ficam azuis (estado ativo) refletindo o que realmente esta no
+  telao no momento, sincronizado por polling - igual ja acontecia com
+  os botoes de video.
+- Corrigido bug de layout do dashboard: havia DUAS regras `.dash-main`
+  em `dashboard.css`, a segunda sobrescrevendo a `margin-left`
+  reativa da primeira com um valor fixo - por isso o conteudo nao
+  ocupava o espaco liberado ao recolher o menu lateral.
+
 ## Ajuste 50 - 2026-07-10
 
 **Dizimo e oferta agora exibem os 2 QR Pix juntos, bem afastados na tela**

@@ -166,3 +166,79 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
         </div>
     <?php endif; ?>
 </div>
+
+<div class="dash-panel">
+    <div class="dash-panel-head">
+        <h2><i class="bi bi-chat-square-quote"></i> Mensagem da tela de Pix</h2>
+    </div>
+    <p class="dash-page-subtitle" style="margin-bottom: 1.4rem;">
+        Texto opcional exibido ao lado da logo da igreja quando o projetista mostra o Pix no telao (dizimo/oferta) -
+        um aviso livre ou um versiculo biblico.
+    </p>
+
+    <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/mensagem-pix" class="crud-form" data-pix-mensagem-form>
+        <?= $csrf ?>
+        <div class="crud-field">
+            <label>Tipo de mensagem</label>
+            <div class="pix-mensagem-tipo-opcoes">
+                <label class="pix-mensagem-tipo-opcao">
+                    <input type="radio" name="pix_mensagem_tipo" value="nenhuma" data-pix-mensagem-tipo <?= $configuracao->pixMensagemTipo === 'nenhuma' ? 'checked' : '' ?>>
+                    Nenhuma
+                </label>
+                <label class="pix-mensagem-tipo-opcao">
+                    <input type="radio" name="pix_mensagem_tipo" value="texto" data-pix-mensagem-tipo <?= $configuracao->pixMensagemTipo === 'texto' ? 'checked' : '' ?>>
+                    Texto livre
+                </label>
+                <label class="pix-mensagem-tipo-opcao">
+                    <input type="radio" name="pix_mensagem_tipo" value="versiculo" data-pix-mensagem-tipo <?= $configuracao->pixMensagemTipo === 'versiculo' ? 'checked' : '' ?>>
+                    Versiculo biblico
+                </label>
+            </div>
+        </div>
+
+        <div class="crud-field" data-pix-mensagem-bloco="texto" <?= $configuracao->pixMensagemTipo !== 'texto' ? 'hidden' : '' ?>>
+            <label for="pix_mensagem_texto">Texto</label>
+            <textarea id="pix_mensagem_texto" name="pix_mensagem_texto" rows="3" placeholder="Ex.: Deus ama quem da com alegria."><?= htmlspecialchars($configuracao->pixMensagemTexto ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+        </div>
+
+        <div class="crud-form-grid" data-pix-mensagem-bloco="versiculo" <?= $configuracao->pixMensagemTipo !== 'versiculo' ? 'hidden' : '' ?>>
+            <div class="crud-field">
+                <label for="pix_mensagem_biblia_versao">Versao</label>
+                <select id="pix_mensagem_biblia_versao" name="pix_mensagem_biblia_versao">
+                    <?php foreach ($versoesBiblia as $codigo => $nome): ?>
+                        <option value="<?= htmlspecialchars($codigo, ENT_QUOTES, 'UTF-8') ?>" <?= $configuracao->pixMensagemBibliaVersao === $codigo ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="crud-field">
+                <label for="pix_mensagem_livro_id">Livro</label>
+                <select id="pix_mensagem_livro_id" name="pix_mensagem_livro_id">
+                    <option value="">Selecione...</option>
+                    <?php foreach ($livros as $livro): ?>
+                        <option value="<?= $livro->id ?>" <?= $configuracao->pixMensagemLivroId === $livro->id ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($livro->nome, ENT_QUOTES, 'UTF-8') ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="crud-field">
+                <label for="pix_mensagem_capitulo">Capitulo</label>
+                <input type="number" min="1" id="pix_mensagem_capitulo" name="pix_mensagem_capitulo" value="<?= htmlspecialchars((string) ($configuracao->pixMensagemCapitulo ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+            </div>
+            <div class="crud-field">
+                <label for="pix_mensagem_versiculo_inicio">Versiculo inicial</label>
+                <input type="number" min="1" id="pix_mensagem_versiculo_inicio" name="pix_mensagem_versiculo_inicio" value="<?= htmlspecialchars((string) ($configuracao->pixMensagemVersiculoInicio ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+            </div>
+            <div class="crud-field">
+                <label for="pix_mensagem_versiculo_fim">Versiculo final (opcional)</label>
+                <input type="number" min="1" id="pix_mensagem_versiculo_fim" name="pix_mensagem_versiculo_fim" value="<?= htmlspecialchars((string) ($configuracao->pixMensagemVersiculoFim ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+            </div>
+        </div>
+
+        <div class="crud-form-actions" style="justify-content: flex-start;">
+            <button type="submit" class="btn-k btn-k-grad"><i class="bi bi-check-lg"></i> Salvar</button>
+        </div>
+    </form>
+</div>
