@@ -125,8 +125,9 @@ $notificacoes = [];
 
 // Aviso do dono da plataforma (ver PlataformaAviso/PlataformaController)
 // - vale pra todas as igrejas, independente de plano ou permissao, por
-// isso vem antes de qualquer outro filtro.
-$avisoPlataforma = PlataformaAviso::ativo();
+// isso vem antes de qualquer outro filtro. Filtrado por publico_alvo
+// (admins/membros/todos, ver PlataformaAviso::ativoParaAudiencia()).
+$avisoPlataforma = PlataformaAviso::ativoParaAudiencia($isAdmin);
 
 if ($avisoPlataforma !== null) {
     $notificacoes[] = [

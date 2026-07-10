@@ -1,5 +1,7 @@
 <?php
 
+use Igrejas\Models\PlataformaAviso;
+
 /**
  * @var array $config
  * @var \Igrejas\Models\PlataformaAviso|null $avisoAtivo
@@ -15,8 +17,8 @@ $basePath = $config['base_path'] ?? '';
     <div>
         <h1 class="dash-page-title">Avisos para as igrejas</h1>
         <p class="dash-page-subtitle">
-            Publique um aviso e ele aparece no sino de notificacoes do painel de <strong>todas</strong> as igrejas cadastradas -
-            util pra manutencao programada, novo recurso disponivel, etc.
+            Publique um aviso e escolha quem ve - admins, membros ou todo mundo - util pra manutencao
+            programada, novo recurso disponivel, etc.
         </p>
     </div>
 </div>
@@ -51,7 +53,12 @@ $basePath = $config['base_path'] ?? '';
     <?php if ($avisoAtivo): ?>
         <div class="crud-alert" style="background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.3);">
             <i class="bi bi-broadcast-pin"></i>
-            <div><?= nl2br(htmlspecialchars($avisoAtivo->mensagem, ENT_QUOTES, 'UTF-8')) ?></div>
+            <div>
+                <?= nl2br(htmlspecialchars($avisoAtivo->mensagem, ENT_QUOTES, 'UTF-8')) ?>
+                <span class="crud-text-dim" style="display: block; font-size: 0.74rem; margin-top: 0.3rem;">
+                    Publico: <?= htmlspecialchars(PlataformaAviso::PUBLICO_LABELS[$avisoAtivo->publicoAlvo] ?? $avisoAtivo->publicoAlvo, ENT_QUOTES, 'UTF-8') ?>
+                </span>
+            </div>
         </div>
 
         <form method="POST" action="<?= $basePath ?>/plataforma/avisos/<?= $avisoAtivo->id ?>/encerrar" data-confirm="Encerrar este aviso? Ele deixa de aparecer no painel das igrejas.">
@@ -67,8 +74,19 @@ $basePath = $config['base_path'] ?? '';
                 <label for="mensagem">Mensagem</label>
                 <textarea id="mensagem" name="mensagem" rows="3" placeholder="Ex.: Manutencao programada hoje as 22h - o sistema pode ficar indisponivel por alguns minutos." required autofocus></textarea>
             </div>
+            <div class="crud-field crud-field-full">
+                <label>Publico</label>
+                <div style="display: flex; gap: 1.2rem; margin-top: 0.3rem;">
+                    <?php foreach (PlataformaAviso::PUBLICO_LABELS as $valor => $rotulo): ?>
+                        <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; font-weight: 400;">
+                            <input type="radio" name="publico_alvo" value="<?= htmlspecialchars($valor, ENT_QUOTES, 'UTF-8') ?>" <?= $valor === PlataformaAviso::PUBLICO_TODOS ? 'checked' : '' ?>>
+                            <?= htmlspecialchars($rotulo, ENT_QUOTES, 'UTF-8') ?>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+            </div>
             <div class="crud-form-actions" style="justify-content: flex-start;">
-                <button type="submit" class="btn-k btn-k-grad"><i class="bi bi-send"></i> Publicar para todas as igrejas</button>
+                <button type="submit" class="btn-k btn-k-grad"><i class="bi bi-send"></i> Publicar aviso</button>
             </div>
         </form>
     <?php endif; ?>
@@ -85,6 +103,7 @@ $basePath = $config['base_path'] ?? '';
                 <thead>
                     <tr>
                         <th>Mensagem</th>
+                        <th>Publico</th>
                         <th>Status</th>
                         <th>Publicado em</th>
                     </tr>
@@ -93,6 +112,7 @@ $basePath = $config['base_path'] ?? '';
                     <?php foreach ($historico as $aviso): ?>
                         <tr>
                             <td><?= htmlspecialchars($aviso->mensagem, ENT_QUOTES, 'UTF-8') ?></td>
+                            <td><?= htmlspecialchars(PlataformaAviso::PUBLICO_LABELS[$aviso->publicoAlvo] ?? $aviso->publicoAlvo, ENT_QUOTES, 'UTF-8') ?></td>
                             <td>
                                 <span class="status-badge <?= $aviso->ativo ? 'is-ativo' : 'is-inativo' ?>">
                                     <?= $aviso->ativo ? 'Ativo' : 'Encerrado' ?>
