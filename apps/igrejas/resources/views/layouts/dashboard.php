@@ -93,7 +93,12 @@ if ($activeMenu !== 'trial-expirado' && $activeMenu !== 'fatura-vencida') {
         $agora = new DateTimeImmutable();
 
         if ($agora <= $expiraEm) {
-            $diasRestantes = (int) ceil(($expiraEm->getTimestamp() - $agora->getTimestamp()) / 86400);
+            // Diferenca por DATA de calendario (sem a hora do dia) - com
+            // timestamp bruto + ceil(), 1 dia e poucas horas de sobra
+            // arredondava pra "2 dias", mesmo a data de vencimento sendo
+            // literalmente amanha (ex.: hoje 10/07 as 13h, vence 11/07 -
+            // e 1 dia de diferenca de calendario, nao 2).
+            $diasRestantes = (int) $agora->setTime(0, 0, 0)->diff($expiraEm->setTime(0, 0, 0))->days;
             $avisoTrialTexto = sprintf(
                 'Seu teste gratis termina em %d dia%s (%s). Clique aqui para escolher um plano.',
                 $diasRestantes,

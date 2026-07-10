@@ -793,15 +793,45 @@
 
   var modoAtual = null;
 
+  /**
+   * Pausa o player do YouTube quando o modo de exibicao deixa de ser
+   * "video" - sem isso, trocar pra Biblia/logo/Pix/imagem so escondia
+   * a camada do video visualmente (CSS), mas o iframe continuava
+   * rodando por baixo e o AUDIO continuava tocando, sobreposto ao que
+   * apareceu na tela (reportado ao vivo: texto biblico na tela com o
+   * audio do video ainda tocando, depois de assumir o comando do
+   * preletor pra Biblia enquanto um video estava em exibicao).
+   */
+  function pausarVideoAoSairDoModo() {
+    ultimoEstadoVideo = null;
+
+    if (!player || typeof player.pauseVideo !== 'function') {
+      return;
+    }
+
+    try {
+      if (videoEstaTocandoDeVerdade()) {
+        player.pauseVideo();
+      }
+    } catch (erro) {
+      // Player ainda nao pronto - nao ha nada tocando pra pausar.
+    }
+  }
+
   function aplicarEstado(estado) {
     if (!estado || estado.ativo === false) {
       modoAtual = null;
+      pausarVideoAoSairDoModo();
       mostrarSomente(['blank']);
 
       return;
     }
 
     modoAtual = estado.modo;
+
+    if (estado.modo !== 'video') {
+      pausarVideoAoSairDoModo();
+    }
 
     if (estado.modo === 'blank') {
       mostrarSomente(['blank']);
