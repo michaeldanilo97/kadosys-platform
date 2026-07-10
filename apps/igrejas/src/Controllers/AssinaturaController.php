@@ -130,12 +130,18 @@ final class AssinaturaController extends Controller
             // AssinaturaController::webhook()/atualizarPlanoNoBancoDoTenant()).
             AssinaturaTenant::registrar($tenantAtual->id, $plano, (string) $resposta['body']['id']);
 
-            // Marca o metodo de pagamento assim que a assinatura e
-            // iniciada (nao so quando confirmada) - e o que libera uma
-            // igreja em teste gratis do bloqueio de trial vencido assim
+            // So marca o metodo de pagamento AQUI (antes do webhook
+            // confirmar) quando o trial ja estava vencido e bloqueando o
+            // acesso - o objetivo e liberar quem ja estava bloqueado assim
             // que ela parte pra um pagamento de verdade, sem esperar o
-            // webhook confirmar.
-            Tenant::atualizarMetodoPagamento($tenantAtual->id, 'cartao');
+            // webhook. Com trial ainda valido, a troca so e efetivada
+            // quando o pagamento realmente e confirmado (ver
+            // processarAssinaturaTenant()) - do contrario, um clique em
+            // "Assinar" so pra abrir a tela do Mercado Pago (sem nunca
+            // completar o pagamento) ja derrubava o trial em andamento.
+            if ($this->trialVencido($tenantAtual)) {
+                Tenant::atualizarMetodoPagamento($tenantAtual->id, 'cartao');
+            }
 
             // Uma assinatura nova por cima de qualquer coisa anterior
             // (trial, primeira assinatura) substitui um downgrade que
@@ -201,10 +207,31 @@ final class AssinaturaController extends Controller
             $vencimento,
         );
 
-        Tenant::atualizarMetodoPagamento($tenant->id, 'pix');
+        // Mesmo raciocinio de iniciar(): so marca o metodo de pagamento
+        // ja aqui (antes da confirmacao) se o trial ja estava vencido -
+        // senao gerar o QR code so pra visualizar ja perdia o trial em
+        // andamento antes do Pix cair de verdade (ver processarFaturaPix()).
+        if ($this->trialVencido($tenant)) {
+            Tenant::atualizarMetodoPagamento($tenant->id, 'pix');
+        }
         Tenant::cancelarTrocaAgendada($tenant->id);
 
         $this->redirect('/dashboard/fatura-vencida');
+    }
+
+    /**
+     * Mesma regra de Igrejas\Core\Middleware\AuthMiddleware::trialExpirado()
+     * (duplicada de proposito - sao camadas diferentes: aquela decide se
+     * BLOQUEIA acesso, esta decide se PODE marcar o metodo de pagamento
+     * antes da confirmacao do pagamento).
+     */
+    private function trialVencido(Tenant $tenant): bool
+    {
+        if ($tenant->metodoPagamento !== 'trial' || $tenant->trialExpiraEm === null) {
+            return false;
+        }
+
+        return new \DateTimeImmutable() > new \DateTimeImmutable($tenant->trialExpiraEm);
     }
 
     /**
@@ -554,7 +581,11 @@ final class AssinaturaController extends Controller
 
         if ($fatura->tipo === FaturaPix::TIPO_RENOVACAO) {
             // Renovacao normal: esta fatura cobre ate o seu proprio
-            // vencimento - vira o novo fim de ciclo.
+            // vencimento - vira o novo fim de ciclo. So agora (Pix
+            // confirmado de verdade) e que o metodo de pagamento passa a
+            // ser "pix" - ver o comentario em iniciarPix() sobre nao
+            // marcar isso antes da confirmacao.
+            Tenant::atualizarMetodoPagamento($fatura->tenantId, 'pix');
             Tenant::atualizarProximoVencimento($fatura->tenantId, new \DateTimeImmutable($fatura->vencimento));
         } else {
             // Upgrade proporcional: so cobriu a diferenca dos dias que
@@ -593,6 +624,10 @@ final class AssinaturaController extends Controller
         }
 
         Tenant::atualizarPlano($assinaturaTenant->tenantId, $assinaturaTenant->plano);
+        // So agora (cartao confirmado de verdade pelo webhook) e que o
+        // metodo de pagamento passa a ser "cartao" - ver o comentario em
+        // iniciar() sobre nao marcar isso antes da confirmacao.
+        Tenant::atualizarMetodoPagamento($assinaturaTenant->tenantId, 'cartao');
         $this->atualizarPlanoNoBancoDoTenant($assinaturaTenant->tenantId, $assinaturaTenant->plano);
 
         // O Mercado Pago nao expoe um jeito simples de sabermos a data
