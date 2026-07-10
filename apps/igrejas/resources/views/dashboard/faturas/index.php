@@ -9,6 +9,7 @@ use Igrejas\Models\Plano;
  * @var \Igrejas\Models\FaturaPix[] $faturas
  * @var int|null $faturaPendenteId
  * @var \Igrejas\Models\AssinaturaTenant|null $assinaturaCartao
+ * @var array<int, array{data:?string, valor:?float, status:string}>|null $pagamentosCartao
  */
 $basePath = $config['base_path'] ?? '';
 
@@ -29,6 +30,21 @@ $assinaturaStatusLabels = [
     'autorizada' => 'Assinatura ativa',
     'pausada' => 'Assinatura pausada',
     'cancelada' => 'Assinatura cancelada',
+];
+
+// Vocabulario proprio da API de pagamentos autorizados do Mercado Pago
+// (diferente do vocabulario de preapproval/fatura Pix usado acima).
+$pagamentoCartaoStatusLabels = [
+    'processed' => 'Pago',
+    'pending' => 'Pendente',
+    'rejected' => 'Recusado',
+    'cancelled' => 'Cancelado',
+];
+$pagamentoCartaoStatusBadge = [
+    'processed' => 'autorizada',
+    'pending' => 'pendente',
+    'rejected' => 'cancelada',
+    'cancelled' => 'cancelada',
 ];
 
 $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
@@ -78,12 +94,56 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
                     </span>
                 <?php endif; ?>
                 <br>
-                Cobranca recorrente automatica direto no Mercado Pago - o historico detalhado de cada cobranca fica
-                la, disponivel na propria conta do Mercado Pago usada no pagamento.
+                Cobranca recorrente automatica - debitada sozinha a cada ciclo pelo Mercado Pago.
                 <?php if ($tenant->proximoVencimento !== null): ?>
                     Proxima renovacao prevista: <strong><?= (new DateTimeImmutable($tenant->proximoVencimento))->format('d/m/Y') ?></strong>.
                 <?php endif; ?>
             </p>
+
+            <?php if ($pagamentosCartao === null): ?>
+                <p class="crud-text-dim" style="margin-top: 0.8rem; margin-bottom: 0;">
+                    <i class="bi bi-info-circle"></i>
+                    Nao foi possivel buscar o extrato de cobrancas agora - o historico detalhado fica disponivel
+                    direto na conta do Mercado Pago usada no pagamento.
+                </p>
+            <?php elseif ($pagamentosCartao === []): ?>
+                <p class="crud-text-dim" style="margin-top: 0.8rem; margin-bottom: 0;">
+                    Nenhuma cobranca debitada ainda.
+                </p>
+            <?php else: ?>
+                <div class="crud-table-wrapper" style="margin-top: 0.8rem;">
+                    <table class="crud-table">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Valor</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($pagamentosCartao as $pagamento): ?>
+                                <tr>
+                                    <td>
+                                        <?= $pagamento['data'] !== null
+                                            ? (new DateTimeImmutable($pagamento['data']))->format('d/m/Y')
+                                            : '<span class="crud-text-dim">&mdash;</span>' ?>
+                                    </td>
+                                    <td>
+                                        <?= $pagamento['valor'] !== null
+                                            ? 'R$ ' . number_format($pagamento['valor'], 2, ',', '.')
+                                            : '<span class="crud-text-dim">&mdash;</span>' ?>
+                                    </td>
+                                    <td>
+                                        <span class="plano-status-badge plano-status-<?= htmlspecialchars($pagamentoCartaoStatusBadge[$pagamento['status']] ?? 'pendente', ENT_QUOTES, 'UTF-8') ?>">
+                                            <?= htmlspecialchars($pagamentoCartaoStatusLabels[$pagamento['status']] ?? $pagamento['status'], ENT_QUOTES, 'UTF-8') ?>
+                                        </span>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
         </div>
     <?php endif; ?>
 
