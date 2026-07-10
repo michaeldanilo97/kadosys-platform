@@ -92,6 +92,24 @@ final class FaturaPix
     }
 
     /**
+     * Historico completo (mais recente primeiro) de faturas de um tenant -
+     * usada pela tela de Faturas (ver Igrejas\Controllers\FaturaController)
+     * pra mostrar vencimento, status e opcao de pagar de cada cobranca ja
+     * gerada, nao so a mais recente.
+     *
+     * @return self[]
+     */
+    public static function todasDoTenant(int $tenantId): array
+    {
+        $stmt = Database::central()->prepare(
+            self::SELECT_BASE . ' WHERE tenant_id = :tenant_id ORDER BY id DESC'
+        );
+        $stmt->execute(['tenant_id' => $tenantId]);
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /**
      * Ultima fatura PAGA de um tenant - representa o ciclo/plano
      * atualmente em vigor (com o vencimento de quando essa cobranca
      * cobre ate). Usada pelo painel pra diferenciar "aviso de renovacao

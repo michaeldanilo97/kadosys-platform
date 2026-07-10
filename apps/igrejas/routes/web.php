@@ -12,6 +12,7 @@ use Igrejas\Controllers\ConfiguracaoController;
 use Igrejas\Controllers\CultoController;
 use Igrejas\Controllers\DashboardController;
 use Igrejas\Controllers\DoacaoController;
+use Igrejas\Controllers\FaturaController;
 use Igrejas\Controllers\FinanceiroController;
 use Igrejas\Controllers\GrupoController;
 use Igrejas\Controllers\LandingController;
@@ -215,6 +216,14 @@ $router->get('/dashboard/plano-bloqueado', [DashboardController::class, 'planoBl
 // acesso de volta assim que o webhook confirmar.
 $router->get('/dashboard/fatura-vencida', [ConfiguracaoController::class, 'faturaVencida'], [AuthMiddleware::class]);
 $router->get('/dashboard/fatura-vencida/status', [ConfiguracaoController::class, 'faturaVencidaStatus'], [AuthMiddleware::class]);
+
+// Rota explicita (fora do catch-all "/dashboard/{slug}" abaixo), sem
+// PlanoMiddleware de proposito - assim como Configuracoes, o historico de
+// cobrancas precisa continuar acessivel mesmo se o modulo estiver fora do
+// plano contratado. Acesso (admin, ou quem o admin liberar) e resolvido
+// por User::podeAcessarModulo(), ja aplicado em toda rota de dashboard via
+// AuthMiddleware::bloquearSePermissaoNegada.
+$router->get('/dashboard/faturas', [FaturaController::class, 'index'], [AuthMiddleware::class]);
 
 // Tela exibida quando o teste gratis de 7 dias vence sem a igreja
 // escolher um plano pago (ver AuthMiddleware).

@@ -17,6 +17,22 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 60 - 2026-07-10
+
+**Nova tela de Faturas no menu lateral**
+
+- Pedido do admin: uma tela pra ver o historico de cobrancas da igreja -
+  vencimento, se foi paga e opcao de pagar agora.
+- Novo item "Faturas" no menu lateral (`/dashboard/faturas`), visivel
+  pra admins e pra quem o admin liberar via Permissoes (mesmo padrao dos
+  outros modulos opcionais, ex.: Financeiro) - disponivel em todos os
+  planos, sem bloqueio mesmo com plano contratado limitado.
+- Mostra: status atual (teste gratis, assinatura por cartao com o status
+  da cobranca recorrente, ou historico completo de cobrancas Pix com
+  vencimento/valor/status de cada uma) e um botao "Pagar agora" na
+  cobranca Pix pendente mais recente (reaproveita a mesma tela de QR code
+  ja usada quando uma fatura vence).
+
 ## Ajuste 59 - 2026-07-10
 
 **So clicar em "Assinar" (mesmo sem terminar o pagamento) ja derrubava o teste gratis**
