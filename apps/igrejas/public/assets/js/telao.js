@@ -442,7 +442,20 @@
 
     var observacoesTravado = 0;
     var observacoesBufferParado = 0;
+    var observacoesIndefinido = 0;
     var LIMITE_TRAVADO = 6; // ~1s cada = 6s parado em "nao iniciado" pra concluir que travou
+
+    // getPlayerState() pode voltar "undefined" so porque o iframe por
+    // baixo do wrapper YT.Player ainda esta conectando (handshake normal,
+    // sem nada de errado) - em rede mais lenta isso as vezes demora mais
+    // que os 6s do LIMITE_TRAVADO. Por isso ganha um limite bem mais
+    // generoso e PROPRIO, sem forcar reload (reload no meio de uma
+    // conexao que ia dar certo interrompe o video bem na hora que ele
+    // comecaria a tocar - foi visto acontecendo: o audio chegava a
+    // engatar e parava). Some com os -1/5 (que sao definitivos, o
+    // player ja respondeu e disse "nao comecei") pra nao repetir o
+    // bug antigo de tela preta permanente se o iframe travar mesmo.
+    var LIMITE_INDEFINIDO = 20; // ~1s cada = 20s sem NENHUMA resposta do player
 
     var intervalo = setInterval(function () {
       if (!player || typeof player.getPlayerState !== 'function' || ultimoEstadoVideo !== 'tocando' || videoId !== currentVideoId) {
@@ -471,25 +484,24 @@
         return;
       }
 
-      // -1 (nao iniciado) e 5 (na fila) sao os estados sabidamente
-      // travados. "undefined" (ou qualquer valor fora dos estados
-      // documentados da API) tambem entra aqui de proposito: acontece
-      // quando o wrapper YT.Player foi criado com sucesso mas o iframe
-      // por baixo nunca terminou de carregar (ex.: o dominio do embed
-      // do YouTube bloqueado pela rede, mesmo com o script da API
-      // liberado) - sem essa checagem, getPlayerState() ficava
-      // retornando undefined pra sempre e caia no "else" abaixo, que
-      // zerava os contadores a cada tick e nunca deixava o timeout de
-      // travamento disparar (tela preta permanente, sem reload nem
-      // mensagem de erro).
-      if (estadoAtual === -1 || estadoAtual === 5 || estadoAtual === undefined || estadoAtual === null) {
+      if (estadoAtual === undefined || estadoAtual === null) {
+        // Player ainda nao respondeu nada (handshake do iframe em
+        // andamento) - da um tempo generoso antes de considerar
+        // travado, sem mexer nos outros contadores.
+        observacoesIndefinido++;
+      } else if (estadoAtual === -1 || estadoAtual === 5) {
+        // -1 (nao iniciado) e 5 (na fila): o player JA respondeu e
+        // confirmou que nao comecou - esses sim sao definitivos o
+        // suficiente pro limite curto (autoplay bloqueado).
         observacoesTravado++;
         observacoesBufferParado = 0;
+        observacoesIndefinido = 0;
       } else if (estadoAtual === 3) {
         // Bufferizando: so e "travado" se o tempo de reproducao continuar
         // em zero por muito tempo - bufferizar de verdade avanca o
         // tempo assim que os primeiros segundos chegam.
         observacoesTravado = 0;
+        observacoesIndefinido = 0;
 
         var tempoAtual = 0;
 
@@ -506,26 +518,27 @@
         }
       } else {
         // Pausado (2) ou encerrado (0): o player aceitou o comando, so
-        // esta trabalhando - zera as duas contagens e continua
-        // observando.
+        // esta trabalhando - zera as contagens e continua observando.
         observacoesTravado = 0;
         observacoesBufferParado = 0;
+        observacoesIndefinido = 0;
       }
 
-      if (observacoesTravado >= LIMITE_TRAVADO) {
+      if (observacoesIndefinido >= LIMITE_INDEFINIDO) {
+        // ~20s sem o player responder nada - nao e mais handshake
+        // lento, e o iframe que nunca vai conectar (ex.: dominio do
+        // embed bloqueado pela rede). Reload nao ajuda aqui (o mesmo
+        // bloqueio se repetiria), entao so avisa.
+        clearInterval(intervalo);
+        checagemVideoId = null;
+        mostrarErroVideo('Nao foi possivel carregar o player do YouTube. Verifique se este dispositivo tem acesso a internet e se o YouTube nao esta bloqueado na rede.');
+      } else if (observacoesTravado >= LIMITE_TRAVADO) {
         clearInterval(intervalo);
         checagemVideoId = null;
 
         if (!jaRecarregouPara(videoId)) {
           marcarRecarregadoPara(videoId);
           window.location.reload();
-        } else if (estadoAtual === undefined || estadoAtual === null) {
-          // Reload unico ja gasto e o player nem chegou a responder
-          // getPlayerState() - nao e um caso de autoplay bloqueado (o
-          // aviso de toque nao resolveria nada aqui), e sim o iframe do
-          // YouTube que nunca terminou de carregar. Mostra a mensagem
-          // de rede em vez do aviso de audio, que so confundiria.
-          mostrarErroVideo('Nao foi possivel carregar o player do YouTube. Verifique se este dispositivo tem acesso a internet e se o YouTube nao esta bloqueado na rede.');
         } else if (avisoAudio) {
           // Reload unico ja gasto e o video continua travado (mas o
           // player responde normalmente) - mostra o aviso de toque como
