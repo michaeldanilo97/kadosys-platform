@@ -524,21 +524,23 @@
         observacoesIndefinido = 0;
       }
 
-      if (observacoesIndefinido >= LIMITE_INDEFINIDO) {
-        // ~20s sem o player responder nada - nao e mais handshake
-        // lento, e o iframe que nunca vai conectar (ex.: dominio do
-        // embed bloqueado pela rede). Reload nao ajuda aqui (o mesmo
-        // bloqueio se repetiria), entao so avisa.
-        clearInterval(intervalo);
-        checagemVideoId = null;
-        mostrarErroVideo('Nao foi possivel carregar o player do YouTube. Verifique se este dispositivo tem acesso a internet e se o YouTube nao esta bloqueado na rede.');
-      } else if (observacoesTravado >= LIMITE_TRAVADO) {
+      if (observacoesIndefinido >= LIMITE_INDEFINIDO || observacoesTravado >= LIMITE_TRAVADO) {
         clearInterval(intervalo);
         checagemVideoId = null;
 
+        // Reportado ao vivo: mesmo no caso "nunca respondeu nada"
+        // (observacoesIndefinido), um F5 manual resolvia o video -
+        // provando que a suposicao original (reload nao ajuda um
+        // iframe travado) estava errada na pratica: o reload tambem
+        // resolve esse caso na maioria das vezes (script/iframe que
+        // engasgou numa tentativa isolada, nao necessariamente um
+        // bloqueio permanente). Por isso os dois casos agora tentam UM
+        // reload automatico antes de desistir e so mostrar aviso.
         if (!jaRecarregouPara(videoId)) {
           marcarRecarregadoPara(videoId);
           window.location.reload();
+        } else if (observacoesIndefinido >= LIMITE_INDEFINIDO) {
+          mostrarErroVideo('Nao foi possivel carregar o player do YouTube. Verifique se este dispositivo tem acesso a internet e se o YouTube nao esta bloqueado na rede.');
         } else if (avisoAudio) {
           // Reload unico ja gasto e o video continua travado (mas o
           // player responde normalmente) - mostra o aviso de toque como
@@ -985,10 +987,18 @@
       // Depois de ~20s sem conseguir nem criar o player (nao e so um
       // video especifico com problema - aqui e a propria API do
       // YouTube que nunca respondeu), o mais provavel e a rede estar
-      // bloqueando o dominio do YouTube por completo. Sem isso, os
-      // botoes de play/pause do operador ficavam sem efeito nenhum e
-      // sem nenhuma explicacao visivel na tela.
-      mostrarErroVideo('Nao foi possivel carregar o player do YouTube. Verifique se este dispositivo tem acesso a internet e se o YouTube nao esta bloqueado na rede.');
+      // bloqueando o dominio do YouTube por completo. Reportado ao
+      // vivo: um F5 manual nesse ponto resolvia - por isso tenta um
+      // reload automatico (uma unica vez por sessao de navegador,
+      // "__api__" nao e um video especifico) antes de so mostrar o
+      // aviso; sem isso, os botoes de play/pause do operador ficavam
+      // sem efeito nenhum e sem nenhuma explicacao visivel na tela.
+      if (!jaRecarregouPara('__api__')) {
+        marcarRecarregadoPara('__api__');
+        window.location.reload();
+      } else {
+        mostrarErroVideo('Nao foi possivel carregar o player do YouTube. Verifique se este dispositivo tem acesso a internet e se o YouTube nao esta bloqueado na rede.');
+      }
     }
   }, 800);
 
