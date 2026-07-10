@@ -218,18 +218,12 @@ final class ProjecaoEstadoController extends Controller
     }
 
     /**
-     * Exibicao rapida de Pix (dizimo/oferta) - ver ProjecaoEstado::mostrarPix().
+     * Exibicao rapida de Pix (dizimo + oferta juntos) - ver ProjecaoEstado::mostrarPix().
      */
     public function mostrarPix(string $token): void
     {
         $sessao = $this->sessaoOuErro($token);
-        $categoria = (string) $this->request->input('categoria', '');
-
-        if (!in_array($categoria, ['dizimo', 'oferta'], true)) {
-            $this->jsonResponse(['erro' => 'Categoria invalida.'], 422);
-        }
-
-        ProjecaoEstado::mostrarPix($sessao->id, $categoria);
+        ProjecaoEstado::mostrarPix($sessao->id);
         $this->jsonResponse(['ok' => true]);
     }
 

@@ -17,6 +17,22 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 50 - 2026-07-10
+
+**Dizimo e oferta agora exibem os 2 QR Pix juntos, bem afastados na tela**
+
+- No Ajuste 49, Dizimo e Oferta eram botoes separados que trocavam um
+  QR pelo outro no telao. Como os dois usam a MESMA chave Pix da
+  igreja e normalmente sao recolhidos no mesmo momento do culto,
+  agora um unico botao "Dizimo e Oferta" exibe os DOIS QR ao mesmo
+  tempo, lado a lado - cada um com seu titulo (Dízimo/Oferta) e o
+  proprio txid (pra identificar cada um depois no extrato), mas a
+  mesma chave por baixo.
+- Os dois QR ficam propositalmente bem espacados um do outro: perto
+  demais, a camera do celular de quem esta escaneando (principalmente
+  em pe, meio de longe) as vezes focava ou lia o QR vizinho por
+  engano.
+
 ## Ajuste 49 - 2026-07-10
 
 **Exibicoes rapidas no telao: Pix de dizimo/oferta + galeria de imagens favoritas**

@@ -198,22 +198,16 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                     <h2><i class="bi bi-lightning-charge-fill"></i> Exibicoes rapidas</h2>
                 </div>
                 <p class="dash-page-subtitle" style="margin-bottom: 1rem;">
-                    Um clique ja exibe no telao - use na hora do dizimo/oferta pra congregacao inteira escanear o Pix.
+                    Um clique ja exibe no telao - dizimo e oferta usam a mesma chave Pix e aparecem juntos, ja que sao recolhidos no mesmo momento do culto.
                 </p>
                 <div class="projecao-video-controles">
                     <button type="button" class="btn-k btn-k-ghost" data-acao-logo><i class="bi bi-image"></i> Logo</button>
                     <button
                         type="button"
                         class="btn-k btn-k-ghost"
-                        data-acao-pix="dizimo"
+                        data-acao-pix
                         <?= $doacaoPixHabilitada ? '' : 'disabled title="Cadastre uma chave Pix em Configuracoes para habilitar"' ?>
-                    ><i class="bi bi-qr-code"></i> Dizimo</button>
-                    <button
-                        type="button"
-                        class="btn-k btn-k-ghost"
-                        data-acao-pix="oferta"
-                        <?= $doacaoPixHabilitada ? '' : 'disabled title="Cadastre uma chave Pix em Configuracoes para habilitar"' ?>
-                    ><i class="bi bi-qr-code"></i> Oferta</button>
+                    ><i class="bi bi-qr-code"></i> Dizimo e Oferta</button>
                 </div>
                 <?php if (!$doacaoPixHabilitada): ?>
                     <p class="auth-field-hint" style="margin-top: 0.8rem;">

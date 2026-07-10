@@ -185,28 +185,50 @@ html, body {
   text-transform: uppercase;
 }
 
-/* ---- Exibicao rapida de Pix (dizimo/oferta) -------------------------------- */
+/* ---- Exibicao rapida de Pix (dizimo + oferta juntos) ----------------------- */
 
 .telao-pix {
   z-index: 4;
+  flex-direction: column;
+  gap: 3.5vh;
   background:
     radial-gradient(circle at 50% 0%, rgba(212, 161, 63, 0.12), transparent 60%),
     var(--telao-bg);
+}
+
+.telao-pix-aviso {
+  font-size: clamp(1.1rem, 2vw, 1.8rem);
+  color: var(--telao-muted);
+  text-align: center;
+  max-width: 60vw;
+}
+
+/* Os dois QR ficam bem afastados um do outro de proposito - perto
+   demais, a camera do celular as vezes foca ou le o QR vizinho por
+   engano ao tentar escanear o de do lado. */
+.telao-pix-grupo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: min(14vw, 220px);
+}
+
+.telao-pix-grupo[hidden] {
+  display: none;
 }
 
 .telao-pix-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.4cqh;
-  padding: 4vh 4vw;
+  gap: 1.6vh;
   text-align: center;
 }
 
 .telao-pix-titulo {
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
-  font-size: clamp(2rem, 5vw, 3.6rem);
+  font-size: clamp(1.6rem, 3.4vw, 2.6rem);
   color: var(--telao-accent);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -219,10 +241,10 @@ html, body {
 }
 
 .telao-pix-qr img {
-  width: min(38vh, 38vw);
-  height: min(38vh, 38vw);
+  width: min(32vh, 24vw);
+  height: min(32vh, 24vw);
   background: var(--telao-text);
-  padding: 1.4rem;
+  padding: 1.2rem;
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
@@ -231,6 +253,11 @@ html, body {
   font-size: clamp(1rem, 1.6vw, 1.5rem);
   color: var(--telao-muted);
   max-width: 60vw;
+  text-align: center;
+}
+
+.telao-pix-instrucao[hidden] {
+  display: none;
 }
 
 .telao-pix-instrucao strong {

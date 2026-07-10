@@ -16,7 +16,7 @@
   var botaoLogo = document.querySelector('[data-acao-logo]');
   var botaoLimpar = document.querySelector('[data-acao-limpar]');
   var botaoFullscreen = document.querySelector('[data-acao-fullscreen]');
-  var botoesPix = document.querySelectorAll('[data-acao-pix]');
+  var botaoPix = document.querySelector('[data-acao-pix]');
   var botoesImagem = document.querySelectorAll('[data-acao-imagem]');
 
   var navBox = root.querySelector('[data-projecao-nav]');
@@ -381,24 +381,19 @@
     });
   }
 
-  botoesPix.forEach(function (botao) {
-    botao.addEventListener('click', function () {
-      var categoria = botao.getAttribute('data-acao-pix');
-
+  if (botaoPix) {
+    botaoPix.addEventListener('click', function () {
       confirmarTroca('pix').then(function (ok) {
         if (!ok) {
           return;
         }
 
-        var dados = new URLSearchParams();
-        dados.set('categoria', categoria);
-
-        enviar('/pix', dados).then(function () {
+        enviar('/pix').then(function () {
           modoAtual = 'pix';
         });
       });
     });
-  });
+  }
 
   botoesImagem.forEach(function (botao) {
     botao.addEventListener('click', function () {
