@@ -17,6 +17,34 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 53 - 2026-07-10
+
+**Corrige regressao do Ajuste 52: video que estava tocando (com som prestes a comecar) sendo interrompido/recarregado**
+
+- O Ajuste 52 corrigiu a tela preta permanente, mas foi longe demais:
+  passou a tratar `getPlayerState() === undefined` com o MESMO limite
+  curto (6s) usado pro cenario de autoplay bloqueado - so que
+  `undefined` tambem acontece de forma NORMAL enquanto o iframe do
+  player ainda esta conectando (handshake), o que em rede mais lenta
+  (bem comum em wifi de igreja) pode levar mais que 6s mesmo em video
+  que ia funcionar perfeitamente. Resultado: video comecava a tocar
+  (som prestes a engatar) e era interrompido por um reload automatico
+  disparado achando que estava travado - reportado ao vivo pelo
+  usuario ("pareceu que ia sair som mas parou").
+- Corrigido dando a `undefined`/`null` um contador PROPRIO, bem mais
+  generoso (~20s em vez de 6s) e sem forcar reload algum (reload nao
+  ajudaria um iframe genuinamente bloqueado, e atrapalha um handshake
+  lento mas saudavel) - so mostra a mensagem de erro apos esse tempo
+  todo sem nenhuma resposta do player. Os estados -1/5 (o player JA
+  respondeu e confirmou que nao comecou - autoplay bloqueado de
+  verdade) continuam com o limite curto de 6s + 1 reload automatico,
+  como sempre funcionou.
+- Validado com 3 cenarios via mock do player: (1) travado pra sempre
+  (`undefined` eterno) - mostra erro em ~22s, sem reload; (2) handshake
+  lento de 10s antes de comecar a tocar - NAO e mais interrompido,
+  toca normalmente; (3) autoplay bloqueado classico (-1 fixo, player
+  respondendo) - continua recarregando uma vez em ~6-7s como antes.
+
 ## Ajuste 52 - 2026-07-10
 
 **Corrige tela preta permanente no video quando o embed do YouTube nao carrega**
