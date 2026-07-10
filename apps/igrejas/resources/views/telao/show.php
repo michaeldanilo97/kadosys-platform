@@ -44,11 +44,18 @@ $logoUrl = $logoPath ? $basePath . '/' . $logoPath : null;
     </div>
 
     <div class="telao-layer telao-pix" data-telao-layer="pix">
-        <div class="telao-pix-card">
-            <div class="telao-pix-titulo" data-telao-pix-titulo></div>
-            <div class="telao-pix-qr" data-telao-pix-qr></div>
-            <div class="telao-pix-instrucao" data-telao-pix-instrucao></div>
+        <div class="telao-pix-aviso" data-telao-pix-aviso hidden></div>
+        <div class="telao-pix-grupo" data-telao-pix-grupo>
+            <div class="telao-pix-card">
+                <div class="telao-pix-titulo">Dízimo</div>
+                <div class="telao-pix-qr" data-telao-pix-qr="dizimo"></div>
+            </div>
+            <div class="telao-pix-card">
+                <div class="telao-pix-titulo">Oferta</div>
+                <div class="telao-pix-qr" data-telao-pix-qr="oferta"></div>
+            </div>
         </div>
+        <div class="telao-pix-instrucao" data-telao-pix-instrucao></div>
     </div>
 
     <div class="telao-layer telao-imagem" data-telao-layer="imagem">

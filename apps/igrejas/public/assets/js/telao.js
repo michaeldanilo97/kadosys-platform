@@ -22,8 +22,12 @@
   var stage = root.querySelector('[data-telao-stage]');
   var marcacaoCanvas = root.querySelector('[data-telao-marcacao]');
   var marcacaoCtx = marcacaoCanvas ? marcacaoCanvas.getContext('2d') : null;
-  var pixTitulo = root.querySelector('[data-telao-pix-titulo]');
-  var pixQrWrap = root.querySelector('[data-telao-pix-qr]');
+  var pixAviso = root.querySelector('[data-telao-pix-aviso]');
+  var pixGrupo = root.querySelector('[data-telao-pix-grupo]');
+  var pixQrWraps = {
+    dizimo: root.querySelector('[data-telao-pix-qr="dizimo"]'),
+    oferta: root.querySelector('[data-telao-pix-qr="oferta"]'),
+  };
   var pixInstrucao = root.querySelector('[data-telao-pix-instrucao]');
   var imagemImg = root.querySelector('[data-telao-imagem-img]');
   // O link publico de doacao (ver DoacaoController) e derivado do
@@ -31,8 +35,10 @@
   // trocando o sufixo "/projecao/{token}/estado" por "/doar" - evita
   // ter que passar essa informacao a parte do servidor pro telao.
   var linkDoacao = pollUrl.replace(/\/projecao\/.*$/, '/doar');
-  var NOMES_PIX_CATEGORIA = { dizimo: 'Dízimo', oferta: 'Oferta' };
-  var ultimoPayloadPixRenderizado = null;
+  // Ultimo payload desenhado em cada QR (chave: categoria) - so
+  // redesenha quando o payload daquela categoria muda de verdade,
+  // evitando repintar (e "piscar") os dois QR a cada poll (1.5s).
+  var ultimoPayloadPixRenderizado = {};
 
   var lastVersao = null;
   var lastLeituraId = null;
@@ -143,42 +149,54 @@
   }
 
   /**
-   * Exibicao rapida de Pix (dizimo/oferta, ver painel "Exibicoes
-   * rapidas" no operador) - o QR e desenhado no proprio navegador do
-   * telao (mesma biblioteca vendorizada usada em doacao-pix.js), a
-   * partir do payload BR Code ja montado no servidor (ver
-   * ProjecaoEstado::montarPixJson()). So redesenha o QR quando o
-   * payload realmente muda (dizimo -> oferta, ou reload da chave Pix),
-   * nao a cada poll - redesenhar sem necessidade some visualmente por
-   * uma fracao de segundo e pisca a tela.
+   * Exibicao rapida de Pix (dizimo + oferta, ver painel "Exibicoes
+   * rapidas" no operador) - os dois QR sao desenhados no proprio
+   * navegador do telao (mesma biblioteca vendorizada usada em
+   * doacao-pix.js), a partir dos payloads BR Code ja montados no
+   * servidor (ver ProjecaoEstado::montarPixJson()). Mostrados JUNTOS
+   * (mesmo momento do culto) mas bem afastados um do outro na tela -
+   * perto demais, a camera do celular as vezes foca/le o QR errado ao
+   * tentar escanear o de do lado. So redesenha cada QR quando o
+   * payload DAQUELE especifico muda de verdade, nao a cada poll -
+   * redesenhar sem necessidade pisca a tela.
    */
   function renderPix(pix) {
-    if (!pixTitulo || !pixQrWrap || !pixInstrucao) {
+    if (!pixAviso || !pixGrupo || !pixInstrucao) {
       return;
     }
 
-    pixTitulo.textContent = NOMES_PIX_CATEGORIA[pix && pix.categoria] || 'Pix';
-
-    if (!pix || !pix.payload) {
-      pixQrWrap.innerHTML = '';
-      pixInstrucao.innerHTML = 'Esta igreja ainda não configurou uma chave Pix.';
-      ultimoPayloadPixRenderizado = null;
+    if (!pix || !pix.length) {
+      pixAviso.hidden = false;
+      pixAviso.textContent = 'Esta igreja ainda não configurou uma chave Pix.';
+      pixGrupo.hidden = true;
+      pixInstrucao.hidden = true;
+      ultimoPayloadPixRenderizado = {};
 
       return;
     }
 
-    if (pix.payload !== ultimoPayloadPixRenderizado) {
-      ultimoPayloadPixRenderizado = pix.payload;
+    pixAviso.hidden = true;
+    pixGrupo.hidden = false;
+    pixInstrucao.hidden = false;
+
+    pix.forEach(function (item) {
+      var wrap = pixQrWraps[item.categoria];
+
+      if (!wrap || !item.payload || item.payload === ultimoPayloadPixRenderizado[item.categoria]) {
+        return;
+      }
+
+      ultimoPayloadPixRenderizado[item.categoria] = item.payload;
 
       try {
         var qr = window.qrcode(0, 'M');
-        qr.addData(pix.payload);
+        qr.addData(item.payload);
         qr.make();
-        pixQrWrap.innerHTML = qr.createImgTag(8, 4, 'QR code Pix');
+        wrap.innerHTML = qr.createImgTag(7, 4, 'QR code Pix - ' + item.label);
       } catch (erro) {
-        pixQrWrap.innerHTML = '';
+        wrap.innerHTML = '';
       }
-    }
+    });
 
     pixInstrucao.innerHTML = 'Prefere fazer depois? Acesse <strong>' + escapeHtml(linkDoacao.replace(/^https?:\/\//, '')) + '</strong> do seu celular.';
   }

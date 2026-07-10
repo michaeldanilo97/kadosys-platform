@@ -35,7 +35,6 @@ final class ProjecaoEstado
         public readonly string $videoEstado,
         public readonly ?int $videoTempoAtual,
         public readonly ?int $videoDuracao,
-        public readonly ?string $pixCategoria,
         public readonly ?int $imagemId,
         public readonly ?string $imagemPath,
         public readonly int $versao,
@@ -159,25 +158,24 @@ final class ProjecaoEstado
     }
 
     /**
-     * Exibicao rapida de Pix (dizimo/oferta) no telao - pensado pro
-     * momento do culto em que o responsavel pelo projetor mostra o QR
-     * pra congregacao inteira, sem que cada pessoa precise abrir o
-     * proprio link. O payload em si (ver PixEstatico) e montado na hora
-     * em paraJson(), sempre sem valor fixo (cada pessoa digita o
-     * proprio valor no banco - o QR e o mesmo pra todo mundo que
-     * escanear naquele momento).
+     * Exibicao rapida de Pix no telao - pensado pro momento do culto em
+     * que o responsavel pelo projetor mostra o QR pra congregacao
+     * inteira, sem que cada pessoa precise abrir o proprio link.
+     * Dizimo e oferta usam a MESMA chave Pix da igreja (so o txid dentro
+     * do payload muda, pra identificar cada um no extrato depois) e sao
+     * exibidos JUNTOS, ja que normalmente sao recolhidos no mesmo
+     * momento do culto - ver montarPixJson() pra como os dois QR sao
+     * montados, e telao.js pra como sao desenhados bem afastados um do
+     * outro (perto demais, a camera do celular as vezes le o QR
+     * errado).
      */
-    public static function mostrarPix(int $sessaoId, string $categoria): void
+    public static function mostrarPix(int $sessaoId): void
     {
-        if (!in_array($categoria, ['dizimo', 'oferta'], true)) {
-            return;
-        }
-
         $stmt = Database::connection()->prepare(
-            'UPDATE projecao_estados SET modo = "pix", pix_categoria = :categoria, versao = versao + 1, updated_at = NOW()
+            'UPDATE projecao_estados SET modo = "pix", versao = versao + 1, updated_at = NOW()
              WHERE sessao_id = :sessao_id'
         );
-        $stmt->execute(['sessao_id' => $sessaoId, 'categoria' => $categoria]);
+        $stmt->execute(['sessao_id' => $sessaoId]);
     }
 
     /**
@@ -266,7 +264,7 @@ final class ProjecaoEstado
                 'tempoAtual' => $this->videoTempoAtual,
                 'duracao' => $this->videoDuracao,
             ],
-            'pix' => $this->modo === 'pix' ? $this->montarPixJson() : null,
+            'pix' => $this->modo === 'pix' ? $this->montarPixJson() : [],
             'imagem' => [
                 'path' => $this->imagemPath,
             ],
@@ -274,31 +272,46 @@ final class ProjecaoEstado
     }
 
     /**
-     * Payload do QR (BR Code, ver PixEstatico) montado na hora que o
-     * telao pede o estado - sempre sem valor fixo (ver mostrarPix()).
-     * Se a igreja nunca cadastrou uma chave Pix (ver
-     * ConfiguracaoIgreja::doacaoPixHabilitada()), volta com payload
-     * null - o telao mostra um aviso em vez de um QR quebrado.
+     * Payload dos DOIS QR (BR Code, ver PixEstatico) montados na hora
+     * que o telao pede o estado - sempre sem valor fixo (cada pessoa
+     * digita o proprio valor no banco). Dizimo e oferta usam a mesma
+     * chave Pix da igreja (o dinheiro cai na mesma conta de qualquer
+     * jeito) - so o txid dentro do payload muda, pra facilitar
+     * identificar cada um depois no extrato. Exibidos juntos porque
+     * normalmente sao recolhidos no mesmo momento do culto.
      *
-     * @return array{categoria: ?string, payload: ?string}
+     * Se a igreja nunca cadastrou uma chave Pix (ver
+     * ConfiguracaoIgreja::doacaoPixHabilitada()), volta com a lista
+     * vazia - o telao mostra um aviso em vez de um QR quebrado.
+     *
+     * @return array<int, array{categoria: string, label: string, payload: string}>
      */
     private function montarPixJson(): array
     {
         $configuracao = ConfiguracaoIgreja::atual();
 
         if (!$configuracao->doacaoPixHabilitada()) {
-            return ['categoria' => $this->pixCategoria, 'payload' => null];
+            return [];
         }
 
-        $payload = PixEstatico::montarPayload(
-            chave: (string) $configuracao->pixChave,
-            nomeBeneficiario: $configuracao->pixNomeBeneficiario ?? (string) $configuracao->nomeIgreja,
-            cidade: (string) ($configuracao->cidade ?? 'BRASIL'),
-            valor: null,
-            txid: strtoupper($this->pixCategoria ?? 'OFERTA'),
-        );
+        $categorias = ['dizimo' => 'Dízimo', 'oferta' => 'Oferta'];
+        $pix = [];
 
-        return ['categoria' => $this->pixCategoria, 'payload' => $payload];
+        foreach ($categorias as $categoria => $label) {
+            $pix[] = [
+                'categoria' => $categoria,
+                'label' => $label,
+                'payload' => PixEstatico::montarPayload(
+                    chave: (string) $configuracao->pixChave,
+                    nomeBeneficiario: $configuracao->pixNomeBeneficiario ?? (string) $configuracao->nomeIgreja,
+                    cidade: (string) ($configuracao->cidade ?? 'BRASIL'),
+                    valor: null,
+                    txid: strtoupper($categoria),
+                ),
+            ];
+        }
+
+        return $pix;
     }
 
     /**
@@ -357,7 +370,6 @@ final class ProjecaoEstado
             videoEstado: (string) $row['video_estado'],
             videoTempoAtual: $row['video_tempo_atual'] !== null ? (int) $row['video_tempo_atual'] : null,
             videoDuracao: $row['video_duracao'] !== null ? (int) $row['video_duracao'] : null,
-            pixCategoria: $row['pix_categoria'] ?? null,
             imagemId: $row['imagem_id'] !== null ? (int) $row['imagem_id'] : null,
             imagemPath: $row['imagem_path'] ?? null,
             versao: (int) $row['versao'],
