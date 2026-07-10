@@ -17,6 +17,32 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 62 - 2026-07-10
+
+**IMPORTANTE: rode a migracao 036 no banco CENTRAL antes de acessar o painel da plataforma**
+
+- Nova coluna `ultimo_acesso_em` em `plataforma_tenants` (banco central,
+  o mesmo que recebe os cadastros publicos - NAO e no banco de cada
+  igreja). Sem rodar `database/migrations/036_add_ultimo_acesso_tenants.sql`
+  no banco central, a pagina `/plataforma/igrejas` da erro.
+
+**Painel da plataforma (`/plataforma/igrejas`): ultimo acesso e situacao de pagamento de cada igreja**
+
+- Pedido: informacoes importantes pra controlar melhor as igrejas
+  provisionadas, tipo ultimo acesso e se o pagamento esta em dia.
+- Adicionada a coluna **Ultimo acesso**: registra o momento do ultimo
+  login com sucesso de qualquer usuario daquela igreja (gravado direto
+  no banco central em `AuthController::login()`), mostrando "Nunca
+  acessou" pra quem ainda nao entrou.
+- Adicionada a coluna **Situacao do pagamento**: resume de relance se
+  esta em dia, atrasado, em teste gratis ou pendente de confirmacao -
+  mesma logica de bloqueio ja usada em AuthMiddleware (trial vencido,
+  fatura Pix vencida, assinatura de cartao nao autorizada), so que
+  resumida numa badge por igreja em vez de decidir se bloqueia ou nao
+  o acesso.
+- Coluna antiga "Pagamento" virou "Metodo" (Pix/Cartao/Teste gratis),
+  mantendo so o metodo escolhido, separado da situacao.
+
 ## Ajuste 61 - 2026-07-10
 
 **Faturas: extrato de cobrancas de cartao direto da API do Mercado Pago**

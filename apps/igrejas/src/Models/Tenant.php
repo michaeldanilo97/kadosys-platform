@@ -34,6 +34,7 @@ final class Tenant
         public readonly string $dbPassword,
         public readonly string $status,
         public readonly string $criadoEm,
+        public readonly ?string $ultimoAcessoEm = null,
     ) {
     }
 
@@ -194,6 +195,21 @@ final class Tenant
         $stmt->execute(['metodo_pagamento' => $metodoPagamento, 'id' => $id]);
     }
 
+    /**
+     * Registra o momento do ultimo login com sucesso de QUALQUER usuario
+     * dessa igreja - chamado em AuthController::login(). So um timestamp
+     * central (nao por usuario individual), suficiente pra dar ao dono da
+     * plataforma uma nocao de quais igrejas estao ativas de verdade (ver
+     * painel /plataforma/igrejas).
+     */
+    public static function atualizarUltimoAcesso(int $id): void
+    {
+        $stmt = Database::central()->prepare(
+            'UPDATE plataforma_tenants SET ultimo_acesso_em = NOW() WHERE id = :id'
+        );
+        $stmt->execute(['id' => $id]);
+    }
+
     public static function buscarPorSubdominio(string $subdominio): ?self
     {
         $stmt = Database::central()->prepare(self::SELECT_BASE . ' WHERE subdominio = :subdominio LIMIT 1');
@@ -253,7 +269,7 @@ final class Tenant
 
     private const SELECT_BASE = 'SELECT id, slug, nome_igreja, documento_tipo, documento, razao_social, plano,
             metodo_pagamento, trial_expira_em, proximo_vencimento, plano_agendado, subdominio, db_name, db_user,
-            db_password, status, created_at
+            db_password, status, created_at, ultimo_acesso_em
         FROM plataforma_tenants';
 
     private static function fromRow(array $row): self
@@ -276,6 +292,7 @@ final class Tenant
             dbPassword: $row['db_password'],
             status: $row['status'],
             criadoEm: $row['created_at'],
+            ultimoAcessoEm: $row['ultimo_acesso_em'] ?? null,
         );
     }
 }

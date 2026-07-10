@@ -10,6 +10,8 @@ use Igrejas\Core\CpanelUapiClient;
 use Igrejas\Core\Desprovisionador;
 use Igrejas\Core\Middleware\PlataformaAuthMiddleware;
 use Igrejas\Core\Session;
+use Igrejas\Models\AssinaturaTenant;
+use Igrejas\Models\FaturaPix;
 use Igrejas\Models\PlataformaAviso;
 use Igrejas\Models\Tenant;
 
@@ -63,14 +65,105 @@ final class PlataformaController extends Controller
 
     public function igrejas(): void
     {
+        $igrejas = Tenant::listarTodas();
+
         echo $this->view('plataforma.igrejas', [
             'pageTitle' => 'Igrejas - Painel da Plataforma',
             'activeMenu' => 'igrejas',
-            'igrejas' => Tenant::listarTodas(),
+            'igrejas' => $igrejas,
+            'situacoesPagamento' => $this->situacoesPagamento($igrejas),
             'success' => Session::flash('plataforma_success'),
             'errors' => Session::flash('plataforma_errors') ?? [],
             'csrfToken' => Csrf::token(),
         ], 'plataforma');
+    }
+
+    /**
+     * Resumo da situacao de pagamento de cada igreja, pro dono da
+     * plataforma acompanhar de relance quem esta em dia e quem precisa de
+     * atencao - mesma logica de bloqueio ja usada em
+     * Igrejas\Core\Middleware\AuthMiddleware (trial vencido/fatura Pix
+     * vencida), so que resumida aqui numa unica badge por igreja em vez
+     * de decidir se bloqueia ou nao o acesso.
+     *
+     * @param array<int, Tenant> $igrejas
+     * @return array<int, array{label:string, classe:string}>
+     */
+    private function situacoesPagamento(array $igrejas): array
+    {
+        $situacoes = [];
+
+        foreach ($igrejas as $tenant) {
+            $situacoes[$tenant->id] = match ($tenant->metodoPagamento) {
+                'trial' => $this->situacaoTrial($tenant),
+                'cartao' => $this->situacaoCartao($tenant),
+                'pix' => $this->situacaoPix($tenant),
+                default => ['label' => 'Desconhecido', 'classe' => 'pendente'],
+            };
+        }
+
+        return $situacoes;
+    }
+
+    /** @return array{label:string, classe:string} */
+    private function situacaoTrial(Tenant $tenant): array
+    {
+        if ($tenant->trialExpiraEm === null) {
+            return ['label' => 'Em teste', 'classe' => 'pendente'];
+        }
+
+        $expiraEm = new \DateTimeImmutable($tenant->trialExpiraEm);
+
+        if (new \DateTimeImmutable() > $expiraEm) {
+            return ['label' => 'Teste vencido', 'classe' => 'cancelada'];
+        }
+
+        return ['label' => 'Em teste ate ' . $expiraEm->format('d/m/Y'), 'classe' => 'pendente'];
+    }
+
+    /** @return array{label:string, classe:string} */
+    private function situacaoCartao(Tenant $tenant): array
+    {
+        $assinatura = AssinaturaTenant::ultimaDoTenant($tenant->id);
+
+        if ($assinatura === null) {
+            return ['label' => 'Sem assinatura', 'classe' => 'pendente'];
+        }
+
+        return match ($assinatura->status) {
+            'autorizada' => ['label' => 'Em dia', 'classe' => 'autorizada'],
+            'pausada' => ['label' => 'Pausada', 'classe' => 'pausada'],
+            'cancelada' => ['label' => 'Cancelada', 'classe' => 'cancelada'],
+            default => ['label' => 'Pagamento pendente', 'classe' => 'pendente'],
+        };
+    }
+
+    /** @return array{label:string, classe:string} */
+    private function situacaoPix(Tenant $tenant): array
+    {
+        $fatura = FaturaPix::ultimaDoTenant($tenant->id);
+
+        if ($fatura === null) {
+            return ['label' => 'Sem fatura', 'classe' => 'pendente'];
+        }
+
+        if ($fatura->status === 'paga') {
+            return ['label' => 'Em dia', 'classe' => 'autorizada'];
+        }
+
+        if ($fatura->status === 'cancelada') {
+            return ['label' => 'Cancelada', 'classe' => 'cancelada'];
+        }
+
+        // 'pendente' ainda dentro do prazo (nao vencida) ou 'expirada'
+        // (vencida sem pagamento, ver FaturaPix::marcarExpiradasVencidas)
+        // - mesmo criterio de bloqueio do AuthMiddleware.
+        $vencida = $fatura->status === 'expirada'
+            || new \DateTimeImmutable() > new \DateTimeImmutable($fatura->vencimento);
+
+        return $vencida
+            ? ['label' => 'Atrasado', 'classe' => 'cancelada']
+            : ['label' => 'Fatura em aberto', 'classe' => 'pendente'];
     }
 
     /**
