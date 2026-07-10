@@ -30,14 +30,15 @@ $basePath = $config['base_path'] ?? '';
     <div class="preletor-body">
         <form class="preletor-picker" data-preletor-form onsubmit="return false;">
             <div class="preletor-field">
-                <label for="preletor_versao">Versao</label>
-                <select id="preletor_versao" name="biblia_versao" data-campo="biblia_versao" required>
+                <label>Versao</label>
+                <div class="preletor-versoes" data-versao-pills>
+                    <input type="hidden" data-campo="biblia_versao" required>
                     <?php foreach ($versoes as $codigo => $nome): ?>
-                        <option value="<?= htmlspecialchars($codigo, ENT_QUOTES, 'UTF-8') ?>" title="<?= htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') ?>">
+                        <button type="button" class="biblia-pill" data-versao-pill data-valor="<?= htmlspecialchars($codigo, ENT_QUOTES, 'UTF-8') ?>" title="<?= htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') ?>">
                             <?= strtoupper(htmlspecialchars($codigo, ENT_QUOTES, 'UTF-8')) ?>
-                        </option>
+                        </button>
                     <?php endforeach; ?>
-                </select>
+                </div>
             </div>
 
             <div class="preletor-field preletor-field-livro">
@@ -60,22 +61,34 @@ $basePath = $config['base_path'] ?? '';
             </div>
 
             <div class="preletor-field preletor-field-sm">
-                <label for="preletor_capitulo">Cap.</label>
-                <select id="preletor_capitulo" data-campo="capitulo" required>
-                    <option value="" selected disabled>Cap.</option>
-                </select>
+                <label>Cap.</label>
+                <div class="num-combo" data-num-combo="capitulo">
+                    <button type="button" class="num-combo-toggle" data-num-combo-toggle aria-expanded="false">Cap...</button>
+                    <input type="hidden" data-campo="capitulo" required>
+                    <div class="livro-combo-lista num-combo-lista" data-num-combo-lista hidden>
+                        <div class="biblia-chips" data-num-combo-grid></div>
+                    </div>
+                </div>
             </div>
             <div class="preletor-field preletor-field-sm">
-                <label for="preletor_versiculo_inicio">Vers.</label>
-                <select id="preletor_versiculo_inicio" data-campo="versiculo_inicio" required>
-                    <option value="" selected disabled>Vers.</option>
-                </select>
+                <label>Vers.</label>
+                <div class="num-combo" data-num-combo="versiculo_inicio">
+                    <button type="button" class="num-combo-toggle" data-num-combo-toggle aria-expanded="false">Vers...</button>
+                    <input type="hidden" data-campo="versiculo_inicio" required>
+                    <div class="livro-combo-lista num-combo-lista" data-num-combo-lista hidden>
+                        <div class="biblia-chips" data-num-combo-grid></div>
+                    </div>
+                </div>
             </div>
             <div class="preletor-field preletor-field-sm">
-                <label for="preletor_versiculo_fim">Ate</label>
-                <select id="preletor_versiculo_fim" data-campo="versiculo_fim">
-                    <option value="">Opcional</option>
-                </select>
+                <label>Ate</label>
+                <div class="num-combo" data-num-combo="versiculo_fim">
+                    <button type="button" class="num-combo-toggle" data-num-combo-toggle aria-expanded="false">Opcional</button>
+                    <input type="hidden" data-campo="versiculo_fim">
+                    <div class="livro-combo-lista num-combo-lista" data-num-combo-lista hidden>
+                        <div class="biblia-chips" data-num-combo-grid></div>
+                    </div>
+                </div>
             </div>
 
             <div class="preletor-field-actions">
