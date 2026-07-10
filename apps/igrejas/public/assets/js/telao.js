@@ -471,7 +471,18 @@
         return;
       }
 
-      if (estadoAtual === -1 || estadoAtual === 5) {
+      // -1 (nao iniciado) e 5 (na fila) sao os estados sabidamente
+      // travados. "undefined" (ou qualquer valor fora dos estados
+      // documentados da API) tambem entra aqui de proposito: acontece
+      // quando o wrapper YT.Player foi criado com sucesso mas o iframe
+      // por baixo nunca terminou de carregar (ex.: o dominio do embed
+      // do YouTube bloqueado pela rede, mesmo com o script da API
+      // liberado) - sem essa checagem, getPlayerState() ficava
+      // retornando undefined pra sempre e caia no "else" abaixo, que
+      // zerava os contadores a cada tick e nunca deixava o timeout de
+      // travamento disparar (tela preta permanente, sem reload nem
+      // mensagem de erro).
+      if (estadoAtual === -1 || estadoAtual === 5 || estadoAtual === undefined || estadoAtual === null) {
         observacoesTravado++;
         observacoesBufferParado = 0;
       } else if (estadoAtual === 3) {
@@ -494,8 +505,9 @@
           observacoesBufferParado++;
         }
       } else {
-        // Pausado/etc: o player aceitou o comando, so esta trabalhando -
-        // zera as duas contagens e continua observando.
+        // Pausado (2) ou encerrado (0): o player aceitou o comando, so
+        // esta trabalhando - zera as duas contagens e continua
+        // observando.
         observacoesTravado = 0;
         observacoesBufferParado = 0;
       }
@@ -507,10 +519,18 @@
         if (!jaRecarregouPara(videoId)) {
           marcarRecarregadoPara(videoId);
           window.location.reload();
+        } else if (estadoAtual === undefined || estadoAtual === null) {
+          // Reload unico ja gasto e o player nem chegou a responder
+          // getPlayerState() - nao e um caso de autoplay bloqueado (o
+          // aviso de toque nao resolveria nada aqui), e sim o iframe do
+          // YouTube que nunca terminou de carregar. Mostra a mensagem
+          // de rede em vez do aviso de audio, que so confundiria.
+          mostrarErroVideo('Nao foi possivel carregar o player do YouTube. Verifique se este dispositivo tem acesso a internet e se o YouTube nao esta bloqueado na rede.');
         } else if (avisoAudio) {
-          // Reload unico ja gasto e o video continua travado - mostra o
-          // aviso de toque como ultima saida (um clique reaplica o play
-          // com gesto, que sempre e aceito).
+          // Reload unico ja gasto e o video continua travado (mas o
+          // player responde normalmente) - mostra o aviso de toque como
+          // ultima saida (um clique reaplica o play com gesto, que
+          // sempre e aceito).
           avisoAudio.classList.add('is-visivel');
         }
       } else if (observacoesBufferParado >= LIMITE_BUFFER_SEM_PROGRESSO) {
