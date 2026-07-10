@@ -9,6 +9,9 @@ use Igrejas\Core\View;
  * @var array<int, \Igrejas\Models\BibliaLivro> $livros
  * @var array<string, string> $versoes
  * @var bool $bibliaImportada
+ * @var bool $doacaoPixHabilitada
+ * @var array<int, \Igrejas\Models\ProjecaoImagem> $imagens
+ * @var array<int, string> $imagensErrors
  * @var string $csrf
  */
 $basePath = $config['base_path'] ?? '';
@@ -192,14 +195,100 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
 
             <div class="dash-panel">
                 <div class="dash-panel-head">
+                    <h2><i class="bi bi-lightning-charge-fill"></i> Exibicoes rapidas</h2>
+                </div>
+                <p class="dash-page-subtitle" style="margin-bottom: 1rem;">
+                    Um clique ja exibe no telao - use na hora do dizimo/oferta pra congregacao inteira escanear o Pix.
+                </p>
+                <div class="projecao-video-controles">
+                    <button type="button" class="btn-k btn-k-ghost" data-acao-logo><i class="bi bi-image"></i> Logo</button>
+                    <button
+                        type="button"
+                        class="btn-k btn-k-ghost"
+                        data-acao-pix="dizimo"
+                        <?= $doacaoPixHabilitada ? '' : 'disabled title="Cadastre uma chave Pix em Configuracoes para habilitar"' ?>
+                    ><i class="bi bi-qr-code"></i> Dizimo</button>
+                    <button
+                        type="button"
+                        class="btn-k btn-k-ghost"
+                        data-acao-pix="oferta"
+                        <?= $doacaoPixHabilitada ? '' : 'disabled title="Cadastre uma chave Pix em Configuracoes para habilitar"' ?>
+                    ><i class="bi bi-qr-code"></i> Oferta</button>
+                </div>
+                <?php if (!$doacaoPixHabilitada): ?>
+                    <p class="auth-field-hint" style="margin-top: 0.8rem;">
+                        <i class="bi bi-info-circle"></i> Cadastre a chave Pix da igreja em
+                        <a href="<?= $basePath ?>/dashboard/configuracoes">Configuracoes</a> pra habilitar Dizimo/Oferta.
+                    </p>
+                <?php endif; ?>
+            </div>
+
+            <div class="dash-panel">
+                <div class="dash-panel-head">
                     <h2><i class="bi bi-sliders"></i> Outras acoes</h2>
                 </div>
                 <div class="projecao-video-controles">
-                    <button type="button" class="btn-k btn-k-ghost" data-acao-logo><i class="bi bi-image"></i> Mostrar logo</button>
                     <button type="button" class="btn-k btn-k-ghost" data-acao-limpar><i class="bi bi-x-circle"></i> Limpar tela</button>
                     <button type="button" class="btn-k btn-k-ghost" data-acao-fullscreen><i class="bi bi-arrows-fullscreen"></i> Tela cheia</button>
                 </div>
             </div>
+        </div>
+
+        <div class="dash-panel" style="margin-top: 1.1rem;">
+            <div class="dash-panel-head">
+                <h2><i class="bi bi-images"></i> Imagens</h2>
+            </div>
+            <p class="dash-page-subtitle" style="margin-bottom: 1rem;">
+                Suba cartazes/avisos e marque como favoritos - eles ficam a um clique de distancia pra exibir no telao.
+            </p>
+
+            <?php if ($imagensErrors !== []): ?>
+                <div class="crud-alert error">
+                    <?php foreach ($imagensErrors as $erro): ?>
+                        <div><?= htmlspecialchars($erro, ENT_QUOTES, 'UTF-8') ?></div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
+            <form method="POST" action="<?= $basePath ?>/dashboard/projecao/imagens" enctype="multipart/form-data" class="crud-form" style="margin-bottom: 1.2rem;">
+                <?= $csrf ?>
+                <div class="crud-field">
+                    <label for="imagem">Enviar nova imagem (PNG, JPG, WEBP ou GIF, ate 8MB)</label>
+                    <input type="file" id="imagem" name="imagem" accept="image/png,image/jpeg,image/webp,image/gif" required>
+                </div>
+                <div class="crud-form-actions" style="justify-content: flex-start;">
+                    <button type="submit" class="btn-k btn-k-grad"><i class="bi bi-upload"></i> Enviar</button>
+                </div>
+            </form>
+
+            <?php if ($imagens === []): ?>
+                <p class="auth-field-hint">Nenhuma imagem enviada ainda.</p>
+            <?php else: ?>
+                <div class="projecao-imagens-grid">
+                    <?php foreach ($imagens as $imagem): ?>
+                        <div class="projecao-imagem-card <?= $imagem->favorita ? 'is-favorita' : '' ?>">
+                            <img src="<?= $basePath ?>/<?= htmlspecialchars($imagem->path, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($imagem->nomeArquivo, ENT_QUOTES, 'UTF-8') ?>">
+                            <div class="projecao-imagem-acoes">
+                                <button type="button" class="btn-k btn-k-ghost" data-acao-imagem="<?= $imagem->id ?>" title="Exibir no telao">
+                                    <i class="bi bi-broadcast"></i>
+                                </button>
+                                <form method="POST" action="<?= $basePath ?>/dashboard/projecao/imagens/<?= $imagem->id ?>/favoritar">
+                                    <?= $csrf ?>
+                                    <button type="submit" class="btn-k btn-k-ghost" title="<?= $imagem->favorita ? 'Desfavoritar' : 'Favoritar' ?>">
+                                        <i class="bi <?= $imagem->favorita ? 'bi-star-fill' : 'bi-star' ?>"></i>
+                                    </button>
+                                </form>
+                                <form method="POST" action="<?= $basePath ?>/dashboard/projecao/imagens/<?= $imagem->id ?>/excluir" data-confirm="Excluir esta imagem?">
+                                    <?= $csrf ?>
+                                    <button type="submit" class="btn-k btn-k-ghost" style="color: var(--danger);" title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 

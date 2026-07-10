@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Igrejas\Models;
 
 use Igrejas\Core\Database;
+use Igrejas\Core\PixEstatico;
 
 /**
  * Estado atual exibido em uma sessao de projecao: um versiculo biblico,
@@ -34,6 +35,9 @@ final class ProjecaoEstado
         public readonly string $videoEstado,
         public readonly ?int $videoTempoAtual,
         public readonly ?int $videoDuracao,
+        public readonly ?string $pixCategoria,
+        public readonly ?int $imagemId,
+        public readonly ?string $imagemPath,
         public readonly int $versao,
         public readonly int $leituraId,
         public readonly string $updatedAt,
@@ -43,9 +47,10 @@ final class ProjecaoEstado
     public static function atual(int $sessaoId): ?self
     {
         $stmt = Database::connection()->prepare(
-            'SELECT pe.*, bl.nome AS livro_nome, bl.abreviacao AS livro_abreviacao
+            'SELECT pe.*, bl.nome AS livro_nome, bl.abreviacao AS livro_abreviacao, pi.path AS imagem_path
              FROM projecao_estados pe
              LEFT JOIN biblia_livros bl ON bl.id = pe.livro_id
+             LEFT JOIN projecao_imagens pi ON pi.id = pe.imagem_id
              WHERE pe.sessao_id = :sessao_id
              LIMIT 1'
         );
@@ -153,6 +158,41 @@ final class ProjecaoEstado
         $stmt->execute(['sessao_id' => $sessaoId]);
     }
 
+    /**
+     * Exibicao rapida de Pix (dizimo/oferta) no telao - pensado pro
+     * momento do culto em que o responsavel pelo projetor mostra o QR
+     * pra congregacao inteira, sem que cada pessoa precise abrir o
+     * proprio link. O payload em si (ver PixEstatico) e montado na hora
+     * em paraJson(), sempre sem valor fixo (cada pessoa digita o
+     * proprio valor no banco - o QR e o mesmo pra todo mundo que
+     * escanear naquele momento).
+     */
+    public static function mostrarPix(int $sessaoId, string $categoria): void
+    {
+        if (!in_array($categoria, ['dizimo', 'oferta'], true)) {
+            return;
+        }
+
+        $stmt = Database::connection()->prepare(
+            'UPDATE projecao_estados SET modo = "pix", pix_categoria = :categoria, versao = versao + 1, updated_at = NOW()
+             WHERE sessao_id = :sessao_id'
+        );
+        $stmt->execute(['sessao_id' => $sessaoId, 'categoria' => $categoria]);
+    }
+
+    /**
+     * Exibe uma imagem da galeria (ver ProjecaoImagem) em tela cheia no
+     * telao - cartazes, avisos especiais etc. escolhidos pelo operador.
+     */
+    public static function mostrarImagem(int $sessaoId, int $imagemId): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE projecao_estados SET modo = "imagem", imagem_id = :imagem_id, versao = versao + 1, updated_at = NOW()
+             WHERE sessao_id = :sessao_id'
+        );
+        $stmt->execute(['sessao_id' => $sessaoId, 'imagem_id' => $imagemId]);
+    }
+
     public static function limpar(int $sessaoId): void
     {
         $stmt = Database::connection()->prepare(
@@ -226,7 +266,39 @@ final class ProjecaoEstado
                 'tempoAtual' => $this->videoTempoAtual,
                 'duracao' => $this->videoDuracao,
             ],
+            'pix' => $this->modo === 'pix' ? $this->montarPixJson() : null,
+            'imagem' => [
+                'path' => $this->imagemPath,
+            ],
         ];
+    }
+
+    /**
+     * Payload do QR (BR Code, ver PixEstatico) montado na hora que o
+     * telao pede o estado - sempre sem valor fixo (ver mostrarPix()).
+     * Se a igreja nunca cadastrou uma chave Pix (ver
+     * ConfiguracaoIgreja::doacaoPixHabilitada()), volta com payload
+     * null - o telao mostra um aviso em vez de um QR quebrado.
+     *
+     * @return array{categoria: ?string, payload: ?string}
+     */
+    private function montarPixJson(): array
+    {
+        $configuracao = ConfiguracaoIgreja::atual();
+
+        if (!$configuracao->doacaoPixHabilitada()) {
+            return ['categoria' => $this->pixCategoria, 'payload' => null];
+        }
+
+        $payload = PixEstatico::montarPayload(
+            chave: (string) $configuracao->pixChave,
+            nomeBeneficiario: $configuracao->pixNomeBeneficiario ?? (string) $configuracao->nomeIgreja,
+            cidade: (string) ($configuracao->cidade ?? 'BRASIL'),
+            valor: null,
+            txid: strtoupper($this->pixCategoria ?? 'OFERTA'),
+        );
+
+        return ['categoria' => $this->pixCategoria, 'payload' => $payload];
     }
 
     /**
@@ -285,6 +357,9 @@ final class ProjecaoEstado
             videoEstado: (string) $row['video_estado'],
             videoTempoAtual: $row['video_tempo_atual'] !== null ? (int) $row['video_tempo_atual'] : null,
             videoDuracao: $row['video_duracao'] !== null ? (int) $row['video_duracao'] : null,
+            pixCategoria: $row['pix_categoria'] ?? null,
+            imagemId: $row['imagem_id'] !== null ? (int) $row['imagem_id'] : null,
+            imagemPath: $row['imagem_path'] ?? null,
             versao: (int) $row['versao'],
             leituraId: (int) ($row['leitura_id'] ?? 0),
             updatedAt: (string) $row['updated_at'],

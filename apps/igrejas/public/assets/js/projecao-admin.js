@@ -16,6 +16,8 @@
   var botaoLogo = document.querySelector('[data-acao-logo]');
   var botaoLimpar = document.querySelector('[data-acao-limpar]');
   var botaoFullscreen = document.querySelector('[data-acao-fullscreen]');
+  var botoesPix = document.querySelectorAll('[data-acao-pix]');
+  var botoesImagem = document.querySelectorAll('[data-acao-imagem]');
 
   var navBox = root.querySelector('[data-projecao-nav]');
   var botaoLerAgora = root.querySelector('[data-acao-ler-agora]');
@@ -33,7 +35,7 @@
   var sincronizando = false;
   var modoAtual = null;
 
-  var NOMES_MODO = { biblia: 'a Bíblia', video: 'o vídeo', logo: 'a logo', blank: 'a tela em branco' };
+  var NOMES_MODO = { biblia: 'a Bíblia', video: 'o vídeo', logo: 'a logo', blank: 'a tela em branco', pix: 'o Pix', imagem: 'a imagem' };
 
   /**
    * Troca de modo (biblia/video/logo/blank) interrompe o que ja esta
@@ -378,6 +380,44 @@
       });
     });
   }
+
+  botoesPix.forEach(function (botao) {
+    botao.addEventListener('click', function () {
+      var categoria = botao.getAttribute('data-acao-pix');
+
+      confirmarTroca('pix').then(function (ok) {
+        if (!ok) {
+          return;
+        }
+
+        var dados = new URLSearchParams();
+        dados.set('categoria', categoria);
+
+        enviar('/pix', dados).then(function () {
+          modoAtual = 'pix';
+        });
+      });
+    });
+  });
+
+  botoesImagem.forEach(function (botao) {
+    botao.addEventListener('click', function () {
+      var imagemId = botao.getAttribute('data-acao-imagem');
+
+      confirmarTroca('imagem').then(function (ok) {
+        if (!ok) {
+          return;
+        }
+
+        var dados = new URLSearchParams();
+        dados.set('imagem_id', imagemId);
+
+        enviar('/imagem', dados).then(function () {
+          modoAtual = 'imagem';
+        });
+      });
+    });
+  });
 
   if (botaoLimpar) {
     botaoLimpar.addEventListener('click', function () {
