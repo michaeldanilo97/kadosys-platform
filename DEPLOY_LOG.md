@@ -17,6 +17,26 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 64 - 2026-07-10
+
+**IMPORTANTE: rode a migracao 037 no banco CENTRAL antes de acessar/publicar avisos**
+
+- Nova coluna `publico_alvo` em `plataforma_avisos` (banco central).
+  Sem rodar `database/migrations/037_add_publico_alvo_plataforma_avisos.sql`
+  no banco central, a pagina `/plataforma/avisos` da erro.
+
+**Avisos da plataforma agora escolhem o publico: admins, membros ou todos**
+
+- Ao publicar um aviso em `/plataforma/avisos`, agora da pra escolher
+  quem ve: so admins de cada igreja, so membros comuns, ou todo mundo
+  (continua sendo o padrao, igual antes). Avisos ja publicados antes
+  desta mudanca continuam visiveis pra todo mundo (nao muda nada pra
+  quem ja existia).
+- O filtro se aplica tanto no sino de notificacoes quanto no painel
+  "Atualizacoes do sistema" (Ajuste 63) da dashboard de cada igreja -
+  um aviso "so admins" nao aparece mais pra membros comuns, e um aviso
+  "so membros" nao aparece mais pra admins.
+
 ## Ajuste 63 - 2026-07-10
 
 **Dashboard do cliente: painel "Novidades" virou "Atualizacoes do sistema" (so pra admins) e para de acumular avisos ja encerrados**

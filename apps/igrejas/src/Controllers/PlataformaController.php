@@ -231,15 +231,18 @@ final class PlataformaController extends Controller
         }
 
         $mensagem = trim((string) $this->request->input('mensagem', ''));
+        $publicoAlvo = (string) $this->request->input('publico_alvo', PlataformaAviso::PUBLICO_TODOS);
 
         if ($mensagem === '') {
             Session::flash('plataforma_errors', ['Escreva a mensagem do aviso.']);
             $this->redirect('/plataforma/avisos');
         }
 
-        PlataformaAviso::publicar($mensagem);
+        PlataformaAviso::publicar($mensagem, $publicoAlvo);
 
-        Session::flash('plataforma_success', ['Aviso publicado - vai aparecer no sino de notificacoes de todas as igrejas.']);
+        Session::flash('plataforma_success', [
+            'Aviso publicado para "' . (PlataformaAviso::PUBLICO_LABELS[$publicoAlvo] ?? PlataformaAviso::PUBLICO_LABELS[PlataformaAviso::PUBLICO_TODOS]) . '" - vai aparecer no sino de notificacoes de todas as igrejas.',
+        ]);
         $this->redirect('/plataforma/avisos');
     }
 
