@@ -85,6 +85,23 @@ final class MercadoPagoClient
     }
 
     /**
+     * Lista os pagamentos ja debitados (ou tentados) de uma assinatura
+     * recorrente de cartao (preapproval) - o "extrato" da cobranca
+     * automatica, usado na tela de Faturas pra mostrar o historico de
+     * quem paga por cartao (que nao gera fatura Pix nenhuma por aqui, ja
+     * que o proprio Mercado Pago debita sozinho a cada ciclo).
+     *
+     * @return array{status:int, body:array}
+     */
+    public function buscarPagamentosAssinatura(string $preapprovalId): array
+    {
+        return $this->request(
+            'GET',
+            '/authorized_payments/search?preapproval_id=' . urlencode($preapprovalId) . '&sort=date_created&criteria=desc'
+        );
+    }
+
+    /**
      * Cria uma cobranca Pix avulsa (QR code + copia-e-cola), com prazo de
      * vencimento. Diferente de criarAssinatura() (cartao recorrente,
      * debitado automaticamente), aqui cada cobranca e paga manualmente

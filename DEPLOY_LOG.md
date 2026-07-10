@@ -17,6 +17,23 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 61 - 2026-07-10
+
+**Faturas: extrato de cobrancas de cartao direto da API do Mercado Pago**
+
+- Pedido: quem paga por cartao so via um badge de status na tela de
+  Faturas, sem ver as cobrancas de fato (o texto so mandava conferir
+  direto no Mercado Pago). O Mercado Pago tem uma API pra listar os
+  pagamentos ja debitados de uma assinatura recorrente
+  (`/authorized_payments/search`) - antes nao usada em lugar nenhum do
+  sistema.
+- Adicionado `MercadoPagoClient::buscarPagamentosAssinatura()` (busca
+  esse extrato) e `FaturaController::buscarPagamentosCartao()` (chama a
+  API e traduz pro formato da tela). A tela agora mostra data, valor e
+  status (Pago/Pendente/Recusado/Cancelado) de cada cobranca, com
+  fallback pro aviso antigo se a consulta falhar ou o pagamento online
+  nao estiver configurado.
+
 ## Ajuste 60 - 2026-07-10
 
 **Nova tela de Faturas no menu lateral**
