@@ -76,6 +76,23 @@ final class AssinaturaTenant
         return $row === false ? null : self::fromRow($row);
     }
 
+    /**
+     * Assinatura de cartao mais recente de um tenant, seja qual for o
+     * status - diferente de ativaDoTenant() (so 'autorizada'), usada pela
+     * tela de Faturas pra mostrar o status atual da assinatura recorrente
+     * mesmo quando ainda pendente/pausada/cancelada.
+     */
+    public static function ultimaDoTenant(int $tenantId): ?self
+    {
+        $stmt = Database::central()->prepare(
+            self::SELECT_BASE . ' WHERE tenant_id = :tenant_id ORDER BY id DESC LIMIT 1'
+        );
+        $stmt->execute(['tenant_id' => $tenantId]);
+        $row = $stmt->fetch();
+
+        return $row === false ? null : self::fromRow($row);
+    }
+
     public static function atualizarStatus(int $id, string $status): void
     {
         $stmt = Database::central()->prepare(

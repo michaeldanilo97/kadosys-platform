@@ -107,6 +107,11 @@ final class DashboardController extends Controller
                 'icon' => 'bi-gear',
                 'description' => 'Dados da igreja, preferencias e configuracoes gerais do sistema.',
             ],
+            'faturas' => [
+                'title' => 'Faturas',
+                'icon' => 'bi-receipt-cutoff',
+                'description' => 'Historico de cobrancas, vencimento e pagamento do plano contratado.',
+            ],
         ];
 
         foreach ($modules as $slug => &$module) {
