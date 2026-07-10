@@ -808,6 +808,11 @@
     } else if (estado.modo === 'biblia') {
       renderBiblia(estado.biblia);
       ajustarStage();
+
+      if (window.KadosysBiblia) {
+        window.KadosysBiblia.ajustarTamanhoTexto(stage, bibliaTexto);
+      }
+
       renderMarcacao(estado.biblia ? estado.biblia.marcacao : null);
       mostrarSomente(['biblia']);
     } else if (estado.modo === 'video') {

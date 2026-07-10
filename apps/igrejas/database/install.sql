@@ -325,6 +325,7 @@ CREATE TABLE IF NOT EXISTS projecao_imagens (
 CREATE TABLE IF NOT EXISTS projecao_estados (
     sessao_id INT UNSIGNED PRIMARY KEY,
     modo ENUM('biblia', 'video', 'logo', 'blank', 'pix', 'imagem') NOT NULL DEFAULT 'blank',
+    controlado_por ENUM('operador', 'preletor') NULL,
     livro_id TINYINT UNSIGNED NULL,
     biblia_versao VARCHAR(10) NULL DEFAULT 'nvi',
     biblia_marcacao TEXT NULL,

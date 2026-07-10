@@ -23,6 +23,7 @@ final class ProjecaoEstado
     public function __construct(
         public readonly int $sessaoId,
         public readonly string $modo,
+        public readonly ?string $controladoPor,
         public readonly ?int $livroId,
         public readonly ?string $livroNome,
         public readonly ?string $livroAbreviacao,
@@ -65,17 +66,19 @@ final class ProjecaoEstado
         int $livroId,
         int $capitulo,
         int $inicio,
-        int $fim
+        int $fim,
+        ?string $origem = null
     ): void {
         $stmt = Database::connection()->prepare(
             'UPDATE projecao_estados SET
-                modo = "biblia", biblia_versao = :biblia_versao, livro_id = :livro_id, capitulo = :capitulo,
+                modo = "biblia", controlado_por = :origem, biblia_versao = :biblia_versao, livro_id = :livro_id, capitulo = :capitulo,
                 versiculo_inicio = :inicio, versiculo_fim = :fim, biblia_marcacao = NULL,
                 versao = versao + 1, updated_at = NOW()
              WHERE sessao_id = :sessao_id'
         );
         $stmt->execute([
             'sessao_id' => $sessaoId,
+            'origem' => self::normalizarOrigem($origem),
             'biblia_versao' => $bibliaVersao,
             'livro_id' => $livroId,
             'capitulo' => $capitulo,
@@ -106,16 +109,16 @@ final class ProjecaoEstado
         ]);
     }
 
-    public static function definirVideo(int $sessaoId, string $url): void
+    public static function definirVideo(int $sessaoId, string $url, ?string $origem = null): void
     {
         $stmt = Database::connection()->prepare(
             'UPDATE projecao_estados SET
-                modo = "video", video_url = :video_url, video_estado = "tocando",
+                modo = "video", controlado_por = :origem, video_url = :video_url, video_estado = "tocando",
                 video_tempo_atual = NULL, video_duracao = NULL,
                 versao = versao + 1, updated_at = NOW()
              WHERE sessao_id = :sessao_id'
         );
-        $stmt->execute(['sessao_id' => $sessaoId, 'video_url' => $url]);
+        $stmt->execute(['sessao_id' => $sessaoId, 'origem' => self::normalizarOrigem($origem), 'video_url' => $url]);
     }
 
     /**
@@ -148,13 +151,13 @@ final class ProjecaoEstado
         $stmt->execute(['sessao_id' => $sessaoId, 'estado' => $estado]);
     }
 
-    public static function mostrarLogo(int $sessaoId): void
+    public static function mostrarLogo(int $sessaoId, ?string $origem = null): void
     {
         $stmt = Database::connection()->prepare(
-            'UPDATE projecao_estados SET modo = "logo", versao = versao + 1, updated_at = NOW()
+            'UPDATE projecao_estados SET modo = "logo", controlado_por = :origem, versao = versao + 1, updated_at = NOW()
              WHERE sessao_id = :sessao_id'
         );
-        $stmt->execute(['sessao_id' => $sessaoId]);
+        $stmt->execute(['sessao_id' => $sessaoId, 'origem' => self::normalizarOrigem($origem)]);
     }
 
     /**
@@ -169,35 +172,46 @@ final class ProjecaoEstado
      * outro (perto demais, a camera do celular as vezes le o QR
      * errado).
      */
-    public static function mostrarPix(int $sessaoId): void
+    public static function mostrarPix(int $sessaoId, ?string $origem = null): void
     {
         $stmt = Database::connection()->prepare(
-            'UPDATE projecao_estados SET modo = "pix", versao = versao + 1, updated_at = NOW()
+            'UPDATE projecao_estados SET modo = "pix", controlado_por = :origem, versao = versao + 1, updated_at = NOW()
              WHERE sessao_id = :sessao_id'
         );
-        $stmt->execute(['sessao_id' => $sessaoId]);
+        $stmt->execute(['sessao_id' => $sessaoId, 'origem' => self::normalizarOrigem($origem)]);
     }
 
     /**
      * Exibe uma imagem da galeria (ver ProjecaoImagem) em tela cheia no
      * telao - cartazes, avisos especiais etc. escolhidos pelo operador.
      */
-    public static function mostrarImagem(int $sessaoId, int $imagemId): void
+    public static function mostrarImagem(int $sessaoId, int $imagemId, ?string $origem = null): void
     {
         $stmt = Database::connection()->prepare(
-            'UPDATE projecao_estados SET modo = "imagem", imagem_id = :imagem_id, versao = versao + 1, updated_at = NOW()
+            'UPDATE projecao_estados SET modo = "imagem", controlado_por = :origem, imagem_id = :imagem_id, versao = versao + 1, updated_at = NOW()
              WHERE sessao_id = :sessao_id'
         );
-        $stmt->execute(['sessao_id' => $sessaoId, 'imagem_id' => $imagemId]);
+        $stmt->execute(['sessao_id' => $sessaoId, 'origem' => self::normalizarOrigem($origem), 'imagem_id' => $imagemId]);
     }
 
-    public static function limpar(int $sessaoId): void
+    public static function limpar(int $sessaoId, ?string $origem = null): void
     {
         $stmt = Database::connection()->prepare(
-            'UPDATE projecao_estados SET modo = "blank", versao = versao + 1, updated_at = NOW()
+            'UPDATE projecao_estados SET modo = "blank", controlado_por = :origem, versao = versao + 1, updated_at = NOW()
              WHERE sessao_id = :sessao_id'
         );
-        $stmt->execute(['sessao_id' => $sessaoId]);
+        $stmt->execute(['sessao_id' => $sessaoId, 'origem' => self::normalizarOrigem($origem)]);
+    }
+
+    /**
+     * Restringe "origem" aos dois valores validos do enum
+     * `controlado_por` - qualquer coisa fora disso (ausente, adulterada
+     * etc.) vira NULL, que o poll trata como "ninguem no comando"
+     * (nenhuma confirmacao de "assumir comando" e exigida nesse caso).
+     */
+    private static function normalizarOrigem(?string $origem): ?string
+    {
+        return in_array($origem, ['operador', 'preletor'], true) ? $origem : null;
     }
 
     /**
@@ -245,6 +259,7 @@ final class ProjecaoEstado
             'versao' => $this->versao,
             'leituraId' => $this->leituraId,
             'modo' => $this->modo,
+            'controladoPor' => $this->controladoPor,
             'biblia' => [
                 'livroId' => $this->livroId,
                 'livroNome' => $this->livroNome,
@@ -414,6 +429,7 @@ final class ProjecaoEstado
         return new self(
             sessaoId: (int) $row['sessao_id'],
             modo: (string) $row['modo'],
+            controladoPor: $row['controlado_por'] ?? null,
             livroId: $row['livro_id'] !== null ? (int) $row['livro_id'] : null,
             livroNome: $row['livro_nome'] ?? null,
             livroAbreviacao: $row['livro_abreviacao'] ?? null,

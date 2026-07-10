@@ -77,6 +77,7 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
         <div class="dash-panel biblia-panel-full">
             <div class="dash-panel-head">
                 <h2><i class="bi bi-book"></i> Biblia</h2>
+                <span class="panel-badge panel-badge-comando" data-comando-indicador hidden><i class="bi bi-person-fill"></i> <span data-comando-indicador-texto></span></span>
                 <span class="panel-badge"><i class="bi bi-lightning-charge-fill"></i> projeta ao clicar</span>
             </div>
 
@@ -130,6 +131,9 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                         <input type="hidden" data-campo="versiculo_inicio" required>
                         <input type="hidden" data-campo="versiculo_fim">
                         <div class="biblia-chips" data-versiculo-chips></div>
+                        <p class="biblia-livro-dica" style="margin-top: 0.6rem;">
+                            <i class="bi bi-info-circle"></i> Intervalos longos (muitos versiculos de uma vez) diminuem automaticamente o tamanho da letra no telao pra caber tudo - prefira intervalos curtos se a legibilidade for importante.
+                        </p>
                     </div>
                 </div>
 
