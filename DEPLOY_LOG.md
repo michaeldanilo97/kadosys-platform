@@ -17,6 +17,29 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 58 - 2026-07-10
+
+**Telao ainda ficava com tela preta no YouTube - agora tenta recarregar sozinho antes de so avisar**
+
+- Bug reportado ao vivo mesmo depois do Ajuste 56 corrigir o caso do
+  video "travado" (estado -1/5): em outro caso a tela ficava preta e
+  so um F5 manual resolvia. Investigando, existiam DOIS outros
+  caminhos de falha do YouTube que nunca tentavam recarregar sozinhos
+  - so mostravam o aviso de erro direto: (1) quando o player nunca
+    responde NENHUM estado (nem "travado", literalmente nao responde
+    nada) e (2) quando a propria API do YouTube nunca termina de
+    carregar (nem o player chega a ser criado). A suposicao original
+    era que recarregar nao ajudaria nesses casos (bloqueio
+    permanente), mas o F5 manual do usuario provou o contrario na
+    pratica.
+- Corrigido: os dois casos agora tentam um reload automatico da
+  pagina (uma unica vez por sessao do navegador, assim como o caso ja
+  corrigido antes) antes de desistir e mostrar o aviso estatico de
+  erro. Validado com testes automatizados simulando cada um dos dois
+  cenarios (player que nunca responde e API do YouTube totalmente
+  bloqueada) - em ambos o reload automatico aconteceu no tempo
+  esperado.
+
 ## Ajuste 57 - 2026-07-10
 
 **Preletor: campo "Ate" (versiculo final) agora pode ser limpo e nao aceita valor menor que o inicial**
