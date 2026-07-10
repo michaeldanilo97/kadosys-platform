@@ -398,7 +398,6 @@ body.dashboard-body[data-theme="light"] {
 
 .dash-main {
   flex: 1;
-  margin-left: var(--sidebar-width);
   min-width: 0;
 }
 

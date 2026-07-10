@@ -25,6 +25,13 @@ final class ConfiguracaoIgreja
         public readonly ?string $estado = null,
         public readonly ?string $pixChave = null,
         public readonly ?string $pixNomeBeneficiario = null,
+        public readonly string $pixMensagemTipo = 'nenhuma',
+        public readonly ?string $pixMensagemTexto = null,
+        public readonly ?string $pixMensagemBibliaVersao = null,
+        public readonly ?int $pixMensagemLivroId = null,
+        public readonly ?int $pixMensagemCapitulo = null,
+        public readonly ?int $pixMensagemVersiculoInicio = null,
+        public readonly ?int $pixMensagemVersiculoFim = null,
     ) {
     }
 
@@ -32,7 +39,8 @@ final class ConfiguracaoIgreja
     {
         $stmt = Database::connection()->prepare(
             'SELECT nome_igreja, logo_path, plano, cadastro_membros_habilitado, cep, endereco, numero, cidade, estado,
-                    pix_chave, pix_nome_beneficiario
+                    pix_chave, pix_nome_beneficiario, pix_mensagem_tipo, pix_mensagem_texto, pix_mensagem_biblia_versao,
+                    pix_mensagem_livro_id, pix_mensagem_capitulo, pix_mensagem_versiculo_inicio, pix_mensagem_versiculo_fim
              FROM configuracoes_igreja WHERE id = 1 LIMIT 1'
         );
         $stmt->execute();
@@ -50,6 +58,13 @@ final class ConfiguracaoIgreja
             estado: $row['estado'] ?? null,
             pixChave: $row['pix_chave'] ?? null,
             pixNomeBeneficiario: $row['pix_nome_beneficiario'] ?? null,
+            pixMensagemTipo: $row['pix_mensagem_tipo'] ?? 'nenhuma',
+            pixMensagemTexto: $row['pix_mensagem_texto'] ?? null,
+            pixMensagemBibliaVersao: $row['pix_mensagem_biblia_versao'] ?? null,
+            pixMensagemLivroId: $row['pix_mensagem_livro_id'] !== null ? (int) $row['pix_mensagem_livro_id'] : null,
+            pixMensagemCapitulo: $row['pix_mensagem_capitulo'] !== null ? (int) $row['pix_mensagem_capitulo'] : null,
+            pixMensagemVersiculoInicio: $row['pix_mensagem_versiculo_inicio'] !== null ? (int) $row['pix_mensagem_versiculo_inicio'] : null,
+            pixMensagemVersiculoFim: $row['pix_mensagem_versiculo_fim'] !== null ? (int) $row['pix_mensagem_versiculo_fim'] : null,
         );
     }
 
@@ -79,6 +94,46 @@ final class ConfiguracaoIgreja
             'UPDATE configuracoes_igreja SET pix_chave = NULL, pix_nome_beneficiario = NULL WHERE id = 1'
         );
         $stmt->execute();
+    }
+
+    /**
+     * Mensagem opcional mostrada na tela de Pix do telao, ao lado da
+     * logo - a igreja escolhe entre um texto livre ou uma referencia
+     * biblica (resolvida na hora pelo telao, ver
+     * ProjecaoEstado::montarPixJson()).
+     */
+    public static function atualizarMensagemPix(
+        string $tipo,
+        ?string $texto,
+        ?string $bibliaVersao,
+        ?int $livroId,
+        ?int $capitulo,
+        ?int $versiculoInicio,
+        ?int $versiculoFim
+    ): void {
+        $stmt = Database::connection()->prepare(
+            'INSERT INTO configuracoes_igreja (
+                id, pix_mensagem_tipo, pix_mensagem_texto, pix_mensagem_biblia_versao,
+                pix_mensagem_livro_id, pix_mensagem_capitulo, pix_mensagem_versiculo_inicio, pix_mensagem_versiculo_fim
+             ) VALUES (1, :tipo, :texto, :biblia_versao, :livro_id, :capitulo, :inicio, :fim)
+             ON DUPLICATE KEY UPDATE
+                pix_mensagem_tipo = VALUES(pix_mensagem_tipo),
+                pix_mensagem_texto = VALUES(pix_mensagem_texto),
+                pix_mensagem_biblia_versao = VALUES(pix_mensagem_biblia_versao),
+                pix_mensagem_livro_id = VALUES(pix_mensagem_livro_id),
+                pix_mensagem_capitulo = VALUES(pix_mensagem_capitulo),
+                pix_mensagem_versiculo_inicio = VALUES(pix_mensagem_versiculo_inicio),
+                pix_mensagem_versiculo_fim = VALUES(pix_mensagem_versiculo_fim)'
+        );
+        $stmt->execute([
+            'tipo' => $tipo,
+            'texto' => $texto,
+            'biblia_versao' => $bibliaVersao,
+            'livro_id' => $livroId,
+            'capitulo' => $capitulo,
+            'inicio' => $versiculoInicio,
+            'fim' => $versiculoFim,
+        ]);
     }
 
     public static function atualizarPlano(string $plano): void

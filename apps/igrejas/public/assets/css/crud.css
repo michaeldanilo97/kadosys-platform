@@ -854,8 +854,22 @@
   color: var(--white);
 }
 
+.projecao-imagem-acoes .btn-k.active {
+  border-color: rgba(59, 130, 246, 0.7);
+  background: rgba(59, 130, 246, 0.35);
+  color: var(--white);
+}
+
 .projecao-imagem-card .bi-star-fill {
   color: #d4a13f;
+}
+
+/* Destaque no card em exibicao no telao agora - fica visivel mesmo sem
+   passar o mouse (a barra de acoes so aparece no hover), senao nao da
+   pra saber de relance qual imagem esta no ar. */
+.projecao-imagem-card.is-exibindo {
+  border-color: rgba(59, 130, 246, 0.8);
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
 }
 
 /* ---- Preview de logo (Configuracoes) ---------------------------------------------- */
@@ -1099,5 +1113,21 @@
   flex: 1 1 260px;
   max-width: 420px;
   height: 36px;
+}
+
+.pix-mensagem-tipo-opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.4rem;
+  margin-top: 0.4rem;
+}
+
+.pix-mensagem-tipo-opcao {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
 }
 

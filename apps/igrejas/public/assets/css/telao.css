@@ -190,7 +190,6 @@ html, body {
 .telao-pix {
   z-index: 4;
   flex-direction: column;
-  gap: 3.5vh;
   background:
     radial-gradient(circle at 50% 0%, rgba(212, 161, 63, 0.12), transparent 60%),
     var(--telao-bg);
@@ -203,14 +202,17 @@ html, body {
   max-width: 60vw;
 }
 
-/* Os dois QR ficam bem afastados um do outro de proposito - perto
-   demais, a camera do celular as vezes foca ou le o QR vizinho por
-   engano ao tentar escanear o de do lado. */
+/* Os dois QR ficam nas pontas OPOSTAS da tela de proposito (justify
+   entre os 3 filhos - card, centro, card) - perto demais, a camera do
+   celular as vezes foca ou le o QR vizinho por engano ao tentar
+   escanear o de do lado, principalmente com a congregacao de pe e a
+   distancia variando muito pessoa a pessoa. */
 .telao-pix-grupo {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: min(14vw, 220px);
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 3vw;
 }
 
 .telao-pix-grupo[hidden] {
@@ -223,6 +225,7 @@ html, body {
   align-items: center;
   gap: 1.6vh;
   text-align: center;
+  flex: 0 0 auto;
 }
 
 .telao-pix-titulo {
@@ -241,18 +244,47 @@ html, body {
 }
 
 .telao-pix-qr img {
-  width: min(32vh, 24vw);
-  height: min(32vh, 24vw);
+  width: min(30vh, 20vw);
+  height: min(30vh, 20vw);
   background: var(--telao-text);
   padding: 1.2rem;
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 
+/* Coluna central, entre os dois QR - logo da igreja + mensagem
+   (versiculo ou aviso livre configurado em Configuracoes) + a
+   instrucao de como doar depois. */
+.telao-pix-centro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.4vh;
+  flex: 1 1 auto;
+  max-width: 34vw;
+  text-align: center;
+}
+
+.telao-pix-logo {
+  max-width: min(14vw, 180px);
+  max-height: 14vh;
+  object-fit: contain;
+}
+
+.telao-pix-mensagem {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(1.1rem, 2vw, 1.7rem);
+  color: var(--telao-text);
+  line-height: 1.5;
+}
+
+.telao-pix-mensagem[hidden] {
+  display: none;
+}
+
 .telao-pix-instrucao {
-  font-size: clamp(1rem, 1.6vw, 1.5rem);
+  font-size: clamp(0.95rem, 1.4vw, 1.3rem);
   color: var(--telao-muted);
-  max-width: 60vw;
   text-align: center;
 }
 

@@ -94,6 +94,7 @@ final class DoacaoController extends Controller
             cidade: (string) ($configuracao->cidade ?? 'BRASIL'),
             valor: $doacao->valor,
             txid: $doacao->txid,
+            descricao: $doacao->categoriaNome,
         );
 
         echo $this->view('doacao.mostrar', [

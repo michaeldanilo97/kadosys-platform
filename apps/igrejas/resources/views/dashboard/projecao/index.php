@@ -260,7 +260,7 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
             <?php else: ?>
                 <div class="projecao-imagens-grid">
                     <?php foreach ($imagens as $imagem): ?>
-                        <div class="projecao-imagem-card <?= $imagem->favorita ? 'is-favorita' : '' ?>">
+                        <div class="projecao-imagem-card <?= $imagem->favorita ? 'is-favorita' : '' ?>" data-imagem-card="<?= $imagem->id ?>">
                             <img src="<?= $basePath ?>/<?= htmlspecialchars($imagem->path, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($imagem->nomeArquivo, ENT_QUOTES, 'UTF-8') ?>">
                             <div class="projecao-imagem-acoes">
                                 <button type="button" class="btn-k btn-k-ghost" data-acao-imagem="<?= $imagem->id ?>" title="Exibir no telao">

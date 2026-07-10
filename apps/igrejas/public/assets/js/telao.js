@@ -29,12 +29,13 @@
     oferta: root.querySelector('[data-telao-pix-qr="oferta"]'),
   };
   var pixInstrucao = root.querySelector('[data-telao-pix-instrucao]');
+  var pixMensagem = root.querySelector('[data-telao-pix-mensagem]');
   var imagemImg = root.querySelector('[data-telao-imagem-img]');
   // O link publico de doacao (ver DoacaoController) e derivado do
   // proprio poll-url (que ja carrega o base-path certo da instalacao),
   // trocando o sufixo "/projecao/{token}/estado" por "/doar" - evita
   // ter que passar essa informacao a parte do servidor pro telao.
-  var linkDoacao = pollUrl.replace(/\/projecao\/.*$/, '/doar');
+  var linkDoacao = window.location.origin + pollUrl.replace(/\/projecao\/.*$/, '/doar');
   // Ultimo payload desenhado em cada QR (chave: categoria) - so
   // redesenha quando o payload daquela categoria muda de verdade,
   // evitando repintar (e "piscar") os dois QR a cada poll (1.5s).
@@ -154,22 +155,23 @@
    * navegador do telao (mesma biblioteca vendorizada usada em
    * doacao-pix.js), a partir dos payloads BR Code ja montados no
    * servidor (ver ProjecaoEstado::montarPixJson()). Mostrados JUNTOS
-   * (mesmo momento do culto) mas bem afastados um do outro na tela -
-   * perto demais, a camera do celular as vezes foca/le o QR errado ao
-   * tentar escanear o de do lado. So redesenha cada QR quando o
-   * payload DAQUELE especifico muda de verdade, nao a cada poll -
-   * redesenhar sem necessidade pisca a tela.
+   * (mesmo momento do culto) mas nas pontas opostas da tela - perto
+   * demais, a camera do celular as vezes foca/le o QR errado ao tentar
+   * escanear o de do lado. So redesenha cada QR quando o payload
+   * DAQUELE especifico muda de verdade, nao a cada poll - redesenhar
+   * sem necessidade pisca a tela.
    */
   function renderPix(pix) {
     if (!pixAviso || !pixGrupo || !pixInstrucao) {
       return;
     }
 
-    if (!pix || !pix.length) {
+    var qrCodes = pix ? pix.qrCodes : null;
+
+    if (!qrCodes || !qrCodes.length) {
       pixAviso.hidden = false;
       pixAviso.textContent = 'Esta igreja ainda não configurou uma chave Pix.';
       pixGrupo.hidden = true;
-      pixInstrucao.hidden = true;
       ultimoPayloadPixRenderizado = {};
 
       return;
@@ -177,9 +179,8 @@
 
     pixAviso.hidden = true;
     pixGrupo.hidden = false;
-    pixInstrucao.hidden = false;
 
-    pix.forEach(function (item) {
+    qrCodes.forEach(function (item) {
       var wrap = pixQrWraps[item.categoria];
 
       if (!wrap || !item.payload || item.payload === ultimoPayloadPixRenderizado[item.categoria]) {
@@ -197,6 +198,12 @@
         wrap.innerHTML = '';
       }
     });
+
+    if (pixMensagem) {
+      var mensagem = pix.mensagem;
+      pixMensagem.hidden = !mensagem;
+      pixMensagem.textContent = mensagem || '';
+    }
 
     pixInstrucao.innerHTML = 'Prefere fazer depois? Acesse <strong>' + escapeHtml(linkDoacao.replace(/^https?:\/\//, '')) + '</strong> do seu celular.';
   }

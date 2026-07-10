@@ -181,6 +181,13 @@ CREATE TABLE IF NOT EXISTS configuracoes_igreja (
     estado CHAR(2) NULL,
     pix_chave VARCHAR(140) NULL,
     pix_nome_beneficiario VARCHAR(25) NULL,
+    pix_mensagem_tipo ENUM('nenhuma', 'texto', 'versiculo') NOT NULL DEFAULT 'nenhuma',
+    pix_mensagem_texto TEXT NULL,
+    pix_mensagem_biblia_versao VARCHAR(10) NULL,
+    pix_mensagem_livro_id TINYINT UNSIGNED NULL,
+    pix_mensagem_capitulo SMALLINT UNSIGNED NULL,
+    pix_mensagem_versiculo_inicio SMALLINT UNSIGNED NULL,
+    pix_mensagem_versiculo_fim SMALLINT UNSIGNED NULL,
     cadastro_membros_habilitado TINYINT(1) NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -198,6 +205,12 @@ CREATE TABLE IF NOT EXISTS biblia_livros (
     ordem SMALLINT UNSIGNED NOT NULL,
     UNIQUE KEY biblia_livros_ordem_unique (ordem)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- FK adicionada so agora porque biblia_livros precisa existir primeiro
+-- (configuracoes_igreja e criada mais acima, ver migracao 034).
+ALTER TABLE configuracoes_igreja
+    ADD CONSTRAINT configuracoes_igreja_pix_mensagem_livro_id_foreign
+        FOREIGN KEY (pix_mensagem_livro_id) REFERENCES biblia_livros (id) ON DELETE SET NULL;
 
 -- Coluna "versao" e chave unica ja refletem a migracao 006 (instalacao
 -- nova fica pronta em um unico passo; quem ja tinha so a 005 aplicada
