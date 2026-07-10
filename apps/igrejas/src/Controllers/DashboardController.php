@@ -141,7 +141,7 @@ final class DashboardController extends Controller
             'proximoCulto' => Culto::proximoAgendado(),
             'financeiroDisponivel' => $financeiroDisponivel,
             'financeiroTotais' => $financeiroDisponivel ? FinanceiroLancamento::totaisMesAtual() : null,
-            'novidades' => PlataformaAviso::recentes(5),
+            'avisoPlataforma' => PlataformaAviso::ativo(),
         ], 'dashboard');
     }
 
