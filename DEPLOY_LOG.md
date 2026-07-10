@@ -17,6 +17,25 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 54 - 2026-07-10
+
+**Corrige lista de livros da Biblia sobrepondo o painel de Video de forma confusa**
+
+- Bug reportado ao vivo: ao abrir a busca de livro no painel Biblia
+  (Projecao), a lista de resultados aparecia colada/misturada com o
+  painel de Video logo abaixo, em vez de flutuar claramente por cima.
+- Causa raiz: tanto o painel Biblia quanto o painel de Video usam
+  `backdrop-filter` (efeito vidro fosco) - isso cria um "stacking
+  context" PROPRIO pra cada painel. Um z-index alto so no campo de
+  busca (dentro do painel Biblia) nao adianta: a disputa de camadas
+  entre os DOIS PAINEIS inteiros e decidida pela ordem no HTML, nao
+  pelo z-index de algo dentro de um deles - por isso a lista, mesmo
+  com z-index alto, ficava "atras" do painel seguinte.
+- Corrigido subindo o z-index do painel Biblia INTEIRO (nao so do
+  campo) enquanto a lista estiver aberta - agora ela flutua
+  claramente por cima do painel de Video, com sombra e borda nitidas,
+  sem nenhuma mistura visual.
+
 ## Ajuste 53 - 2026-07-10
 
 **Corrige regressao do Ajuste 52: video que estava tocando (com som prestes a comecar) sendo interrompido/recarregado**
