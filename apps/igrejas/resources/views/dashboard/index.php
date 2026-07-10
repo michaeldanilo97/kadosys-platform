@@ -15,12 +15,13 @@ use Igrejas\Models\User;
  * @var \Igrejas\Models\Culto|null $proximoCulto
  * @var bool $financeiroDisponivel
  * @var array{entradas: float, saidas: float, saldo: float}|null $financeiroTotais
- * @var array<int, \Igrejas\Models\PlataformaAviso> $novidades
+ * @var \Igrejas\Models\PlataformaAviso|null $avisoPlataforma
  */
 $basePath = $config['base_path'] ?? '';
 $firstName = explode(' ', trim($user?->name ?? 'Usuario'))[0];
 $planoAtual = ConfiguracaoIgreja::atual()->plano;
 $emTrial = TenantResolver::atual()?->metodoPagamento === 'trial';
+$isAdmin = $user?->role === User::ROLE_ADMIN;
 ?>
 
 <div class="dash-page-head">
@@ -94,30 +95,30 @@ $emTrial = TenantResolver::atual()?->metodoPagamento === 'trial';
 </div>
 
 <div class="dash-panels-row">
-    <div class="dash-panel dash-ai-panel">
-        <div class="dash-panel-head">
-            <h2><i class="bi bi-newspaper"></i> Novidades</h2>
-        </div>
-        <?php if ($novidades === []): ?>
-            <p class="crud-text-dim">Nenhuma novidade por enquanto.</p>
-        <?php else: ?>
-            <div class="ai-insight-list">
-                <?php foreach ($novidades as $novidade): ?>
+    <?php if ($isAdmin): ?>
+        <div class="dash-panel dash-ai-panel">
+            <div class="dash-panel-head">
+                <h2><i class="bi bi-newspaper"></i> Atualizacoes do sistema</h2>
+            </div>
+            <?php if ($avisoPlataforma === null): ?>
+                <p class="crud-text-dim">Nenhuma atualizacao por enquanto.</p>
+            <?php else: ?>
+                <div class="ai-insight-list">
                     <div class="ai-insight">
                         <div class="glyph"><i class="bi bi-broadcast-pin"></i></div>
                         <p>
-                            <?= htmlspecialchars($novidade->mensagem, ENT_QUOTES, 'UTF-8') ?>
+                            <?= htmlspecialchars($avisoPlataforma->mensagem, ENT_QUOTES, 'UTF-8') ?>
                             <span class="crud-text-dim" style="display: block; font-size: 0.74rem; margin-top: 0.2rem;">
-                                <?= (new DateTimeImmutable($novidade->createdAt))->format('d/m/Y') ?>
+                                <?= (new DateTimeImmutable($avisoPlataforma->createdAt))->format('d/m/Y') ?>
                             </span>
                         </p>
                     </div>
-                <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
-    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
 
-    <div class="dash-panel">
+    <div class="dash-panel"<?= $isAdmin ? '' : ' style="grid-column: 1 / -1;"' ?>>
         <div class="dash-panel-head">
             <h2><i class="bi bi-lightning-charge"></i> Acoes rapidas</h2>
         </div>

@@ -17,6 +17,25 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 63 - 2026-07-10
+
+**Dashboard do cliente: painel "Novidades" virou "Atualizacoes do sistema" (so pra admins) e para de acumular avisos ja encerrados**
+
+- Duas coisas diferentes estavam misturadas: o aviso que o DONO da
+  plataforma publica pra todas as igrejas (`/plataforma/avisos`) e o
+  aviso que CADA IGREJA cria pros seus proprios membros (modulo
+  Comunicacao) - o segundo ja funciona certo (aparece pra quem tem
+  acesso ao modulo, admin ou nao, e ja tem opcao de excluir).
+- O problema era so no primeiro: o painel principal do dashboard
+  ("Novidades") mostrava os ultimos 5 avisos da plataforma pra
+  QUALQUER usuario da igreja, mesmo os ja encerrados pelo dono da
+  plataforma - ficava acumulando aviso velho sem nunca sumir.
+- Corrigido: o painel (renomeado "Atualizacoes do sistema") agora so
+  aparece pra admins, e mostra so o aviso ATIVO no momento (some
+  assim que o dono da plataforma clica em "Encerrar"). O sino de
+  notificacoes no topo (visivel pra todo mundo) nao mudou - ja
+  filtrava certo antes.
+
 ## Ajuste 62 - 2026-07-10
 
 **IMPORTANTE: rode a migracao 036 no banco CENTRAL antes de acessar o painel da plataforma**
