@@ -1,0 +1,169 @@
+/* Tela cheia do louvor (letra/cifra) - pensada pra ser aberta numa
+   segunda tela (tablet do musico, monitor no palco): texto grande,
+   controles discretos fixos no rodape, e auto-scroll opcional pra nao
+   precisar tocar na tela enquanto toca o instrumento. */
+
+html {
+  scroll-behavior: auto;
+}
+
+.lct-topo {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1.4rem;
+  background: rgba(8, 12, 20, 0.92);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--glass-border);
+  flex-wrap: wrap;
+}
+
+.lct-titulo {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--white);
+  margin: 0;
+}
+
+.lct-tom {
+  color: var(--primary-soft);
+  font-weight: 600;
+}
+
+.lct-abas {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.lct-aba {
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.lct-aba.is-ativa {
+  background: var(--gradient);
+  color: var(--white);
+  border-color: transparent;
+}
+
+.lct-conteudo {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.4rem 8rem;
+}
+
+.lct-texto {
+  font-family: var(--font-mono);
+  white-space: pre-wrap;
+  line-height: 1.7;
+  font-size: var(--lct-font-size, 1.4rem);
+}
+
+.lct-texto.is-letra {
+  font-family: var(--font-body);
+}
+
+.lct-vazio {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.lct-controles {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.8rem 1.4rem;
+  background: rgba(8, 12, 20, 0.95);
+  backdrop-filter: blur(6px);
+  border-top: 1px solid var(--glass-border);
+  flex-wrap: wrap;
+}
+
+.lct-controles-grupo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lct-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.85rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.lct-btn:hover {
+  border-color: var(--primary-soft);
+}
+
+.lct-btn.is-ativo {
+  background: var(--gradient);
+  color: var(--white);
+  border-color: transparent;
+}
+
+.lct-slider {
+  width: 100px;
+  accent-color: var(--primary);
+}
+
+.lct-controles-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* Impressao/"exportar PDF" - o navegador gera o PDF a partir do dialogo
+   de impressao (window.print(), ver louvor-tela-cheia.js), sem precisar
+   de nenhuma biblioteca de PDF no servidor (hospedagem compartilhada
+   nem sempre tem as dependencias nativas que essas bibliotecas exigem).
+   So o texto fica visivel; controles/topo somem e as cores viram
+   claro-no-escuro pra nao gastar tinta/ficar ilegivel no papel. */
+@media print {
+  .lct-topo,
+  .lct-controles {
+    display: none;
+  }
+
+  body {
+    background: #FFFFFF;
+    color: #111827;
+  }
+
+  .lct-texto {
+    font-size: 12pt;
+    color: #111827;
+  }
+
+  .lct-conteudo {
+    padding: 0;
+    max-width: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .lct-conteudo {
+    padding: 1.2rem 1rem 9rem;
+  }
+}

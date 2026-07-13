@@ -17,6 +17,41 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 71 - 2026-07-13
+
+**Louvores: tela cheia (auto-scroll + PDF), transposição automática de
+tom e ícone de visualizar**
+
+- Ícone de "olho" na listagem de louvores, ao lado de Editar, levando
+  direto pra página de detalhe (letra, cifra e histórico de tons).
+- Nova tela cheia (`/dashboard/louvores/{id}/tela-cheia`), sem menu do
+  painel, pensada pra abrir numa segunda tela (tablet do músico, monitor
+  no palco): letra/cifra com fonte ajustável, auto-scroll com controle
+  de velocidade (pra rolar sozinho sem tirar a mão do instrumento) e
+  botão de tela cheia de verdade (Fullscreen API do navegador). O botão
+  "Baixar PDF" usa o diálogo de impressão nativo do navegador (sem
+  precisar de nenhuma biblioteca de PDF no servidor, que costuma exigir
+  dependências que a hospedagem compartilhada não tem).
+- "Tom atual" virou um `<select>` com os 24 tons (12 maiores + 12
+  menores), em vez de campo de texto livre.
+- Transposição automática de cifra: reconhece as linhas que são só
+  acordes (tanto na Cifra quanto na Letra colada direto do Cifra Club,
+  que já vem com os acordes juntos) e desloca cada nota
+  proporcionalmente ao trocar de tom - mesmo princípio de um
+  transpositor de cifra club, calculado no navegador (sem precisar de
+  nada no servidor).
+
+Arquivos novos: `apps/igrejas/resources/views/layouts/tela-cheia.php`,
+`apps/igrejas/resources/views/dashboard/louvores/tela-cheia.php`,
+`apps/igrejas/public/assets/css/louvor-tela-cheia.css`,
+`apps/igrejas/public/assets/js/louvor-tela-cheia.js`,
+`apps/igrejas/public/assets/js/louvor-transpositor.js`.
+
+Arquivos alterados: `apps/igrejas/src/Models/Louvor.php` (lista de tons),
+`apps/igrejas/src/Controllers/LouvorController.php` (ação `telaCheia`),
+`apps/igrejas/routes/web.php`,
+`apps/igrejas/resources/views/dashboard/louvores/{index,form,show}.php`.
+
 ## Ajuste 70 - 2026-07-13
 
 **Novo módulo: Louvores (letras, cifras e tons) + tag de músico**

@@ -79,6 +79,27 @@ final class LouvorController extends Controller
         ], 'dashboard');
     }
 
+    /**
+     * Tela cheia sem distração (letra/cifra grandes, auto-scroll,
+     * exportar PDF) - pensada pra ser aberta numa segunda tela (tablet
+     * do músico, monitor no palco), sem o menu/sidebar do painel.
+     */
+    public function telaCheia(string $id): void
+    {
+        $louvor = Louvor::find((int) $id);
+
+        if (!$louvor) {
+            $this->renderNotFound();
+
+            return;
+        }
+
+        echo $this->view('dashboard.louvores.tela-cheia', [
+            'pageTitle' => $louvor->titulo . ' - KADOSYS Igrejas',
+            'louvor' => $louvor,
+        ], 'tela-cheia');
+    }
+
     public function create(): void
     {
         echo $this->view('dashboard.louvores.form', [

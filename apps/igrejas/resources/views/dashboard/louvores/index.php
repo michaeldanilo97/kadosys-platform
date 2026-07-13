@@ -102,6 +102,13 @@ $basePath = $config['base_path'] ?? '';
                             </td>
                             <td class="actions-col">
                                 <a
+                                    href="<?= $basePath ?>/dashboard/louvores/<?= $louvor->id ?>"
+                                    class="crud-icon-btn"
+                                    aria-label="Visualizar <?= htmlspecialchars($louvor->titulo, ENT_QUOTES, 'UTF-8') ?>"
+                                >
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a
                                     href="<?= $basePath ?>/dashboard/louvores/<?= $louvor->id ?>/editar"
                                     class="crud-icon-btn"
                                     aria-label="Editar <?= htmlspecialchars($louvor->titulo, ENT_QUOTES, 'UTF-8') ?>"
