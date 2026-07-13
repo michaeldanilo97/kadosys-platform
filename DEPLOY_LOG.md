@@ -17,6 +17,39 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 65 - 2026-07-10
+
+**YouTube: video ficava com tela preta sem audio pra sempre, mesmo esperando bastante tempo**
+
+- Bug reportado ao vivo (mesmo depois dos Ajustes 39/58/59 ja terem
+  corrigido outros casos de tela preta): quando o telao ja estava
+  aberto ha um tempo (parado em texto/branco) e um video era projetado
+  pela primeira vez, a tela ficava preta e MUDA, sem o mecanismo de
+  reload automatico nunca disparar - so um F5 manual resolvia.
+- Causa raiz encontrada: o telao reaplica o video a cada consulta ao
+  servidor (~1.5s) enquanto o modo for video, de proposito, pra dar
+  outra chance caso a primeira tentativa de carregar falhe. O problema
+  e que `getVideoData()` do player do YouTube pode demorar mais que
+  1.5s pra refletir o video recem-carregado (atraso normal da propria
+  API) - entao o codigo concluia (errado) que precisava carregar de
+  novo, chamando `loadVideoById()` repetidas vezes seguidas. Cada
+  chamada nova reiniciava o carregamento do zero, entao o video nunca
+  tinha os poucos segundos continuos que precisa pra realmente comecar
+  - e como o estado ficava sendo reiniciado o tempo todo (nunca
+  "travado" por tempo suficiente), nem o proprio vigia de recuperacao
+  automatica conseguia detectar o problema e disparar o reload sozinho.
+- Corrigido: enquanto ja existe uma checagem de reproducao ativa pra um
+  video (ver `agendarChecagemReproducao`), o telao para de tentar
+  recarregar esse mesmo video a cada consulta - deixa o vigia observar
+  o player por um tempo continuo de verdade (alguns segundos), tempo
+  suficiente pra reproducao normal comecar OU pro reload automatico
+  disparar de verdade se estiver mesmo travado.
+- Validado com testes automatizados simulando exatamente o atraso real
+  do `getVideoData()` (confirmado que `loadVideoById()` agora e chamado
+  so 1 vez, e o video toca normalmente sem reload nenhum) e o caso de
+  travamento genuino (confirmado que o reload automatico continua
+  funcionando normalmente, sem regressao).
+
 ## Ajuste 64 - 2026-07-10
 
 **IMPORTANTE: rode a migracao 037 no banco CENTRAL antes de acessar/publicar avisos**
