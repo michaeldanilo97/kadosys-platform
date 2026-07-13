@@ -39,6 +39,21 @@
   var modoAtual = null;
   var controladoPorAtual = null;
 
+  /**
+   * Estado local do progresso do video, atualizado a cada segundo por
+   * conta propria (ver iniciarTickProgresso) em vez de so refletir
+   * cegamente o que o servidor mandou a cada poll. O telao so reporta o
+   * tempo a cada 2s (ver telao.js/reportarTempoVideo), enquanto este
+   * painel consulta o servidor a cada 1.5s - como os dois ciclos nao
+   * estao sincronizados, boa parte das consultas cai bem no meio de duas
+   * atualizacoes reais e devolve um valor levemente atrasado, fazendo a
+   * barra parecer "voltar" (o video continua tocando normalmente, so a
+   * exibicao no painel que oscilava).
+   */
+  var progresso = { atual: 0, duracao: 0 };
+  var progressoAtivo = false;
+  var progressoTimer = null;
+
   var NOMES_MODO = { biblia: 'a Bíblia', video: 'o vídeo', logo: 'a logo', blank: 'a tela em branco', pix: 'o Pix', imagem: 'a imagem' };
   var NOMES_ORIGEM = { operador: 'O painel do operador', preletor: 'O preletor' };
 
@@ -337,6 +352,32 @@
     return (minutos < 10 ? '0' : '') + minutos + ':' + (resto < 10 ? '0' : '') + resto;
   }
 
+  function renderizarProgresso() {
+    videoProgressoPreenchido.style.width = Math.min(100, (progresso.atual / progresso.duracao) * 100) + '%';
+    videoProgressoTempo.textContent = formatarTempo(progresso.atual) + ' / ' + formatarTempo(progresso.duracao);
+  }
+
+  /**
+   * Avanca a exibicao 1s por vez, por conta propria, independente de
+   * quando a proxima resposta do servidor chega - e o que da a sensacao
+   * de contagem continua (como um cronometro de verdade) em vez de
+   * pulos a cada poll.
+   */
+  function iniciarTickProgresso() {
+    if (progressoTimer) {
+      return;
+    }
+
+    progressoTimer = setInterval(function () {
+      if (!progressoAtivo || progresso.duracao <= 0) {
+        return;
+      }
+
+      progresso.atual = Math.min(progresso.duracao, progresso.atual + 1);
+      renderizarProgresso();
+    }, 1000);
+  }
+
   function atualizarProgressoVideo(dados) {
     if (!videoProgresso) {
       return;
@@ -344,16 +385,31 @@
 
     if (!dados || dados.modo !== 'video' || !dados.video || !dados.video.duracao) {
       videoProgresso.hidden = true;
+      progressoAtivo = false;
 
       return;
     }
 
-    var atual = dados.video.tempoAtual || 0;
-    var duracao = dados.video.duracao;
-
     videoProgresso.hidden = false;
-    videoProgressoPreenchido.style.width = Math.min(100, (atual / duracao) * 100) + '%';
-    videoProgressoTempo.textContent = formatarTempo(atual) + ' / ' + formatarTempo(duracao);
+    progressoAtivo = true;
+    iniciarTickProgresso();
+
+    var atualServidor = dados.video.tempoAtual || 0;
+    var duracaoMudou = dados.video.duracao !== progresso.duracao;
+
+    progresso.duracao = dados.video.duracao;
+
+    // So aceita o valor do servidor se a duracao mudou (video novo -
+    // sempre confia no valor novo, mesmo que va "pra tras" comparado ao
+    // video anterior) OU se estiver IGUAL OU A FRENTE do que ja esta
+    // sendo exibido. Um valor levemente atrasado do MESMO video (ver
+    // comentario acima de "progresso") e simplesmente ignorado, deixando
+    // o tick local seguir contando sem parecer que o video "voltou".
+    if (duracaoMudou || atualServidor >= progresso.atual) {
+      progresso.atual = atualServidor;
+    }
+
+    renderizarProgresso();
   }
 
   function poll() {
