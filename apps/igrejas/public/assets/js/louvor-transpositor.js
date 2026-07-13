@@ -12,6 +12,28 @@
   var cifraTextarea = document.getElementById('cifra');
   var spanDe = document.querySelector('[data-tom-de]');
 
+  /**
+   * Aviso flutuante chamando atencao pra transposicao que acabou de
+   * acontecer - sem isso, a letra/cifra mudava de tom silenciosamente e
+   * so quem reparasse na rolagem do texto notaria.
+   */
+  function mostrarToast(mensagem) {
+    var toast = document.createElement('div');
+    toast.className = 'kadosys-toast';
+    toast.setAttribute('role', 'status');
+    toast.textContent = mensagem;
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(function () {
+      toast.classList.add('is-visivel');
+    });
+
+    setTimeout(function () {
+      toast.classList.remove('is-visivel');
+      setTimeout(function () { toast.remove(); }, 300);
+    }, 3500);
+  }
+
   // Mesma grafia usada no <select> de tons (ver Louvor::TONS_MAIORES no
   // PHP, passado aqui via window.KADOSYS_TONS) - reaproveitada como
   // "tabela de saida" da transposicao, pra sempre devolver os acordes
@@ -182,5 +204,7 @@
     if (spanDe) {
       spanDe.textContent = tomNovo;
     }
+
+    mostrarToast('Tom alterado para ' + tomNovo + ' - letra e cifra transpostas.');
   });
 })();

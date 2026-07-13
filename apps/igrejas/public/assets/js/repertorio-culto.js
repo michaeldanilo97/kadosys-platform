@@ -24,6 +24,32 @@
   var tomBaixarBtn = root.querySelector('[data-culto-tom-baixar]');
   var tomSubirBtn = root.querySelector('[data-culto-tom-subir]');
 
+  /**
+   * Aviso flutuante chamando atencao que o tom da musica atual mudou -
+   * aparece pra TODOS os musicos (nao so quem mudou), ja que a
+   * mudanca chega pra eles via o mesmo polling que acompanha a musica
+   * atual. Some sozinho depois de alguns segundos.
+   */
+  function mostrarToast(mensagem) {
+    var toast = document.createElement('div');
+    toast.className = 'mc-toast';
+    toast.setAttribute('role', 'status');
+    toast.textContent = mensagem;
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(function () {
+      toast.classList.add('is-visivel');
+    });
+
+    setTimeout(function () {
+      toast.classList.remove('is-visivel');
+      setTimeout(function () { toast.remove(); }, 300);
+    }, 3500);
+  }
+
+  var ultimoTomItemId = null;
+  var ultimoTomValor = null;
+
   // Mesma tabela cromatica do transpositor de cifras (ver
   // louvor-transpositor.js) - aqui so precisamos transpor a nota-raiz
   // do tom (ex.: "Fm" -> "F#m"), nao uma cifra inteira.
@@ -132,6 +158,16 @@
     bpmEl.textContent = atual.andamentoBpm ? atual.andamentoBpm + ' BPM' : '';
     letraEl.textContent = atual.letra || 'Letra ainda não cadastrada.';
     cifraEl.textContent = atual.cifra || 'Cifra ainda não cadastrada.';
+
+    // So chama atencao quando o tom da MESMA musica muda ao vivo - se
+    // for a primeira renderizacao ou a musica atual trocou (avancou/
+    // voltou), o tom "novo" e so o tom normal dela, nao uma mudanca.
+    if (ultimoTomItemId === atual.id && ultimoTomValor !== atual.tomAtual) {
+      mostrarToast('Tom alterado para ' + (atual.tomAtual || 'nenhum') + '.');
+    }
+
+    ultimoTomItemId = atual.id;
+    ultimoTomValor = atual.tomAtual;
 
     if (tomControlesEl && !alterandoTom) {
       tomControlesEl.hidden = false;
