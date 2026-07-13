@@ -17,6 +17,28 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 68 - 2026-07-13
+
+**Painel do operador: barrinha de progresso do video "voltando" no meio da
+contagem**
+
+O telao reporta o tempo do video pro servidor a cada 2 segundos, mas o
+painel do operador consulta o servidor a cada 1.5 segundos - como os dois
+ciclos nao sao sincronizados, boa parte das consultas cai bem no meio de
+duas atualizacoes reais e volta um valor levemente atrasado. Antes, o
+painel jogava esse valor direto na tela, dando a impressao de que o video
+tinha voltado do comeco (mesmo ele continuando tocando normalmente).
+
+Agora o painel mantem uma contagem local que avanca sozinha 1s por vez (um
+cronometro de verdade), so aceitando o valor do servidor quando ele esta
+igual ou a frente do que ja esta sendo exibido - ou quando a duracao muda
+(sinal de que e um video novo, aceita o valor mesmo que seja menor que o
+anterior). Confirmado com teste automatizado simulando leituras
+"atrasadas" do servidor (barra nunca mais recua) e simulando a troca real
+de video (novo tempo e aceito normalmente).
+
+Arquivo alterado: `apps/igrejas/public/assets/js/projecao-admin.js`.
+
 ## Ajuste 67 - 2026-07-13
 
 **YouTube: achada a causa real da tela preta muda que so um F5 resolvia**
