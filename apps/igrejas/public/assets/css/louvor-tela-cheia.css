@@ -134,12 +134,27 @@ html {
   color: var(--text-muted);
 }
 
+/* So aparece na impressao (ver .lct-titulo-impressao abaixo) - um
+   cabecalho "Letra"/"Cifra" pra separar as duas secoes no papel, ja que
+   as duas saem juntas ali (diferente da tela, que so mostra a aba
+   ativa). */
+.lct-titulo-impressao {
+  display: none;
+}
+
 /* Impressao/"exportar PDF" - o navegador gera o PDF a partir do dialogo
    de impressao (window.print(), ver louvor-tela-cheia.js), sem precisar
    de nenhuma biblioteca de PDF no servidor (hospedagem compartilhada
    nem sempre tem as dependencias nativas que essas bibliotecas exigem).
    So o texto fica visivel; controles/topo somem e as cores viram
-   claro-no-escuro pra nao gastar tinta/ficar ilegivel no papel. */
+   claro-no-escuro pra nao gastar tinta/ficar ilegivel no papel.
+
+   Letra e cifra saem as DUAS no PDF, mesmo que so uma aba estivesse
+   selecionada na tela - reportado ao vivo: um louvor colado com a
+   cifra JUNTO da letra (direto do Cifra Club) so imprimia o campo
+   "Cifra" separado (normalmente vazio ou so um resumo/intro), sem a
+   letra+cifra completa. Por isso o [hidden] (que controla as abas na
+   tela) e ignorado aqui. */
 @media print {
   .lct-topo,
   .lct-controles {
@@ -154,6 +169,27 @@ html {
   .lct-texto {
     font-size: 12pt;
     color: #111827;
+  }
+
+  .lct-texto[hidden] {
+    display: block;
+  }
+
+  .lct-vazio {
+    display: none;
+  }
+
+  .lct-titulo-impressao {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 13pt;
+    margin: 1.4rem 0 0.4rem;
+    break-after: avoid;
+  }
+
+  .lct-titulo-impressao:first-child {
+    margin-top: 0;
   }
 
   .lct-conteudo {
