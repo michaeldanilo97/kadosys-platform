@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(150) NOT NULL,
     password VARCHAR(255) NOT NULL,
     role ENUM('admin', 'usuario') NOT NULL DEFAULT 'admin',
+    musico TINYINT(1) NOT NULL DEFAULT 0,
+    lider_louvor TINYINT(1) NOT NULL DEFAULT 0,
     active TINYINT(1) NOT NULL DEFAULT 1,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -336,6 +338,9 @@ CREATE TABLE IF NOT EXISTS projecao_estados (
     video_estado ENUM('parado', 'tocando', 'pausado', 'fadeout') NOT NULL DEFAULT 'parado',
     video_tempo_atual SMALLINT UNSIGNED NULL,
     video_duracao SMALLINT UNSIGNED NULL,
+    video_volume TINYINT UNSIGNED NOT NULL DEFAULT 100,
+    video_mudo TINYINT(1) NOT NULL DEFAULT 0,
+    video_reiniciar_id INT UNSIGNED NOT NULL DEFAULT 0,
     pix_categoria VARCHAR(20) NULL,
     imagem_id INT UNSIGNED NULL,
     versao INT UNSIGNED NOT NULL DEFAULT 1,
@@ -590,4 +595,86 @@ CREATE TABLE IF NOT EXISTS playbacks (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     KEY playbacks_titulo_index (titulo),
     KEY playbacks_status_index (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ----------------------------------------------------------------------------
+-- 039/040/041 - Modulo Louvores + Programacao de Culto (Modo Culto)
+-- ----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS louvores (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(150) NOT NULL,
+    letra TEXT NULL,
+    tom_atual VARCHAR(20) NULL,
+    andamento_bpm SMALLINT UNSIGNED NULL,
+    cifra TEXT NULL,
+    anexo_path VARCHAR(255) NULL,
+    anexo_nome_original VARCHAR(255) NULL,
+    playback_id INT UNSIGNED NULL,
+    status ENUM('ativo', 'inativo') NOT NULL DEFAULT 'ativo',
+    ultima_execucao TIMESTAMP NULL DEFAULT NULL,
+    criado_por INT UNSIGNED NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT louvores_playback_id_foreign
+        FOREIGN KEY (playback_id) REFERENCES playbacks (id) ON DELETE SET NULL,
+    CONSTRAINT louvores_criado_por_foreign
+        FOREIGN KEY (criado_por) REFERENCES users (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS louvor_tons_historico (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    louvor_id INT UNSIGNED NOT NULL,
+    tom_anterior VARCHAR(20) NULL,
+    tom_novo VARCHAR(20) NOT NULL,
+    observacao VARCHAR(255) NULL,
+    alterado_por INT UNSIGNED NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT louvor_tons_historico_louvor_id_foreign
+        FOREIGN KEY (louvor_id) REFERENCES louvores (id) ON DELETE CASCADE,
+    CONSTRAINT louvor_tons_historico_alterado_por_foreign
+        FOREIGN KEY (alterado_por) REFERENCES users (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS repertorios (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(150) NOT NULL,
+    status ENUM('planejado', 'encerrado') NOT NULL DEFAULT 'planejado',
+    atual_item_id INT UNSIGNED NULL,
+    versao INT UNSIGNED NOT NULL DEFAULT 1,
+    criado_por INT UNSIGNED NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT repertorios_criado_por_foreign
+        FOREIGN KEY (criado_por) REFERENCES users (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS repertorio_itens (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    repertorio_id INT UNSIGNED NOT NULL,
+    louvor_id INT UNSIGNED NOT NULL,
+    ordem SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT repertorio_itens_repertorio_id_foreign
+        FOREIGN KEY (repertorio_id) REFERENCES repertorios (id) ON DELETE CASCADE,
+    CONSTRAINT repertorio_itens_louvor_id_foreign
+        FOREIGN KEY (louvor_id) REFERENCES louvores (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- So depois de repertorio_itens existir, pra poder referenciar.
+ALTER TABLE repertorios
+    ADD CONSTRAINT repertorios_atual_item_id_foreign
+        FOREIGN KEY (atual_item_id) REFERENCES repertorio_itens (id) ON DELETE SET NULL;
+
+CREATE TABLE IF NOT EXISTS repertorio_mensagens (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    repertorio_id INT UNSIGNED NOT NULL,
+    user_id INT UNSIGNED NULL,
+    texto VARCHAR(280) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT repertorio_mensagens_repertorio_id_foreign
+        FOREIGN KEY (repertorio_id) REFERENCES repertorios (id) ON DELETE CASCADE,
+    CONSTRAINT repertorio_mensagens_user_id_foreign
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
