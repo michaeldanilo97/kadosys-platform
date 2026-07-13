@@ -17,6 +17,33 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 74 - 2026-07-13
+
+**Louvores: sugestão automática de tom + "tocado por último"**
+
+- Ao colar a letra (com cifra junto) ou preencher a Cifra, o campo
+  "Tom atual" é sugerido automaticamente a partir do primeiro acorde
+  reconhecido no texto - economiza um clique, já que a informação já
+  estava no que foi colado. Só sugere enquanto o campo estiver vazio;
+  se a pessoa escolher um tom na mão, a sugestão automática para (não
+  fica brigando com a escolha).
+- Nova coluna "Tocado por último" na listagem de Louvores (ex.: "Há 3
+  dias", "Nunca tocado") - toda vez que um louvor vira a música "atual"
+  no Modo Culto, fica registrado quando tocou de verdade, ajudando o
+  time a variar o repertório em vez de repetir sempre os mesmos.
+
+Arquivos novos: `apps/igrejas/database/migrations/041_add_ultima_execucao_louvor.sql`,
+`apps/igrejas/public/assets/js/louvor-sugestao-tom.js`.
+
+Arquivos alterados: `apps/igrejas/src/Models/Louvor.php` (campo
+`ultima_execucao` + `marcarExecutado()`),
+`apps/igrejas/src/Controllers/RepertorioController.php` (marca o louvor
+como executado ao avançar a música atual),
+`apps/igrejas/resources/views/dashboard/louvores/{index,form}.php`.
+
+**IMPORTANTE:** rodar a migração 041 no banco de cada igreja depois do
+deploy (mesma regra das outras migrações de módulo).
+
 ## Ajuste 73 - 2026-07-13
 
 **Novo submódulo: Programação de Culto (repertório) + Modo Culto ao vivo**

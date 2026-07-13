@@ -107,6 +107,7 @@ $modoInicial = $cifra !== '' ? 'separadas' : 'juntas';
                         </optgroup>
                     </select>
                     <span class="auth-field-hint">Mudar o tom aqui registra automaticamente no histórico abaixo (quem mudou e quando).</span>
+                    <span class="auth-field-hint" data-tom-sugestao-hint hidden></span>
                 </div>
                 <div class="crud-field">
                     <label for="andamento_bpm">Andamento (BPM)</label>
@@ -187,4 +188,5 @@ $modoInicial = $cifra !== '' ? 'separadas' : 'juntas';
   };
 </script>
 <script src="<?= $basePath ?>/assets/js/louvor-transpositor.js?v=<?= View::assetVersion('assets/js/louvor-transpositor.js') ?>"></script>
+<script src="<?= $basePath ?>/assets/js/louvor-sugestao-tom.js?v=<?= View::assetVersion('assets/js/louvor-sugestao-tom.js') ?>"></script>
 <script src="<?= $basePath ?>/assets/js/louvor-form.js?v=<?= View::assetVersion('assets/js/louvor-form.js') ?>"></script>

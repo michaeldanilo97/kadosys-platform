@@ -184,6 +184,12 @@ final class RepertorioController extends Controller
         }
 
         Repertorio::definirAtual($id, $itens[$novaPosicao]->id);
+
+        // Vira a musica "tocando agora" de verdade - registra pra
+        // listagem de Louvores mostrar quando cada um tocou por ultimo
+        // (ver Louvor::marcarExecutado()).
+        Louvor::marcarExecutado($itens[$novaPosicao]->louvorId);
+
         $this->jsonResponse(['ok' => true] + (Repertorio::find($id)?->paraJson() ?? []));
     }
 
