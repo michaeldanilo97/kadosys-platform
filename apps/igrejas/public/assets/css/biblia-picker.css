@@ -395,6 +395,37 @@ body.livro-combo-lista-aberta[data-theme="light"]::after {
   color: var(--text-muted);
 }
 
+/* ---- Volume/mudo do video (slider + botao de mudo) -------------------- */
+
+.video-volume-controles {
+  margin-top: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.video-volume-controles .btn-k-icone {
+  padding: 0.5rem 0.65rem;
+  flex-shrink: 0;
+}
+
+.video-volume-controles input[type="range"] {
+  flex: 1;
+  accent-color: var(--primary);
+}
+
+.video-volume-valor {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  min-width: 3.2em;
+  text-align: right;
+}
+
+[data-theme="light"] .video-volume-valor {
+  color: #334155;
+}
+
 /* ---- Tema claro: as cores de --text/--text-muted/--text-dim sao
    pensadas para texto claro sobre fundo escuro (tema padrao antigo).
    No tema claro, sem essas correcoes, ficam quase invisiveis sobre o

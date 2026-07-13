@@ -62,6 +62,9 @@ final class ProjecaoController extends Controller
             'imagens' => ProjecaoImagem::todas(),
             'imagensErrors' => Session::flash('projecao_imagens_errors') ?? [],
             'csrf' => Csrf::field(),
+            'telaoUrlAbsoluta' => $sessao ? $this->urlAbsoluta('/telao/' . $sessao->token) : '',
+            'telaoUrlAbsolutaBase' => $this->urlAbsoluta('/telao'),
+            'preletorUrlAbsoluta' => $this->urlAbsoluta('/preletor'),
         ], 'dashboard');
     }
 

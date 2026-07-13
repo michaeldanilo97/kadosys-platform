@@ -377,21 +377,6 @@ final class ConfiguracaoController extends Controller
         $this->redirect('/dashboard/configuracoes');
     }
 
-    /**
-     * URL absoluta (com protocolo e host) da requisicao atual - usa o
-     * host de verdade (subdominio da igreja) em vez de qualquer valor
-     * fixo de configuracao, pra funcionar automaticamente em qualquer
-     * ambiente (producao, staging, dominio customizado).
-     */
-    private function urlAbsoluta(string $path): string
-    {
-        $https = !empty($this->request->server['HTTPS']) && $this->request->server['HTTPS'] !== 'off';
-        $protocolo = $https ? 'https' : 'http';
-        $host = (string) ($this->request->server['HTTP_HOST'] ?? 'localhost');
-
-        return $protocolo . '://' . $host . $this->url($path);
-    }
-
     private function removerArquivosLogo(string $destinoDir): void
     {
         foreach (glob($destinoDir . '/logo.*') ?: [] as $arquivoAntigo) {

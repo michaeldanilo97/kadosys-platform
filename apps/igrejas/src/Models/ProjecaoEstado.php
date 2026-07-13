@@ -36,6 +36,9 @@ final class ProjecaoEstado
         public readonly string $videoEstado,
         public readonly ?int $videoTempoAtual,
         public readonly ?int $videoDuracao,
+        public readonly int $videoVolume,
+        public readonly bool $videoMudo,
+        public readonly int $videoReiniciarId,
         public readonly ?int $imagemId,
         public readonly ?string $imagemPath,
         public readonly int $versao,
@@ -114,7 +117,7 @@ final class ProjecaoEstado
         $stmt = Database::connection()->prepare(
             'UPDATE projecao_estados SET
                 modo = "video", controlado_por = :origem, video_url = :video_url, video_estado = "tocando",
-                video_tempo_atual = NULL, video_duracao = NULL,
+                video_tempo_atual = NULL, video_duracao = NULL, video_volume = 100, video_mudo = 0,
                 versao = versao + 1, updated_at = NOW()
              WHERE sessao_id = :sessao_id'
         );
@@ -149,6 +152,52 @@ final class ProjecaoEstado
              WHERE sessao_id = :sessao_id AND modo = "video"'
         );
         $stmt->execute(['sessao_id' => $sessaoId, 'estado' => $estado]);
+    }
+
+    /**
+     * Ajusta o volume do video (0-100) a partir do slider do operador.
+     * Desliga o mudo junto - arrastar o slider e uma escolha explicita de
+     * volume audivel, entao um mudo anterior nao deve continuar calando
+     * o video (ver alternarMudoVideo() abaixo pra o botao dedicado).
+     */
+    public static function definirVolumeVideo(int $sessaoId, int $volume): void
+    {
+        $volume = max(0, min(100, $volume));
+
+        $stmt = Database::connection()->prepare(
+            'UPDATE projecao_estados SET video_volume = :volume, video_mudo = 0, versao = versao + 1, updated_at = NOW()
+             WHERE sessao_id = :sessao_id AND modo = "video"'
+        );
+        $stmt->execute(['sessao_id' => $sessaoId, 'volume' => $volume]);
+    }
+
+    /**
+     * Liga/desliga o mudo sem alterar o volume configurado - permite
+     * "voltar como estava" ao desmutar, em vez de sempre voltar a 100%.
+     */
+    public static function alternarMudoVideo(int $sessaoId, bool $mudo): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE projecao_estados SET video_mudo = :mudo, versao = versao + 1, updated_at = NOW()
+             WHERE sessao_id = :sessao_id AND modo = "video"'
+        );
+        $stmt->execute(['sessao_id' => $sessaoId, 'mudo' => $mudo ? 1 : 0]);
+    }
+
+    /**
+     * Pede pro telao voltar o video atual pro segundo 0 - mesmo padrao
+     * de contador de lerAgora() (video_reiniciar_id), ja que reiniciar o
+     * MESMO video em exibicao nao muda nenhum conteudo (nao precisa
+     * incrementar "versao"), so um pedido que o telao detecta via
+     * polling mesmo sem nenhuma outra mudanca de estado.
+     */
+    public static function reiniciarVideo(int $sessaoId): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE projecao_estados SET video_reiniciar_id = video_reiniciar_id + 1, video_tempo_atual = 0
+             WHERE sessao_id = :sessao_id AND modo = "video"'
+        );
+        $stmt->execute(['sessao_id' => $sessaoId]);
     }
 
     public static function mostrarLogo(int $sessaoId, ?string $origem = null): void
@@ -278,6 +327,9 @@ final class ProjecaoEstado
                 'estado' => $this->videoEstado,
                 'tempoAtual' => $this->videoTempoAtual,
                 'duracao' => $this->videoDuracao,
+                'volume' => $this->videoVolume,
+                'mudo' => $this->videoMudo,
+                'reiniciarId' => $this->videoReiniciarId,
             ],
             'pix' => $this->modo === 'pix' ? $this->montarPixJson() : ['qrCodes' => [], 'mensagem' => null],
             'imagem' => [
@@ -444,6 +496,9 @@ final class ProjecaoEstado
             videoEstado: (string) $row['video_estado'],
             videoTempoAtual: $row['video_tempo_atual'] !== null ? (int) $row['video_tempo_atual'] : null,
             videoDuracao: $row['video_duracao'] !== null ? (int) $row['video_duracao'] : null,
+            videoVolume: (int) ($row['video_volume'] ?? 100),
+            videoMudo: (bool) ($row['video_mudo'] ?? false),
+            videoReiniciarId: (int) ($row['video_reiniciar_id'] ?? 0),
             imagemId: $row['imagem_id'] !== null ? (int) $row['imagem_id'] : null,
             imagemPath: $row['imagem_path'] ?? null,
             versao: (int) $row['versao'],

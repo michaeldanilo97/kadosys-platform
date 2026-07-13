@@ -13,6 +13,11 @@
   var formBiblia = root.querySelector('[data-form-biblia]');
   var formVideo = root.querySelector('[data-form-video]');
   var botoesVideo = root.querySelectorAll('[data-video-acao]');
+  var botaoReiniciarVideo = root.querySelector('[data-video-reiniciar]');
+  var botaoMudoVideo = root.querySelector('[data-video-mudo]');
+  var iconeMudoVideo = root.querySelector('[data-video-mudo-icone]');
+  var sliderVolumeVideo = root.querySelector('[data-video-volume]');
+  var valorVolumeVideo = root.querySelector('[data-video-volume-valor]');
   var botaoLogo = document.querySelector('[data-acao-logo]');
   var botaoLimpar = document.querySelector('[data-acao-limpar]');
   var botaoFullscreen = document.querySelector('[data-acao-fullscreen]');
@@ -50,7 +55,7 @@
    * barra parecer "voltar" (o video continua tocando normalmente, so a
    * exibicao no painel que oscilava).
    */
-  var progresso = { atual: 0, duracao: 0 };
+  var progresso = { atual: 0, duracao: 0, reiniciarId: null };
   var progressoAtivo = false;
   var progressoTimer = null;
 
@@ -218,6 +223,34 @@
   }
 
   /**
+   * Mesma ideia de sincronizarBotoesVideo acima, mas pro volume/mudo -
+   * reflete o que o servidor tem de verdade (outro dispositivo, ou o
+   * reset pra 100%/desmutado de um video novo, ver
+   * ProjecaoEstado::definirVideo()), sem sobrescrever o slider NO MEIO
+   * de um arrasto do proprio operador (ver "arrastandoVolume" abaixo).
+   */
+  function sincronizarVolumeVideo(dados) {
+    var video = (dados && dados.modo === 'video') ? dados.video : null;
+
+    if (!video || typeof video.volume !== 'number') {
+      return;
+    }
+
+    if (botaoMudoVideo && iconeMudoVideo) {
+      iconeMudoVideo.className = video.mudo ? 'bi bi-volume-mute-fill' : 'bi bi-volume-up-fill';
+      botaoMudoVideo.classList.toggle('active', !!video.mudo);
+    }
+
+    if (sliderVolumeVideo && !arrastandoVolume) {
+      sliderVolumeVideo.value = video.volume;
+    }
+
+    if (valorVolumeVideo && !arrastandoVolume) {
+      valorVolumeVideo.textContent = video.volume + '%';
+    }
+  }
+
+  /**
    * Mesma logica do video acima, mas pros botoes de "Exibicoes
    * rapidas" (Logo, Dizimo e Oferta, e cada imagem da galeria) - o
    * botao correspondente ao que esta REALMENTE no telao agora fica
@@ -275,6 +308,7 @@
     controladoPorAtual = dados ? dados.controladoPor : null;
     sincronizarIndicadorComando();
     sincronizarBotoesVideo(dados);
+    sincronizarVolumeVideo(dados);
     sincronizarBotoesExibicao(dados);
 
     if (!dados || dados.modo !== 'biblia' || !dados.biblia || !dados.biblia.livroId) {
@@ -396,16 +430,20 @@
 
     var atualServidor = dados.video.tempoAtual || 0;
     var duracaoMudou = dados.video.duracao !== progresso.duracao;
+    var reiniciarIdMudou = dados.video.reiniciarId !== undefined && dados.video.reiniciarId !== progresso.reiniciarId;
 
     progresso.duracao = dados.video.duracao;
+    progresso.reiniciarId = dados.video.reiniciarId;
 
     // So aceita o valor do servidor se a duracao mudou (video novo -
     // sempre confia no valor novo, mesmo que va "pra tras" comparado ao
-    // video anterior) OU se estiver IGUAL OU A FRENTE do que ja esta
-    // sendo exibido. Um valor levemente atrasado do MESMO video (ver
-    // comentario acima de "progresso") e simplesmente ignorado, deixando
-    // o tick local seguir contando sem parecer que o video "voltou".
-    if (duracaoMudou || atualServidor >= progresso.atual) {
+    // video anterior), se o botao "Reiniciar" foi usado (mesmo caso: o
+    // tempo tem que voltar pra 0 de proposito) OU se estiver IGUAL OU A
+    // FRENTE do que ja esta sendo exibido. Um valor levemente atrasado do
+    // MESMO video (ver comentario acima de "progresso") e simplesmente
+    // ignorado, deixando o tick local seguir contando sem parecer que o
+    // video "voltou" sozinho.
+    if (duracaoMudou || reiniciarIdMudou || atualServidor >= progresso.atual) {
       progresso.atual = atualServidor;
     }
 
@@ -519,6 +557,79 @@
       enviar('/video/estado', dados);
     });
   });
+
+  if (botaoReiniciarVideo) {
+    botaoReiniciarVideo.addEventListener('click', function () {
+      enviar('/video/reiniciar');
+    });
+  }
+
+  /**
+   * Enquanto o operador arrasta o slider, nao deixa a sincronizacao vinda
+   * do poll (ver sincronizarVolumeVideo) sobrescrever a posicao no meio
+   * do gesto - sem isso, o slider "pulava" de volta pro ultimo valor
+   * confirmado pelo servidor a cada 1.5s enquanto ainda se estava
+   * arrastando.
+   */
+  var arrastandoVolume = false;
+  var volumeDebounce = null;
+
+  function enviarVolume() {
+    var dados = new URLSearchParams();
+    dados.set('volume', sliderVolumeVideo.value);
+
+    // Ajustar o volume manualmente e uma escolha explicita de som
+    // audivel - desliga o indicador visual de mudo tambem (mesmo
+    // comportamento do servidor, ver ProjecaoEstado::definirVolumeVideo()).
+    if (botaoMudoVideo) {
+      botaoMudoVideo.classList.remove('active');
+    }
+
+    if (iconeMudoVideo) {
+      iconeMudoVideo.className = 'bi bi-volume-up-fill';
+    }
+
+    enviar('/video/volume', dados);
+  }
+
+  if (sliderVolumeVideo) {
+    sliderVolumeVideo.addEventListener('input', function () {
+      arrastandoVolume = true;
+
+      if (valorVolumeVideo) {
+        valorVolumeVideo.textContent = sliderVolumeVideo.value + '%';
+      }
+
+      // So manda pro servidor depois de uma pausa curta no arrasto -
+      // sem isso, cada pixel de movimento do slider disparava um POST,
+      // inundando o servidor com pedidos durante um unico gesto.
+      clearTimeout(volumeDebounce);
+      volumeDebounce = setTimeout(enviarVolume, 150);
+    });
+
+    sliderVolumeVideo.addEventListener('change', function () {
+      clearTimeout(volumeDebounce);
+      enviarVolume();
+      arrastandoVolume = false;
+    });
+  }
+
+  if (botaoMudoVideo) {
+    botaoMudoVideo.addEventListener('click', function () {
+      var novoMudo = !botaoMudoVideo.classList.contains('active');
+      var dados = new URLSearchParams();
+      dados.set('mudo', novoMudo ? '1' : '0');
+
+      // Retorno visual imediato, mesmo padrao dos outros botoes de video.
+      if (iconeMudoVideo) {
+        iconeMudoVideo.className = novoMudo ? 'bi bi-volume-mute-fill' : 'bi bi-volume-up-fill';
+      }
+
+      botaoMudoVideo.classList.toggle('active', novoMudo);
+
+      enviar('/video/mudo', dados);
+    });
+  }
 
   if (botaoLogo) {
     botaoLogo.addEventListener('click', function () {
