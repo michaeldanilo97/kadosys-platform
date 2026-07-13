@@ -575,7 +575,22 @@
       return;
     }
 
-    if (videoId && precisaRecarregar(videoId)) {
+    // Enquanto ja existe um vigia rodando pra este mesmo video (ver
+    // agendarChecagemReproducao/checagemVideoId), NAO chama
+    // loadVideoById() de novo a cada poll (~1.5s) so por causa de
+    // precisaRecarregar() - getVideoData() do player pode demorar mais
+    // que isso pra refletir o video recem-carregado (atraso normal da
+    // API do YouTube), entao precisaRecarregar() reincidia sozinho a
+    // cada poll, reiniciando o carregamento repetidas vezes sem nunca
+    // dar ao video os poucos segundos continuos que ele precisa pra
+    // realmente comecar. Isso mantinha o estado do player oscilando
+    // (nunca "travado" por tempo suficiente NEM "tocando"), entao nem
+    // o reload automatico do vigia disparava - tela preta sem audio
+    // pra sempre, so resolvendo com um F5 manual. checagemVideoId volta
+    // a null assim que o vigia conclui (video tocando de verdade, ou
+    // apos o reload automatico/aviso de erro), liberando este bloqueio
+    // pro proximo video.
+    if (videoId && checagemVideoId !== videoId && precisaRecarregar(videoId)) {
       currentVideoId = videoId;
 
       try {
