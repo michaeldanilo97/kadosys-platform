@@ -1,5 +1,8 @@
 <?php
 
+use Igrejas\Core\View;
+use Igrejas\Models\Louvor;
+
 /**
  * @var array $config
  * @var \Igrejas\Models\Louvor|null $louvor
@@ -14,6 +17,7 @@ $isEdit = $louvor !== null;
 $titulo = $old['titulo'] ?? $louvor->titulo ?? '';
 $letra = $old['letra'] ?? $louvor->letra ?? '';
 $tomAtual = $old['tom_atual'] ?? $louvor->tomAtual ?? '';
+$tomOriginal = $louvor->tomAtual ?? '';
 $cifra = $old['cifra'] ?? $louvor->cifra ?? '';
 $playbackId = $old['playback_id'] ?? $louvor->playbackId ?? '';
 $status = $old['status'] ?? $louvor->status ?? 'ativo';
@@ -63,17 +67,36 @@ $actionUrl = $isEdit
                 </div>
                 <div class="crud-field crud-field-full">
                     <label for="letra">Letra</label>
-                    <textarea id="letra" name="letra" rows="8" placeholder="Cole aqui a letra completa do louvor"><?= htmlspecialchars($letra, ENT_QUOTES, 'UTF-8') ?></textarea>
+                    <textarea id="letra" name="letra" rows="10" class="crud-field-mono" placeholder="Cole aqui a letra - pode colar direto do Cifra Club com os acordes junto, uma linha de acorde em cima de cada linha da letra"><?= htmlspecialchars($letra, ENT_QUOTES, 'UTF-8') ?></textarea>
+                    <span class="auth-field-hint">Pode colar a letra com os acordes juntos (como vem do Cifra Club) - o transpositor abaixo reconhece as linhas que são só acordes e transpõe elas junto com a Cifra.</span>
                 </div>
                 <div class="crud-field">
                     <label for="tom_atual">Tom atual</label>
-                    <input type="text" id="tom_atual" name="tom_atual" value="<?= htmlspecialchars($tomAtual, ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex.: G, Am, D">
+                    <select id="tom_atual" name="tom_atual" data-tom-select>
+                        <option value="">Nenhum</option>
+                        <optgroup label="Maior">
+                            <?php foreach (Louvor::TONS_MAIORES as $tom): ?>
+                                <option value="<?= $tom ?>" <?= $tomAtual === $tom ? 'selected' : '' ?>><?= $tom ?></option>
+                            <?php endforeach; ?>
+                        </optgroup>
+                        <optgroup label="Menor">
+                            <?php foreach (Louvor::TONS_MENORES as $tom): ?>
+                                <option value="<?= $tom ?>" <?= $tomAtual === $tom ? 'selected' : '' ?>><?= $tom ?></option>
+                            <?php endforeach; ?>
+                        </optgroup>
+                    </select>
                     <span class="auth-field-hint">Mudar o tom aqui registra automaticamente no histórico abaixo (quem mudou e quando).</span>
                 </div>
                 <?php if ($isEdit): ?>
                     <div class="crud-field">
                         <label for="tom_observacao">O que mudou nesse tom (opcional)</label>
                         <input type="text" id="tom_observacao" name="tom_observacao" placeholder="Ex.: Abaixamos meio tom pro vocalista de hoje">
+                    </div>
+                    <div class="crud-field crud-field-full" data-transpositor-wrap <?= $tomOriginal === '' ? 'hidden' : '' ?>>
+                        <button type="button" class="btn-k btn-k-ghost" data-transpor-acordes data-tom-original="<?= htmlspecialchars($tomOriginal, ENT_QUOTES, 'UTF-8') ?>">
+                            <i class="bi bi-arrow-repeat"></i> Transpor Letra/Cifra automaticamente pro tom selecionado
+                        </button>
+                        <span class="auth-field-hint">Identifica as linhas de acorde na Letra e na Cifra e desloca cada nota proporcionalmente - de <span data-tom-de><?= htmlspecialchars($tomOriginal, ENT_QUOTES, 'UTF-8') ?></span> pro tom escolhido acima. Confira o resultado antes de salvar.</span>
                     </div>
                 <?php endif; ?>
                 <div class="crud-field crud-field-full">
@@ -130,3 +153,11 @@ $actionUrl = $isEdit
         </div>
     </form>
 </div>
+
+<script>
+  window.KADOSYS_TONS = {
+    maiores: <?= json_encode(Louvor::TONS_MAIORES) ?>,
+    menores: <?= json_encode(Louvor::TONS_MENORES) ?>,
+  };
+</script>
+<script src="<?= $basePath ?>/assets/js/louvor-transpositor.js?v=<?= View::assetVersion('assets/js/louvor-transpositor.js') ?>"></script>

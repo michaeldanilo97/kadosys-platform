@@ -24,6 +24,9 @@ $basePath = $config['base_path'] ?? '';
         <a href="<?= $basePath ?>/dashboard/louvores" class="btn-k btn-k-ghost">
             <i class="bi bi-arrow-left"></i> Voltar
         </a>
+        <a href="<?= $basePath ?>/dashboard/louvores/<?= $louvor->id ?>/tela-cheia" target="_blank" rel="noopener" class="btn-k btn-k-ghost">
+            <i class="bi bi-arrows-fullscreen"></i> Tela cheia / PDF
+        </a>
         <a href="<?= $basePath ?>/dashboard/louvores/<?= $louvor->id ?>/editar" class="btn-k btn-k-grad">
             <i class="bi bi-pencil"></i> Editar
         </a>

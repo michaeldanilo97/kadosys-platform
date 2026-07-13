@@ -15,6 +15,21 @@ use PDO;
  */
 final class Louvor
 {
+    /**
+     * Todos os tons (maiores e menores) pro <select> de "Tom atual" -
+     * grafia mais comum usada em cifras brasileiras (bemol pros tons
+     * que normalmente aparecem assim: Eb, Ab, Bb, em vez de D#/G#/A#).
+     * Usado tambem pelo transpositor automatico no cliente (ver
+     * louvor-transpositor.js), que precisa da MESMA lista pra saber
+     * a posicao de cada tom na escala cromatica.
+     *
+     * @var array<int, string>
+     */
+    public const TONS_MAIORES = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
+
+    /** @var array<int, string> */
+    public const TONS_MENORES = ['Cm', 'C#m', 'Dm', 'Ebm', 'Em', 'Fm', 'F#m', 'Gm', 'Abm', 'Am', 'Bbm', 'Bm'];
+
     public function __construct(
         public readonly int $id,
         public readonly string $titulo,
