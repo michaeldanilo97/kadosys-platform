@@ -17,6 +17,31 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 75 - 2026-07-13
+
+**install.sql desatualizado: igrejas novas nao ganhavam o modulo de
+Louvores/Programacao de Culto nem os controles de volume do video do
+telao**
+
+- `database/install.sql` e o schema usado para provisionar o banco de
+  QUALQUER igreja nova (ver `Provisionador.php`) - e diferente das
+  migracoes numeradas em `database/migrations/`, que rodam manualmente
+  banco a banco. Ele estava desatualizado desde a migracao 038: faltavam
+  as colunas `musico`/`lider_louvor` em `users`, as colunas de volume/mudo/
+  reiniciar do video em `projecao_estados`, e as tabelas inteiras
+  `louvores`, `louvor_tons_historico`, `repertorios`, `repertorio_itens` e
+  `repertorio_mensagens`.
+- Ou seja: toda igreja cadastrada depois que essas funcionalidades foram
+  lancadas ficou sem o modulo Louvores e sem Programacao de Culto (Modo
+  Culto) ate rodar as migracoes manualmente no banco dela.
+- Corrigido: `install.sql` atualizado com todo o schema das migracoes
+  038 a 041, testado do zero contra um banco vazio pra garantir que roda
+  sem erro (incluindo a ordem correta da FK `repertorios.atual_item_id`,
+  que so pode ser criada depois de `repertorio_itens` existir).
+- Igrejas ja provisionadas nesse intervalo continuam precisando rodar as
+  migracoes 038-041 manualmente - esse ajuste so vale pra igrejas novas
+  daqui pra frente.
+
 ## Ajuste 74 - 2026-07-13
 
 **Louvores: sugestão automática de tom + "tocado por último"**
