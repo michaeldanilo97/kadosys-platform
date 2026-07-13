@@ -18,6 +18,7 @@ $titulo = $old['titulo'] ?? $louvor->titulo ?? '';
 $letra = $old['letra'] ?? $louvor->letra ?? '';
 $tomAtual = $old['tom_atual'] ?? $louvor->tomAtual ?? '';
 $tomOriginal = $louvor->tomAtual ?? '';
+$andamentoBpm = $old['andamento_bpm'] ?? $louvor->andamentoBpm ?? '';
 $cifra = $old['cifra'] ?? $louvor->cifra ?? '';
 $playbackId = $old['playback_id'] ?? $louvor->playbackId ?? '';
 $status = $old['status'] ?? $louvor->status ?? 'ativo';
@@ -106,6 +107,11 @@ $modoInicial = $cifra !== '' ? 'separadas' : 'juntas';
                         </optgroup>
                     </select>
                     <span class="auth-field-hint">Mudar o tom aqui registra automaticamente no histórico abaixo (quem mudou e quando).</span>
+                </div>
+                <div class="crud-field">
+                    <label for="andamento_bpm">Andamento (BPM)</label>
+                    <input type="number" id="andamento_bpm" name="andamento_bpm" min="1" max="300" value="<?= htmlspecialchars((string) $andamentoBpm, ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex.: 72">
+                    <span class="auth-field-hint">Aparece ao lado do tom no Modo Culto, pra dar o ritmo antes de começar a tocar.</span>
                 </div>
                 <?php if ($isEdit): ?>
                     <div class="crud-field">

@@ -17,6 +17,7 @@ $email = $old['email'] ?? $usuarioEditado->email ?? '';
 $role = $old['role'] ?? $usuarioEditado->role ?? User::ROLE_USUARIO;
 $active = array_key_exists('active', $old) ? !empty($old['active']) : ($usuarioEditado->active ?? true);
 $musico = array_key_exists('musico', $old) ? !empty($old['musico']) : ($usuarioEditado->musico ?? false);
+$liderLouvor = array_key_exists('lider_louvor', $old) ? !empty($old['lider_louvor']) : ($usuarioEditado->liderLouvor ?? false);
 
 $actionUrl = $isEdit
     ? $basePath . '/dashboard/usuarios/' . $usuarioEditado->id
@@ -89,6 +90,16 @@ $actionUrl = $isEdit
                         <span class="toggle-switch-label">
                             Músico
                             <span class="auth-field-hint">Libera automaticamente o acesso ao módulo Louvores (letras, cifras e tons), sem precisar mexer em Permissões.</span>
+                        </span>
+                    </label>
+                </div>
+                <div class="crud-field crud-field-full">
+                    <label class="toggle-switch-field">
+                        <input type="checkbox" name="lider_louvor" value="1" <?= $liderLouvor ? 'checked' : '' ?>>
+                        <span class="toggle-switch"></span>
+                        <span class="toggle-switch-label">
+                            Líder de louvor
+                            <span class="auth-field-hint">Além do acesso de músico, pode montar/reordenar a programação de culto (repertório) e avançar a música atual durante o Modo Culto - os demais músicos só acompanham e usam o chat.</span>
                         </span>
                     </label>
                 </div>

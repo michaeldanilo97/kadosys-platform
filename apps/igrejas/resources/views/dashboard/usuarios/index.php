@@ -66,6 +66,9 @@ $roleLabels = [User::ROLE_ADMIN => 'Administrador', User::ROLE_USUARIO => 'Usuá
                             <?php if ($usuario->musico): ?>
                                 <span class="status-badge is-ativo" style="margin-left: 0.35rem;"><i class="bi bi-music-note-beamed"></i> Músico</span>
                             <?php endif; ?>
+                            <?php if ($usuario->liderLouvor): ?>
+                                <span class="status-badge is-ativo" style="margin-left: 0.35rem;"><i class="bi bi-star-fill"></i> Líder de louvor</span>
+                            <?php endif; ?>
                         </td>
                         <td>
                             <span class="status-badge <?= $usuario->active ? 'is-ativo' : 'is-inativo' ?>">

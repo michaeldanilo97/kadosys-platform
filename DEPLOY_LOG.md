@@ -17,6 +17,48 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 73 - 2026-07-13
+
+**Novo submódulo: Programação de Culto (repertório) + Modo Culto ao vivo**
+
+Novo submódulo dentro de Louvores: o líder de louvor (nova flag
+"Líder de louvor" na tela de Usuários, ao lado de "Músico") monta e
+arrasta a ordem dos louvores de um culto - a mudança é sincronizada em
+tempo real (por polling a cada ~1.2s, mesmo mecanismo já usado em
+Projeção/Telão - sem WebSocket, funciona na hospedagem compartilhada)
+pra todo o time no **Modo Culto**: uma tela dedicada, sem menu do
+painel, mostrando só a música atual (letra/cifra com abas, tom e
+andamento em BPM). O líder avança/volta a música direto por lá, e todo
+mundo acompanha instantaneamente.
+
+Incluído também um canal discreto de avisos rápidos entre os músicos
+(ex.: "abaixa meio tom") - fica escondido até ser aberto de propósito
+(ícone de chat no topo, com contador de não lidas), sem poluir a tela
+principal, e guarda histórico entre cultos.
+
+Novo campo "Andamento (BPM)" no cadastro do louvor (aparece ao lado do
+tom no Modo Culto e na tela cheia).
+
+Arquivos novos: `apps/igrejas/database/migrations/040_create_repertorio_culto.sql`,
+`apps/igrejas/src/Models/{Repertorio,RepertorioItem,RepertorioMensagem}.php`,
+`apps/igrejas/src/Controllers/RepertorioController.php`,
+`apps/igrejas/resources/views/layouts/modo-culto.php`,
+`apps/igrejas/resources/views/dashboard/louvores/repertorios/{index,form,editor,culto}.php`,
+`apps/igrejas/public/assets/css/repertorio-culto.css`,
+`apps/igrejas/public/assets/js/{repertorio-editor,repertorio-culto}.js`.
+
+Arquivos alterados: `apps/igrejas/src/Models/User.php` (campo
+`lider_louvor`), `apps/igrejas/src/Models/Louvor.php` (campo
+`andamento_bpm` + lista pro seletor de repertório),
+`apps/igrejas/src/Controllers/{UsuarioController,LouvorController}.php`,
+`apps/igrejas/routes/web.php`,
+`apps/igrejas/resources/views/dashboard/usuarios/{form,index}.php`,
+`apps/igrejas/resources/views/dashboard/louvores/{index,form,show,tela-cheia}.php`,
+`apps/igrejas/public/assets/css/crud.css`.
+
+**IMPORTANTE:** rodar a migração 040 no banco de cada igreja depois do
+deploy (mesma regra das outras migrações de módulo).
+
 ## Ajuste 72 - 2026-07-13
 
 **Louvores: modo de cadastro (letra+cifra juntas ou separadas) e

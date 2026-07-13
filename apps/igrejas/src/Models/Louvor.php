@@ -35,6 +35,7 @@ final class Louvor
         public readonly string $titulo,
         public readonly ?string $letra,
         public readonly ?string $tomAtual,
+        public readonly ?int $andamentoBpm,
         public readonly ?string $cifra,
         public readonly ?string $anexoPath,
         public readonly ?string $anexoNomeOriginal,
@@ -56,6 +57,26 @@ final class Louvor
     /**
      * @return array{items: array<int, self>, total: int, page: int, perPage: int, lastPage: int}
      */
+    /**
+     * Lista enxuta (id + titulo) dos louvores ativos, usada no
+     * buscador de "adicionar ao repertorio" do modulo de programacao de
+     * culto - nao precisa do objeto Louvor inteiro (letra/cifra/etc.),
+     * so o necessario pra montar a lista de opcoes.
+     *
+     * @return array<int, array{id: int, titulo: string}>
+     */
+    public static function listaParaSelect(): array
+    {
+        $stmt = Database::connection()->query(
+            "SELECT id, titulo FROM louvores WHERE status = 'ativo' ORDER BY titulo ASC"
+        );
+
+        return array_map(
+            static fn (array $row): array => ['id' => (int) $row['id'], 'titulo' => (string) $row['titulo']],
+            $stmt->fetchAll()
+        );
+    }
+
     public static function paginate(int $page, int $perPage, string $search = ''): array
     {
         $page = max(1, $page);
@@ -110,8 +131,8 @@ final class Louvor
     public static function create(array $data, ?int $criadoPor): int
     {
         $stmt = Database::connection()->prepare(
-            'INSERT INTO louvores (titulo, letra, tom_atual, cifra, anexo_path, anexo_nome_original, playback_id, status, criado_por, created_at)
-             VALUES (:titulo, :letra, :tom_atual, :cifra, :anexo_path, :anexo_nome_original, :playback_id, :status, :criado_por, NOW())'
+            'INSERT INTO louvores (titulo, letra, tom_atual, andamento_bpm, cifra, anexo_path, anexo_nome_original, playback_id, status, criado_por, created_at)
+             VALUES (:titulo, :letra, :tom_atual, :andamento_bpm, :cifra, :anexo_path, :anexo_nome_original, :playback_id, :status, :criado_por, NOW())'
         );
         $stmt->execute(self::bindings($data) + ['criado_por' => $criadoPor]);
 
@@ -134,7 +155,7 @@ final class Louvor
 
         $stmt = Database::connection()->prepare(
             'UPDATE louvores SET
-                titulo = :titulo, letra = :letra, tom_atual = :tom_atual, cifra = :cifra,
+                titulo = :titulo, letra = :letra, tom_atual = :tom_atual, andamento_bpm = :andamento_bpm, cifra = :cifra,
                 anexo_path = :anexo_path, anexo_nome_original = :anexo_nome_original,
                 playback_id = :playback_id, status = :status
              WHERE id = :id'
@@ -162,11 +183,13 @@ final class Louvor
     private static function bindings(array $data): array
     {
         $playbackId = (int) ($data['playback_id'] ?? 0);
+        $andamentoBpm = (int) ($data['andamento_bpm'] ?? 0);
 
         return [
             'titulo' => trim((string) $data['titulo']),
             'letra' => self::nullable($data['letra'] ?? null),
             'tom_atual' => self::nullable($data['tom_atual'] ?? null),
+            'andamento_bpm' => $andamentoBpm > 0 ? $andamentoBpm : null,
             'cifra' => self::nullable($data['cifra'] ?? null),
             'anexo_path' => self::nullable($data['anexo_path'] ?? null),
             'anexo_nome_original' => self::nullable($data['anexo_nome_original'] ?? null),
@@ -189,6 +212,7 @@ final class Louvor
             titulo: (string) $row['titulo'],
             letra: $row['letra'],
             tomAtual: $row['tom_atual'],
+            andamentoBpm: $row['andamento_bpm'] !== null ? (int) $row['andamento_bpm'] : null,
             cifra: $row['cifra'],
             anexoPath: $row['anexo_path'],
             anexoNomeOriginal: $row['anexo_nome_original'],

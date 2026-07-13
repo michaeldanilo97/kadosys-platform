@@ -20,6 +20,9 @@ $abaInicial = $temCifra ? 'cifra' : 'letra';
             <?php if ($louvor->tomAtual !== null): ?>
                 <span class="lct-tom">Tom: <?= htmlspecialchars($louvor->tomAtual, ENT_QUOTES, 'UTF-8') ?></span>
             <?php endif; ?>
+            <?php if ($louvor->andamentoBpm !== null): ?>
+                <span class="lct-tom"><?= $louvor->andamentoBpm ?> BPM</span>
+            <?php endif; ?>
         </div>
         <div class="lct-abas">
             <button type="button" class="lct-aba <?= $abaInicial === 'letra' ? 'is-ativa' : '' ?>" data-lct-aba="letra">Letra</button>

@@ -123,7 +123,7 @@ final class LouvorController extends Controller
             $this->redirect('/dashboard/louvores/novo');
         }
 
-        $data = $this->request->only(['titulo', 'letra', 'tom_atual', 'cifra', 'playback_id']);
+        $data = $this->request->only(['titulo', 'letra', 'tom_atual', 'andamento_bpm', 'cifra', 'playback_id']);
         $errors = $this->validate($data);
 
         if ($errors !== []) {
@@ -185,7 +185,7 @@ final class LouvorController extends Controller
             $this->redirect("/dashboard/louvores/{$id}/editar");
         }
 
-        $data = $this->request->only(['titulo', 'letra', 'tom_atual', 'tom_observacao', 'cifra', 'playback_id', 'status']);
+        $data = $this->request->only(['titulo', 'letra', 'tom_atual', 'andamento_bpm', 'tom_observacao', 'cifra', 'playback_id', 'status']);
         $errors = $this->validate($data);
 
         if ($errors !== []) {

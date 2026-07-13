@@ -65,13 +65,14 @@ final class User
         public readonly string $role,
         public readonly bool $active,
         public readonly bool $musico = false,
+        public readonly bool $liderLouvor = false,
     ) {
     }
 
     public static function findByEmail(string $email): ?self
     {
         $stmt = Database::connection()->prepare(
-            'SELECT id, name, email, password, role, active, musico FROM users WHERE email = :email LIMIT 1'
+            'SELECT id, name, email, password, role, active, musico, lider_louvor FROM users WHERE email = :email LIMIT 1'
         );
         $stmt->execute(['email' => $email]);
         $row = $stmt->fetch();
@@ -82,7 +83,7 @@ final class User
     public static function findById(int $id): ?self
     {
         $stmt = Database::connection()->prepare(
-            'SELECT id, name, email, password, role, active, musico FROM users WHERE id = :id LIMIT 1'
+            'SELECT id, name, email, password, role, active, musico, lider_louvor FROM users WHERE id = :id LIMIT 1'
         );
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch();
@@ -114,7 +115,7 @@ final class User
     public static function findByValidRememberToken(string $tokenHash): ?self
     {
         $stmt = Database::connection()->prepare(
-            'SELECT u.id, u.name, u.email, u.password, u.role, u.active, u.musico
+            'SELECT u.id, u.name, u.email, u.password, u.role, u.active, u.musico, u.lider_louvor
              FROM remember_tokens rt
              INNER JOIN users u ON u.id = rt.user_id
              WHERE rt.token_hash = :token_hash AND rt.expires_at > NOW()
@@ -157,7 +158,7 @@ final class User
      */
     public static function all(): array
     {
-        $stmt = Database::connection()->query('SELECT id, name, email, password, role, active, musico FROM users ORDER BY name ASC');
+        $stmt = Database::connection()->query('SELECT id, name, email, password, role, active, musico, lider_louvor FROM users ORDER BY name ASC');
 
         return array_map(self::fromRow(...), $stmt->fetchAll());
     }
@@ -194,8 +195,8 @@ final class User
     public static function create(array $data): int
     {
         $stmt = Database::connection()->prepare(
-            'INSERT INTO users (name, email, password, role, active, musico, created_at)
-             VALUES (:name, :email, :password, :role, :active, :musico, NOW())'
+            'INSERT INTO users (name, email, password, role, active, musico, lider_louvor, created_at)
+             VALUES (:name, :email, :password, :role, :active, :musico, :lider_louvor, NOW())'
         );
         $stmt->execute([
             'name' => trim((string) $data['name']),
@@ -204,6 +205,7 @@ final class User
             'role' => in_array($data['role'] ?? null, [self::ROLE_ADMIN, self::ROLE_USUARIO], true) ? $data['role'] : self::ROLE_USUARIO,
             'active' => 1,
             'musico' => !empty($data['musico']) ? 1 : 0,
+            'lider_louvor' => !empty($data['lider_louvor']) ? 1 : 0,
         ]);
 
         return (int) Database::connection()->lastInsertId();
@@ -214,7 +216,7 @@ final class User
      */
     public function update(array $data): void
     {
-        $sql = 'UPDATE users SET name = :name, email = :email, role = :role, active = :active, musico = :musico';
+        $sql = 'UPDATE users SET name = :name, email = :email, role = :role, active = :active, musico = :musico, lider_louvor = :lider_louvor';
         $params = [
             'id' => $this->id,
             'name' => trim((string) $data['name']),
@@ -222,6 +224,7 @@ final class User
             'role' => in_array($data['role'] ?? null, [self::ROLE_ADMIN, self::ROLE_USUARIO], true) ? $data['role'] : self::ROLE_USUARIO,
             'active' => !empty($data['active']) ? 1 : 0,
             'musico' => !empty($data['musico']) ? 1 : 0,
+            'lider_louvor' => !empty($data['lider_louvor']) ? 1 : 0,
         ];
 
         $novaSenha = (string) ($data['password'] ?? '');
@@ -308,7 +311,7 @@ final class User
             return false;
         }
 
-        if (in_array($slug, self::MODULOS_SOMENTE_MUSICO, true) && !$user->musico) {
+        if (in_array($slug, self::MODULOS_SOMENTE_MUSICO, true) && !$user->musico && !$user->liderLouvor) {
             return false;
         }
 
@@ -327,6 +330,7 @@ final class User
             role: (string) $row['role'],
             active: (bool) $row['active'],
             musico: (bool) ($row['musico'] ?? false),
+            liderLouvor: (bool) ($row['lider_louvor'] ?? false),
         );
     }
 }

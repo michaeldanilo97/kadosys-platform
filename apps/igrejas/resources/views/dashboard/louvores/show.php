@@ -15,6 +15,9 @@ $basePath = $config['base_path'] ?? '';
             <?= $louvor->tomAtual !== null
                 ? 'Tom atual: ' . htmlspecialchars($louvor->tomAtual, ENT_QUOTES, 'UTF-8')
                 : 'Sem tom definido' ?>
+            <?php if ($louvor->andamentoBpm !== null): ?>
+                &middot; <?= $louvor->andamentoBpm ?> BPM
+            <?php endif; ?>
             <?php if ($louvor->playbackTitulo !== null): ?>
                 &middot; Áudio: <?= htmlspecialchars($louvor->playbackTitulo, ENT_QUOTES, 'UTF-8') ?>
             <?php endif; ?>
