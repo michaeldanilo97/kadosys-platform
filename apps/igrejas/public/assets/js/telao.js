@@ -443,6 +443,7 @@
     var observacoesTravado = 0;
     var observacoesBufferParado = 0;
     var observacoesIndefinido = 0;
+    var observacoesErro = 0;
     var LIMITE_TRAVADO = 6; // ~1s cada = 6s parado em "nao iniciado" pra concluir que travou
 
     // getPlayerState() pode voltar "undefined" so porque o iframe por
@@ -457,6 +458,22 @@
     // bug antigo de tela preta permanente se o iframe travar mesmo.
     var LIMITE_INDEFINIDO = 20; // ~1s cada = 20s sem NENHUMA resposta do player
 
+    // Reportado ao vivo (com print do Console): getPlayerState() as vezes
+    // nao so devolve "nao respondeu nada" (undefined/null, tratado acima
+    // como observacoesIndefinido) - ele pode literalmente LANCAR excecao
+    // (confirmado: DOMException "invalid or illegal string" dentro do
+    // proprio www-widgetapi.js do YouTube, na funcao interna sendMessage,
+    // repetindo sem parar) quando o canal de comunicacao entre o iframe do
+    // YouTube e esta pagina quebra logo na inicializacao (bug conhecido,
+    // ligado a protecoes de rastreamento/particionamento de cookies de
+    // terceiros de alguns navegadores). Antes, esse catch so desistia
+    // calado (clearInterval sem nenhuma tentativa de recuperacao) - so um
+    // F5 manual resolvia, sem nenhum aviso na tela. Limite baixo porque,
+    // diferente de "nao respondeu nada" (que pode ser so handshake
+    // lento), uma excecao repetida e um sinal bem mais forte de que o
+    // canal esta genuinamente quebrado, nao so lento.
+    var LIMITE_ERRO = 3; // ~1s cada = 3s de excecao repetida ao consultar o player
+
     var intervalo = setInterval(function () {
       if (!player || typeof player.getPlayerState !== 'function' || ultimoEstadoVideo !== 'tocando' || videoId !== currentVideoId) {
         clearInterval(intervalo);
@@ -469,9 +486,26 @@
 
       try {
         estadoAtual = player.getPlayerState();
+        observacoesErro = 0;
       } catch (erro) {
+        observacoesErro++;
+
+        if (observacoesErro < LIMITE_ERRO) {
+          return;
+        }
+
         clearInterval(intervalo);
         checagemVideoId = null;
+
+        // Mesmo padrao de recuperacao dos outros casos: tenta UM reload
+        // automatico primeiro (resolve a maioria das vezes) antes de
+        // desistir e so mostrar aviso.
+        if (!jaRecarregouPara(videoId)) {
+          marcarRecarregadoPara(videoId);
+          window.location.reload();
+        } else {
+          mostrarErroVideo('Não foi possível carregar o player do YouTube. Verifique se este dispositivo tem acesso à internet e se o YouTube não está bloqueado na rede.');
+        }
 
         return;
       }

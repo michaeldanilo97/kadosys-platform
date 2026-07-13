@@ -17,6 +17,36 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 67 - 2026-07-13
+
+**YouTube: achada a causa real da tela preta muda que so um F5 resolvia**
+
+- Bug reportado ao vivo com print do Console do navegador (obrigado pela
+  paciencia em coletar isso!): o video ficava com tela preta e SEM
+  audio nenhum, esperando 30+ segundos sem nenhuma recuperacao
+  automatica - so um F5 manual resolvia. Confirmado tambem numa aba
+  anonima (zerada), descartando qualquer acumulo de estado do
+  navegador.
+- Causa raiz: o Console mostrava `DOMException: An invalid or illegal
+  string was specified` repetindo sem parar dentro do proprio script
+  do YouTube (`www-widgetapi.js`, funcao interna `sendMessage`) - um
+  bug conhecido de comunicacao entre o iframe do YouTube e a pagina,
+  que pode acontecer no primeiro carregamento (ligado a protecoes de
+  rastreamento/particionamento de cookies de terceiros de alguns
+  navegadores). Isso fazia `player.getPlayerState()` (usado pelo vigia
+  de recuperacao automatica) LANCAR EXCECAO em vez de so devolver "nao
+  iniciado" - e o codigo, ao capturar esse erro, desistia da
+  recuperacao SILENCIOSAMENTE, sem tentar nada. Por isso nunca
+  recarregava sozinho, mesmo esperando bastante tempo.
+- Corrigido: uma excecao repetida (~3s) ao consultar o player agora e
+  tratada como um sinal de travamento tambem, disparando a mesma
+  recuperacao automatica (reload unico, depois aviso na tela) ja usada
+  nos outros casos.
+- Validado com testes automatizados reproduzindo exatamente esse
+  DOMException reportado - confirmado que o reload automatico agora
+  dispara em poucos segundos, e que uma segunda falha (reload ja
+  usado) mostra o aviso de erro em vez de ficar num loop.
+
 ## Ajuste 66 - 2026-07-13
 
 **Revisao geral de acentuacao PT-BR em todo o sistema**
