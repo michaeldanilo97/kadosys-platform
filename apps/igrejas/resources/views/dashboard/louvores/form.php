@@ -25,6 +25,13 @@ $status = $old['status'] ?? $louvor->status ?? 'ativo';
 $actionUrl = $isEdit
     ? $basePath . '/dashboard/louvores/' . $louvor->id
     : $basePath . '/dashboard/louvores';
+
+// So entra no modo "separadas" quando ja existe algo cadastrado no
+// campo cifra (edicao de um louvor antigo) - musico cadastrando um
+// louvor novo comeca no modo "juntas" (letra colada do Cifra Club, ja
+// com a cifra dentro), que e o jeito mais comum de colar segundo quem
+// usa o modulo no dia a dia.
+$modoInicial = $cifra !== '' ? 'separadas' : 'juntas';
 ?>
 
 <div class="dash-page-head">
@@ -66,9 +73,22 @@ $actionUrl = $isEdit
                     <input type="text" id="titulo" name="titulo" value="<?= htmlspecialchars($titulo, ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex.: Grande é o Senhor" required autofocus>
                 </div>
                 <div class="crud-field crud-field-full">
-                    <label for="letra">Letra</label>
-                    <textarea id="letra" name="letra" rows="10" class="crud-field-mono" placeholder="Cole aqui a letra - pode colar direto do Cifra Club com os acordes junto, uma linha de acorde em cima de cada linha da letra"><?= htmlspecialchars($letra, ENT_QUOTES, 'UTF-8') ?></textarea>
-                    <span class="auth-field-hint">Pode colar a letra com os acordes juntos (como vem do Cifra Club) - o transpositor abaixo reconhece as linhas que são só acordes e transpõe elas junto com a Cifra.</span>
+                    <label>Como você vai cadastrar esse louvor?</label>
+                    <div class="crud-radio-grupo">
+                        <label class="crud-radio">
+                            <input type="radio" name="_modo_cadastro" value="juntas" data-modo-cadastro <?= $modoInicial === 'juntas' ? 'checked' : '' ?>>
+                            Letra e cifra juntas (como vem do Cifra Club)
+                        </label>
+                        <label class="crud-radio">
+                            <input type="radio" name="_modo_cadastro" value="separadas" data-modo-cadastro <?= $modoInicial === 'separadas' ? 'checked' : '' ?>>
+                            Letra e cifra em campos separados
+                        </label>
+                    </div>
+                </div>
+                <div class="crud-field crud-field-full">
+                    <label for="letra" data-letra-label>Letra</label>
+                    <textarea id="letra" name="letra" rows="10" class="crud-field-mono" placeholder="Cole aqui a letra"><?= htmlspecialchars($letra, ENT_QUOTES, 'UTF-8') ?></textarea>
+                    <span class="auth-field-hint" data-letra-hint></span>
                 </div>
                 <div class="crud-field">
                     <label for="tom_atual">Tom atual</label>
@@ -99,7 +119,7 @@ $actionUrl = $isEdit
                         <span class="auth-field-hint">Identifica as linhas de acorde na Letra e na Cifra e desloca cada nota proporcionalmente - de <span data-tom-de><?= htmlspecialchars($tomOriginal, ENT_QUOTES, 'UTF-8') ?></span> pro tom escolhido acima. Confira o resultado antes de salvar.</span>
                     </div>
                 <?php endif; ?>
-                <div class="crud-field crud-field-full">
+                <div class="crud-field crud-field-full" data-bloco-cifra <?= $modoInicial === 'juntas' ? 'hidden' : '' ?>>
                     <label for="cifra">Cifra</label>
                     <textarea id="cifra" name="cifra" rows="8" class="crud-field-mono" placeholder="Cole aqui a cifra (acordes sobre a letra, intro, etc.)"><?= htmlspecialchars($cifra, ENT_QUOTES, 'UTF-8') ?></textarea>
                 </div>
@@ -161,3 +181,4 @@ $actionUrl = $isEdit
   };
 </script>
 <script src="<?= $basePath ?>/assets/js/louvor-transpositor.js?v=<?= View::assetVersion('assets/js/louvor-transpositor.js') ?>"></script>
+<script src="<?= $basePath ?>/assets/js/louvor-form.js?v=<?= View::assetVersion('assets/js/louvor-form.js') ?>"></script>

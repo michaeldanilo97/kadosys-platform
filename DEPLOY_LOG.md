@@ -17,6 +17,28 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 72 - 2026-07-13
+
+**Louvores: modo de cadastro (letra+cifra juntas ou separadas) e
+correção do PDF**
+
+- Corrigido: a tela cheia/PDF só imprimia o campo Cifra, mesmo quando o
+  louvor tinha a cifra colada JUNTO da letra (comum ao colar direto do
+  Cifra Club) - agora letra e cifra saem as duas no PDF, cada uma com
+  seu próprio título de seção, independente de qual aba estava
+  selecionada na tela.
+- Novo cadastro pergunta primeiro "como você vai cadastrar esse
+  louvor": letra e cifra juntas (modo padrão, pensado pra colar direto
+  do Cifra Club) ou em campos separados - escolher a segunda opção
+  revela o campo Cifra dedicado. Facilita pro músico que só quer colar
+  de um jeito ou de outro, sem ficar com os dois campos preenchidos com
+  informação redundante/confusa.
+
+Arquivos novos: `apps/igrejas/public/assets/js/louvor-form.js`.
+
+Arquivos alterados: `apps/igrejas/resources/views/dashboard/louvores/{form,tela-cheia}.php`,
+`apps/igrejas/public/assets/css/{louvor-tela-cheia,crud}.css`.
+
 ## Ajuste 71 - 2026-07-13
 
 **Louvores: tela cheia (auto-scroll + PDF), transposição automática de

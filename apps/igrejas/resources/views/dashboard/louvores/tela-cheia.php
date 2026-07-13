@@ -28,20 +28,27 @@ $abaInicial = $temCifra ? 'cifra' : 'letra';
     </div>
 
     <div class="lct-conteudo">
-        <div class="lct-texto is-letra" data-lct-texto="letra" <?= $abaInicial === 'letra' ? '' : 'hidden' ?>>
-            <?php if ($temLetra): ?>
+        <?php if ($temLetra): ?>
+            <div class="lct-titulo-impressao">Letra<?= $temCifra ? ' (com cifra)' : '' ?></div>
+            <div class="lct-texto is-letra" data-lct-texto="letra" <?= $abaInicial === 'letra' ? '' : 'hidden' ?>>
                 <?= htmlspecialchars($louvor->letra, ENT_QUOTES, 'UTF-8') ?>
-            <?php else: ?>
+            </div>
+        <?php else: ?>
+            <div class="lct-texto is-letra" data-lct-texto="letra" <?= $abaInicial === 'letra' ? '' : 'hidden' ?>>
                 <span class="lct-vazio">Letra ainda não cadastrada.</span>
-            <?php endif; ?>
-        </div>
-        <div class="lct-texto" data-lct-texto="cifra" <?= $abaInicial === 'cifra' ? '' : 'hidden' ?>>
-            <?php if ($temCifra): ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($temCifra): ?>
+            <div class="lct-titulo-impressao">Cifra</div>
+            <div class="lct-texto" data-lct-texto="cifra" <?= $abaInicial === 'cifra' ? '' : 'hidden' ?>>
                 <?= htmlspecialchars($louvor->cifra, ENT_QUOTES, 'UTF-8') ?>
-            <?php else: ?>
+            </div>
+        <?php else: ?>
+            <div class="lct-texto" data-lct-texto="cifra" <?= $abaInicial === 'cifra' ? '' : 'hidden' ?>>
                 <span class="lct-vazio">Cifra ainda não cadastrada.</span>
-            <?php endif; ?>
-        </div>
+            </div>
+        <?php endif; ?>
     </div>
 
     <div class="lct-controles">
