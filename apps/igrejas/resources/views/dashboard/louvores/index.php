@@ -21,6 +21,9 @@ $basePath = $config['base_path'] ?? '';
         </p>
     </div>
     <div class="dash-page-actions">
+        <a href="<?= $basePath ?>/dashboard/louvores/repertorios" class="btn-k btn-k-ghost">
+            <i class="bi bi-broadcast"></i> Programação de Culto
+        </a>
         <a href="<?= $basePath ?>/dashboard/louvores/novo" class="btn-k btn-k-grad">
             <i class="bi bi-music-note-list"></i> Novo louvor
         </a>

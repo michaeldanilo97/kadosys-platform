@@ -1165,3 +1165,63 @@ textarea.crud-field-mono {
   cursor: pointer;
 }
 
+/* ---- Repertorio de culto: lista arrastavel (editor.php) -------------------- */
+
+.repertorio-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.repertorio-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: var(--surface);
+  cursor: grab;
+}
+
+.repertorio-item.is-arrastando {
+  opacity: 0.4;
+}
+
+.repertorio-item-arrasta {
+  color: var(--text-dim);
+}
+
+.repertorio-item-titulo {
+  flex: 1;
+  font-weight: 500;
+}
+
+.repertorio-item-meta {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+}
+
+.repertorio-disponiveis {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.repertorio-disponivel-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+}
+

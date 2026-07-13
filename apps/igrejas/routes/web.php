@@ -27,6 +27,7 @@ use Igrejas\Controllers\PreletorController;
 use Igrejas\Controllers\ProjecaoController;
 use Igrejas\Controllers\ProjecaoEstadoController;
 use Igrejas\Controllers\RelatorioController;
+use Igrejas\Controllers\RepertorioController;
 use Igrejas\Controllers\TelaoController;
 use Igrejas\Controllers\UsuarioController;
 use Igrejas\Core\Middleware\AuthMiddleware;
@@ -125,6 +126,25 @@ $router->post('/dashboard/playbacks/{id}/excluir', [PlaybackController::class, '
 $router->get('/dashboard/louvores', [LouvorController::class, 'index'], [AuthMiddleware::class]);
 $router->get('/dashboard/louvores/novo', [LouvorController::class, 'create'], [AuthMiddleware::class]);
 $router->post('/dashboard/louvores', [LouvorController::class, 'store'], [AuthMiddleware::class]);
+
+// Programacao de culto (repertorio) - precisa vir ANTES de qualquer
+// "/dashboard/louvores/{id}" (GET ou POST, inclusive so 3 segmentos
+// como o de update abaixo), senao "repertorios" seria interpretado
+// como um {id} de louvor por essas rotas mais genericas.
+$router->get('/dashboard/louvores/repertorios', [RepertorioController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/louvores/repertorios/novo', [RepertorioController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/louvores/repertorios', [RepertorioController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/louvores/repertorios/{id}/editar', [RepertorioController::class, 'editor'], [AuthMiddleware::class]);
+$router->get('/dashboard/louvores/repertorios/{id}/culto', [RepertorioController::class, 'culto'], [AuthMiddleware::class]);
+$router->get('/dashboard/louvores/repertorios/{id}/estado', [RepertorioController::class, 'estado'], [AuthMiddleware::class]);
+$router->post('/dashboard/louvores/repertorios/{id}/itens', [RepertorioController::class, 'adicionarItem'], [AuthMiddleware::class]);
+$router->post('/dashboard/louvores/repertorios/{id}/itens/{itemId}/remover', [RepertorioController::class, 'removerItem'], [AuthMiddleware::class]);
+$router->post('/dashboard/louvores/repertorios/{id}/reordenar', [RepertorioController::class, 'reordenar'], [AuthMiddleware::class]);
+$router->post('/dashboard/louvores/repertorios/{id}/avancar', [RepertorioController::class, 'avancar'], [AuthMiddleware::class]);
+$router->post('/dashboard/louvores/repertorios/{id}/voltar', [RepertorioController::class, 'voltar'], [AuthMiddleware::class]);
+$router->post('/dashboard/louvores/repertorios/{id}/encerrar', [RepertorioController::class, 'encerrar'], [AuthMiddleware::class]);
+$router->post('/dashboard/louvores/repertorios/{id}/mensagens', [RepertorioController::class, 'mensagem'], [AuthMiddleware::class]);
+
 $router->get('/dashboard/louvores/{id}/editar', [LouvorController::class, 'edit'], [AuthMiddleware::class]);
 $router->get('/dashboard/louvores/{id}/tela-cheia', [LouvorController::class, 'telaCheia'], [AuthMiddleware::class]);
 $router->post('/dashboard/louvores/{id}', [LouvorController::class, 'update'], [AuthMiddleware::class]);
