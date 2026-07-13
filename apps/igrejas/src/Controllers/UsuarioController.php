@@ -56,7 +56,7 @@ final class UsuarioController extends Controller
             $this->redirect('/dashboard/usuarios/novo');
         }
 
-        $data = $this->request->only(['name', 'email', 'password', 'password_confirmacao', 'role']);
+        $data = $this->request->only(['name', 'email', 'password', 'password_confirmacao', 'role', 'musico']);
         $errors = $this->validate($data, null);
 
         if ($errors !== []) {
@@ -105,7 +105,7 @@ final class UsuarioController extends Controller
             $this->redirect("/dashboard/usuarios/{$id}/editar");
         }
 
-        $data = $this->request->only(['name', 'email', 'password', 'password_confirmacao', 'role', 'active']);
+        $data = $this->request->only(['name', 'email', 'password', 'password_confirmacao', 'role', 'active', 'musico']);
         $errors = $this->validate($data, $usuarioEditado);
 
         $souEuMesmo = $usuarioEditado->id === (new Auth($this->config))->user()?->id;

@@ -69,6 +69,25 @@ final class Playback
         ];
     }
 
+    /**
+     * Lista enxuta (id + titulo) dos playbacks ativos, usada no combo
+     * de "vincular áudio" do módulo Louvores - não precisa do objeto
+     * Playback inteiro, só o necessário pra popular um <select>.
+     *
+     * @return array<int, array{id: int, titulo: string}>
+     */
+    public static function listaParaSelect(): array
+    {
+        $stmt = Database::connection()->query(
+            "SELECT id, titulo FROM playbacks WHERE status = 'ativo' ORDER BY titulo ASC"
+        );
+
+        return array_map(
+            static fn (array $row): array => ['id' => (int) $row['id'], 'titulo' => (string) $row['titulo']],
+            $stmt->fetchAll()
+        );
+    }
+
     public static function find(int $id): ?self
     {
         $stmt = Database::connection()->prepare('SELECT * FROM playbacks WHERE id = :id LIMIT 1');

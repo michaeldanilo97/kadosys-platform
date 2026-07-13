@@ -45,6 +45,18 @@ final class User
      */
     public const SEM_ACESSO_PADRAO = '__membro_sem_acesso__';
 
+    /**
+     * Modulos que so ficam disponiveis pra 'admin' OU pra um usuario
+     * marcado como musico (ver campo "musico" abaixo) - diferente de
+     * MODULOS_SOMENTE_ADMIN, aqui um 'usuario' comum (sem a flag) fica
+     * de fora mesmo sem nenhuma restricao em user_modulos, ja que o
+     * modulo Louvores e pensado especificamente pro time de louvor, nao
+     * pra qualquer conta de acesso geral.
+     *
+     * @var array<int, string>
+     */
+    public const MODULOS_SOMENTE_MUSICO = ['louvores'];
+
     public function __construct(
         public readonly int $id,
         public readonly string $name,
@@ -52,13 +64,14 @@ final class User
         public readonly string $passwordHash,
         public readonly string $role,
         public readonly bool $active,
+        public readonly bool $musico = false,
     ) {
     }
 
     public static function findByEmail(string $email): ?self
     {
         $stmt = Database::connection()->prepare(
-            'SELECT id, name, email, password, role, active FROM users WHERE email = :email LIMIT 1'
+            'SELECT id, name, email, password, role, active, musico FROM users WHERE email = :email LIMIT 1'
         );
         $stmt->execute(['email' => $email]);
         $row = $stmt->fetch();
@@ -69,7 +82,7 @@ final class User
     public static function findById(int $id): ?self
     {
         $stmt = Database::connection()->prepare(
-            'SELECT id, name, email, password, role, active FROM users WHERE id = :id LIMIT 1'
+            'SELECT id, name, email, password, role, active, musico FROM users WHERE id = :id LIMIT 1'
         );
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch();
@@ -101,7 +114,7 @@ final class User
     public static function findByValidRememberToken(string $tokenHash): ?self
     {
         $stmt = Database::connection()->prepare(
-            'SELECT u.id, u.name, u.email, u.password, u.role, u.active
+            'SELECT u.id, u.name, u.email, u.password, u.role, u.active, u.musico
              FROM remember_tokens rt
              INNER JOIN users u ON u.id = rt.user_id
              WHERE rt.token_hash = :token_hash AND rt.expires_at > NOW()
@@ -144,7 +157,7 @@ final class User
      */
     public static function all(): array
     {
-        $stmt = Database::connection()->query('SELECT id, name, email, password, role, active FROM users ORDER BY name ASC');
+        $stmt = Database::connection()->query('SELECT id, name, email, password, role, active, musico FROM users ORDER BY name ASC');
 
         return array_map(self::fromRow(...), $stmt->fetchAll());
     }
@@ -181,8 +194,8 @@ final class User
     public static function create(array $data): int
     {
         $stmt = Database::connection()->prepare(
-            'INSERT INTO users (name, email, password, role, active, created_at)
-             VALUES (:name, :email, :password, :role, :active, NOW())'
+            'INSERT INTO users (name, email, password, role, active, musico, created_at)
+             VALUES (:name, :email, :password, :role, :active, :musico, NOW())'
         );
         $stmt->execute([
             'name' => trim((string) $data['name']),
@@ -190,6 +203,7 @@ final class User
             'password' => password_hash((string) $data['password'], PASSWORD_BCRYPT),
             'role' => in_array($data['role'] ?? null, [self::ROLE_ADMIN, self::ROLE_USUARIO], true) ? $data['role'] : self::ROLE_USUARIO,
             'active' => 1,
+            'musico' => !empty($data['musico']) ? 1 : 0,
         ]);
 
         return (int) Database::connection()->lastInsertId();
@@ -200,13 +214,14 @@ final class User
      */
     public function update(array $data): void
     {
-        $sql = 'UPDATE users SET name = :name, email = :email, role = :role, active = :active';
+        $sql = 'UPDATE users SET name = :name, email = :email, role = :role, active = :active, musico = :musico';
         $params = [
             'id' => $this->id,
             'name' => trim((string) $data['name']),
             'email' => trim((string) $data['email']),
             'role' => in_array($data['role'] ?? null, [self::ROLE_ADMIN, self::ROLE_USUARIO], true) ? $data['role'] : self::ROLE_USUARIO,
             'active' => !empty($data['active']) ? 1 : 0,
+            'musico' => !empty($data['musico']) ? 1 : 0,
         ];
 
         $novaSenha = (string) ($data['password'] ?? '');
@@ -293,6 +308,10 @@ final class User
             return false;
         }
 
+        if (in_array($slug, self::MODULOS_SOMENTE_MUSICO, true) && !$user->musico) {
+            return false;
+        }
+
         $modulosPermitidos = self::modulosPermitidos($user->id);
 
         return $modulosPermitidos === [] || in_array($slug, $modulosPermitidos, true);
@@ -307,6 +326,7 @@ final class User
             passwordHash: (string) $row['password'],
             role: (string) $row['role'],
             active: (bool) $row['active'],
+            musico: (bool) ($row['musico'] ?? false),
         );
     }
 }

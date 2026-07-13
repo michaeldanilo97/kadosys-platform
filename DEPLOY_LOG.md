@@ -17,6 +17,41 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 70 - 2026-07-13
+
+**Novo módulo: Louvores (letras, cifras e tons) + tag de músico**
+
+Novo módulo pro time de louvor: cadastro de louvores com letra, cifra,
+tom atual e um anexo opcional (PDF/imagem da cifra escrita à mão),
+podendo linkar um áudio já cadastrado em Playbacks. Toda vez que o tom
+de um louvor muda, fica registrado um histórico (quem mudou, quando e de
+qual tom pra qual) - resolve a bagunça de cada departamento mudar o tom
+e ninguém saber qual é o "oficial".
+
+Acesso ao módulo é liberado automaticamente pra usuários marcados como
+"Músico" na tela de Usuários (novo campo, ao lado de Papel) - sem
+precisar mexer em Permissões pra cada pessoa do time. Um usuário comum
+(sem essa marcação) continua sem acesso, mesmo que não tenha nenhuma
+restrição em Permissões (diferente dos outros módulos, que ficam
+liberados por padrão pra qualquer 'usuario' do plano contratado).
+
+Arquivos novos: `apps/igrejas/database/migrations/039_create_louvores_musico.sql`,
+`apps/igrejas/src/Models/Louvor.php`, `apps/igrejas/src/Models/LouvorTomHistorico.php`,
+`apps/igrejas/src/Controllers/LouvorController.php`,
+`apps/igrejas/resources/views/dashboard/louvores/{index,form,show}.php`.
+
+Arquivos alterados: `apps/igrejas/src/Models/User.php` (campo `musico`
++ regra de acesso), `apps/igrejas/src/Models/Playback.php` (lista
+enxuta pro combo de vincular áudio), `apps/igrejas/src/Controllers/UsuarioController.php`,
+`apps/igrejas/src/Controllers/DashboardController.php`,
+`apps/igrejas/src/Controllers/PermissaoController.php`,
+`apps/igrejas/routes/web.php`,
+`apps/igrejas/resources/views/dashboard/usuarios/{form,index}.php`,
+`apps/igrejas/public/assets/css/crud.css`.
+
+**IMPORTANTE:** rodar a migração 039 no banco de cada igreja depois do
+deploy (mesma regra das outras migrações de módulo).
+
 ## Ajuste 69 - 2026-07-13
 
 **Painel do operador: comandos de volume, mudo e reiniciar no vídeo**

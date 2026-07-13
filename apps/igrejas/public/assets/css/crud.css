@@ -486,6 +486,15 @@
   min-height: 100px;
 }
 
+/* Cifras (acordes sobre a letra) precisam de largura fixa por caractere
+   pra alinhar os acordes certinho acima da letra, como num editor de
+   texto simples - fonte proporcional bagunça o alinhamento visual. */
+.crud-field-mono,
+textarea.crud-field-mono {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
 /* ---- Combo de busca de livro (biblia-picker.js) ------------------------------- */
 
 .livro-combo {
