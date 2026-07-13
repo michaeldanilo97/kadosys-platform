@@ -31,7 +31,7 @@
 
       alvo.innerHTML = qr.createImgTag(6, 4, 'QR code Pix');
     } catch (erro) {
-      alvo.innerHTML = '<p class="auth-field-hint">Nao foi possivel gerar o QR code. Use o codigo "copia e cola" abaixo.</p>';
+      alvo.innerHTML = '<p class="auth-field-hint">Não foi possível gerar o QR code. Use o código "copia e cola" abaixo.</p>';
     }
   }
 

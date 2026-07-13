@@ -11,19 +11,19 @@ use Igrejas\Models\User;
  */
 $basePath = $config['base_path'] ?? '';
 
-$roleLabels = [User::ROLE_ADMIN => 'Administrador', User::ROLE_USUARIO => 'Usuario'];
+$roleLabels = [User::ROLE_ADMIN => 'Administrador', User::ROLE_USUARIO => 'Usuário'];
 ?>
 
 <div class="dash-page-head">
     <div>
-        <h1 class="dash-page-title">Usuarios</h1>
+        <h1 class="dash-page-title">Usuários</h1>
         <p class="dash-page-subtitle">
-            <?= count($usuarios) ?> usuario<?= count($usuarios) === 1 ? '' : 's' ?> com acesso ao sistema.
+            <?= count($usuarios) ?> usuário<?= count($usuarios) === 1 ? '' : 's' ?> com acesso ao sistema.
         </p>
     </div>
     <div class="dash-page-actions">
         <a href="<?= $basePath ?>/dashboard/usuarios/novo" class="btn-k btn-k-grad">
-            <i class="bi bi-person-plus"></i> Novo usuario
+            <i class="bi bi-person-plus"></i> Novo usuário
         </a>
     </div>
 </div>
@@ -37,11 +37,11 @@ $roleLabels = [User::ROLE_ADMIN => 'Administrador', User::ROLE_USUARIO => 'Usuar
         <table class="crud-table">
             <thead>
                 <tr>
-                    <th>Usuario</th>
+                    <th>Usuário</th>
                     <th>E-mail</th>
                     <th>Papel</th>
                     <th>Status</th>
-                    <th class="actions-col">Acoes</th>
+                    <th class="actions-col">Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -55,7 +55,7 @@ $roleLabels = [User::ROLE_ADMIN => 'Administrador', User::ROLE_USUARIO => 'Usuar
                                 <span>
                                     <?= htmlspecialchars($usuario->name, ENT_QUOTES, 'UTF-8') ?>
                                     <?php if ($usuario->id === $usuarioAtualId): ?>
-                                        <span class="crud-text-dim">(voce)</span>
+                                        <span class="crud-text-dim">(você)</span>
                                     <?php endif; ?>
                                 </span>
                             </div>
@@ -79,7 +79,7 @@ $roleLabels = [User::ROLE_ADMIN => 'Administrador', User::ROLE_USUARIO => 'Usuar
                                 <form
                                     method="POST"
                                     action="<?= $basePath ?>/dashboard/usuarios/<?= $usuario->id ?>/excluir"
-                                    data-confirm="Remover o usuario &quot;<?= htmlspecialchars($usuario->name, ENT_QUOTES, 'UTF-8') ?>&quot;?"
+                                    data-confirm="Remover o usuário &quot;<?= htmlspecialchars($usuario->name, ENT_QUOTES, 'UTF-8') ?>&quot;?"
                                 >
                                     <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
                                     <button

@@ -20,14 +20,14 @@ $statusLabels = ['agendado' => 'Agendado', 'realizado' => 'Realizado', 'cancelad
 
 <div class="dash-page-head">
     <div>
-        <h1 class="dash-page-title">Relatorios</h1>
-        <p class="dash-page-subtitle">Indicadores consolidados da igreja - referencia <?= $mesFormatado ?>.</p>
+        <h1 class="dash-page-title">Relatórios</h1>
+        <p class="dash-page-subtitle">Indicadores consolidados da igreja - referência <?= $mesFormatado ?>.</p>
     </div>
 </div>
 
 <form method="GET" action="<?= $basePath ?>/dashboard/relatorios" class="crud-filters">
     <input type="month" name="mes" value="<?= htmlspecialchars($mes, ENT_QUOTES, 'UTF-8') ?>">
-    <button type="submit" class="btn-k btn-k-ghost"><i class="bi bi-funnel"></i> Ver mes</button>
+    <button type="submit" class="btn-k btn-k-ghost"><i class="bi bi-funnel"></i> Ver mês</button>
 </form>
 
 <div class="kpi-grid">
@@ -43,28 +43,28 @@ $statusLabels = ['agendado' => 'Agendado', 'realizado' => 'Realizado', 'cancelad
             <div class="kpi-icon violet"><i class="bi bi-person-plus"></i></div>
         </div>
         <div class="value"><?= $novosMembrosNoMes ?></div>
-        <div class="label">Novos membros no mes</div>
+        <div class="label">Novos membros no mês</div>
     </div>
     <div class="kpi-card">
         <div class="kpi-top">
             <div class="kpi-icon cyan"><i class="bi bi-calendar2-week"></i></div>
         </div>
         <div class="value"><?= count($cultosDoMes) ?></div>
-        <div class="label">Cultos no mes</div>
+        <div class="label">Cultos no mês</div>
     </div>
     <div class="kpi-card">
         <div class="kpi-top">
             <div class="kpi-icon cyan"><i class="bi bi-graph-up"></i></div>
         </div>
         <div class="value"><?= number_format($mediaPresencas, 1, ',', '.') ?></div>
-        <div class="label">Media de presencas (realizados)</div>
+        <div class="label">Média de presenças (realizados)</div>
     </div>
     <div class="kpi-card">
         <div class="kpi-top">
             <div class="kpi-icon violet"><i class="bi bi-diagram-3"></i></div>
         </div>
         <div class="value"><?= $ministeriosAtivos ?></div>
-        <div class="label">Ministerios ativos</div>
+        <div class="label">Ministérios ativos</div>
     </div>
     <div class="kpi-card">
         <div class="kpi-top">
@@ -78,21 +78,21 @@ $statusLabels = ['agendado' => 'Agendado', 'realizado' => 'Realizado', 'cancelad
             <div class="kpi-icon green"><i class="bi bi-arrow-down-circle"></i></div>
         </div>
         <div class="value">R$ <?= number_format($financeiroTotais['entradas'], 2, ',', '.') ?></div>
-        <div class="label">Entradas do mes</div>
+        <div class="label">Entradas do mês</div>
     </div>
     <div class="kpi-card">
         <div class="kpi-top">
             <div class="kpi-icon red"><i class="bi bi-arrow-up-circle"></i></div>
         </div>
         <div class="value">R$ <?= number_format($financeiroTotais['saidas'], 2, ',', '.') ?></div>
-        <div class="label">Saidas do mes</div>
+        <div class="label">Saídas do mês</div>
     </div>
     <div class="kpi-card">
         <div class="kpi-top">
             <div class="kpi-icon <?= $financeiroTotais['saldo'] >= 0 ? 'blue' : 'red' ?>"><i class="bi bi-wallet2"></i></div>
         </div>
         <div class="value">R$ <?= number_format($financeiroTotais['saldo'], 2, ',', '.') ?></div>
-        <div class="label">Saldo do mes</div>
+        <div class="label">Saldo do mês</div>
     </div>
     <div class="kpi-card">
         <div class="kpi-top">
@@ -109,7 +109,7 @@ $statusLabels = ['agendado' => 'Agendado', 'realizado' => 'Realizado', 'cancelad
             <h2><i class="bi bi-cash-coin"></i> Financeiro por categoria</h2>
         </div>
         <?php if ($financeiroPorCategoria === []): ?>
-            <p class="crud-text-dim">Nenhum lancamento financeiro neste mes.</p>
+            <p class="crud-text-dim">Nenhum lançamento financeiro neste mês.</p>
         <?php else: ?>
             <div class="crud-table-wrapper">
                 <table class="crud-table">
@@ -126,7 +126,7 @@ $statusLabels = ['agendado' => 'Agendado', 'realizado' => 'Realizado', 'cancelad
                                 <td><?= htmlspecialchars($linha['categoria'], ENT_QUOTES, 'UTF-8') ?></td>
                                 <td>
                                     <span class="status-badge <?= $linha['tipo'] === 'entrada' ? 'is-entrada' : 'is-saida' ?>">
-                                        <?= $linha['tipo'] === 'entrada' ? 'Entrada' : 'Saida' ?>
+                                        <?= $linha['tipo'] === 'entrada' ? 'Entrada' : 'Saída' ?>
                                     </span>
                                 </td>
                                 <td>R$ <?= number_format($linha['total'], 2, ',', '.') ?></td>
@@ -140,10 +140,10 @@ $statusLabels = ['agendado' => 'Agendado', 'realizado' => 'Realizado', 'cancelad
 
     <div class="dash-panel">
         <div class="dash-panel-head">
-            <h2><i class="bi bi-calendar2-week"></i> Cultos do mes</h2>
+            <h2><i class="bi bi-calendar2-week"></i> Cultos do mês</h2>
         </div>
         <?php if ($cultosDoMes === []): ?>
-            <p class="crud-text-dim">Nenhum culto cadastrado neste mes.</p>
+            <p class="crud-text-dim">Nenhum culto cadastrado neste mês.</p>
         <?php else: ?>
             <div class="crud-table-wrapper">
                 <table class="crud-table">

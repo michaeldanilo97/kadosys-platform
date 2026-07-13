@@ -41,77 +41,77 @@ final class DashboardController extends Controller
             'membros' => [
                 'title' => 'Membros',
                 'icon' => 'bi-people',
-                'description' => 'Cadastro, historico e acompanhamento dos membros da igreja.',
+                'description' => 'Cadastro, histórico e acompanhamento dos membros da igreja.',
             ],
             'ministerios' => [
-                'title' => 'Ministerios',
+                'title' => 'Ministérios',
                 'icon' => 'bi-diagram-3',
-                'description' => 'Organizacao dos ministerios e seus respectivos lideres e voluntarios.',
+                'description' => 'Organização dos ministérios e seus respectivos líderes e voluntários.',
             ],
             'grupos' => [
                 'title' => 'Grupos',
                 'icon' => 'bi-people-fill',
-                'description' => 'Pequenos grupos, celulas e classes, com encontros e participantes.',
+                'description' => 'Pequenos grupos, células e classes, com encontros e participantes.',
             ],
             'cultos' => [
                 'title' => 'Cultos',
                 'icon' => 'bi-calendar2-week',
-                'description' => 'Programacao, escalas e registro de frequencia dos cultos.',
+                'description' => 'Programação, escalas e registro de frequência dos cultos.',
             ],
             'projecao' => [
-                'title' => 'Projecao',
+                'title' => 'Projeção',
                 'icon' => 'bi-easel2',
-                'description' => 'Telao do culto: biblia, videos e controle do preletor em tempo real.',
+                'description' => 'Telão do culto: bíblia, vídeos e controle do preletor em tempo real.',
             ],
             'playbacks' => [
                 'title' => 'Playbacks',
                 'icon' => 'bi-music-note-beamed',
-                'description' => 'Biblioteca de playbacks para o ministerio de louvor, liberada em todos os planos.',
+                'description' => 'Biblioteca de playbacks para o ministério de louvor, liberada em todos os planos.',
             ],
             'agenda' => [
                 'title' => 'Agenda',
                 'icon' => 'bi-calendar3',
-                'description' => 'Eventos, compromissos e reserva de espacos da igreja.',
+                'description' => 'Eventos, compromissos e reserva de espaços da igreja.',
             ],
             'financeiro' => [
                 'title' => 'Financeiro',
                 'icon' => 'bi-cash-coin',
-                'description' => 'Dizimos, ofertas, despesas e relatorios financeiros.',
+                'description' => 'Dízimos, ofertas, despesas e relatórios financeiros.',
             ],
             'patrimonio' => [
-                'title' => 'Patrimonio',
+                'title' => 'Patrimônio',
                 'icon' => 'bi-building',
-                'description' => 'Controle de bens, imoveis e equipamentos da igreja.',
+                'description' => 'Controle de bens, imóveis e equipamentos da igreja.',
             ],
             'comunicacao' => [
-                'title' => 'Comunicacao',
+                'title' => 'Comunicação',
                 'icon' => 'bi-megaphone',
-                'description' => 'Avisos, mensagens e comunicados para membros e lideranca.',
+                'description' => 'Avisos, mensagens e comunicados para membros e liderança.',
             ],
             'relatorios' => [
-                'title' => 'Relatorios',
+                'title' => 'Relatórios',
                 'icon' => 'bi-bar-chart-line',
-                'description' => 'Indicadores e relatorios consolidados da igreja.',
+                'description' => 'Indicadores e relatórios consolidados da igreja.',
             ],
             'usuarios' => [
-                'title' => 'Usuarios',
+                'title' => 'Usuários',
                 'icon' => 'bi-person-badge',
-                'description' => 'Gestao dos usuarios com acesso ao sistema.',
+                'description' => 'Gestão dos usuários com acesso ao sistema.',
             ],
             'permissoes' => [
-                'title' => 'Permissoes',
+                'title' => 'Permissões',
                 'icon' => 'bi-shield-lock',
-                'description' => 'Perfis de acesso e permissoes por modulo.',
+                'description' => 'Perfis de acesso e permissões por módulo.',
             ],
             'configuracoes' => [
-                'title' => 'Configuracoes',
+                'title' => 'Configurações',
                 'icon' => 'bi-gear',
-                'description' => 'Dados da igreja, preferencias e configuracoes gerais do sistema.',
+                'description' => 'Dados da igreja, preferências e configurações gerais do sistema.',
             ],
             'faturas' => [
                 'title' => 'Faturas',
                 'icon' => 'bi-receipt-cutoff',
-                'description' => 'Historico de cobrancas, vencimento e pagamento do plano contratado.',
+                'description' => 'Histórico de cobranças, vencimento e pagamento do plano contratado.',
             ],
         ];
 
@@ -154,9 +154,9 @@ final class DashboardController extends Controller
             http_response_code(404);
 
             echo $this->view('errors.404', [
-                'pageTitle' => 'Pagina nao encontrada - KADOSYS Igrejas',
+                'pageTitle' => 'Página não encontrada - KADOSYS Igrejas',
                 'activeMenu' => '',
-                'breadcrumb' => ['Dashboard', 'Pagina nao encontrada'],
+                'breadcrumb' => ['Dashboard', 'Página não encontrada'],
                 'user' => (new Auth($this->config))->user(),
                 'modules' => $modules,
             ], 'dashboard');

@@ -40,7 +40,7 @@
         return;
       }
 
-      definirStatus('Buscando endereco...');
+      definirStatus('Buscando endereço...');
 
       fetch('https://viacep.com.br/ws/' + digitos + '/json/')
         .then(function (resposta) {
@@ -48,7 +48,7 @@
         })
         .then(function (dados) {
           if (dados.erro) {
-            definirStatus('CEP nao encontrado - preencha o endereco manualmente.');
+            definirStatus('CEP não encontrado - preencha o endereço manualmente.');
 
             return;
           }
@@ -65,10 +65,10 @@
             estadoInput.value = dados.uf || estadoInput.value;
           }
 
-          definirStatus('Endereco preenchido automaticamente.');
+          definirStatus('Endereço preenchido automaticamente.');
         })
         .catch(function () {
-          definirStatus('Nao foi possivel buscar o CEP agora - preencha o endereco manualmente.');
+          definirStatus('Não foi possível buscar o CEP agora - preencha o endereço manualmente.');
         });
     });
   }

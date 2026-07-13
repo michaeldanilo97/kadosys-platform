@@ -7,9 +7,9 @@
 $basePath = $config['base_path'] ?? '';
 ?>
 <div class="auth-form-card">
-    <div class="eyebrow">Recuperacao de acesso</div>
+    <div class="eyebrow">Recuperação de acesso</div>
     <h1>Esqueci minha senha</h1>
-    <p class="subtitle">Informe seu e-mail de acesso. Enviaremos as instrucoes de recuperacao.</p>
+    <p class="subtitle">Informe seu e-mail de acesso. Enviaremos as instruções de recuperação.</p>
 
     <?php if (!empty($status)): ?>
         <div class="auth-alert success"><?= htmlspecialchars($status, ENT_QUOTES, 'UTF-8') ?></div>
@@ -32,7 +32,7 @@ $basePath = $config['base_path'] ?? '';
             >
         </div>
 
-        <button type="submit" class="btn-k btn-k-grad">Enviar instrucoes <i class="bi bi-send"></i></button>
+        <button type="submit" class="btn-k btn-k-grad">Enviar instruções <i class="bi bi-send"></i></button>
     </form>
 
     <a href="<?= $basePath ?>/login" class="auth-back-link">

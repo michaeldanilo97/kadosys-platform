@@ -104,7 +104,7 @@ $basePath = $config['base_path'] ?? '';
                         <?= ($old['documento_tipo'] ?? 'cpf') === 'cpf' ? 'checked' : '' ?>
                     >
                     <span class="nome">CPF</span>
-                    <span class="desc">Pessoa fisica</span>
+                    <span class="desc">Pessoa física</span>
                 </label>
                 <label class="plano-escolha-card" data-plano-card>
                     <input
@@ -115,7 +115,7 @@ $basePath = $config['base_path'] ?? '';
                         <?= ($old['documento_tipo'] ?? '') === 'cnpj' ? 'checked' : '' ?>
                     >
                     <span class="nome">CNPJ</span>
-                    <span class="desc">Pessoa juridica</span>
+                    <span class="desc">Pessoa jurídica</span>
                 </label>
             </div>
         </div>
@@ -135,17 +135,17 @@ $basePath = $config['base_path'] ?? '';
                     data-documento-input
                     required
                 >
-                <span class="auth-field-hint">Usado so para evitar abuso do teste gratis - seus dados ficam seguros.</span>
+                <span class="auth-field-hint">Usado só para evitar abuso do teste grátis - seus dados ficam seguros.</span>
             </div>
             <div class="auth-field" data-razao-social-field hidden>
-                <label for="razao_social">Razao social</label>
+                <label for="razao_social">Razão social</label>
                 <input
                     type="text"
                     class="form-control"
                     id="razao_social"
                     name="razao_social"
                     value="<?= htmlspecialchars($old['razao_social'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                    placeholder="Razao social da igreja/instituicao"
+                    placeholder="Razão social da igreja/instituição"
                     autocomplete="organization"
                     data-razao-social-input
                 >
@@ -173,7 +173,7 @@ $basePath = $config['base_path'] ?? '';
                 <span class="auth-field-hint" data-cep-status></span>
             </div>
             <div class="auth-field">
-                <label for="numero">Numero</label>
+                <label for="numero">Número</label>
                 <input
                     type="text"
                     class="form-control"
@@ -187,7 +187,7 @@ $basePath = $config['base_path'] ?? '';
         </div>
 
         <div class="auth-field">
-            <label for="endereco">Endereco</label>
+            <label for="endereco">Endereço</label>
             <input
                 type="text"
                 class="form-control"
@@ -236,7 +236,7 @@ $basePath = $config['base_path'] ?? '';
                     class="form-control"
                     id="senha"
                     name="senha"
-                    placeholder="Minimo 8 caracteres"
+                    placeholder="Mínimo 8 caracteres"
                     autocomplete="new-password"
                     minlength="8"
                     required
@@ -274,7 +274,7 @@ $basePath = $config['base_path'] ?? '';
                     </label>
                 <?php endforeach; ?>
             </div>
-            <span class="auth-field-hint">Sua igreja e uma rede com necessidades especiais? <a href="mailto:contato@kadosys.com.br">Fale com a gente</a>.</span>
+            <span class="auth-field-hint">Sua igreja é uma rede com necessidades especiais? <a href="mailto:contato@kadosys.com.br">Fale com a gente</a>.</span>
         </div>
 
         <div class="auth-field">
@@ -287,8 +287,8 @@ $basePath = $config['base_path'] ?? '';
                         value="cartao"
                         <?= ($old['metodo_pagamento'] ?? 'cartao') === 'cartao' ? 'checked' : '' ?>
                     >
-                    <span class="nome"><i class="bi bi-credit-card"></i> Cartao</span>
-                    <span class="desc">Cobranca automatica todo mes</span>
+                    <span class="nome"><i class="bi bi-credit-card"></i> Cartão</span>
+                    <span class="desc">Cobrança automática todo mês</span>
                 </label>
                 <label class="plano-escolha-card" data-plano-card>
                     <input
@@ -298,7 +298,7 @@ $basePath = $config['base_path'] ?? '';
                         <?= ($old['metodo_pagamento'] ?? '') === 'pix' ? 'checked' : '' ?>
                     >
                     <span class="nome"><i class="bi bi-qr-code"></i> Pix</span>
-                    <span class="desc">Fatura nova todo mes, paga na hora</span>
+                    <span class="desc">Fatura nova todo mês, paga na hora</span>
                 </label>
                 <label class="plano-escolha-card" data-plano-card>
                     <input
@@ -307,8 +307,8 @@ $basePath = $config['base_path'] ?? '';
                         value="trial"
                         <?= ($old['metodo_pagamento'] ?? '') === 'trial' ? 'checked' : '' ?>
                     >
-                    <span class="nome"><i class="bi bi-gift"></i> Teste gratis</span>
-                    <span class="desc">7 dias gratis, sem cartao</span>
+                    <span class="nome"><i class="bi bi-gift"></i> Teste grátis</span>
+                    <span class="desc">7 dias grátis, sem cartão</span>
                 </label>
             </div>
         </div>
@@ -317,7 +317,7 @@ $basePath = $config['base_path'] ?? '';
     </form>
 
     <a href="<?= $basePath ?>/login" class="auth-back-link">
-        <i class="bi bi-arrow-left"></i> Ja tenho uma conta - entrar
+        <i class="bi bi-arrow-left"></i> Já tenho uma conta - entrar
     </a>
 </div>
 

@@ -16,8 +16,8 @@ $basePath = $config['base_path'] ?? '';
 $formasPagamento = [
     'dinheiro' => 'Dinheiro',
     'pix' => 'Pix',
-    'cartao' => 'Cartao',
-    'transferencia' => 'Transferencia',
+    'cartao' => 'Cartão',
+    'transferencia' => 'Transferência',
     'boleto' => 'Boleto',
     'outro' => 'Outro',
 ];
@@ -34,7 +34,7 @@ $queryPersistente = array_filter([
     <div>
         <h1 class="dash-page-title">Financeiro</h1>
         <p class="dash-page-subtitle">
-            <?= $total ?> lancamento<?= $total === 1 ? '' : 's' ?> no periodo filtrado.
+            <?= $total ?> lançamento<?= $total === 1 ? '' : 's' ?> no período filtrado.
         </p>
     </div>
     <div class="dash-page-actions">
@@ -57,21 +57,21 @@ $queryPersistente = array_filter([
             <div class="kpi-icon green"><i class="bi bi-arrow-down-circle"></i></div>
         </div>
         <div class="value">R$ <?= number_format($totais['entradas'], 2, ',', '.') ?></div>
-        <div class="label">Entradas no periodo</div>
+        <div class="label">Entradas no período</div>
     </div>
     <div class="kpi-card">
         <div class="kpi-top">
             <div class="kpi-icon red"><i class="bi bi-arrow-up-circle"></i></div>
         </div>
         <div class="value">R$ <?= number_format($totais['saidas'], 2, ',', '.') ?></div>
-        <div class="label">Saidas no periodo</div>
+        <div class="label">Saídas no período</div>
     </div>
     <div class="kpi-card">
         <div class="kpi-top">
             <div class="kpi-icon <?= $totais['saldo'] >= 0 ? 'blue' : 'red' ?>"><i class="bi bi-wallet2"></i></div>
         </div>
         <div class="value">R$ <?= number_format($totais['saldo'], 2, ',', '.') ?></div>
-        <div class="label">Saldo do periodo</div>
+        <div class="label">Saldo do período</div>
     </div>
 </div>
 
@@ -79,9 +79,9 @@ $queryPersistente = array_filter([
     <form method="GET" action="<?= $basePath ?>/dashboard/financeiro" class="crud-filters">
         <input type="month" name="mes" value="<?= htmlspecialchars($filtros['mes'], ENT_QUOTES, 'UTF-8') ?>">
         <select name="tipo">
-            <option value="">Entradas e saidas</option>
-            <option value="entrada" <?= $filtros['tipo'] === 'entrada' ? 'selected' : '' ?>>So entradas</option>
-            <option value="saida" <?= $filtros['tipo'] === 'saida' ? 'selected' : '' ?>>So saidas</option>
+            <option value="">Entradas e saídas</option>
+            <option value="entrada" <?= $filtros['tipo'] === 'entrada' ? 'selected' : '' ?>>Só entradas</option>
+            <option value="saida" <?= $filtros['tipo'] === 'saida' ? 'selected' : '' ?>>Só saídas</option>
         </select>
         <select name="categoria_id">
             <option value="">Todas as categorias</option>
@@ -93,7 +93,7 @@ $queryPersistente = array_filter([
         </select>
         <div class="crud-search">
             <i class="bi bi-search"></i>
-            <input type="search" name="busca" value="<?= htmlspecialchars($filtros['busca'], ENT_QUOTES, 'UTF-8') ?>" placeholder="Buscar por descricao...">
+            <input type="search" name="busca" value="<?= htmlspecialchars($filtros['busca'], ENT_QUOTES, 'UTF-8') ?>" placeholder="Buscar por descrição...">
         </div>
         <button type="submit" class="btn-k btn-k-ghost"><i class="bi bi-funnel"></i> Filtrar</button>
         <a href="<?= $basePath ?>/dashboard/financeiro" class="btn-k btn-k-ghost">Limpar</a>
@@ -102,8 +102,8 @@ $queryPersistente = array_filter([
     <?php if ($lancamentos === []): ?>
         <div class="crud-empty">
             <div class="icon"><i class="bi bi-cash-coin"></i></div>
-            <h2>Nenhum lancamento encontrado</h2>
-            <p>Ajuste os filtros ou cadastre o primeiro lancamento do periodo.</p>
+            <h2>Nenhum lançamento encontrado</h2>
+            <p>Ajuste os filtros ou cadastre o primeiro lançamento do período.</p>
             <a href="<?= $basePath ?>/dashboard/financeiro/novo" class="btn-k btn-k-grad">
                 <i class="bi bi-plus-lg"></i> Novo lancamento
             </a>
@@ -114,12 +114,12 @@ $queryPersistente = array_filter([
                 <thead>
                     <tr>
                         <th>Data</th>
-                        <th>Descricao</th>
+                        <th>Descrição</th>
                         <th>Categoria</th>
                         <th>Tipo</th>
                         <th>Forma</th>
                         <th>Valor</th>
-                        <th class="actions-col">Acoes</th>
+                        <th class="actions-col">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -139,7 +139,7 @@ $queryPersistente = array_filter([
                             </td>
                             <td>
                                 <span class="status-badge <?= $lancamento->tipo === 'entrada' ? 'is-entrada' : 'is-saida' ?>">
-                                    <?= $lancamento->tipo === 'entrada' ? 'Entrada' : 'Saida' ?>
+                                    <?= $lancamento->tipo === 'entrada' ? 'Entrada' : 'Saída' ?>
                                 </span>
                             </td>
                             <td><?= htmlspecialchars($formasPagamento[$lancamento->formaPagamento] ?? $lancamento->formaPagamento, ENT_QUOTES, 'UTF-8') ?></td>
@@ -150,17 +150,17 @@ $queryPersistente = array_filter([
                                 <a
                                     href="<?= $basePath ?>/dashboard/financeiro/<?= $lancamento->id ?>/editar"
                                     class="crud-icon-btn"
-                                    aria-label="Editar lancamento"
+                                    aria-label="Editar lançamento"
                                 >
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 <form
                                     method="POST"
                                     action="<?= $basePath ?>/dashboard/financeiro/<?= $lancamento->id ?>/excluir"
-                                    data-confirm="Remover este lancamento?"
+                                    data-confirm="Remover este lançamento?"
                                 >
                                     <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
-                                    <button type="submit" class="crud-icon-btn danger" aria-label="Excluir lancamento">
+                                    <button type="submit" class="crud-icon-btn danger" aria-label="Excluir lançamento">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>

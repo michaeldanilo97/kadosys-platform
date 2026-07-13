@@ -48,7 +48,7 @@ final class DoacaoController extends Controller
         }
 
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('doacao_errors', ['Sessao expirada. Preencha o formulario novamente.']);
+            Session::flash('doacao_errors', ['Sessão expirada. Preencha o formulário novamente.']);
             $this->redirect('/doar');
         }
 
@@ -80,7 +80,7 @@ final class DoacaoController extends Controller
         if (!$doacao) {
             http_response_code(404);
             echo $this->view('doacao.nao-encontrada', [
-                'pageTitle' => 'Doacao nao encontrada',
+                'pageTitle' => 'Doação não encontrada',
             ], 'auth');
 
             return;
@@ -128,13 +128,13 @@ final class DoacaoController extends Controller
         $valor = (float) str_replace(',', '.', (string) ($data['valor'] ?? '0'));
 
         if ($valor <= 0) {
-            $errors[] = 'Informe um valor valido para a doacao.';
+            $errors[] = 'Informe um valor válido para a doação.';
         }
 
         $categoriaId = trim((string) ($data['categoria_id'] ?? ''));
 
         if ($categoriaId !== '' && !FinanceiroCategoria::find((int) $categoriaId)) {
-            $errors[] = 'Categoria invalida.';
+            $errors[] = 'Categoria inválida.';
         }
 
         return $errors;

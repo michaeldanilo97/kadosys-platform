@@ -51,12 +51,12 @@ $statusAssinaturaLabel = [
     </div>
     <?php if ($emTrial): ?>
         <p class="dash-page-subtitle" style="margin-bottom: 0.6rem;">
-            Voce esta no teste gratis, com todos os modulos liberados<?php if ($tenant->trialExpiraEm !== null): ?> ate <strong><?= (new DateTimeImmutable($tenant->trialExpiraEm))->format('d/m/Y') ?></strong><?php endif; ?>.
+            Você está no teste grátis, com todos os módulos liberados<?php if ($tenant->trialExpiraEm !== null): ?> até <strong><?= (new DateTimeImmutable($tenant->trialExpiraEm))->format('d/m/Y') ?></strong><?php endif; ?>.
             Escolha um plano abaixo para continuar usando o sistema depois do teste.
         </p>
     <?php else: ?>
         <p class="dash-page-subtitle" style="margin-bottom: 0.6rem;">
-            Define quais modulos ficam disponiveis no menu lateral. Plano atual:
+            Define quais módulos ficam disponíveis no menu lateral. Plano atual:
             <strong><?= htmlspecialchars(Plano::label($configuracao->plano), ENT_QUOTES, 'UTF-8') ?></strong>.
             <?php if ($assinatura !== null): ?>
                 <span class="plano-status-badge plano-status-<?= htmlspecialchars($assinatura->status, ENT_QUOTES, 'UTF-8') ?>">
@@ -74,7 +74,7 @@ $statusAssinaturaLabel = [
     <?php elseif (!$pagamentoConfigurado): ?>
         <div class="crud-alert" style="background: rgba(212, 161, 63, 0.1); border-color: rgba(212, 161, 63, 0.35); color: #d4a13f;">
             <i class="bi bi-info-circle"></i>
-            Pagamento online ainda nao foi configurado neste servidor. Fale com o suporte para habilitar a assinatura automatica.
+            Pagamento online ainda não foi configurado neste servidor. Fale com o suporte para habilitar a assinatura automática.
         </div>
     <?php endif; ?>
 
@@ -91,7 +91,7 @@ $statusAssinaturaLabel = [
             ?>
             <div class="plano-assinar-card<?= $ehPlanoAtual ? ' atual' : '' ?>">
                 <strong><?= htmlspecialchars(Plano::label($valor), ENT_QUOTES, 'UTF-8') ?></strong>
-                <span class="preco">R$ <?= number_format($preco, 2, ',', '.') ?><small>/mes</small></span>
+                <span class="preco">R$ <?= number_format($preco, 2, ',', '.') ?><small>/mês</small></span>
                 <?php if ($ehPlanoAtual): ?>
                     <span class="plano-assinar-atual-tag">Plano atual</span>
                 <?php elseif (!$permiteAlterarPlano): ?>
@@ -100,7 +100,7 @@ $statusAssinaturaLabel = [
                         <i class="bi bi-clock-history"></i> Agendado para <?= (new DateTimeImmutable($tenant->proximoVencimento))->format('d/m/Y') ?>
                     </span>
                 <?php elseif ($ehDowngrade): ?>
-                    <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/assinatura/<?= htmlspecialchars($valor, ENT_QUOTES, 'UTF-8') ?>" data-confirm="O plano so muda no fim do ciclo atual (<?= (new DateTimeImmutable($tenant->proximoVencimento))->format('d/m/Y') ?>), sem reembolso do que ja foi pago. Confirma?">
+                    <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/assinatura/<?= htmlspecialchars($valor, ENT_QUOTES, 'UTF-8') ?>" data-confirm="O plano só muda no fim do ciclo atual (<?= (new DateTimeImmutable($tenant->proximoVencimento))->format('d/m/Y') ?>), sem reembolso do que já foi pago. Confirma?">
                         <?= $csrf ?>
                         <button type="submit" class="btn-k btn-k-ghost">
                             <i class="bi bi-arrow-down-circle"></i> Agendar downgrade
@@ -113,7 +113,7 @@ $statusAssinaturaLabel = [
                         <button type="submit" class="btn-k btn-k-grad" <?= $pagamentoConfigurado ? '' : 'disabled' ?>>
                             <i class="bi bi-qr-code"></i> Upgrade agora - R$ <?= number_format($valorProporcional, 2, ',', '.') ?>
                         </button>
-                        <span class="plano-assinar-hint">Valor proporcional aos dias restantes do seu ciclo atual, via Pix. O valor cheio passa a valer so no proximo ciclo.</span>
+                        <span class="plano-assinar-hint">Valor proporcional aos dias restantes do seu ciclo atual, via Pix. O valor cheio passa a valer só no próximo ciclo.</span>
                     </form>
                 <?php else: ?>
                     <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/assinatura/<?= htmlspecialchars($valor, ENT_QUOTES, 'UTF-8') ?>">
@@ -122,7 +122,7 @@ $statusAssinaturaLabel = [
                             <div class="plano-assinar-metodo">
                                 <label>
                                     <input type="radio" name="metodo_pagamento" value="cartao" checked>
-                                    Cartao
+                                    Cartão
                                 </label>
                                 <label>
                                     <input type="radio" name="metodo_pagamento" value="pix">

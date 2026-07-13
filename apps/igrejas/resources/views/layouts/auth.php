@@ -35,7 +35,7 @@ $basePath = $config['base_path'] ?? '';
 
         <div class="auth-aside-quote">
             <span class="eyebrow">Plataforma inteligente</span>
-            <h2>A gestao da sua igreja, <span class="text-gradient">conectada ao futuro</span>.</h2>
+            <h2>A gestão da sua igreja, <span class="text-gradient">conectada ao futuro</span>.</h2>
             <div class="auth-aside-points">
                 <div><i class="bi bi-shield-check"></i> Dados exclusivos da sua igreja</div>
                 <div><i class="bi bi-cloud-check"></i> Acesso de qualquer lugar</div>

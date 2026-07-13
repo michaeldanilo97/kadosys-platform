@@ -32,26 +32,26 @@ final class AssinaturaController extends Controller
     public function iniciar(string $plano): void
     {
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('config_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('config_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect('/dashboard/configuracoes');
         }
 
         if (!isset(Plano::VALOR_MENSAL[$plano])) {
-            Session::flash('config_errors', ['Esse plano nao tem assinatura automatica disponivel.']);
+            Session::flash('config_errors', ['Esse plano não tem assinatura automática disponível.']);
             $this->redirect('/dashboard/configuracoes');
         }
 
         $mp = new MercadoPagoClient();
 
         if (!$mp->configurado()) {
-            Session::flash('config_errors', ['Pagamento online ainda nao foi configurado neste servidor. Fale com o suporte.']);
+            Session::flash('config_errors', ['Pagamento online ainda não foi configurado neste servidor. Fale com o suporte.']);
             $this->redirect('/dashboard/configuracoes');
         }
 
         $mpConfig = require dirname(__DIR__, 2) . '/config/mercadopago.php';
 
         if ($mpConfig['app_url'] === '') {
-            Session::flash('config_errors', ['A variavel de ambiente APP_URL nao foi configurada no servidor (necessaria para o retorno do pagamento).']);
+            Session::flash('config_errors', ['A variável de ambiente APP_URL não foi configurada no servidor (necessária para o retorno do pagamento).']);
             $this->redirect('/dashboard/configuracoes');
         }
 
@@ -107,13 +107,13 @@ final class AssinaturaController extends Controller
             ]);
         } catch (\RuntimeException $exception) {
             Assinatura::registrarEvento(null, 'erro_criar_assinatura', $exception->getMessage());
-            Session::flash('config_errors', ['Nao foi possivel iniciar o pagamento agora. Tente novamente em instantes.']);
+            Session::flash('config_errors', ['Não foi possível iniciar o pagamento agora. Tente novamente em instantes.']);
             $this->redirect('/dashboard/configuracoes');
         }
 
         if ($resposta['status'] >= 300 || !isset($resposta['body']['init_point'], $resposta['body']['id'])) {
             Assinatura::registrarEvento(null, 'erro_criar_assinatura', json_encode($resposta, JSON_UNESCAPED_UNICODE));
-            Session::flash('config_errors', ['O Mercado Pago recusou a criacao da assinatura. Tente novamente.']);
+            Session::flash('config_errors', ['O Mercado Pago recusou a criação da assinatura. Tente novamente.']);
             $this->redirect('/dashboard/configuracoes');
         }
 
@@ -167,7 +167,7 @@ final class AssinaturaController extends Controller
         $tenant = TenantResolver::atual();
 
         if ($tenant === null) {
-            Session::flash('config_errors', ['Pagamento via Pix nao esta disponivel pra esta conta. Use cartao.']);
+            Session::flash('config_errors', ['Pagamento via Pix não está disponível pra esta conta. Use cartão.']);
             $this->redirect('/dashboard/configuracoes');
         }
 
@@ -184,7 +184,7 @@ final class AssinaturaController extends Controller
             ]);
         } catch (\RuntimeException $exception) {
             Assinatura::registrarEvento(null, 'erro_criar_pagamento_pix', $exception->getMessage());
-            Session::flash('config_errors', ['Nao foi possivel gerar a cobranca Pix agora. Tente novamente em instantes.']);
+            Session::flash('config_errors', ['Não foi possível gerar a cobrança Pix agora. Tente novamente em instantes.']);
             $this->redirect('/dashboard/configuracoes');
         }
 
@@ -193,7 +193,7 @@ final class AssinaturaController extends Controller
 
         if ($resposta['status'] >= 300 || !isset($resposta['body']['id']) || $qrCode === null) {
             Assinatura::registrarEvento(null, 'erro_criar_pagamento_pix', json_encode($resposta, JSON_UNESCAPED_UNICODE));
-            Session::flash('config_errors', ['O Mercado Pago recusou a cobranca Pix. Tente novamente.']);
+            Session::flash('config_errors', ['O Mercado Pago recusou a cobrança Pix. Tente novamente.']);
             $this->redirect('/dashboard/configuracoes');
         }
 
@@ -245,7 +245,7 @@ final class AssinaturaController extends Controller
         Tenant::agendarTrocaPlano($tenant->id, $novoPlano);
 
         Session::flash('config_success', sprintf(
-            'Seu plano vai mudar de %s para %s a partir de %s (fim do ciclo ja pago) - ate la, os modulos do plano %s continuam liberados normalmente.',
+            'Seu plano vai mudar de %s para %s a partir de %s (fim do ciclo já pago) - até lá, os módulos do plano %s continuam liberados normalmente.',
             Plano::label($tenant->plano),
             Plano::label($novoPlano),
             $vencimentoCiclo->format('d/m/Y'),
@@ -288,7 +288,7 @@ final class AssinaturaController extends Controller
             ]);
         } catch (\RuntimeException $exception) {
             Assinatura::registrarEvento(null, 'erro_criar_pagamento_pix_upgrade', $exception->getMessage());
-            Session::flash('config_errors', ['Nao foi possivel gerar a cobranca do upgrade agora. Tente novamente em instantes.']);
+            Session::flash('config_errors', ['Não foi possível gerar a cobrança do upgrade agora. Tente novamente em instantes.']);
             $this->redirect('/dashboard/configuracoes');
         }
 
@@ -297,7 +297,7 @@ final class AssinaturaController extends Controller
 
         if ($resposta['status'] >= 300 || !isset($resposta['body']['id']) || $qrCode === null) {
             Assinatura::registrarEvento(null, 'erro_criar_pagamento_pix_upgrade', json_encode($resposta, JSON_UNESCAPED_UNICODE));
-            Session::flash('config_errors', ['O Mercado Pago recusou a cobranca do upgrade. Tente novamente.']);
+            Session::flash('config_errors', ['O Mercado Pago recusou a cobrança do upgrade. Tente novamente.']);
             $this->redirect('/dashboard/configuracoes');
         }
 
@@ -322,7 +322,7 @@ final class AssinaturaController extends Controller
      */
     public function retorno(): void
     {
-        Session::flash('config_success', 'Pagamento em processamento no Mercado Pago. Assim que for aprovado, o plano e liberado automaticamente aqui em Configuracoes.');
+        Session::flash('config_success', 'Pagamento em processamento no Mercado Pago. Assim que for aprovado, o plano é liberado automaticamente aqui em Configurações.');
         $this->redirect('/dashboard/configuracoes');
     }
 
@@ -350,7 +350,7 @@ final class AssinaturaController extends Controller
         echo $this->view('dashboard.configuracoes.upgrade-pendente', [
             'pageTitle' => 'Upgrade pendente - KADOSYS Igrejas',
             'activeMenu' => 'configuracoes',
-            'breadcrumb' => ['Dashboard', 'Configuracoes', 'Upgrade pendente'],
+            'breadcrumb' => ['Dashboard', 'Configurações', 'Upgrade pendente'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
             'fatura' => $fatura,

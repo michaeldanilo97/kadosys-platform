@@ -15,8 +15,8 @@ $vencimento = $provisionamento->pixVencimento ? new DateTimeImmutable($provision
     <div class="eyebrow">Falta pouco</div>
     <h1>Pague com Pix pra ativar</h1>
     <p class="subtitle">
-        Escaneie o QR code no app do seu banco, ou use o codigo "copia e cola".
-        Assim que o pagamento for confirmado, sua igreja e criada automaticamente.
+        Escaneie o QR code no app do seu banco, ou use o código "copia e cola".
+        Assim que o pagamento for confirmado, sua igreja é criada automaticamente.
     </p>
 
     <div class="pix-valor">R$ <?= number_format($valor, 2, ',', '.') ?></div>
@@ -31,7 +31,7 @@ $vencimento = $provisionamento->pixVencimento ? new DateTimeImmutable($provision
         <label for="pix_copia_cola">Pix copia e cola</label>
         <div class="auth-slug-input">
             <input type="text" class="form-control" id="pix_copia_cola" value="<?= htmlspecialchars($provisionamento->pixQrCode ?? '', ENT_QUOTES, 'UTF-8') ?>" readonly>
-            <button type="button" class="pix-copiar-btn" data-pix-copiar aria-label="Copiar codigo Pix">
+            <button type="button" class="pix-copiar-btn" data-pix-copiar aria-label="Copiar código Pix">
                 <i class="bi bi-clipboard"></i>
             </button>
         </div>

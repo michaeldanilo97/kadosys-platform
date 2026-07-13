@@ -88,11 +88,11 @@
   // motivo real (nao era travamento de autoplay, o unico caso que os
   // outros mecanismos de recuperacao tratavam).
   var MENSAGENS_ERRO_YOUTUBE = {
-    2: 'Link de video invalido.',
-    5: 'Este video nao pode ser reproduzido neste navegador.',
-    100: 'Video nao encontrado ou removido.',
-    101: 'O dono deste video nao permite reproduzi-lo em outros sites. Escolha outro video.',
-    150: 'O dono deste video nao permite reproduzi-lo em outros sites. Escolha outro video.',
+    2: 'Link de vídeo inválido.',
+    5: 'Este vídeo não pode ser reproduzido neste navegador.',
+    100: 'Vídeo não encontrado ou removido.',
+    101: 'O dono deste vídeo não permite reproduzi-lo em outros sites. Escolha outro vídeo.',
+    150: 'O dono deste vídeo não permite reproduzi-lo em outros sites. Escolha outro vídeo.',
   };
 
   function extrairIdYoutube(url) {
@@ -540,7 +540,7 @@
           marcarRecarregadoPara(videoId);
           window.location.reload();
         } else if (observacoesIndefinido >= LIMITE_INDEFINIDO) {
-          mostrarErroVideo('Nao foi possivel carregar o player do YouTube. Verifique se este dispositivo tem acesso a internet e se o YouTube nao esta bloqueado na rede.');
+          mostrarErroVideo('Não foi possível carregar o player do YouTube. Verifique se este dispositivo tem acesso à internet e se o YouTube não está bloqueado na rede.');
         } else if (avisoAudio) {
           // Reload unico ja gasto e o video continua travado (mas o
           // player responde normalmente) - mostra o aviso de toque como
@@ -556,7 +556,7 @@
         // de deixar travado pra sempre sem nenhuma pista.
         clearInterval(intervalo);
         checagemVideoId = null;
-        mostrarErroVideo('O video esta demorando demais para carregar. Verifique a conexao com a internet ou se o link e valido.');
+        mostrarErroVideo('O vídeo está demorando demais para carregar. Verifique a conexão com a internet ou se o link é válido.');
       }
     }, 1000);
   }
@@ -952,7 +952,7 @@
           }
         },
         onError: function (evento) {
-          var mensagem = MENSAGENS_ERRO_YOUTUBE[evento.data] || 'Nao foi possivel reproduzir este video.';
+          var mensagem = MENSAGENS_ERRO_YOUTUBE[evento.data] || 'Não foi possível reproduzir este vídeo.';
           mostrarErroVideo(mensagem);
         },
       },
@@ -1012,7 +1012,7 @@
         marcarRecarregadoPara('__api__');
         window.location.reload();
       } else {
-        mostrarErroVideo('Nao foi possivel carregar o player do YouTube. Verifique se este dispositivo tem acesso a internet e se o YouTube nao esta bloqueado na rede.');
+        mostrarErroVideo('Não foi possível carregar o player do YouTube. Verifique se este dispositivo tem acesso à internet e se o YouTube não está bloqueado na rede.');
       }
     }
   }, 800);

@@ -61,7 +61,7 @@ final class AgendaController extends Controller
     public function store(): void
     {
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('agenda_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('agenda_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect('/dashboard/agenda/novo');
         }
 
@@ -113,7 +113,7 @@ final class AgendaController extends Controller
         }
 
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('agenda_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('agenda_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect("/dashboard/agenda/{$id}/editar");
         }
 
@@ -151,17 +151,17 @@ final class AgendaController extends Controller
         $errors = [];
 
         if (trim((string) ($data['titulo'] ?? '')) === '') {
-            $errors[] = 'Informe o titulo do evento.';
+            $errors[] = 'Informe o título do evento.';
         }
 
         $dataEvento = trim((string) ($data['data'] ?? ''));
         if ($dataEvento === '' || \DateTime::createFromFormat('Y-m-d', $dataEvento) === false) {
-            $errors[] = 'Informe uma data valida.';
+            $errors[] = 'Informe uma data válida.';
         }
 
         $responsavelId = trim((string) ($data['responsavel_membro_id'] ?? ''));
         if ($responsavelId !== '' && Membro::find((int) $responsavelId) === null) {
-            $errors[] = 'Responsavel selecionado invalido.';
+            $errors[] = 'Responsável selecionado inválido.';
         }
 
         return $errors;
@@ -172,9 +172,9 @@ final class AgendaController extends Controller
         http_response_code(404);
 
         echo $this->view('errors.404', [
-            'pageTitle' => 'Pagina nao encontrada - KADOSYS Igrejas',
+            'pageTitle' => 'Página não encontrada - KADOSYS Igrejas',
             'activeMenu' => 'agenda',
-            'breadcrumb' => ['Dashboard', 'Agenda', 'Nao encontrado'],
+            'breadcrumb' => ['Dashboard', 'Agenda', 'Não encontrado'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
         ], 'dashboard');

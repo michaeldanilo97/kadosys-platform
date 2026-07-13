@@ -6,11 +6,11 @@
  */
 ?>
 
-<h1 class="dash-page-title">Pagina nao encontrada</h1>
-<p class="dash-page-subtitle">O modulo solicitado nao existe ou ainda nao foi criado.</p>
+<h1 class="dash-page-title">Página não encontrada</h1>
+<p class="dash-page-subtitle">O módulo solicitado não existe ou ainda não foi criado.</p>
 
 <div class="placeholder-box">
     <div class="icon"><i class="bi bi-question-circle"></i></div>
     <h2>404</h2>
-    <p>Verifique o link acessado ou utilize o menu lateral para navegar entre os modulos disponiveis.</p>
+    <p>Verifique o link acessado ou utilize o menu lateral para navegar entre os módulos disponíveis.</p>
 </div>

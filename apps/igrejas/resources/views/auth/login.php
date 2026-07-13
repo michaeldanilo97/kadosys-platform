@@ -59,10 +59,10 @@ $basePath = $config['base_path'] ?? '';
     </form>
 
     <p class="auth-signup-hint">
-        Ainda nao tem uma conta? <a href="<?= $basePath ?>/cadastro">Cadastre-se</a>
+        Ainda não tem uma conta? <a href="<?= $basePath ?>/cadastro">Cadastre-se</a>
     </p>
 
     <a href="<?= $basePath ?>/" class="auth-back-link">
-        <i class="bi bi-arrow-left"></i> Voltar para a pagina inicial
+        <i class="bi bi-arrow-left"></i> Voltar para a página inicial
     </a>
 </div>

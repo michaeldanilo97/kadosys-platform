@@ -39,7 +39,7 @@ $statusLabels = ['agendado' => 'Agendado', 'realizado' => 'Realizado', 'cancelad
             type="search"
             name="busca"
             value="<?= htmlspecialchars($search, ENT_QUOTES, 'UTF-8') ?>"
-            placeholder="Buscar por titulo ou local..."
+            placeholder="Buscar por título ou local..."
         >
         <?php if ($search !== ''): ?>
             <a href="<?= $basePath ?>/dashboard/cultos" class="crud-search-clear" aria-label="Limpar busca">
@@ -54,8 +54,8 @@ $statusLabels = ['agendado' => 'Agendado', 'realizado' => 'Realizado', 'cancelad
             <h2><?= $search !== '' ? 'Nenhum culto encontrado' : 'Nenhum culto cadastrado ainda' ?></h2>
             <p>
                 <?= $search !== ''
-                    ? 'Tente buscar por outro titulo ou local.'
-                    : 'Comece cadastrando o proximo culto da igreja.' ?>
+                    ? 'Tente buscar por outro título ou local.'
+                    : 'Comece cadastrando o próximo culto da igreja.' ?>
             </p>
             <?php if ($search === ''): ?>
                 <a href="<?= $basePath ?>/dashboard/cultos/novo" class="btn-k btn-k-grad">
@@ -73,7 +73,7 @@ $statusLabels = ['agendado' => 'Agendado', 'realizado' => 'Realizado', 'cancelad
                         <th>Local</th>
                         <th>Presentes</th>
                         <th>Status</th>
-                        <th class="actions-col">Acoes</th>
+                        <th class="actions-col">Ações</th>
                     </tr>
                 </thead>
                 <tbody>

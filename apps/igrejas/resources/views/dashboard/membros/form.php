@@ -70,9 +70,9 @@ $actionUrl = $isEdit
                     <input type="date" id="data_nascimento" name="data_nascimento" value="<?= htmlspecialchars($dataNascimento, ENT_QUOTES, 'UTF-8') ?>">
                 </div>
                 <div class="crud-field">
-                    <label for="genero">Genero</label>
+                    <label for="genero">Gênero</label>
                     <select id="genero" name="genero">
-                        <option value="" <?= $genero === '' ? 'selected' : '' ?>>Nao informado</option>
+                        <option value="" <?= $genero === '' ? 'selected' : '' ?>>Não informado</option>
                         <option value="feminino" <?= $genero === 'feminino' ? 'selected' : '' ?>>Feminino</option>
                         <option value="masculino" <?= $genero === 'masculino' ? 'selected' : '' ?>>Masculino</option>
                         <option value="outro" <?= $genero === 'outro' ? 'selected' : '' ?>>Outro</option>
@@ -81,11 +81,11 @@ $actionUrl = $isEdit
                 <div class="crud-field">
                     <label for="estado_civil">Estado civil</label>
                     <select id="estado_civil" name="estado_civil">
-                        <option value="" <?= $estadoCivil === '' ? 'selected' : '' ?>>Nao informado</option>
+                        <option value="" <?= $estadoCivil === '' ? 'selected' : '' ?>>Não informado</option>
                         <option value="solteiro" <?= $estadoCivil === 'solteiro' ? 'selected' : '' ?>>Solteiro(a)</option>
                         <option value="casado" <?= $estadoCivil === 'casado' ? 'selected' : '' ?>>Casado(a)</option>
                         <option value="divorciado" <?= $estadoCivil === 'divorciado' ? 'selected' : '' ?>>Divorciado(a)</option>
-                        <option value="viuvo" <?= $estadoCivil === 'viuvo' ? 'selected' : '' ?>>Viuvo(a)</option>
+                        <option value="viuvo" <?= $estadoCivil === 'viuvo' ? 'selected' : '' ?>>Viúvo(a)</option>
                         <option value="outro" <?= $estadoCivil === 'outro' ? 'selected' : '' ?>>Outro</option>
                     </select>
                 </div>
@@ -93,7 +93,7 @@ $actionUrl = $isEdit
         </div>
 
         <div class="crud-form-section">
-            <h3><i class="bi bi-telephone"></i> Contato e endereco</h3>
+            <h3><i class="bi bi-telephone"></i> Contato e endereço</h3>
             <div class="crud-form-grid">
                 <div class="crud-field">
                     <label for="email">E-mail</label>
@@ -104,8 +104,8 @@ $actionUrl = $isEdit
                     <input type="tel" id="telefone" name="telefone" value="<?= htmlspecialchars($telefone, ENT_QUOTES, 'UTF-8') ?>" placeholder="(00) 00000-0000">
                 </div>
                 <div class="crud-field crud-field-full">
-                    <label for="endereco">Endereco</label>
-                    <input type="text" id="endereco" name="endereco" value="<?= htmlspecialchars($endereco, ENT_QUOTES, 'UTF-8') ?>" placeholder="Rua, numero, bairro">
+                    <label for="endereco">Endereço</label>
+                    <input type="text" id="endereco" name="endereco" value="<?= htmlspecialchars($endereco, ENT_QUOTES, 'UTF-8') ?>" placeholder="Rua, número, bairro">
                 </div>
                 <div class="crud-field">
                     <label for="cidade">Cidade</label>
@@ -133,8 +133,8 @@ $actionUrl = $isEdit
                     </select>
                 </div>
                 <div class="crud-field crud-field-full">
-                    <label for="observacoes">Observacoes</label>
-                    <textarea id="observacoes" name="observacoes" rows="4" placeholder="Anotacoes sobre o membro (opcional)"><?= htmlspecialchars($observacoes, ENT_QUOTES, 'UTF-8') ?></textarea>
+                    <label for="observacoes">Observações</label>
+                    <textarea id="observacoes" name="observacoes" rows="4" placeholder="Anotações sobre o membro (opcional)"><?= htmlspecialchars($observacoes, ENT_QUOTES, 'UTF-8') ?></textarea>
                 </div>
             </div>
         </div>
@@ -142,7 +142,7 @@ $actionUrl = $isEdit
         <div class="crud-form-actions">
             <a href="<?= $basePath ?>/dashboard/membros" class="btn-k btn-k-ghost">Cancelar</a>
             <button type="submit" class="btn-k btn-k-grad">
-                <i class="bi bi-check-lg"></i> <?= $isEdit ? 'Salvar alteracoes' : 'Cadastrar membro' ?>
+                <i class="bi bi-check-lg"></i> <?= $isEdit ? 'Salvar alterações' : 'Cadastrar membro' ?>
             </button>
         </div>
     </form>

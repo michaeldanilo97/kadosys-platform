@@ -21,7 +21,7 @@ $statusLabels = [
 ];
 
 $tipoLabels = [
-    FaturaPix::TIPO_RENOVACAO => 'Renovacao mensal',
+    FaturaPix::TIPO_RENOVACAO => 'Renovação mensal',
     FaturaPix::TIPO_UPGRADE_PROPORCIONAL => 'Upgrade de plano',
 ];
 
@@ -53,7 +53,7 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
 <div class="dash-page-head">
     <div>
         <h1 class="dash-page-title">Faturas</h1>
-        <p class="dash-page-subtitle">Historico de cobrancas, vencimento e pagamento do plano contratado.</p>
+        <p class="dash-page-subtitle">Histórico de cobranças, vencimento e pagamento do plano contratado.</p>
     </div>
     <div class="dash-page-actions">
         <a href="<?= $basePath ?>/dashboard/configuracoes#plano-contratado" class="btn-k btn-k-ghost">
@@ -66,8 +66,8 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
     <div class="dash-panel">
         <div class="crud-empty">
             <div class="icon"><i class="bi bi-receipt-cutoff"></i></div>
-            <h2>Historico de faturas indisponivel</h2>
-            <p>Esse recurso e exclusivo de contas hospedadas automaticamente (com subdominio proprio).</p>
+            <h2>Histórico de faturas indisponível</h2>
+            <p>Esse recurso é exclusivo de contas hospedadas automaticamente (com subdomínio próprio).</p>
         </div>
     </div>
 <?php else: ?>
@@ -76,15 +76,15 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
         <div class="dash-panel">
             <p class="dash-page-subtitle" style="margin: 0;">
                 <i class="bi bi-gift"></i>
-                Voce esta no teste gratis<?php if ($tenant->trialExpiraEm !== null): ?> ate <strong><?= (new DateTimeImmutable($tenant->trialExpiraEm))->format('d/m/Y') ?></strong><?php endif; ?> -
-                nenhuma cobranca foi feita ainda.
+                Você está no teste grátis<?php if ($tenant->trialExpiraEm !== null): ?> até <strong><?= (new DateTimeImmutable($tenant->trialExpiraEm))->format('d/m/Y') ?></strong><?php endif; ?> -
+                nenhuma cobrança foi feita ainda.
                 <a href="<?= $basePath ?>/dashboard/configuracoes#plano-contratado">Escolha um plano</a> quando quiser continuar depois do teste.
             </p>
         </div>
     <?php elseif ($tenant->metodoPagamento === 'cartao'): ?>
         <div class="dash-panel">
             <div class="dash-panel-head">
-                <h2><i class="bi bi-credit-card"></i> Assinatura por cartao</h2>
+                <h2><i class="bi bi-credit-card"></i> Assinatura por cartão</h2>
             </div>
             <p class="dash-page-subtitle" style="margin-bottom: 0;">
                 Plano <strong><?= htmlspecialchars(Plano::label($tenant->plano), ENT_QUOTES, 'UTF-8') ?></strong>
@@ -94,21 +94,21 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
                     </span>
                 <?php endif; ?>
                 <br>
-                Cobranca recorrente automatica - debitada sozinha a cada ciclo pelo Mercado Pago.
+                Cobrança recorrente automática - debitada sozinha a cada ciclo pelo Mercado Pago.
                 <?php if ($tenant->proximoVencimento !== null): ?>
-                    Proxima renovacao prevista: <strong><?= (new DateTimeImmutable($tenant->proximoVencimento))->format('d/m/Y') ?></strong>.
+                    Próxima renovação prevista: <strong><?= (new DateTimeImmutable($tenant->proximoVencimento))->format('d/m/Y') ?></strong>.
                 <?php endif; ?>
             </p>
 
             <?php if ($pagamentosCartao === null): ?>
                 <p class="crud-text-dim" style="margin-top: 0.8rem; margin-bottom: 0;">
                     <i class="bi bi-info-circle"></i>
-                    Nao foi possivel buscar o extrato de cobrancas agora - o historico detalhado fica disponivel
+                    Não foi possível buscar o extrato de cobranças agora - o histórico detalhado fica disponível
                     direto na conta do Mercado Pago usada no pagamento.
                 </p>
             <?php elseif ($pagamentosCartao === []): ?>
                 <p class="crud-text-dim" style="margin-top: 0.8rem; margin-bottom: 0;">
-                    Nenhuma cobranca debitada ainda.
+                    Nenhuma cobrança debitada ainda.
                 </p>
             <?php else: ?>
                 <div class="crud-table-wrapper" style="margin-top: 0.8rem;">
@@ -149,17 +149,17 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
 
     <div class="dash-panel">
         <div class="dash-panel-head">
-            <h2><i class="bi bi-receipt-cutoff"></i> Cobrancas via Pix</h2>
+            <h2><i class="bi bi-receipt-cutoff"></i> Cobranças via Pix</h2>
         </div>
 
         <?php if ($faturas === []): ?>
             <div class="crud-empty">
                 <div class="icon"><i class="bi bi-receipt"></i></div>
-                <h2>Nenhuma cobranca via Pix ainda</h2>
+                <h2>Nenhuma cobrança via Pix ainda</h2>
                 <p>
                     <?= $tenant->metodoPagamento === 'cartao'
-                        ? 'Quem paga por cartao so tem fatura Pix aqui em upgrades pontuais de plano.'
-                        : 'Assim que a primeira cobranca for gerada, ela aparece nesta lista.' ?>
+                        ? 'Quem paga por cartão só tem fatura Pix aqui em upgrades pontuais de plano.'
+                        : 'Assim que a primeira cobrança for gerada, ela aparece nesta lista.' ?>
                 </p>
             </div>
         <?php else: ?>
@@ -172,7 +172,7 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
                             <th>Tipo</th>
                             <th>Valor</th>
                             <th>Status</th>
-                            <th class="actions-col">Acoes</th>
+                            <th class="actions-col">Ações</th>
                         </tr>
                     </thead>
                     <tbody>

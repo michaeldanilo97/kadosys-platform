@@ -55,18 +55,18 @@ $actionUrl = $isEdit
             <h3><i class="bi bi-megaphone"></i> Dados do aviso</h3>
             <div class="crud-form-grid">
                 <div class="crud-field crud-field-full">
-                    <label for="titulo">Titulo *</label>
-                    <input type="text" id="titulo" name="titulo" value="<?= htmlspecialchars($titulo, ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex.: Mudanca no horario do culto de quarta" required autofocus>
+                    <label for="titulo">Título *</label>
+                    <input type="text" id="titulo" name="titulo" value="<?= htmlspecialchars($titulo, ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex.: Mudança no horário do culto de quarta" required autofocus>
                 </div>
                 <div class="crud-field crud-field-full">
-                    <label for="conteudo">Conteudo *</label>
+                    <label for="conteudo">Conteúdo *</label>
                     <textarea id="conteudo" name="conteudo" rows="5" placeholder="Escreva o aviso ou comunicado" required><?= htmlspecialchars($conteudo, ENT_QUOTES, 'UTF-8') ?></textarea>
                 </div>
                 <div class="crud-field">
-                    <label for="publico_alvo">Publico</label>
+                    <label for="publico_alvo">Público</label>
                     <select id="publico_alvo" name="publico_alvo">
                         <option value="todos" <?= $publicoAlvo === 'todos' ? 'selected' : '' ?>>Todos os membros</option>
-                        <option value="lideranca" <?= $publicoAlvo === 'lideranca' ? 'selected' : '' ?>>So lideranca</option>
+                        <option value="lideranca" <?= $publicoAlvo === 'lideranca' ? 'selected' : '' ?>>Só liderança</option>
                     </select>
                 </div>
                 <div class="crud-field">
@@ -78,7 +78,7 @@ $actionUrl = $isEdit
                     </select>
                 </div>
                 <div class="crud-field">
-                    <label for="data_publicacao">Data de publicacao</label>
+                    <label for="data_publicacao">Data de publicação</label>
                     <input type="date" id="data_publicacao" name="data_publicacao" value="<?= htmlspecialchars($dataPublicacao, ENT_QUOTES, 'UTF-8') ?>">
                     <span class="auth-field-hint">Se deixar em branco e publicar, usa a data de hoje.</span>
                 </div>
@@ -88,7 +88,7 @@ $actionUrl = $isEdit
         <div class="crud-form-actions">
             <a href="<?= $basePath ?>/dashboard/comunicacao" class="btn-k btn-k-ghost">Cancelar</a>
             <button type="submit" class="btn-k btn-k-grad">
-                <i class="bi bi-check-lg"></i> <?= $isEdit ? 'Salvar alteracoes' : 'Cadastrar aviso' ?>
+                <i class="bi bi-check-lg"></i> <?= $isEdit ? 'Salvar alterações' : 'Cadastrar aviso' ?>
             </button>
         </div>
     </form>

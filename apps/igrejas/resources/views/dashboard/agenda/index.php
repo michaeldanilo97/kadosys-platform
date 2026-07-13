@@ -12,7 +12,7 @@
 $basePath = $config['base_path'] ?? '';
 
 $statusLabels = ['agendado' => 'Agendado', 'realizado' => 'Realizado', 'cancelado' => 'Cancelado'];
-$tipoLabels = ['evento' => 'Evento', 'reuniao' => 'Reuniao', 'reserva' => 'Reserva de espaco', 'outro' => 'Outro'];
+$tipoLabels = ['evento' => 'Evento', 'reuniao' => 'Reunião', 'reserva' => 'Reserva de espaço', 'outro' => 'Outro'];
 ?>
 
 <div class="dash-page-head">
@@ -40,7 +40,7 @@ $tipoLabels = ['evento' => 'Evento', 'reuniao' => 'Reuniao', 'reserva' => 'Reser
             type="search"
             name="busca"
             value="<?= htmlspecialchars($search, ENT_QUOTES, 'UTF-8') ?>"
-            placeholder="Buscar por titulo ou local..."
+            placeholder="Buscar por título ou local..."
         >
         <?php if ($search !== ''): ?>
             <a href="<?= $basePath ?>/dashboard/agenda" class="crud-search-clear" aria-label="Limpar busca">
@@ -55,8 +55,8 @@ $tipoLabels = ['evento' => 'Evento', 'reuniao' => 'Reuniao', 'reserva' => 'Reser
             <h2><?= $search !== '' ? 'Nenhum evento encontrado' : 'Nenhum evento cadastrado ainda' ?></h2>
             <p>
                 <?= $search !== ''
-                    ? 'Tente buscar por outro titulo ou local.'
-                    : 'Comece cadastrando o proximo evento, reuniao ou reserva de espaco.' ?>
+                    ? 'Tente buscar por outro título ou local.'
+                    : 'Comece cadastrando o próximo evento, reunião ou reserva de espaço.' ?>
             </p>
             <?php if ($search === ''): ?>
                 <a href="<?= $basePath ?>/dashboard/agenda/novo" class="btn-k btn-k-grad">
@@ -73,9 +73,9 @@ $tipoLabels = ['evento' => 'Evento', 'reuniao' => 'Reuniao', 'reserva' => 'Reser
                         <th>Tipo</th>
                         <th>Data</th>
                         <th>Local</th>
-                        <th>Responsavel</th>
+                        <th>Responsável</th>
                         <th>Status</th>
-                        <th class="actions-col">Acoes</th>
+                        <th class="actions-col">Ações</th>
                     </tr>
                 </thead>
                 <tbody>

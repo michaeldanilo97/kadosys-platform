@@ -25,8 +25,8 @@ $actionUrl = $isEdit
     : $basePath . '/dashboard/grupos';
 
 $diasSemana = [
-    'domingo' => 'Domingo', 'segunda' => 'Segunda-feira', 'terca' => 'Terca-feira',
-    'quarta' => 'Quarta-feira', 'quinta' => 'Quinta-feira', 'sexta' => 'Sexta-feira', 'sabado' => 'Sabado',
+    'domingo' => 'Domingo', 'segunda' => 'Segunda-feira', 'terca' => 'Terça-feira',
+    'quarta' => 'Quarta-feira', 'quinta' => 'Quinta-feira', 'sexta' => 'Sexta-feira', 'sabado' => 'Sábado',
 ];
 
 $participanteIds = array_map(static fn ($membro) => $membro->id, $participantes);
@@ -42,7 +42,7 @@ $disponiveisParaParticipante = array_filter(
         <p class="dash-page-subtitle">
             <?= $isEdit
                 ? 'Atualize os dados de ' . htmlspecialchars($grupo->nome, ENT_QUOTES, 'UTF-8') . '.'
-                : 'Preencha os dados para cadastrar um novo grupo, celula ou classe.' ?>
+                : 'Preencha os dados para cadastrar um novo grupo, célula ou classe.' ?>
         </p>
     </div>
     <div class="dash-page-actions">
@@ -72,20 +72,20 @@ $disponiveisParaParticipante = array_filter(
             <div class="crud-form-grid">
                 <div class="crud-field crud-field-full">
                     <label for="nome">Nome do grupo *</label>
-                    <input type="text" id="nome" name="nome" value="<?= htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex.: Celula Vila Nova" required autofocus>
+                    <input type="text" id="nome" name="nome" value="<?= htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex.: Célula Vila Nova" required autofocus>
                 </div>
                 <div class="crud-field">
                     <label for="tipo">Tipo</label>
                     <select id="tipo" name="tipo">
                         <option value="grupo" <?= $tipo === 'grupo' ? 'selected' : '' ?>>Grupo</option>
-                        <option value="celula" <?= $tipo === 'celula' ? 'selected' : '' ?>>Celula</option>
+                        <option value="celula" <?= $tipo === 'celula' ? 'selected' : '' ?>>Célula</option>
                         <option value="classe" <?= $tipo === 'classe' ? 'selected' : '' ?>>Classe</option>
                     </select>
                 </div>
                 <div class="crud-field">
-                    <label for="lider_membro_id">Lider</label>
+                    <label for="lider_membro_id">Líder</label>
                     <select id="lider_membro_id" name="lider_membro_id">
-                        <option value="">Sem lider definido</option>
+                        <option value="">Sem líder definido</option>
                         <?php foreach ($membrosAtivos as $membro): ?>
                             <option value="<?= $membro->id ?>" <?= (string) $liderMembroId === (string) $membro->id ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($membro->nome, ENT_QUOTES, 'UTF-8') ?>
@@ -94,25 +94,25 @@ $disponiveisParaParticipante = array_filter(
                     </select>
                 </div>
                 <div class="crud-field crud-field-full">
-                    <label for="descricao">Descricao</label>
-                    <textarea id="descricao" name="descricao" rows="3" placeholder="Proposito e atividades do grupo (opcional)"><?= htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8') ?></textarea>
+                    <label for="descricao">Descrição</label>
+                    <textarea id="descricao" name="descricao" rows="3" placeholder="Propósito e atividades do grupo (opcional)"><?= htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8') ?></textarea>
                 </div>
                 <div class="crud-field">
                     <label for="dia_semana">Dia do encontro</label>
                     <select id="dia_semana" name="dia_semana">
-                        <option value="">Nao definido</option>
+                        <option value="">Não definido</option>
                         <?php foreach ($diasSemana as $valor => $rotulo): ?>
                             <option value="<?= $valor ?>" <?= $diaSemana === $valor ? 'selected' : '' ?>><?= $rotulo ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 <div class="crud-field">
-                    <label for="horario">Horario</label>
+                    <label for="horario">Horário</label>
                     <input type="time" id="horario" name="horario" value="<?= htmlspecialchars(substr($horario, 0, 5), ENT_QUOTES, 'UTF-8') ?>">
                 </div>
                 <div class="crud-field crud-field-full">
                     <label for="local">Local do encontro</label>
-                    <input type="text" id="local" name="local" value="<?= htmlspecialchars($local, ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex.: Casa da familia Silva, sala 3 do templo... (opcional)">
+                    <input type="text" id="local" name="local" value="<?= htmlspecialchars($local, ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex.: Casa da família Silva, sala 3 do templo... (opcional)">
                 </div>
                 <div class="crud-field">
                     <label for="status">Status</label>
@@ -127,7 +127,7 @@ $disponiveisParaParticipante = array_filter(
         <div class="crud-form-actions">
             <a href="<?= $basePath ?>/dashboard/grupos" class="btn-k btn-k-ghost">Cancelar</a>
             <button type="submit" class="btn-k btn-k-grad">
-                <i class="bi bi-check-lg"></i> <?= $isEdit ? 'Salvar alteracoes' : 'Cadastrar grupo' ?>
+                <i class="bi bi-check-lg"></i> <?= $isEdit ? 'Salvar alterações' : 'Cadastrar grupo' ?>
             </button>
         </div>
     </form>

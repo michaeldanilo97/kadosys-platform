@@ -20,7 +20,7 @@ $estadoCivil = $old['estado_civil'] ?? '';
     <h1>Cadastro de membro</h1>
 
     <?php if (!$habilitado): ?>
-        <p class="subtitle">O auto-cadastro nao esta disponivel no momento. Fale com a secretaria da igreja pra ser cadastrado.</p>
+        <p class="subtitle">O auto-cadastro não está disponível no momento. Fale com a secretaria da igreja pra ser cadastrado.</p>
     <?php elseif ($sucesso): ?>
         <div class="auth-alert" style="background: rgba(52,211,153,0.12); border-color: rgba(52,211,153,0.35); color: var(--success);">
             <i class="bi bi-check-circle"></i> Cadastro realizado com sucesso! Seja bem-vindo(a).
@@ -95,9 +95,9 @@ $estadoCivil = $old['estado_civil'] ?? '';
                     >
                 </div>
                 <div class="auth-field">
-                    <label for="genero">Genero</label>
+                    <label for="genero">Gênero</label>
                     <select id="genero" name="genero" class="form-control">
-                        <option value="" <?= $genero === '' ? 'selected' : '' ?>>Nao informado</option>
+                        <option value="" <?= $genero === '' ? 'selected' : '' ?>>Não informado</option>
                         <option value="feminino" <?= $genero === 'feminino' ? 'selected' : '' ?>>Feminino</option>
                         <option value="masculino" <?= $genero === 'masculino' ? 'selected' : '' ?>>Masculino</option>
                         <option value="outro" <?= $genero === 'outro' ? 'selected' : '' ?>>Outro</option>
@@ -108,11 +108,11 @@ $estadoCivil = $old['estado_civil'] ?? '';
             <div class="auth-field">
                 <label for="estado_civil">Estado civil</label>
                 <select id="estado_civil" name="estado_civil" class="form-control">
-                    <option value="" <?= $estadoCivil === '' ? 'selected' : '' ?>>Nao informado</option>
+                    <option value="" <?= $estadoCivil === '' ? 'selected' : '' ?>>Não informado</option>
                     <option value="solteiro" <?= $estadoCivil === 'solteiro' ? 'selected' : '' ?>>Solteiro(a)</option>
                     <option value="casado" <?= $estadoCivil === 'casado' ? 'selected' : '' ?>>Casado(a)</option>
                     <option value="divorciado" <?= $estadoCivil === 'divorciado' ? 'selected' : '' ?>>Divorciado(a)</option>
-                    <option value="viuvo" <?= $estadoCivil === 'viuvo' ? 'selected' : '' ?>>Viuvo(a)</option>
+                    <option value="viuvo" <?= $estadoCivil === 'viuvo' ? 'selected' : '' ?>>Viúvo(a)</option>
                     <option value="outro" <?= $estadoCivil === 'outro' ? 'selected' : '' ?>>Outro</option>
                 </select>
             </div>
@@ -153,14 +153,14 @@ $estadoCivil = $old['estado_civil'] ?? '';
 
             <div class="auth-field-row">
                 <div class="auth-field">
-                    <label for="endereco">Endereco</label>
+                    <label for="endereco">Endereço</label>
                     <input
                         type="text"
                         class="form-control"
                         id="endereco"
                         name="endereco"
                         value="<?= htmlspecialchars($old['endereco'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                        placeholder="Rua, numero, bairro"
+                        placeholder="Rua, número, bairro"
                         autocomplete="street-address"
                     >
                 </div>
@@ -186,7 +186,7 @@ $estadoCivil = $old['estado_civil'] ?? '';
                         class="form-control"
                         id="senha"
                         name="senha"
-                        placeholder="Minimo 8 caracteres"
+                        placeholder="Mínimo 8 caracteres"
                         autocomplete="new-password"
                         minlength="8"
                         required
@@ -212,7 +212,7 @@ $estadoCivil = $old['estado_civil'] ?? '';
     <?php endif; ?>
 
     <a href="<?= $basePath ?>/login" class="auth-back-link">
-        <i class="bi bi-arrow-left"></i> Ja sou cadastrado - entrar
+        <i class="bi bi-arrow-left"></i> Já sou cadastrado - entrar
     </a>
 </div>
 

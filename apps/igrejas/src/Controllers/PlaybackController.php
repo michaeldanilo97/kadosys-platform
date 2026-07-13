@@ -84,14 +84,14 @@ final class PlaybackController extends Controller
     public function store(): void
     {
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('playback_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('playback_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect('/dashboard/playbacks/novo');
         }
 
         $titulo = trim((string) $this->request->input('titulo', ''));
 
         if ($titulo === '') {
-            Session::flash('playback_errors', ['Informe o titulo do playback.']);
+            Session::flash('playback_errors', ['Informe o título do playback.']);
             Session::flash('playback_old', ['titulo' => $titulo, 'artista' => $this->request->input('artista', '')]);
             $this->redirect('/dashboard/playbacks/novo');
         }
@@ -99,7 +99,7 @@ final class PlaybackController extends Controller
         $arquivo = $this->request->file('audio');
 
         if ($arquivo === null) {
-            Session::flash('playback_errors', ['Selecione um arquivo de audio.']);
+            Session::flash('playback_errors', ['Selecione um arquivo de áudio.']);
             Session::flash('playback_old', ['titulo' => $titulo, 'artista' => $this->request->input('artista', '')]);
             $this->redirect('/dashboard/playbacks/novo');
         }
@@ -110,7 +110,7 @@ final class PlaybackController extends Controller
         }
 
         if ($arquivo['size'] > self::TAMANHO_MAXIMO) {
-            Session::flash('playback_errors', ['O audio deve ter no maximo 25MB.']);
+            Session::flash('playback_errors', ['O áudio deve ter no máximo 25MB.']);
             $this->redirect('/dashboard/playbacks/novo');
         }
 
@@ -118,21 +118,21 @@ final class PlaybackController extends Controller
         $extensao = self::MIME_PARA_EXTENSAO[$mime] ?? null;
 
         if ($extensao === null) {
-            Session::flash('playback_errors', ['Formato invalido. Envie MP3, WAV, OGG, M4A ou AAC.']);
+            Session::flash('playback_errors', ['Formato inválido. Envie MP3, WAV, OGG, M4A ou AAC.']);
             $this->redirect('/dashboard/playbacks/novo');
         }
 
         $destinoDir = $this->diretorioTenant();
 
         if (!is_dir($destinoDir) && !mkdir($destinoDir, 0755, true) && !is_dir($destinoDir)) {
-            Session::flash('playback_errors', ['Nao foi possivel salvar o audio no servidor.']);
+            Session::flash('playback_errors', ['Não foi possível salvar o áudio no servidor.']);
             $this->redirect('/dashboard/playbacks/novo');
         }
 
         $nomeArquivo = bin2hex(random_bytes(16)) . '.' . $extensao;
 
         if (!move_uploaded_file($arquivo['tmp_name'], $destinoDir . '/' . $nomeArquivo)) {
-            Session::flash('playback_errors', ['Nao foi possivel salvar o audio no servidor.']);
+            Session::flash('playback_errors', ['Não foi possível salvar o áudio no servidor.']);
             $this->redirect('/dashboard/playbacks/novo');
         }
 
@@ -180,14 +180,14 @@ final class PlaybackController extends Controller
         }
 
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('playback_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('playback_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect("/dashboard/playbacks/{$id}/editar");
         }
 
         $titulo = trim((string) $this->request->input('titulo', ''));
 
         if ($titulo === '') {
-            Session::flash('playback_errors', ['Informe o titulo do playback.']);
+            Session::flash('playback_errors', ['Informe o título do playback.']);
             $this->redirect("/dashboard/playbacks/{$id}/editar");
         }
 
@@ -237,9 +237,9 @@ final class PlaybackController extends Controller
         http_response_code(404);
 
         echo $this->view('errors.404', [
-            'pageTitle' => 'Pagina nao encontrada - KADOSYS Igrejas',
+            'pageTitle' => 'Página não encontrada - KADOSYS Igrejas',
             'activeMenu' => 'playbacks',
-            'breadcrumb' => ['Dashboard', 'Playbacks', 'Nao encontrado'],
+            'breadcrumb' => ['Dashboard', 'Playbacks', 'Não encontrado'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
         ], 'dashboard');

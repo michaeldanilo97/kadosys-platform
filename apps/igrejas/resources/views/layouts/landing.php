@@ -16,7 +16,7 @@ $basePath = $config['base_path'] ?? '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle ?? 'KADOSYS Igrejas', ENT_QUOTES, 'UTF-8') ?></title>
-    <meta name="description" content="KADOSYS Igrejas - plataforma inteligente de gestao para igrejas: membros, ministerios, financeiro, agenda e muito mais, com tecnologia e IA.">
+    <meta name="description" content="KADOSYS Igrejas - plataforma inteligente de gestão para igrejas: membros, ministérios, financeiro, agenda e muito mais, com tecnologia e IA.">
     <script>document.documentElement.classList.add('js');</script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
@@ -46,7 +46,7 @@ $basePath = $config['base_path'] ?? '';
 
         <div class="landing-nav-actions">
             <a href="<?= $basePath ?>/cadastro?metodo_pagamento=trial" class="btn-k btn-k-ghost">
-                <i class="bi bi-gift"></i> Teste gratis
+                <i class="bi bi-gift"></i> Teste grátis
             </a>
             <a href="<?= $basePath ?>/login" class="btn-k btn-k-outline">Acessar o sistema</a>
             <button class="nav-toggle" type="button" data-nav-toggle aria-label="Abrir menu" aria-expanded="false">
@@ -69,8 +69,8 @@ $basePath = $config['base_path'] ?? '';
                     <span class="text-gradient">KADOSYS</span>&nbsp;Igrejas
                 </div>
                 <p class="footer-about">
-                    Plataforma inteligente de gestao para igrejas. Tecnologia moderna,
-                    automacao e IA a servico da sua comunidade.
+                    Plataforma inteligente de gestão para igrejas. Tecnologia moderna,
+                    automação e IA a serviço da sua comunidade.
                 </p>
             </div>
             <div class="footer-col">

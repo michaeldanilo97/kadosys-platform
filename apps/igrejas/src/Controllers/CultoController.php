@@ -63,7 +63,7 @@ final class CultoController extends Controller
     public function store(): void
     {
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('culto_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('culto_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect('/dashboard/cultos/novo');
         }
 
@@ -116,7 +116,7 @@ final class CultoController extends Controller
         }
 
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('culto_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('culto_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect("/dashboard/cultos/{$id}/editar");
         }
 
@@ -151,7 +151,7 @@ final class CultoController extends Controller
 
         if (Csrf::verify($this->request->input('_csrf_token')) && $membroId > 0) {
             Culto::addPresenca((int) $id, $membroId);
-            Session::flash('culto_success', 'Presenca registrada.');
+            Session::flash('culto_success', 'Presença registrada.');
         }
 
         $this->redirect("/dashboard/cultos/{$id}/editar");
@@ -161,7 +161,7 @@ final class CultoController extends Controller
     {
         if (Csrf::verify($this->request->input('_csrf_token'))) {
             Culto::removePresenca((int) $id, (int) $membroId);
-            Session::flash('culto_success', 'Presenca removida.');
+            Session::flash('culto_success', 'Presença removida.');
         }
 
         $this->redirect("/dashboard/cultos/{$id}/editar");
@@ -176,12 +176,12 @@ final class CultoController extends Controller
         $errors = [];
 
         if (trim((string) ($data['titulo'] ?? '')) === '') {
-            $errors[] = 'Informe o titulo do culto.';
+            $errors[] = 'Informe o título do culto.';
         }
 
         $dataCulto = trim((string) ($data['data'] ?? ''));
         if ($dataCulto === '' || \DateTime::createFromFormat('Y-m-d', $dataCulto) === false) {
-            $errors[] = 'Informe uma data valida.';
+            $errors[] = 'Informe uma data válida.';
         }
 
         return $errors;
@@ -192,9 +192,9 @@ final class CultoController extends Controller
         http_response_code(404);
 
         echo $this->view('errors.404', [
-            'pageTitle' => 'Pagina nao encontrada - KADOSYS Igrejas',
+            'pageTitle' => 'Página não encontrada - KADOSYS Igrejas',
             'activeMenu' => 'cultos',
-            'breadcrumb' => ['Dashboard', 'Cultos', 'Nao encontrado'],
+            'breadcrumb' => ['Dashboard', 'Cultos', 'Não encontrado'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
         ], 'dashboard');

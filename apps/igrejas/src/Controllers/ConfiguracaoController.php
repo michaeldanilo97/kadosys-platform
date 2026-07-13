@@ -43,9 +43,9 @@ final class ConfiguracaoController extends Controller
         $configuracao = ConfiguracaoIgreja::atual();
 
         echo $this->view('dashboard.configuracoes.index', [
-            'pageTitle' => 'Configuracoes - KADOSYS Igrejas',
+            'pageTitle' => 'Configurações - KADOSYS Igrejas',
             'activeMenu' => 'configuracoes',
-            'breadcrumb' => ['Dashboard', 'Configuracoes'],
+            'breadcrumb' => ['Dashboard', 'Configurações'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
             'configuracao' => $configuracao,
@@ -147,7 +147,7 @@ final class ConfiguracaoController extends Controller
 
         try {
             $resposta = $mp->criarPagamentoPix([
-                'description' => 'KADOSYS Igrejas - Renovacao ' . Plano::label($tenant->plano),
+                'description' => 'KADOSYS Igrejas - Renovação ' . Plano::label($tenant->plano),
                 'amount' => $valor,
                 'payerEmail' => $usuario?->email ?? '',
                 'externalReference' => $referencia,
@@ -193,9 +193,9 @@ final class ConfiguracaoController extends Controller
         }
 
         echo $this->view('dashboard.trial-expirado', [
-            'pageTitle' => 'Teste gratis encerrado - KADOSYS Igrejas',
+            'pageTitle' => 'Teste grátis encerrado - KADOSYS Igrejas',
             'activeMenu' => 'trial-expirado',
-            'breadcrumb' => ['Dashboard', 'Teste gratis encerrado'],
+            'breadcrumb' => ['Dashboard', 'Teste grátis encerrado'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
             'tenant' => $tenant,
@@ -205,7 +205,7 @@ final class ConfiguracaoController extends Controller
     public function atualizarLogo(): void
     {
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('config_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('config_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect('/dashboard/configuracoes');
         }
 
@@ -222,7 +222,7 @@ final class ConfiguracaoController extends Controller
         }
 
         if ($arquivo['size'] > self::TAMANHO_MAXIMO) {
-            Session::flash('config_errors', ['A imagem deve ter no maximo 5MB.']);
+            Session::flash('config_errors', ['A imagem deve ter no máximo 5MB.']);
             $this->redirect('/dashboard/configuracoes');
         }
 
@@ -230,14 +230,14 @@ final class ConfiguracaoController extends Controller
         $extensao = self::MIME_PARA_EXTENSAO[$mime] ?? null;
 
         if ($extensao === null) {
-            Session::flash('config_errors', ['Formato invalido. Envie PNG, JPG, WEBP ou SVG.']);
+            Session::flash('config_errors', ['Formato inválido. Envie PNG, JPG, WEBP ou SVG.']);
             $this->redirect('/dashboard/configuracoes');
         }
 
         $destinoDir = dirname(__DIR__, 2) . '/public/' . self::UPLOAD_DIR;
 
         if (!is_dir($destinoDir) && !mkdir($destinoDir, 0755, true) && !is_dir($destinoDir)) {
-            Session::flash('config_errors', ['Nao foi possivel salvar a imagem no servidor.']);
+            Session::flash('config_errors', ['Não foi possível salvar a imagem no servidor.']);
             $this->redirect('/dashboard/configuracoes');
         }
 
@@ -246,7 +246,7 @@ final class ConfiguracaoController extends Controller
         $nomeArquivo = 'logo.' . $extensao;
 
         if (!move_uploaded_file($arquivo['tmp_name'], $destinoDir . '/' . $nomeArquivo)) {
-            Session::flash('config_errors', ['Nao foi possivel salvar a imagem no servidor.']);
+            Session::flash('config_errors', ['Não foi possível salvar a imagem no servidor.']);
             $this->redirect('/dashboard/configuracoes');
         }
 
@@ -278,7 +278,7 @@ final class ConfiguracaoController extends Controller
             $habilitado = (string) $this->request->input('cadastro_membros_habilitado', '') === '1';
             ConfiguracaoIgreja::atualizarCadastroMembros($habilitado);
             Session::flash('config_success', $habilitado
-                ? 'Auto-cadastro de membros habilitado - o link ja aparece na tela de login.'
+                ? 'Auto-cadastro de membros habilitado - o link já aparece na tela de login.'
                 : 'Auto-cadastro de membros desabilitado.');
         }
 
@@ -298,11 +298,11 @@ final class ConfiguracaoController extends Controller
 
             if ($chave === '') {
                 ConfiguracaoIgreja::removerChavePix();
-                Session::flash('config_success', 'Chave Pix removida - a pagina de doacao fica indisponivel ate cadastrar uma nova.');
+                Session::flash('config_success', 'Chave Pix removida - a página de doação fica indisponível até cadastrar uma nova.');
             } else {
                 $nomeBeneficiario = $nomeBeneficiario !== '' ? $nomeBeneficiario : (string) (ConfiguracaoIgreja::atual()->nomeIgreja ?? 'Igreja');
                 ConfiguracaoIgreja::atualizarChavePix($chave, $nomeBeneficiario);
-                Session::flash('config_success', 'Chave Pix salva - a pagina de doacao ja esta disponivel.');
+                Session::flash('config_success', 'Chave Pix salva - a página de doação já está disponível.');
             }
         }
 

@@ -90,9 +90,9 @@ final class FinanceiroController extends Controller
     public function create(): void
     {
         echo $this->view('dashboard.financeiro.form', [
-            'pageTitle' => 'Novo lancamento - KADOSYS Igrejas',
+            'pageTitle' => 'Novo lançamento - KADOSYS Igrejas',
             'activeMenu' => 'financeiro',
-            'breadcrumb' => ['Dashboard', 'Financeiro', 'Novo lancamento'],
+            'breadcrumb' => ['Dashboard', 'Financeiro', 'Novo lançamento'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
             'lancamento' => null,
@@ -107,7 +107,7 @@ final class FinanceiroController extends Controller
     public function store(): void
     {
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('financeiro_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('financeiro_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect('/dashboard/financeiro/novo');
         }
 
@@ -122,7 +122,7 @@ final class FinanceiroController extends Controller
 
         FinanceiroLancamento::create($data);
 
-        Session::flash('financeiro_success', 'Lancamento cadastrado com sucesso.');
+        Session::flash('financeiro_success', 'Lançamento cadastrado com sucesso.');
         $this->redirect('/dashboard/financeiro');
     }
 
@@ -137,7 +137,7 @@ final class FinanceiroController extends Controller
         }
 
         echo $this->view('dashboard.financeiro.form', [
-            'pageTitle' => 'Editar lancamento - KADOSYS Igrejas',
+            'pageTitle' => 'Editar lançamento - KADOSYS Igrejas',
             'activeMenu' => 'financeiro',
             'breadcrumb' => ['Dashboard', 'Financeiro', 'Editar'],
             'user' => (new Auth($this->config))->user(),
@@ -160,7 +160,7 @@ final class FinanceiroController extends Controller
         }
 
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('financeiro_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('financeiro_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect("/dashboard/financeiro/{$id}/editar");
         }
 
@@ -175,7 +175,7 @@ final class FinanceiroController extends Controller
 
         FinanceiroLancamento::update((int) $id, $data);
 
-        Session::flash('financeiro_success', 'Lancamento atualizado com sucesso.');
+        Session::flash('financeiro_success', 'Lançamento atualizado com sucesso.');
         $this->redirect('/dashboard/financeiro');
     }
 
@@ -183,7 +183,7 @@ final class FinanceiroController extends Controller
     {
         if (Csrf::verify($this->request->input('_csrf_token'))) {
             FinanceiroLancamento::delete((int) $id);
-            Session::flash('financeiro_success', 'Lancamento removido com sucesso.');
+            Session::flash('financeiro_success', 'Lançamento removido com sucesso.');
         }
 
         $this->redirect('/dashboard/financeiro');
@@ -208,7 +208,7 @@ final class FinanceiroController extends Controller
     public function storeCategoria(): void
     {
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('financeiro_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('financeiro_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect('/dashboard/financeiro/categorias');
         }
 
@@ -221,7 +221,7 @@ final class FinanceiroController extends Controller
         }
 
         if (!in_array($tipo, ['entrada', 'saida'], true)) {
-            Session::flash('financeiro_errors', ['Escolha se a categoria e de entrada ou saida.']);
+            Session::flash('financeiro_errors', ['Escolha se a categoria é de entrada ou saída.']);
             $this->redirect('/dashboard/financeiro/categorias');
         }
 
@@ -259,11 +259,11 @@ final class FinanceiroController extends Controller
         $errors = [];
 
         if (!in_array($data['tipo'] ?? null, ['entrada', 'saida'], true)) {
-            $errors[] = 'Escolha se o lancamento e uma entrada ou saida.';
+            $errors[] = 'Escolha se o lançamento é uma entrada ou saída.';
         }
 
         if (trim((string) ($data['descricao'] ?? '')) === '') {
-            $errors[] = 'Informe uma descricao para o lancamento.';
+            $errors[] = 'Informe uma descrição para o lançamento.';
         }
 
         $valor = (float) str_replace(',', '.', (string) ($data['valor'] ?? '0'));
@@ -272,17 +272,17 @@ final class FinanceiroController extends Controller
         }
 
         if (trim((string) ($data['data_lancamento'] ?? '')) === '') {
-            $errors[] = 'Informe a data do lancamento.';
+            $errors[] = 'Informe a data do lançamento.';
         }
 
         $categoriaId = trim((string) ($data['categoria_id'] ?? ''));
         if ($categoriaId !== '' && FinanceiroCategoria::find((int) $categoriaId) === null) {
-            $errors[] = 'Categoria selecionada invalida.';
+            $errors[] = 'Categoria selecionada inválida.';
         }
 
         $membroId = trim((string) ($data['membro_id'] ?? ''));
         if ($membroId !== '' && Membro::find((int) $membroId) === null) {
-            $errors[] = 'Membro selecionado invalido.';
+            $errors[] = 'Membro selecionado inválido.';
         }
 
         return $errors;
@@ -293,9 +293,9 @@ final class FinanceiroController extends Controller
         http_response_code(404);
 
         echo $this->view('errors.404', [
-            'pageTitle' => 'Pagina nao encontrada - KADOSYS Igrejas',
+            'pageTitle' => 'Página não encontrada - KADOSYS Igrejas',
             'activeMenu' => 'financeiro',
-            'breadcrumb' => ['Dashboard', 'Financeiro', 'Nao encontrado'],
+            'breadcrumb' => ['Dashboard', 'Financeiro', 'Não encontrado'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
         ], 'dashboard');

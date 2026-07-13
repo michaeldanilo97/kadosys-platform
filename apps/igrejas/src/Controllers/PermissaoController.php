@@ -26,9 +26,9 @@ final class PermissaoController extends Controller
         $usuarios = array_values(array_filter(User::all(), static fn (User $usuario) => $usuario->role === User::ROLE_USUARIO));
 
         echo $this->view('dashboard.permissoes.index', [
-            'pageTitle' => 'Permissoes - KADOSYS Igrejas',
+            'pageTitle' => 'Permissões - KADOSYS Igrejas',
             'activeMenu' => 'permissoes',
-            'breadcrumb' => ['Dashboard', 'Permissoes'],
+            'breadcrumb' => ['Dashboard', 'Permissões'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
             'usuarios' => $usuarios,
@@ -44,9 +44,9 @@ final class PermissaoController extends Controller
         }
 
         echo $this->view('dashboard.permissoes.form', [
-            'pageTitle' => 'Permissoes de ' . $usuarioEditado->name . ' - KADOSYS Igrejas',
+            'pageTitle' => 'Permissões de ' . $usuarioEditado->name . ' - KADOSYS Igrejas',
             'activeMenu' => 'permissoes',
-            'breadcrumb' => ['Dashboard', 'Permissoes', $usuarioEditado->name],
+            'breadcrumb' => ['Dashboard', 'Permissões', $usuarioEditado->name],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
             'usuarioEditado' => $usuarioEditado,
@@ -74,7 +74,7 @@ final class PermissaoController extends Controller
 
         User::definirModulosPermitidos($usuarioEditado->id, $modulosSelecionados);
 
-        Session::flash('permissao_success', 'Permissoes de ' . $usuarioEditado->name . ' atualizadas com sucesso.');
+        Session::flash('permissao_success', 'Permissões de ' . $usuarioEditado->name . ' atualizadas com sucesso.');
         $this->redirect("/dashboard/permissoes/{$id}/editar");
     }
 
@@ -114,7 +114,7 @@ final class PermissaoController extends Controller
         $usuarioEditado = User::findById($id);
 
         if ($usuarioEditado === null || $usuarioEditado->role !== User::ROLE_USUARIO) {
-            Session::flash('permissao_errors', ['Usuario invalido.']);
+            Session::flash('permissao_errors', ['Usuário inválido.']);
             $this->redirect('/dashboard/permissoes');
         }
 

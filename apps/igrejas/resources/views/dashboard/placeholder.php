@@ -11,9 +11,9 @@
     <div class="icon"><i class="bi <?= htmlspecialchars($module['icon'], ENT_QUOTES, 'UTF-8') ?>"></i></div>
     <h2><?= htmlspecialchars($module['title'], ENT_QUOTES, 'UTF-8') ?></h2>
     <p>
-        A estrutura desta pagina ja esta pronta. As funcionalidades do modulo
+        A estrutura desta página já está pronta. As funcionalidades do módulo
         <?= htmlspecialchars(mb_strtolower($module['title']), ENT_QUOTES, 'UTF-8') ?>
-        serao implementadas em uma proxima sprint de desenvolvimento.
+        serão implementadas em uma próxima sprint de desenvolvimento.
     </p>
     <span class="status-tag">Estrutura pronta &middot; em desenvolvimento</span>
 </div>

@@ -7,14 +7,14 @@
 $basePath = $config['base_path'] ?? '';
 
 $statusLabels = ['rascunho' => 'Rascunho', 'publicado' => 'Publicado', 'arquivado' => 'Arquivado'];
-$publicoLabels = ['todos' => 'Todos os membros', 'lideranca' => 'So lideranca'];
+$publicoLabels = ['todos' => 'Todos os membros', 'lideranca' => 'Só liderança'];
 ?>
 
 <div class="dash-page-head">
     <div>
         <h1 class="dash-page-title"><?= htmlspecialchars($aviso->titulo, ENT_QUOTES, 'UTF-8') ?></h1>
         <p class="dash-page-subtitle">
-            <?= $aviso->dataPublicacao ? (new DateTimeImmutable($aviso->dataPublicacao))->format('d/m/Y') : 'Sem data de publicacao' ?>
+            <?= $aviso->dataPublicacao ? (new DateTimeImmutable($aviso->dataPublicacao))->format('d/m/Y') : 'Sem data de publicação' ?>
             &middot; <?= $publicoLabels[$aviso->publicoAlvo] ?? $aviso->publicoAlvo ?>
         </p>
     </div>

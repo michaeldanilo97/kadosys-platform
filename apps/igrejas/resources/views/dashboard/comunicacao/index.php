@@ -12,12 +12,12 @@
 $basePath = $config['base_path'] ?? '';
 
 $statusLabels = ['rascunho' => 'Rascunho', 'publicado' => 'Publicado', 'arquivado' => 'Arquivado'];
-$publicoLabels = ['todos' => 'Todos', 'lideranca' => 'Lideranca'];
+$publicoLabels = ['todos' => 'Todos', 'lideranca' => 'Liderança'];
 ?>
 
 <div class="dash-page-head">
     <div>
-        <h1 class="dash-page-title">Comunicacao</h1>
+        <h1 class="dash-page-title">Comunicação</h1>
         <p class="dash-page-subtitle">
             <?= $total ?> aviso<?= $total === 1 ? '' : 's' ?> cadastrado<?= $total === 1 ? '' : 's' ?>.
         </p>
@@ -40,7 +40,7 @@ $publicoLabels = ['todos' => 'Todos', 'lideranca' => 'Lideranca'];
             type="search"
             name="busca"
             value="<?= htmlspecialchars($search, ENT_QUOTES, 'UTF-8') ?>"
-            placeholder="Buscar por titulo ou conteudo..."
+            placeholder="Buscar por título ou conteúdo..."
         >
         <?php if ($search !== ''): ?>
             <a href="<?= $basePath ?>/dashboard/comunicacao" class="crud-search-clear" aria-label="Limpar busca">
@@ -70,10 +70,10 @@ $publicoLabels = ['todos' => 'Todos', 'lideranca' => 'Lideranca'];
                 <thead>
                     <tr>
                         <th>Aviso</th>
-                        <th>Publico</th>
-                        <th>Publicacao</th>
+                        <th>Público</th>
+                        <th>Publicação</th>
                         <th>Status</th>
-                        <th class="actions-col">Acoes</th>
+                        <th class="actions-col">Ações</th>
                     </tr>
                 </thead>
                 <tbody>

@@ -5,14 +5,14 @@
 $basePath = $config['base_path'] ?? '';
 ?>
 <div class="auth-form-card">
-    <div class="eyebrow">Quase la</div>
+    <div class="eyebrow">Quase lá</div>
     <h1>Recebemos seu pedido!</h1>
     <p class="subtitle">
-        Seu pagamento esta sendo processado pelo Mercado Pago. Assim que for aprovado,
+        Seu pagamento está sendo processado pelo Mercado Pago. Assim que for aprovado,
         preparamos o acesso da sua igreja automaticamente e enviamos um e-mail com o
-        endereco e os proximos passos para entrar pela primeira vez.
+        endereço e os próximos passos para entrar pela primeira vez.
     </p>
     <p class="subtitle">Isso costuma levar poucos minutos.</p>
 
-    <a href="<?= $basePath ?>/" class="btn-k btn-k-grad">Voltar para o inicio</a>
+    <a href="<?= $basePath ?>/" class="btn-k btn-k-grad">Voltar para o início</a>
 </div>

@@ -39,7 +39,7 @@ final class PlataformaController extends Controller
     public function autenticar(): void
     {
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('plataforma_login_error', 'Sessao expirada. Tente novamente.');
+            Session::flash('plataforma_login_error', 'Sessão expirada. Tente novamente.');
             $this->redirect('/plataforma/entrar');
         }
 
@@ -47,7 +47,7 @@ final class PlataformaController extends Controller
         $config = require dirname(__DIR__, 2) . '/config/plataforma.php';
 
         if ($config['senha_hash'] === '' || !password_verify($chave, $config['senha_hash'])) {
-            Session::flash('plataforma_login_error', 'Chave invalida.');
+            Session::flash('plataforma_login_error', 'Chave inválida.');
             $this->redirect('/plataforma/entrar');
         }
 
@@ -118,7 +118,7 @@ final class PlataformaController extends Controller
             return ['label' => 'Teste vencido', 'classe' => 'cancelada'];
         }
 
-        return ['label' => 'Em teste ate ' . $expiraEm->format('d/m/Y'), 'classe' => 'pendente'];
+        return ['label' => 'Em teste até ' . $expiraEm->format('d/m/Y'), 'classe' => 'pendente'];
     }
 
     /** @return array{label:string, classe:string} */
@@ -176,14 +176,14 @@ final class PlataformaController extends Controller
     public function excluirIgreja(string $id): void
     {
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('plataforma_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('plataforma_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect('/plataforma/igrejas');
         }
 
         $tenant = Tenant::buscarPorId((int) $id);
 
         if ($tenant === null) {
-            Session::flash('plataforma_errors', ['Igreja nao encontrada.']);
+            Session::flash('plataforma_errors', ['Igreja não encontrada.']);
             $this->redirect('/plataforma/igrejas');
         }
 
@@ -191,7 +191,7 @@ final class PlataformaController extends Controller
 
         if ($resultado['erros'] === []) {
             Session::flash('plataforma_success', array_merge(
-                ['"' . $tenant->nomeIgreja . '" foi excluida (banco de dados e usuario removidos do cPanel, registro removido do sistema).'],
+                ['"' . $tenant->nomeIgreja . '" foi excluída (banco de dados e usuário removidos do cPanel, registro removido do sistema).'],
                 $resultado['avisos']
             ));
         } else {
@@ -226,7 +226,7 @@ final class PlataformaController extends Controller
     public function publicarAviso(): void
     {
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('plataforma_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('plataforma_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect('/plataforma/avisos');
         }
 
@@ -241,7 +241,7 @@ final class PlataformaController extends Controller
         PlataformaAviso::publicar($mensagem, $publicoAlvo);
 
         Session::flash('plataforma_success', [
-            'Aviso publicado para "' . (PlataformaAviso::PUBLICO_LABELS[$publicoAlvo] ?? PlataformaAviso::PUBLICO_LABELS[PlataformaAviso::PUBLICO_TODOS]) . '" - vai aparecer no sino de notificacoes de todas as igrejas.',
+            'Aviso publicado para "' . (PlataformaAviso::PUBLICO_LABELS[$publicoAlvo] ?? PlataformaAviso::PUBLICO_LABELS[PlataformaAviso::PUBLICO_TODOS]) . '" - vai aparecer no sino de notificações de todas as igrejas.',
         ]);
         $this->redirect('/plataforma/avisos');
     }

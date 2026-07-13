@@ -27,22 +27,22 @@ $modulosComparacao = array_filter(
 <section class="hero">
     <div class="container">
         <div class="hero-copy reveal">
-            <span class="eyebrow">Kadosys Igrejas &middot; Gestao inteligente</span>
-            <h1>A gestao da sua igreja, <span class="text-gradient">inteligente e conectada</span>.</h1>
+            <span class="eyebrow">Kadosys Igrejas &middot; Gestão inteligente</span>
+            <h1>A gestão da sua igreja, <span class="text-gradient">inteligente e conectada</span>.</h1>
             <p class="lead">
-                Membros, ministerios, cultos, agenda, financeiro e patrimonio em uma unica
-                plataforma moderna, com automacao e inteligencia artificial a servico da
+                Membros, ministérios, cultos, agenda, financeiro e patrimônio em uma única
+                plataforma moderna, com automação e inteligência artificial a serviço da
                 rotina real de quem administra a igreja.
             </p>
             <div class="hero-actions">
-                <a href="#planos" class="btn-k btn-k-grad">Comecar agora</a>
+                <a href="#planos" class="btn-k btn-k-grad">Começar agora</a>
                 <a href="<?= $basePath ?>/login" class="btn-k btn-k-outline">
                     Acessar o sistema <i class="bi bi-arrow-right"></i>
                 </a>
             </div>
             <div class="hero-meta">
-                <div><strong data-counter="14">0</strong> modulos integrados</div>
-                <div><strong data-counter="100">0</strong><span class="unit">%</span> dados na sua propria base</div>
+                <div><strong data-counter="14">0</strong> módulos integrados</div>
+                <div><strong data-counter="100">0</strong><span class="unit">%</span> dados na sua própria base</div>
                 <div><strong>IA</strong> integrada a plataforma</div>
             </div>
         </div>
@@ -59,25 +59,25 @@ $modulosComparacao = array_filter(
                         <span class="tag">agendado</span>
                     </div>
                     <div class="hero-row">
-                        <span><i class="bi bi-people"></i> Novos membros este mes</span>
+                        <span><i class="bi bi-people"></i> Novos membros este mês</span>
                         <span class="tag glow">+18</span>
                     </div>
                     <div class="hero-row">
-                        <span><i class="bi bi-music-note-beamed"></i> Ministerio de louvor</span>
-                        <span class="tag">14 voluntarios</span>
+                        <span><i class="bi bi-music-note-beamed"></i> Ministério de louvor</span>
+                        <span class="tag">14 voluntários</span>
                     </div>
                     <div class="hero-row">
-                        <span><i class="bi bi-cash-coin"></i> Dizimos e ofertas</span>
+                        <span><i class="bi bi-cash-coin"></i> Dízimos e ofertas</span>
                         <span class="tag glow">atualizado</span>
                     </div>
                     <div class="hero-row">
                         <span><i class="bi bi-stars"></i> Insight da IA</span>
-                        <span class="tag ai">frequencia +12%</span>
+                        <span class="tag ai">frequência +12%</span>
                     </div>
                 </div>
             </div>
             <div class="floating-badge badge-1"><i class="bi bi-stars"></i> IA Ativa</div>
-            <div class="floating-badge badge-2"><i class="bi bi-graph-up-arrow"></i> +85% Organizacao</div>
+            <div class="floating-badge badge-2"><i class="bi bi-graph-up-arrow"></i> +85% Organização</div>
         </div>
     </div>
 </section>
@@ -89,9 +89,9 @@ $modulosComparacao = array_filter(
             <span class="eyebrow">Sobre o sistema</span>
             <h2 class="section-title">Feito para a rotina da igreja, <span class="text-gradient">potencializado por tecnologia</span></h2>
             <p class="section-lead">
-                O KADOSYS Igrejas reune, em um unico lugar, os processos que normalmente se perdem entre
-                planilhas, papeis e grupos de mensagens: cadastro de membros, organizacao de ministerios,
-                controle financeiro e comunicacao com a congregacao.
+                O KADOSYS Igrejas reúne, em um único lugar, os processos que normalmente se perdem entre
+                planilhas, papéis e grupos de mensagens: cadastro de membros, organização de ministérios,
+                controle financeiro e comunicação com a congregação.
             </p>
         </div>
 
@@ -99,17 +99,17 @@ $modulosComparacao = array_filter(
             <div class="sobre-item glass-card reveal">
                 <div class="icon"><i class="bi bi-hdd-network"></i></div>
                 <h3>Centralizado</h3>
-                <p>Toda a informacao da igreja em uma unica plataforma na nuvem, acessivel de qualquer lugar.</p>
+                <p>Toda a informação da igreja em uma única plataforma na nuvem, acessível de qualquer lugar.</p>
             </div>
             <div class="sobre-item glass-card reveal">
                 <div class="icon"><i class="bi bi-shield-check"></i></div>
                 <h3>Seguro</h3>
-                <p>Cada igreja com seu proprio banco de dados, autenticacao protegida e controle de acesso.</p>
+                <p>Cada igreja com seu próprio banco de dados, autenticação protegida e controle de acesso.</p>
             </div>
             <div class="sobre-item glass-card reveal">
                 <div class="icon"><i class="bi bi-cpu"></i></div>
                 <h3>Inteligente</h3>
-                <p>Estrutura preparada para automacoes e recursos de IA que evoluem junto com a sua gestao.</p>
+                <p>Estrutura preparada para automações e recursos de IA que evoluem junto com a sua gestão.</p>
             </div>
         </div>
     </div>
@@ -120,7 +120,7 @@ $modulosComparacao = array_filter(
     <div class="container">
         <div class="section-header reveal">
             <span class="eyebrow">Recursos</span>
-            <h2 class="section-title">Tudo que a secretaria, a tesouraria e a <span class="text-gradient">lideranca precisam</span></h2>
+            <h2 class="section-title">Tudo que a secretaria, a tesouraria e a <span class="text-gradient">liderança precisam</span></h2>
             <p class="section-lead">
                 Recursos pensados para reduzir o trabalho manual e dar visibilidade sobre o que importa.
             </p>
@@ -129,43 +129,43 @@ $modulosComparacao = array_filter(
         <div class="cards-grid">
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-people"></i></div>
-                <h3>Gestao de membros</h3>
-                <p>Cadastro completo, historico e acompanhamento de cada membro da congregacao.</p>
+                <h3>Gestão de membros</h3>
+                <p>Cadastro completo, histórico e acompanhamento de cada membro da congregação.</p>
             </div>
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-diagram-3"></i></div>
-                <h3>Ministerios e grupos</h3>
-                <p>Organizacao de ministerios, pequenos grupos e suas respectivas liderancas.</p>
+                <h3>Ministérios e grupos</h3>
+                <p>Organização de ministérios, pequenos grupos e suas respectivas lideranças.</p>
             </div>
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-cash-coin"></i></div>
                 <h3>Financeiro</h3>
-                <p>Controle de dizimos, ofertas e despesas com relatorios claros.</p>
+                <p>Controle de dízimos, ofertas e despesas com relatórios claros.</p>
             </div>
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-calendar3"></i></div>
                 <h3>Agenda e cultos</h3>
-                <p>Programacao de cultos, eventos e compromissos da igreja em um calendario unico.</p>
+                <p>Programação de cultos, eventos e compromissos da igreja em um calendário único.</p>
             </div>
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-building"></i></div>
-                <h3>Patrimonio</h3>
-                <p>Controle de bens, imoveis e equipamentos sob responsabilidade da igreja.</p>
+                <h3>Patrimônio</h3>
+                <p>Controle de bens, imóveis e equipamentos sob responsabilidade da igreja.</p>
             </div>
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-megaphone"></i></div>
-                <h3>Comunicacao</h3>
-                <p>Avisos e comunicados centralizados para membros e lideranca.</p>
+                <h3>Comunicação</h3>
+                <p>Avisos e comunicados centralizados para membros e liderança.</p>
             </div>
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-easel2"></i></div>
-                <h3>Projecao e Telao</h3>
-                <p>Biblia, videos e letras projetados ao vivo no telao, com controle remoto para o preletor direto do celular ou tablet durante o culto.</p>
+                <h3>Projeção e Telão</h3>
+                <p>Bíblia, vídeos e letras projetados ao vivo no telão, com controle remoto para o preletor direto do celular ou tablet durante o culto.</p>
             </div>
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-music-note-beamed"></i></div>
                 <h3>Playbacks</h3>
-                <p>Biblioteca de playbacks para o ministerio de louvor, liberada em todos os planos - sem custo extra.</p>
+                <p>Biblioteca de playbacks para o ministério de louvor, liberada em todos os planos - sem custo extra.</p>
             </div>
         </div>
     </div>
@@ -176,10 +176,10 @@ $modulosComparacao = array_filter(
     <div class="container">
         <div class="section-header reveal">
             <span class="eyebrow">Funcionalidades</span>
-            <h2 class="section-title">Um painel administrativo <span class="text-gradient">de nova geracao</span></h2>
+            <h2 class="section-title">Um painel administrativo <span class="text-gradient">de nova geração</span></h2>
             <p class="section-lead">
-                Dashboard moderno, com visao clara dos indicadores, navegacao simples e
-                insights automaticos entre os modulos.
+                Dashboard moderno, com visão clara dos indicadores, navegação simples e
+                insights automáticos entre os módulos.
             </p>
         </div>
 
@@ -187,22 +187,22 @@ $modulosComparacao = array_filter(
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-speedometer2"></i></div>
                 <h3>Dashboard com indicadores</h3>
-                <p>Visao geral da igreja com numeros atualizados dos principais modulos.</p>
+                <p>Visão geral da igreja com números atualizados dos principais módulos.</p>
             </div>
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-stars"></i></div>
                 <h3>Insights com IA</h3>
-                <p>Resumos e alertas inteligentes sobre frequencia, financas e engajamento.</p>
+                <p>Resumos e alertas inteligentes sobre frequência, finanças e engajamento.</p>
             </div>
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-shield-lock"></i></div>
-                <h3>Usuarios e permissoes</h3>
-                <p>Controle de quem acessa cada area do sistema, por perfil de usuario.</p>
+                <h3>Usuários e permissões</h3>
+                <p>Controle de quem acessa cada área do sistema, por perfil de usuário.</p>
             </div>
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-bar-chart-line"></i></div>
-                <h3>Relatorios</h3>
-                <p>Relatorios consolidados para acompanhar a evolucao da igreja.</p>
+                <h3>Relatórios</h3>
+                <p>Relatórios consolidados para acompanhar a evolução da igreja.</p>
             </div>
         </div>
     </div>
@@ -212,7 +212,7 @@ $modulosComparacao = array_filter(
 <section class="landing-section alt" id="beneficios">
     <div class="container">
         <div class="section-header reveal">
-            <span class="eyebrow">Beneficios</span>
+            <span class="eyebrow">Benefícios</span>
             <h2 class="section-title">Por que igrejas escolhem o <span class="text-gradient">KADOSYS</span></h2>
         </div>
 
@@ -221,28 +221,28 @@ $modulosComparacao = array_filter(
                 <div class="check"><i class="bi bi-check-lg"></i></div>
                 <div>
                     <h4>Menos planilhas, mais clareza</h4>
-                    <p>Substitua controles manuais por um sistema unico, organizado e automatizado.</p>
+                    <p>Substitua controles manuais por um sistema único, organizado e automatizado.</p>
                 </div>
             </div>
             <div class="beneficio-row glass-card reveal">
                 <div class="check"><i class="bi bi-check-lg"></i></div>
                 <div>
                     <h4>Dados exclusivos da sua igreja</h4>
-                    <p>Cada instalacao utiliza seu proprio banco de dados, sem compartilhamento.</p>
+                    <p>Cada instalação utiliza seu próprio banco de dados, sem compartilhamento.</p>
                 </div>
             </div>
             <div class="beneficio-row glass-card reveal">
                 <div class="check"><i class="bi bi-check-lg"></i></div>
                 <div>
-                    <h4>Facil de usar</h4>
-                    <p>Interface simples e moderna, pensada para secretarias, tesoureiros e lideranca.</p>
+                    <h4>Fácil de usar</h4>
+                    <p>Interface simples e moderna, pensada para secretarias, tesoureiros e liderança.</p>
                 </div>
             </div>
             <div class="beneficio-row glass-card reveal">
                 <div class="check"><i class="bi bi-check-lg"></i></div>
                 <div>
                     <h4>Pronto para o futuro</h4>
-                    <p>Estrutura preparada para novos modulos e recursos de IA nas proximas etapas.</p>
+                    <p>Estrutura preparada para novos módulos e recursos de IA nas próximas etapas.</p>
                 </div>
             </div>
         </div>
@@ -254,8 +254,8 @@ $modulosComparacao = array_filter(
     <div class="container">
         <div class="section-header reveal">
             <span class="eyebrow">Capturas de tela</span>
-            <h2 class="section-title">Conheca a interface do <span class="text-gradient">sistema</span></h2>
-            <p class="section-lead">Imagens reais serao adicionadas conforme os modulos forem publicados.</p>
+            <h2 class="section-title">Conheça a interface do <span class="text-gradient">sistema</span></h2>
+            <p class="section-lead">Imagens reais serão adicionadas conforme os módulos forem publicados.</p>
         </div>
 
         <div class="screens-grid">
@@ -287,11 +287,11 @@ $modulosComparacao = array_filter(
         <div class="plan-trial-banner glass-card reveal">
             <div class="plan-trial-banner-icon"><i class="bi bi-gift"></i></div>
             <div class="plan-trial-banner-copy">
-                <h3>Teste gratis por 7 dias</h3>
-                <p>Experimente o sistema completo, sem cartao de credito e sem compromisso. Depois escolha o plano que combina com a sua igreja.</p>
+                <h3>Teste grátis por 7 dias</h3>
+                <p>Experimente o sistema completo, sem cartão de crédito e sem compromisso. Depois escolha o plano que combina com a sua igreja.</p>
             </div>
             <a href="<?= $basePath ?>/cadastro?metodo_pagamento=trial" class="btn-k btn-k-grad">
-                Testar gratis agora <i class="bi bi-arrow-right"></i>
+                Testar grátis agora <i class="bi bi-arrow-right"></i>
             </a>
         </div>
 
@@ -299,46 +299,46 @@ $modulosComparacao = array_filter(
             <div class="plan-card glass-card reveal">
                 <div class="plan-icon"><i class="bi bi-rocket-takeoff"></i></div>
                 <h3>Essencial</h3>
-                <p class="plan-desc">Para igrejas pequenas que estao comecando a organizar sua gestao.</p>
-                <div class="plan-price">R$ 49,90<span>/mes</span></div>
+                <p class="plan-desc">Para igrejas pequenas que estão começando a organizar sua gestão.</p>
+                <div class="plan-price">R$ 49,90<span>/mês</span></div>
                 <ul class="plan-features">
                     <li class="plan-feature"><i class="bi bi-check2"></i> Cadastro de membros</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Cultos (programacao e frequencia)</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Projecao/Telao (Biblia e video)</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> 1 usuario administrador</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Backup automatico</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Cultos (programação e frequência)</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Projeção/Telão (Bíblia e vídeo)</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> 1 usuário administrador</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Backup automático</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Suporte por e-mail</li>
                 </ul>
-                <a href="<?= $basePath ?>/cadastro?plano=essencial" class="btn-k btn-k-outline">Comecar agora</a>
+                <a href="<?= $basePath ?>/cadastro?plano=essencial" class="btn-k btn-k-outline">Começar agora</a>
             </div>
 
             <div class="plan-card glass-card featured reveal">
                 <span class="badge-featured">Mais escolhido</span>
                 <div class="plan-icon"><i class="bi bi-stars"></i></div>
                 <h3>Plus</h3>
-                <p class="plan-desc">Para igrejas em crescimento, com ministerios ativos.</p>
-                <div class="plan-price">R$ 99,90<span>/mes</span></div>
+                <p class="plan-desc">Para igrejas em crescimento, com ministérios ativos.</p>
+                <div class="plan-price">R$ 99,90<span>/mês</span></div>
                 <ul class="plan-features">
                     <li class="plan-feature"><i class="bi bi-check2"></i> Tudo do plano Essencial</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Ministerios (lideres e voluntarios)</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Usuarios administradores ilimitados</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Suporte prioritario</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Ministérios (líderes e voluntários)</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Usuários administradores ilimitados</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Suporte prioritário</li>
                 </ul>
-                <a href="<?= $basePath ?>/cadastro?plano=premium" class="btn-k btn-k-grad">Comecar agora</a>
+                <a href="<?= $basePath ?>/cadastro?plano=premium" class="btn-k btn-k-grad">Começar agora</a>
             </div>
 
             <div class="plan-card glass-card reveal">
                 <div class="plan-icon"><i class="bi bi-gem"></i></div>
                 <h3>Premium</h3>
-                <p class="plan-desc">Para igrejas medias e grandes que querem prioridade.</p>
-                <div class="plan-price">R$ 179,90<span>/mes</span></div>
+                <p class="plan-desc">Para igrejas médias e grandes que querem prioridade.</p>
+                <div class="plan-price">R$ 179,90<span>/mês</span></div>
                 <ul class="plan-features">
                     <li class="plan-feature"><i class="bi bi-check2"></i> Tudo do plano Plus</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Acesso prioritario a novos modulos (financeiro, comunicacao, relatorios)</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Playbacks: mudar o tom da musica em tempo real</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Acesso prioritário a novos módulos (financeiro, comunicação, relatórios)</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Playbacks: mudar o tom da música em tempo real</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Atendimento dedicado</li>
                 </ul>
-                <a href="<?= $basePath ?>/cadastro?plano=enterprise" class="btn-k btn-k-outline">Comecar agora</a>
+                <a href="<?= $basePath ?>/cadastro?plano=enterprise" class="btn-k btn-k-outline">Começar agora</a>
             </div>
         </div>
 
@@ -379,7 +379,7 @@ $modulosComparacao = array_filter(
                             </tr>
                         <?php endforeach; ?>
                         <tr>
-                            <td class="plan-compare-feature-col"><i class="bi bi-person-badge"></i> Usuarios administradores</td>
+                            <td class="plan-compare-feature-col"><i class="bi bi-person-badge"></i> Usuários administradores</td>
                             <td>1</td>
                             <td>Ilimitados</td>
                             <td>Ilimitados</td>
@@ -387,11 +387,11 @@ $modulosComparacao = array_filter(
                         <tr>
                             <td class="plan-compare-feature-col"><i class="bi bi-headset"></i> Suporte</td>
                             <td>E-mail</td>
-                            <td>E-mail prioritario</td>
+                            <td>E-mail prioritário</td>
                             <td>Dedicado</td>
                         </tr>
                         <tr>
-                            <td class="plan-compare-feature-col"><i class="bi bi-music-note-beamed"></i> Playbacks: mudar tom da musica</td>
+                            <td class="plan-compare-feature-col"><i class="bi bi-music-note-beamed"></i> Playbacks: mudar tom da música</td>
                             <td><i class="bi bi-dash-lg plan-compare-no"></i></td>
                             <td><i class="bi bi-dash-lg plan-compare-no"></i></td>
                             <td><i class="bi bi-check-circle-fill plan-compare-yes"></i></td>
@@ -408,18 +408,18 @@ $modulosComparacao = array_filter(
     <div class="container">
         <div class="section-header reveal">
             <span class="eyebrow">Perguntas frequentes</span>
-            <h2 class="section-title">Ainda com <span class="text-gradient">duvidas?</span></h2>
+            <h2 class="section-title">Ainda com <span class="text-gradient">dúvidas?</span></h2>
         </div>
 
         <div class="faq-list">
             <div class="faq-item glass-card reveal" data-faq-item>
                 <button class="faq-question">
-                    Os dados da minha igreja sao compartilhados com outras igrejas?
+                    Os dados da minha igreja são compartilhados com outras igrejas?
                     <span class="plus">+</span>
                 </button>
                 <div class="faq-answer">
-                    <p>Nao. Cada instalacao do KADOSYS Igrejas utiliza seu proprio banco de dados,
-                        exclusivo para a sua igreja, sem compartilhamento com outras instalacoes.</p>
+                    <p>Não. Cada instalação do KADOSYS Igrejas utiliza seu próprio banco de dados,
+                        exclusivo para a sua igreja, sem compartilhamento com outras instalações.</p>
                 </div>
             </div>
 
@@ -429,7 +429,7 @@ $modulosComparacao = array_filter(
                     <span class="plus">+</span>
                 </button>
                 <div class="faq-answer">
-                    <p>Sim. E possivel alterar o plano contratado conforme a igreja cresce e novas
+                    <p>Sim. É possível alterar o plano contratado conforme a igreja cresce e novas
                         necessidades surgem.</p>
                 </div>
             </div>
@@ -440,30 +440,30 @@ $modulosComparacao = array_filter(
                     <span class="plus">+</span>
                 </button>
                 <div class="faq-answer">
-                    <p>Sim. A interface e responsiva e se adapta a celulares, tablets e computadores.</p>
+                    <p>Sim. A interface é responsiva e se adapta a celulares, tablets e computadores.</p>
                 </div>
             </div>
 
             <div class="faq-item glass-card reveal" data-faq-item>
                 <button class="faq-question">
-                    O que sao os Playbacks e como funciona a troca de tom?
+                    O que são os Playbacks e como funciona a troca de tom?
                     <span class="plus">+</span>
                 </button>
                 <div class="faq-answer">
-                    <p>O modulo de Playbacks disponibiliza uma biblioteca de faixas para o ministerio
-                        de louvor, liberada em todos os planos. No plano Premium, sera possivel ainda
-                        mudar o tom da musica em tempo real durante a execucao - recurso em
-                        desenvolvimento, com previsao de lancamento em breve.</p>
+                    <p>O módulo de Playbacks disponibiliza uma biblioteca de faixas para o ministério
+                        de louvor, liberada em todos os planos. No plano Premium, será possível ainda
+                        mudar o tom da música em tempo real durante a execução - recurso em
+                        desenvolvimento, com previsão de lançamento em breve.</p>
                 </div>
             </div>
 
             <div class="faq-item glass-card reveal" data-faq-item>
                 <button class="faq-question">
-                    Quais modulos estarao disponiveis em seguida?
+                    Quais módulos estarão disponíveis em seguida?
                     <span class="plus">+</span>
                 </button>
                 <div class="faq-answer">
-                    <p>Modulos como Grupos, Agenda, Financeiro, Comunicacao, CRM e ERP estao
+                    <p>Módulos como Grupos, Agenda, Financeiro, Comunicação, CRM e ERP estão
                         planejados para sprints futuras de desenvolvimento.</p>
                 </div>
             </div>
@@ -476,10 +476,10 @@ $modulosComparacao = array_filter(
     <div class="container">
         <div class="cta-final-card glass-card reveal">
             <span class="eyebrow">Comece hoje</span>
-            <h2 class="section-title">Leve a gestao da sua igreja para <span class="text-gradient">o futuro</span></h2>
-            <p>Acesse o sistema ou escolha um plano para comecar.</p>
+            <h2 class="section-title">Leve a gestão da sua igreja para <span class="text-gradient">o futuro</span></h2>
+            <p>Acesse o sistema ou escolha um plano para começar.</p>
             <div class="cta-final-actions">
-                <a href="#planos" class="btn-k btn-k-grad">Comecar agora</a>
+                <a href="#planos" class="btn-k btn-k-grad">Começar agora</a>
                 <a href="<?= $basePath ?>/login" class="btn-k btn-k-outline">Acessar o sistema</a>
             </div>
         </div>

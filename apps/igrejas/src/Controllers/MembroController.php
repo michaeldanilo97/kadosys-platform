@@ -65,7 +65,7 @@ final class MembroController extends Controller
     public function store(): void
     {
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('membro_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('membro_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect('/dashboard/membros/novo');
         }
 
@@ -116,7 +116,7 @@ final class MembroController extends Controller
         }
 
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('membro_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('membro_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect("/dashboard/membros/{$id}/editar");
         }
 
@@ -159,12 +159,12 @@ final class MembroController extends Controller
 
         $email = trim((string) ($data['email'] ?? ''));
         if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = 'Informe um e-mail valido.';
+            $errors[] = 'Informe um e-mail válido.';
         }
 
         $status = $data['status'] ?? 'ativo';
         if (!in_array($status, ['ativo', 'inativo'], true)) {
-            $errors[] = 'Status invalido.';
+            $errors[] = 'Status inválido.';
         }
 
         return $errors;
@@ -175,9 +175,9 @@ final class MembroController extends Controller
         http_response_code(404);
 
         echo $this->view('errors.404', [
-            'pageTitle' => 'Pagina nao encontrada - KADOSYS Igrejas',
+            'pageTitle' => 'Página não encontrada - KADOSYS Igrejas',
             'activeMenu' => 'membros',
-            'breadcrumb' => ['Dashboard', 'Membros', 'Nao encontrado'],
+            'breadcrumb' => ['Dashboard', 'Membros', 'Não encontrado'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
         ], 'dashboard');

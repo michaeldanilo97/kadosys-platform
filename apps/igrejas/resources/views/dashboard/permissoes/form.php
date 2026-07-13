@@ -16,10 +16,10 @@ $semRestricao = $modulosPermitidos === [];
 
 <div class="dash-page-head">
     <div>
-        <h1 class="dash-page-title">Permissoes de <?= htmlspecialchars($usuarioEditado->name, ENT_QUOTES, 'UTF-8') ?></h1>
+        <h1 class="dash-page-title">Permissões de <?= htmlspecialchars($usuarioEditado->name, ENT_QUOTES, 'UTF-8') ?></h1>
         <p class="dash-page-subtitle">
-            Escolha quais modulos <?= htmlspecialchars($usuarioEditado->name, ENT_QUOTES, 'UTF-8') ?> pode acessar.
-            Sem nenhum modulo marcado, o acesso e o padrao: tudo que o plano contratado libera.
+            Escolha quais módulos <?= htmlspecialchars($usuarioEditado->name, ENT_QUOTES, 'UTF-8') ?> pode acessar.
+            Sem nenhum módulo marcado, o acesso é o padrão: tudo que o plano contratado libera.
         </p>
     </div>
     <div class="dash-page-actions">
@@ -40,8 +40,8 @@ $semRestricao = $modulosPermitidos === [];
         <div class="crud-alert" style="background: rgba(59, 130, 246, 0.08); border-color: rgba(59, 130, 246, 0.3); color: var(--primary-soft);">
             <i class="bi bi-info-circle"></i>
             <?= $semRestricao
-                ? 'Nenhuma restricao aplicada agora - o usuario acessa tudo que o plano contratado libera.'
-                : 'Restricao ativa - o usuario so acessa os modulos marcados abaixo.' ?>
+                ? 'Nenhuma restrição aplicada agora - o usuário acessa tudo que o plano contratado libera.'
+                : 'Restrição ativa - o usuário só acessa os módulos marcados abaixo.' ?>
         </div>
 
         <div class="plano-escolha" data-permissoes-grid style="margin-top: 1rem;">
@@ -61,7 +61,7 @@ $semRestricao = $modulosPermitidos === [];
         <div class="crud-form-actions">
             <a href="<?= $basePath ?>/dashboard/permissoes" class="btn-k btn-k-ghost">Cancelar</a>
             <button type="submit" class="btn-k btn-k-grad">
-                <i class="bi bi-check-lg"></i> Salvar permissoes
+                <i class="bi bi-check-lg"></i> Salvar permissões
             </button>
         </div>
     </form>

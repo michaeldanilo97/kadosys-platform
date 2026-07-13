@@ -10,7 +10,7 @@ $basePath = $config['base_path'] ?? '';
 <div class="auth-form-card">
     <div class="eyebrow">Acesso restrito - dono do sistema</div>
     <h1>Painel da Plataforma</h1>
-    <p class="subtitle">Area interna de administracao das igrejas provisionadas. Nao e o login normal de uma igreja.</p>
+    <p class="subtitle">Área interna de administração das igrejas provisionadas. Não é o login normal de uma igreja.</p>
 
     <?php if (!empty($error)): ?>
         <div class="auth-alert error"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></div>
@@ -37,6 +37,6 @@ $basePath = $config['base_path'] ?? '';
     </form>
 
     <a href="<?= $basePath ?>/" class="auth-back-link">
-        <i class="bi bi-arrow-left"></i> Voltar para a pagina inicial
+        <i class="bi bi-arrow-left"></i> Voltar para a página inicial
     </a>
 </div>
