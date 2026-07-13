@@ -17,6 +17,23 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 77 - 2026-07-13
+
+**Modo Culto: líder muda o tom da música ao vivo, sincronizado pra todos**
+
+- No Modo Culto, o líder agora consegue mudar o tom da música que está
+  tocando na hora (dropdown com todos os tons, ou botões rápidos de
+  meio tom pra cima/baixo) sem precisar sair da tela e ir editar o
+  louvor.
+- A mudança grava de verdade no cadastro do louvor (mesma tabela usada
+  em qualquer outro lugar do sistema) e entra no histórico de tons,
+  igual a qualquer outra alteração de tom.
+- Todos os músicos no Modo Culto recebem a mudança automaticamente no
+  próximo poll (mesmo mecanismo de sincronização já usado pra
+  avançar/voltar a música), e um aviso automático aparece no chat
+  ("Fulano mudou o tom de 'Música' para X"), pra quem não estiver de
+  olho no tom exibido perceber.
+
 ## Ajuste 76 - 2026-07-13
 
 **Tom "Db" (e outras grafias antigas) sumia do formulario do louvor**

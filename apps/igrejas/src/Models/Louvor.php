@@ -178,6 +178,33 @@ final class Louvor
     }
 
     /**
+     * Muda so o tom atual (sem mexer em mais nada) e registra no
+     * historico - usado pelo lider durante o Modo Culto pra ajustar o
+     * tom em tempo real (ex.: baixar meio tom pro vocalista de hoje),
+     * sincronizado pra todos os musicos via o mesmo polling que ja
+     * acompanha a musica atual (ver RepertorioController::alterarTom()).
+     */
+    public static function alterarTom(int $id, string $novoTom, ?int $alteradoPor): void
+    {
+        $atual = self::find($id);
+
+        if (!$atual) {
+            return;
+        }
+
+        $novoTom = trim($novoTom);
+
+        if ($novoTom === '' || $novoTom === $atual->tomAtual) {
+            return;
+        }
+
+        $stmt = Database::connection()->prepare('UPDATE louvores SET tom_atual = :tom_atual WHERE id = :id');
+        $stmt->execute(['tom_atual' => $novoTom, 'id' => $id]);
+
+        LouvorTomHistorico::registrar($id, $atual->tomAtual, $novoTom, 'Alterado ao vivo no Modo Culto', $alteradoPor);
+    }
+
+    /**
      * Registra que o louvor tocou de verdade agora - chamado quando ele
      * vira a musica "atual" no Modo Culto (ver
      * Repertorio::definirAtual()/RepertorioController::moverAtual()).
