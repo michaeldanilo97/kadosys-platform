@@ -71,7 +71,7 @@ $basePath = $config['base_path'] ?? '';
                         <th>Idade</th>
                         <th>Membro desde</th>
                         <th>Status</th>
-                        <th class="actions-col">Acoes</th>
+                        <th class="actions-col">Ações</th>
                     </tr>
                 </thead>
                 <tbody>

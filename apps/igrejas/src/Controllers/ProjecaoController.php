@@ -48,9 +48,9 @@ final class ProjecaoController extends Controller
         $estado = $sessao ? ProjecaoEstado::atual($sessao->id) : null;
 
         echo $this->view('dashboard.projecao.index', [
-            'pageTitle' => 'Projecao - KADOSYS Igrejas',
+            'pageTitle' => 'Projeção - KADOSYS Igrejas',
             'activeMenu' => 'projecao',
-            'breadcrumb' => ['Dashboard', 'Projecao'],
+            'breadcrumb' => ['Dashboard', 'Projeção'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
             'sessao' => $sessao,
@@ -68,7 +68,7 @@ final class ProjecaoController extends Controller
     public function enviarImagem(): void
     {
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('projecao_imagens_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('projecao_imagens_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect('/dashboard/projecao');
         }
 
@@ -80,7 +80,7 @@ final class ProjecaoController extends Controller
         }
 
         if ($arquivo['size'] > self::TAMANHO_MAXIMO) {
-            Session::flash('projecao_imagens_errors', ['A imagem deve ter no maximo 8MB.']);
+            Session::flash('projecao_imagens_errors', ['A imagem deve ter no máximo 8MB.']);
             $this->redirect('/dashboard/projecao');
         }
 
@@ -88,21 +88,21 @@ final class ProjecaoController extends Controller
         $extensao = self::MIME_PARA_EXTENSAO[$mime] ?? null;
 
         if ($extensao === null) {
-            Session::flash('projecao_imagens_errors', ['Formato invalido. Envie PNG, JPG, WEBP ou GIF.']);
+            Session::flash('projecao_imagens_errors', ['Formato inválido. Envie PNG, JPG, WEBP ou GIF.']);
             $this->redirect('/dashboard/projecao');
         }
 
         $destinoDir = $this->diretorioTenant();
 
         if (!is_dir($destinoDir) && !mkdir($destinoDir, 0755, true) && !is_dir($destinoDir)) {
-            Session::flash('projecao_imagens_errors', ['Nao foi possivel salvar a imagem no servidor.']);
+            Session::flash('projecao_imagens_errors', ['Não foi possível salvar a imagem no servidor.']);
             $this->redirect('/dashboard/projecao');
         }
 
         $nomeArquivo = bin2hex(random_bytes(16)) . '.' . $extensao;
 
         if (!move_uploaded_file($arquivo['tmp_name'], $destinoDir . '/' . $nomeArquivo)) {
-            Session::flash('projecao_imagens_errors', ['Nao foi possivel salvar a imagem no servidor.']);
+            Session::flash('projecao_imagens_errors', ['Não foi possível salvar a imagem no servidor.']);
             $this->redirect('/dashboard/projecao');
         }
 

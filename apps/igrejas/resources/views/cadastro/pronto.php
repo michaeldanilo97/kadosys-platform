@@ -12,12 +12,12 @@ $loginUrl = 'https://' . $subdominio . '/login';
 $statusUrl = $basePath . '/cadastro/pronto/' . $provisionamentoId . '/status';
 ?>
 <div class="auth-form-card">
-    <div class="eyebrow">Quase la</div>
+    <div class="eyebrow">Quase lá</div>
     <h1>Estamos preparando tudo</h1>
     <p class="subtitle">
-        Sua igreja foi criada com sucesso! Estamos finalizando a configuracao do endereco
+        Sua igreja foi criada com sucesso! Estamos finalizando a configuração do endereço
         <strong><?= htmlspecialchars($subdominio, ENT_QUOTES, 'UTF-8') ?></strong> - na primeira vez isso
-        pode levar ate um minuto.
+        pode levar até um minuto.
     </p>
 
     <div class="provisionamento-status" data-provisionamento-status>
@@ -25,7 +25,7 @@ $statusUrl = $basePath . '/cadastro/pronto/' . $provisionamentoId . '/status';
     </div>
 
     <p class="auth-signup-hint" data-provisionamento-fallback hidden>
-        Esta demorando um pouco mais que o normal. Voce pode aguardar mais um instante ou
+        Está demorando um pouco mais que o normal. Você pode aguardar mais um instante ou
         <a href="<?= htmlspecialchars($loginUrl, ENT_QUOTES, 'UTF-8') ?>">tentar entrar agora</a>.
     </p>
 </div>

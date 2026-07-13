@@ -69,7 +69,7 @@ $logoUrl = $logoPath ? $basePath . '/' . $logoPath : null;
     </div>
 
     <div class="telao-aviso-audio" data-telao-audio-unlock>
-        <i class="bi bi-volume-up-fill"></i> Toque na tela uma vez para habilitar o audio do video e a leitura em voz alta
+        <i class="bi bi-volume-up-fill"></i> Toque na tela uma vez para habilitar o áudio do vídeo e a leitura em voz alta
     </div>
 </div>
 

@@ -24,9 +24,9 @@ $faturaVencida = $vencimento !== null && $vencimento < new DateTimeImmutable();
     <div class="icon"><i class="bi bi-qr-code"></i></div>
 
     <?php if ($fatura === null || $fatura->pixQrCode === null): ?>
-        <h2>Nao foi possivel gerar a cobranca agora</h2>
+        <h2>Não foi possível gerar a cobrança agora</h2>
         <p>
-            Tivemos um problema ao gerar uma nova cobranca Pix. Tente atualizar esta pagina em alguns minutos
+            Tivemos um problema ao gerar uma nova cobrança Pix. Tente atualizar esta página em alguns minutos
             ou fale com o suporte.
         </p>
     <?php else: ?>
@@ -48,7 +48,7 @@ $faturaVencida = $vencimento !== null && $vencimento < new DateTimeImmutable();
             <label for="pix_copia_cola">Pix copia e cola</label>
             <div class="auth-slug-input">
                 <input type="text" class="form-control" id="pix_copia_cola" value="<?= htmlspecialchars($fatura->pixQrCode, ENT_QUOTES, 'UTF-8') ?>" readonly>
-                <button type="button" class="pix-copiar-btn" data-pix-copiar aria-label="Copiar codigo Pix">
+                <button type="button" class="pix-copiar-btn" data-pix-copiar aria-label="Copiar código Pix">
                     <i class="bi bi-clipboard"></i>
                 </button>
             </div>

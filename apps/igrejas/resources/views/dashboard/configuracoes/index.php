@@ -23,8 +23,8 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
 
 <div class="dash-page-head">
     <div>
-        <h1 class="dash-page-title">Configuracoes</h1>
-        <p class="dash-page-subtitle">Dados gerais da igreja e preferencias do sistema.</p>
+        <h1 class="dash-page-title">Configurações</h1>
+        <p class="dash-page-subtitle">Dados gerais da igreja e preferências do sistema.</p>
     </div>
 </div>
 
@@ -59,7 +59,7 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
         <h2><i class="bi bi-image"></i> Logo da igreja</h2>
     </div>
     <p class="dash-page-subtitle" style="margin-bottom: 1.4rem;">
-        Usada na tela de projecao quando o operador aplica o "fadeout" de um video.
+        Usada na tela de projeção quando o operador aplica o "fadeout" de um vídeo.
     </p>
 
     <?php if ($logoUrl): ?>
@@ -71,7 +71,7 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
     <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/logo" enctype="multipart/form-data" class="crud-form">
         <?= $csrf ?>
         <div class="crud-field">
-            <label for="logo">Enviar nova logo (PNG, JPG, WEBP ou SVG, ate 5MB)</label>
+            <label for="logo">Enviar nova logo (PNG, JPG, WEBP ou SVG, até 5MB)</label>
             <input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp,image/svg+xml" required>
         </div>
         <div class="crud-form-actions" style="justify-content: flex-start;">
@@ -105,7 +105,7 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
             <span class="toggle-switch-label">
                 Permitir que membros se cadastrem sozinhos
                 <span class="auth-field-hint">
-                    Quando ligado, um link "Cadastre-se" aparece na tela de login desta igreja - qualquer pessoa pode preencher os proprios dados (com autopreenchimento de endereco pelo CEP) e virar um membro, sem precisar de acesso ao painel. Quando desligado, so a secretaria cadastra membros pelo modulo Membros.
+                    Quando ligado, um link "Cadastre-se" aparece na tela de login desta igreja - qualquer pessoa pode preencher os próprios dados (com autopreenchimento de endereço pelo CEP) e virar um membro, sem precisar de acesso ao painel. Quando desligado, só a secretaria cadastra membros pelo módulo Membros.
                 </span>
             </span>
         </label>
@@ -117,12 +117,12 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
 
 <div class="dash-panel">
     <div class="dash-panel-head">
-        <h2><i class="bi bi-qr-code"></i> Doacao via Pix</h2>
+        <h2><i class="bi bi-qr-code"></i> Doação via Pix</h2>
     </div>
     <p class="dash-page-subtitle" style="margin-bottom: 1.4rem;">
-        Cadastre a chave Pix da igreja para gerar uma pagina publica de doacao (dizimos, ofertas) - o dinheiro cai
-        direto na conta da igreja, sem passar pela plataforma. Como e um Pix por chave (sem gateway), nao ha
-        confirmacao automatica de pagamento - o doador confirma manualmente que fez o Pix.
+        Cadastre a chave Pix da igreja para gerar uma página pública de doação (dízimos, ofertas) - o dinheiro cai
+        direto na conta da igreja, sem passar pela plataforma. Como é um Pix por chave (sem gateway), não há
+        confirmação automática de pagamento - o doador confirma manualmente que fez o Pix.
     </p>
 
     <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/chave-pix" class="crud-form">
@@ -134,7 +134,7 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
                 id="pix_chave"
                 name="pix_chave"
                 value="<?= htmlspecialchars($configuracao->pixChave ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatoria"
+                placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatória"
             >
         </div>
         <div class="crud-field">
@@ -144,10 +144,10 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
                 id="pix_nome_beneficiario"
                 name="pix_nome_beneficiario"
                 value="<?= htmlspecialchars($configuracao->pixNomeBeneficiario ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                placeholder="Padrao: nome da igreja"
+                placeholder="Padrão: nome da igreja"
                 maxlength="25"
             >
-            <span class="auth-field-hint">Maximo 25 caracteres, sem acentos (limitacao do padrao Pix).</span>
+            <span class="auth-field-hint">Máximo 25 caracteres, sem acentos (limitação do padrão Pix).</span>
         </div>
         <div class="crud-form-actions" style="justify-content: flex-start;">
             <button type="submit" class="btn-k btn-k-grad"><i class="bi bi-check-lg"></i> Salvar</button>
@@ -156,7 +156,7 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
 
     <?php if ($configuracao->doacaoPixHabilitada()): ?>
         <div class="auth-field" style="margin-top: 1.2rem;">
-            <label for="link_doacao">Link publico para compartilhar</label>
+            <label for="link_doacao">Link público para compartilhar</label>
             <div class="auth-slug-input">
                 <input type="text" class="form-control" id="link_doacao" value="<?= htmlspecialchars($linkDoacao, ENT_QUOTES, 'UTF-8') ?>" readonly>
                 <button type="button" class="pix-copiar-btn" data-copiar-link="link_doacao" aria-label="Copiar link">
@@ -172,8 +172,8 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
         <h2><i class="bi bi-chat-square-quote"></i> Mensagem da tela de Pix</h2>
     </div>
     <p class="dash-page-subtitle" style="margin-bottom: 1.4rem;">
-        Texto opcional exibido ao lado da logo da igreja quando o projetista mostra o Pix no telao (dizimo/oferta) -
-        um aviso livre ou um versiculo biblico.
+        Texto opcional exibido ao lado da logo da igreja quando o projetista mostra o Pix no telão (dízimo/oferta) -
+        um aviso livre ou um versículo bíblico.
     </p>
 
     <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/mensagem-pix" class="crud-form" data-pix-mensagem-form>
@@ -191,19 +191,19 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
                 </label>
                 <label class="pix-mensagem-tipo-opcao">
                     <input type="radio" name="pix_mensagem_tipo" value="versiculo" data-pix-mensagem-tipo <?= $configuracao->pixMensagemTipo === 'versiculo' ? 'checked' : '' ?>>
-                    Versiculo biblico
+                    Versículo bíblico
                 </label>
             </div>
         </div>
 
         <div class="crud-field" data-pix-mensagem-bloco="texto" <?= $configuracao->pixMensagemTipo !== 'texto' ? 'hidden' : '' ?>>
             <label for="pix_mensagem_texto">Texto</label>
-            <textarea id="pix_mensagem_texto" name="pix_mensagem_texto" rows="3" placeholder="Ex.: Deus ama quem da com alegria."><?= htmlspecialchars($configuracao->pixMensagemTexto ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+            <textarea id="pix_mensagem_texto" name="pix_mensagem_texto" rows="3" placeholder="Ex.: Deus ama quem dá com alegria."><?= htmlspecialchars($configuracao->pixMensagemTexto ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
         </div>
 
         <div class="crud-form-grid" data-pix-mensagem-bloco="versiculo" <?= $configuracao->pixMensagemTipo !== 'versiculo' ? 'hidden' : '' ?>>
             <div class="crud-field">
-                <label for="pix_mensagem_biblia_versao">Versao</label>
+                <label for="pix_mensagem_biblia_versao">Versão</label>
                 <select id="pix_mensagem_biblia_versao" name="pix_mensagem_biblia_versao">
                     <?php foreach ($versoesBiblia as $codigo => $nome): ?>
                         <option value="<?= htmlspecialchars($codigo, ENT_QUOTES, 'UTF-8') ?>" <?= $configuracao->pixMensagemBibliaVersao === $codigo ? 'selected' : '' ?>>
@@ -224,15 +224,15 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
                 </select>
             </div>
             <div class="crud-field">
-                <label for="pix_mensagem_capitulo">Capitulo</label>
+                <label for="pix_mensagem_capitulo">Capítulo</label>
                 <input type="number" min="1" id="pix_mensagem_capitulo" name="pix_mensagem_capitulo" value="<?= htmlspecialchars((string) ($configuracao->pixMensagemCapitulo ?? ''), ENT_QUOTES, 'UTF-8') ?>">
             </div>
             <div class="crud-field">
-                <label for="pix_mensagem_versiculo_inicio">Versiculo inicial</label>
+                <label for="pix_mensagem_versiculo_inicio">Versículo inicial</label>
                 <input type="number" min="1" id="pix_mensagem_versiculo_inicio" name="pix_mensagem_versiculo_inicio" value="<?= htmlspecialchars((string) ($configuracao->pixMensagemVersiculoInicio ?? ''), ENT_QUOTES, 'UTF-8') ?>">
             </div>
             <div class="crud-field">
-                <label for="pix_mensagem_versiculo_fim">Versiculo final (opcional)</label>
+                <label for="pix_mensagem_versiculo_fim">Versículo final (opcional)</label>
                 <input type="number" min="1" id="pix_mensagem_versiculo_fim" name="pix_mensagem_versiculo_fim" value="<?= htmlspecialchars((string) ($configuracao->pixMensagemVersiculoFim ?? ''), ENT_QUOTES, 'UTF-8') ?>">
             </div>
         </div>

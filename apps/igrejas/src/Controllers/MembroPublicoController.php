@@ -54,7 +54,7 @@ final class MembroPublicoController extends Controller
         }
 
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('cadastro_membro_errors', ['Sessao expirada. Preencha o formulario novamente.']);
+            Session::flash('cadastro_membro_errors', ['Sessão expirada. Preencha o formulário novamente.']);
             $this->redirect('/cadastro');
         }
 
@@ -97,22 +97,22 @@ final class MembroPublicoController extends Controller
 
         $nome = trim((string) ($data['nome'] ?? ''));
         if ($nome === '' || mb_strlen($nome) < 3) {
-            $errors[] = 'Informe seu nome completo (minimo 3 caracteres).';
+            $errors[] = 'Informe seu nome completo (mínimo 3 caracteres).';
         }
 
         $email = trim((string) ($data['email'] ?? ''));
         if ($email === '') {
             $errors[] = 'Informe seu e-mail - ele vira seu login de acesso.';
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = 'Informe um e-mail valido.';
+            $errors[] = 'Informe um e-mail válido.';
         } elseif (Membro::emailEmUso($email) || User::emailEmUso($email)) {
-            $errors[] = 'Esse e-mail ja esta cadastrado. Fale com a secretaria da igreja.';
+            $errors[] = 'Esse e-mail já está cadastrado. Fale com a secretaria da igreja.';
         }
 
         if (mb_strlen($senha) < self::SENHA_MINIMA) {
             $errors[] = 'A senha precisa ter pelo menos ' . self::SENHA_MINIMA . ' caracteres.';
         } elseif ($senha !== $senhaConfirmacao) {
-            $errors[] = 'A confirmacao de senha nao confere.';
+            $errors[] = 'A confirmação de senha não confere.';
         }
 
         return $errors;

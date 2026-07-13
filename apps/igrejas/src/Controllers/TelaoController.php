@@ -22,7 +22,7 @@ final class TelaoController extends Controller
     public function entrar(): void
     {
         echo $this->view('telao.telao-entrar', [
-            'pageTitle' => 'Telao - KADOSYS Igrejas',
+            'pageTitle' => 'Telão - KADOSYS Igrejas',
             'error' => Session::flash('telao_error'),
         ], 'telao');
     }
@@ -33,7 +33,7 @@ final class TelaoController extends Controller
         $sessao = $pin !== '' ? ProjecaoSessao::findAtivaByPin($pin) : null;
 
         if (!$sessao) {
-            Session::flash('telao_error', 'PIN invalido ou sessao de projecao encerrada.');
+            Session::flash('telao_error', 'PIN inválido ou sessão de projeção encerrada.');
             $this->redirect('/telao');
         }
 
@@ -46,7 +46,7 @@ final class TelaoController extends Controller
 
         if (!$sessao) {
             echo $this->view('telao.encerrado', [
-                'pageTitle' => 'Projecao encerrada - KADOSYS Igrejas',
+                'pageTitle' => 'Projeção encerrada - KADOSYS Igrejas',
             ], 'telao');
 
             return;
@@ -56,7 +56,7 @@ final class TelaoController extends Controller
         $estado = ProjecaoEstado::atual($sessao->id);
 
         echo $this->view('telao.show', [
-            'pageTitle' => 'Telao - KADOSYS Igrejas',
+            'pageTitle' => 'Telão - KADOSYS Igrejas',
             'token' => $token,
             'logoPath' => $configuracao->logoPath,
             'estadoInicial' => $estado?->paraJson(),

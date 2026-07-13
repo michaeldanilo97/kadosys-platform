@@ -69,16 +69,16 @@
       return Promise.resolve(true);
     }
 
-    var atual = NOMES_MODO[modoAtual] || 'outro conteudo';
-    var proximo = NOMES_MODO[novoModo] || 'outro conteudo';
+    var atual = NOMES_MODO[modoAtual] || 'outro conteúdo';
+    var proximo = NOMES_MODO[novoModo] || 'outro conteúdo';
     var mensagem;
 
     if (outroTemComando && mudandoModo) {
-      mensagem = NOMES_ORIGEM[controladoPorAtual] + ' esta no comando agora, exibindo ' + atual + '. Assumir o comando e trocar para ' + proximo + '?';
+      mensagem = NOMES_ORIGEM[controladoPorAtual] + ' está no comando agora, exibindo ' + atual + '. Assumir o comando e trocar para ' + proximo + '?';
     } else if (outroTemComando) {
-      mensagem = NOMES_ORIGEM[controladoPorAtual] + ' esta no comando agora. Assumir o comando e continuar?';
+      mensagem = NOMES_ORIGEM[controladoPorAtual] + ' está no comando agora. Assumir o comando e continuar?';
     } else {
-      mensagem = 'Ja tem ' + atual + ' em exibicao no telao. Trocar para ' + proximo + ' agora?';
+      mensagem = 'Já tem ' + atual + ' em exibição no telão. Trocar para ' + proximo + ' agora?';
     }
 
     if (!window.KadosysModal) {
@@ -272,11 +272,11 @@
       }
 
       if (previewRef) {
-        previewRef.innerHTML = '<i class="bi bi-broadcast"></i> Nada em projecao';
+        previewRef.innerHTML = '<i class="bi bi-broadcast"></i> Nada em projeção';
       }
 
       if (previewTexto) {
-        previewTexto.innerHTML = '<span class="vazio">Escolha versao, livro, capitulo e versiculo acima para comecar.</span>';
+        previewTexto.innerHTML = '<span class="vazio">Escolha versão, livro, capítulo e versículo acima para começar.</span>';
       }
 
       if (previewProximo) {
@@ -315,7 +315,7 @@
           return '<span class="numero">' + versiculo.numero + '</span> ' + escapeHtml(versiculo.texto) + ' ';
         }).join('');
       } else {
-        previewTexto.innerHTML = '<span class="vazio">Texto ainda nao importado para esta versao.</span>';
+        previewTexto.innerHTML = '<span class="vazio">Texto ainda não importado para esta versão.</span>';
       }
     }
 

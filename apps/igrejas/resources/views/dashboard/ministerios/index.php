@@ -14,14 +14,14 @@ $basePath = $config['base_path'] ?? '';
 
 <div class="dash-page-head">
     <div>
-        <h1 class="dash-page-title">Ministerios</h1>
+        <h1 class="dash-page-title">Ministérios</h1>
         <p class="dash-page-subtitle">
-            <?= $total ?> ministerio<?= $total === 1 ? '' : 's' ?> cadastrado<?= $total === 1 ? '' : 's' ?>.
+            <?= $total ?> ministério<?= $total === 1 ? '' : 's' ?> cadastrado<?= $total === 1 ? '' : 's' ?>.
         </p>
     </div>
     <div class="dash-page-actions">
         <a href="<?= $basePath ?>/dashboard/ministerios/novo" class="btn-k btn-k-grad">
-            <i class="bi bi-diagram-3"></i> Novo ministerio
+            <i class="bi bi-diagram-3"></i> Novo ministério
         </a>
     </div>
 </div>
@@ -37,7 +37,7 @@ $basePath = $config['base_path'] ?? '';
             type="search"
             name="busca"
             value="<?= htmlspecialchars($search, ENT_QUOTES, 'UTF-8') ?>"
-            placeholder="Buscar por nome do ministerio..."
+            placeholder="Buscar por nome do ministério..."
         >
         <?php if ($search !== ''): ?>
             <a href="<?= $basePath ?>/dashboard/ministerios" class="crud-search-clear" aria-label="Limpar busca">
@@ -49,15 +49,15 @@ $basePath = $config['base_path'] ?? '';
     <?php if ($ministerios === []): ?>
         <div class="crud-empty">
             <div class="icon"><i class="bi bi-diagram-3"></i></div>
-            <h2><?= $search !== '' ? 'Nenhum ministerio encontrado' : 'Nenhum ministerio cadastrado ainda' ?></h2>
+            <h2><?= $search !== '' ? 'Nenhum ministério encontrado' : 'Nenhum ministério cadastrado ainda' ?></h2>
             <p>
                 <?= $search !== ''
                     ? 'Tente buscar por outro nome.'
-                    : 'Comece cadastrando o primeiro ministerio da igreja.' ?>
+                    : 'Comece cadastrando o primeiro ministério da igreja.' ?>
             </p>
             <?php if ($search === ''): ?>
                 <a href="<?= $basePath ?>/dashboard/ministerios/novo" class="btn-k btn-k-grad">
-                    <i class="bi bi-diagram-3"></i> Cadastrar ministerio
+                    <i class="bi bi-diagram-3"></i> Cadastrar ministério
                 </a>
             <?php endif; ?>
         </div>
@@ -66,11 +66,11 @@ $basePath = $config['base_path'] ?? '';
             <table class="crud-table">
                 <thead>
                     <tr>
-                        <th>Ministerio</th>
-                        <th>Lider</th>
-                        <th>Voluntarios</th>
+                        <th>Ministério</th>
+                        <th>Líder</th>
+                        <th>Voluntários</th>
                         <th>Status</th>
-                        <th class="actions-col">Acoes</th>
+                        <th class="actions-col">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -87,7 +87,7 @@ $basePath = $config['base_path'] ?? '';
                             <td>
                                 <?= $ministerio->liderNome
                                     ? htmlspecialchars($ministerio->liderNome, ENT_QUOTES, 'UTF-8')
-                                    : '<span class="crud-text-dim">Sem lider definido</span>' ?>
+                                    : '<span class="crud-text-dim">Sem líder definido</span>' ?>
                             </td>
                             <td><?= $ministerio->totalVoluntarios ?></td>
                             <td>
@@ -106,7 +106,7 @@ $basePath = $config['base_path'] ?? '';
                                 <form
                                     method="POST"
                                     action="<?= $basePath ?>/dashboard/ministerios/<?= $ministerio->id ?>/excluir"
-                                    data-confirm="Remover o ministerio &quot;<?= htmlspecialchars($ministerio->nome, ENT_QUOTES, 'UTF-8') ?>&quot;?"
+                                    data-confirm="Remover o ministério &quot;<?= htmlspecialchars($ministerio->nome, ENT_QUOTES, 'UTF-8') ?>&quot;?"
                                 >
                                     <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
                                     <button

@@ -41,7 +41,7 @@ final class AuthController extends Controller
         $token = $this->request->input('_csrf_token');
 
         if (!Csrf::verify($token)) {
-            Session::flash('login_error', 'Sessao expirada. Tente novamente.');
+            Session::flash('login_error', 'Sessão expirada. Tente novamente.');
             $this->redirect('/login');
         }
 
@@ -54,7 +54,7 @@ final class AuthController extends Controller
         $auth = new Auth($this->config);
 
         if (!$auth->attempt($email, $password, $remember)) {
-            Session::flash('login_error', 'E-mail ou senha invalidos.');
+            Session::flash('login_error', 'E-mail ou senha inválidos.');
             Session::flash('login_old', ['email' => $email]);
             $this->redirect('/login');
         }
@@ -93,7 +93,7 @@ final class AuthController extends Controller
         $token = $this->request->input('_csrf_token');
 
         if (!Csrf::verify($token) || $email === '') {
-            Session::flash('forgot_status', 'Nao foi possivel processar a solicitacao. Tente novamente.');
+            Session::flash('forgot_status', 'Não foi possível processar a solicitação. Tente novamente.');
             $this->redirect('/esqueci-senha');
         }
 
@@ -115,7 +115,7 @@ final class AuthController extends Controller
         // enderecos estao cadastrados na base.
         Session::flash(
             'forgot_status',
-            'Se o e-mail informado estiver cadastrado, voce recebera as instrucoes de recuperacao em breve.'
+            'Se o e-mail informado estiver cadastrado, você receberá as instruções de recuperação em breve.'
         );
 
         $this->redirect('/esqueci-senha');

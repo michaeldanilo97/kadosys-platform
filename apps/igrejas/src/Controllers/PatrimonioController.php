@@ -26,9 +26,9 @@ final class PatrimonioController extends Controller
         $result = PatrimonioBem::paginate($page, self::PER_PAGE, $search);
 
         echo $this->view('dashboard.patrimonio.index', [
-            'pageTitle' => 'Patrimonio - KADOSYS Igrejas',
+            'pageTitle' => 'Patrimônio - KADOSYS Igrejas',
             'activeMenu' => 'patrimonio',
-            'breadcrumb' => ['Dashboard', 'Patrimonio'],
+            'breadcrumb' => ['Dashboard', 'Patrimônio'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
             'bens' => $result['items'],
@@ -48,7 +48,7 @@ final class PatrimonioController extends Controller
         echo $this->view('dashboard.patrimonio.form', [
             'pageTitle' => 'Novo bem - KADOSYS Igrejas',
             'activeMenu' => 'patrimonio',
-            'breadcrumb' => ['Dashboard', 'Patrimonio', 'Novo'],
+            'breadcrumb' => ['Dashboard', 'Patrimônio', 'Novo'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
             'bem' => null,
@@ -61,7 +61,7 @@ final class PatrimonioController extends Controller
     public function store(): void
     {
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('patrimonio_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('patrimonio_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect('/dashboard/patrimonio/novo');
         }
 
@@ -93,7 +93,7 @@ final class PatrimonioController extends Controller
         echo $this->view('dashboard.patrimonio.form', [
             'pageTitle' => 'Editar ' . $bem->nome . ' - KADOSYS Igrejas',
             'activeMenu' => 'patrimonio',
-            'breadcrumb' => ['Dashboard', 'Patrimonio', $bem->nome],
+            'breadcrumb' => ['Dashboard', 'Patrimônio', $bem->nome],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
             'bem' => $bem,
@@ -112,7 +112,7 @@ final class PatrimonioController extends Controller
         }
 
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('patrimonio_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('patrimonio_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect("/dashboard/patrimonio/{$id}/editar");
         }
 
@@ -155,7 +155,7 @@ final class PatrimonioController extends Controller
 
         $valor = trim((string) ($data['valor_estimado'] ?? ''));
         if ($valor !== '' && (float) str_replace(',', '.', $valor) < 0) {
-            $errors[] = 'O valor estimado nao pode ser negativo.';
+            $errors[] = 'O valor estimado não pode ser negativo.';
         }
 
         return $errors;
@@ -166,9 +166,9 @@ final class PatrimonioController extends Controller
         http_response_code(404);
 
         echo $this->view('errors.404', [
-            'pageTitle' => 'Pagina nao encontrada - KADOSYS Igrejas',
+            'pageTitle' => 'Página não encontrada - KADOSYS Igrejas',
             'activeMenu' => 'patrimonio',
-            'breadcrumb' => ['Dashboard', 'Patrimonio', 'Nao encontrado'],
+            'breadcrumb' => ['Dashboard', 'Patrimônio', 'Não encontrado'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
         ], 'dashboard');

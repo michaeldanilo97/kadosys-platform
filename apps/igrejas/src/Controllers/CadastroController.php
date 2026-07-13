@@ -89,7 +89,7 @@ final class CadastroController extends Controller
         }
 
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('cadastro_errors', ['Sessao expirada. Preencha o formulario novamente.']);
+            Session::flash('cadastro_errors', ['Sessão expirada. Preencha o formulário novamente.']);
             $this->redirect('/cadastro');
         }
 
@@ -152,7 +152,7 @@ final class CadastroController extends Controller
         );
 
         if ($metodoPagamento === 'trial' && $documento !== '' && Tenant::documentoJaUsouTrial($documento)) {
-            $errors[] = 'Esse CPF/CNPJ ja usou o teste gratis antes. Escolha um plano pago pra continuar.';
+            $errors[] = 'Esse CPF/CNPJ já usou o teste grátis antes. Escolha um plano pago pra continuar.';
         }
 
         if ($errors !== []) {
@@ -185,7 +185,7 @@ final class CadastroController extends Controller
         $mp = new MercadoPagoClient();
 
         if (!$mp->configurado()) {
-            Session::flash('cadastro_errors', ['Cadastro com pagamento online indisponivel no momento. Tente novamente mais tarde.']);
+            Session::flash('cadastro_errors', ['Cadastro com pagamento online indisponível no momento. Tente novamente mais tarde.']);
             Session::flash('cadastro_old', $old);
             $this->redirect('/cadastro');
         }
@@ -193,7 +193,7 @@ final class CadastroController extends Controller
         $mpConfig = require dirname(__DIR__, 2) . '/config/mercadopago.php';
 
         if ($mpConfig['app_url'] === '') {
-            Session::flash('cadastro_errors', ['Cadastro temporariamente indisponivel. Tente novamente mais tarde.']);
+            Session::flash('cadastro_errors', ['Cadastro temporariamente indisponível. Tente novamente mais tarde.']);
             Session::flash('cadastro_old', $old);
             $this->redirect('/cadastro');
         }
@@ -237,7 +237,7 @@ final class CadastroController extends Controller
             ]);
         } catch (\RuntimeException $exception) {
             Provisionamento::atualizarStatus($provisionamentoId, 'erro', $exception->getMessage());
-            Session::flash('cadastro_errors', ['Nao foi possivel iniciar o pagamento agora. Tente novamente em instantes.']);
+            Session::flash('cadastro_errors', ['Não foi possível iniciar o pagamento agora. Tente novamente em instantes.']);
             Session::flash('cadastro_old', $old);
             $this->redirect('/cadastro');
         }
@@ -281,7 +281,7 @@ final class CadastroController extends Controller
             ]);
         } catch (\RuntimeException $exception) {
             Provisionamento::atualizarStatus($provisionamentoId, 'erro', $exception->getMessage());
-            Session::flash('cadastro_errors', ['Nao foi possivel gerar a cobranca Pix agora. Tente novamente em instantes.']);
+            Session::flash('cadastro_errors', ['Não foi possível gerar a cobrança Pix agora. Tente novamente em instantes.']);
             Session::flash('cadastro_old', $old);
             $this->redirect('/cadastro');
         }
@@ -291,7 +291,7 @@ final class CadastroController extends Controller
 
         if ($resposta['status'] >= 300 || !isset($resposta['body']['id']) || $qrCode === null) {
             Provisionamento::atualizarStatus($provisionamentoId, 'erro', json_encode($resposta, JSON_UNESCAPED_UNICODE));
-            Session::flash('cadastro_errors', ['O Mercado Pago recusou a cobranca Pix. Tente novamente.']);
+            Session::flash('cadastro_errors', ['O Mercado Pago recusou a cobrança Pix. Tente novamente.']);
             Session::flash('cadastro_old', $old);
             $this->redirect('/cadastro');
         }
@@ -357,7 +357,7 @@ final class CadastroController extends Controller
             // Nao deveria acontecer (o provisionamento acabou de ser
             // criado agora mesmo, ninguem mais tem o id ainda) - por
             // seguranca, trata como falha em vez de travar o usuario.
-            Session::flash('cadastro_errors', ['Nao foi possivel iniciar seu teste gratis agora. Tente novamente.']);
+            Session::flash('cadastro_errors', ['Não foi possível iniciar seu teste grátis agora. Tente novamente.']);
             $this->redirect('/cadastro');
         }
 
@@ -367,7 +367,7 @@ final class CadastroController extends Controller
         $provisionamentoFinal = Provisionamento::buscarPorId($provisionamentoId);
 
         if ($provisionamentoFinal?->status !== 'concluido' || $provisionamentoFinal->tenantId === null) {
-            Session::flash('cadastro_errors', ['Tivemos um problema ao preparar sua conta de teste. Nossa equipe ja foi avisada - tente novamente em alguns minutos ou fale com o suporte.']);
+            Session::flash('cadastro_errors', ['Tivemos um problema ao preparar sua conta de teste. Nossa equipe já foi avisada - tente novamente em alguns minutos ou fale com o suporte.']);
             $this->redirect('/cadastro');
         }
 
@@ -529,13 +529,13 @@ final class CadastroController extends Controller
         $errors = [];
 
         if ($nomeIgreja === '' || mb_strlen($nomeIgreja) < 3) {
-            $errors[] = 'Informe o nome da igreja (minimo 3 caracteres).';
+            $errors[] = 'Informe o nome da igreja (mínimo 3 caracteres).';
         }
 
         if ($slug === '' || mb_strlen($slug) < 3) {
-            $errors[] = 'O subdominio precisa ter pelo menos 3 letras (so letras, numeros e hifen).';
+            $errors[] = 'O subdomínio precisa ter pelo menos 3 letras (só letras, números e hífen).';
         } elseif (!Tenant::slugDisponivel($slug) || Provisionamento::slugReservado($slug)) {
-            $errors[] = 'Esse subdominio ja esta em uso. Escolha outro.';
+            $errors[] = 'Esse subdomínio já está em uso. Escolha outro.';
         }
 
         if ($adminNome === '' || mb_strlen($adminNome) < 3) {
@@ -543,25 +543,25 @@ final class CadastroController extends Controller
         }
 
         if (!filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = 'Informe um e-mail valido.';
+            $errors[] = 'Informe um e-mail válido.';
         }
 
         if (mb_strlen($senha) < self::SENHA_MINIMA) {
             $errors[] = 'A senha precisa ter pelo menos ' . self::SENHA_MINIMA . ' caracteres.';
         } elseif ($senha !== $senhaConfirmacao) {
-            $errors[] = 'A confirmacao de senha nao confere.';
+            $errors[] = 'A confirmação de senha não confere.';
         }
 
         if (!isset(Plano::VALOR_MENSAL[$plano])) {
-            $errors[] = 'Escolha um plano valido.';
+            $errors[] = 'Escolha um plano válido.';
         }
 
         if (!Documento::validar($documentoTipo, $documento)) {
-            $errors[] = $documentoTipo === 'cnpj' ? 'Informe um CNPJ valido.' : 'Informe um CPF valido.';
+            $errors[] = $documentoTipo === 'cnpj' ? 'Informe um CNPJ válido.' : 'Informe um CPF válido.';
         }
 
         if ($documentoTipo === 'cnpj' && ($razaoSocial === '' || mb_strlen($razaoSocial) < 3)) {
-            $errors[] = 'Informe a razao social da igreja/instituicao.';
+            $errors[] = 'Informe a razão social da igreja/instituição.';
         }
 
         return $errors;

@@ -63,7 +63,7 @@ final class GrupoController extends Controller
     public function store(): void
     {
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('grupo_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('grupo_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect('/dashboard/grupos/novo');
         }
 
@@ -116,7 +116,7 @@ final class GrupoController extends Controller
         }
 
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('grupo_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('grupo_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect("/dashboard/grupos/{$id}/editar");
         }
 
@@ -181,22 +181,22 @@ final class GrupoController extends Controller
 
         $tipo = $data['tipo'] ?? 'grupo';
         if (!in_array($tipo, ['celula', 'classe', 'grupo'], true)) {
-            $errors[] = 'Tipo invalido.';
+            $errors[] = 'Tipo inválido.';
         }
 
         $status = $data['status'] ?? 'ativo';
         if (!in_array($status, ['ativo', 'inativo'], true)) {
-            $errors[] = 'Status invalido.';
+            $errors[] = 'Status inválido.';
         }
 
         $liderId = trim((string) ($data['lider_membro_id'] ?? ''));
         if ($liderId !== '' && Membro::find((int) $liderId) === null) {
-            $errors[] = 'Lider selecionado invalido.';
+            $errors[] = 'Líder selecionado inválido.';
         }
 
         $diaSemana = trim((string) ($data['dia_semana'] ?? ''));
         if ($diaSemana !== '' && !in_array($diaSemana, ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'], true)) {
-            $errors[] = 'Dia da semana invalido.';
+            $errors[] = 'Dia da semana inválido.';
         }
 
         return $errors;
@@ -207,9 +207,9 @@ final class GrupoController extends Controller
         http_response_code(404);
 
         echo $this->view('errors.404', [
-            'pageTitle' => 'Pagina nao encontrada - KADOSYS Igrejas',
+            'pageTitle' => 'Página não encontrada - KADOSYS Igrejas',
             'activeMenu' => 'grupos',
-            'breadcrumb' => ['Dashboard', 'Grupos', 'Nao encontrado'],
+            'breadcrumb' => ['Dashboard', 'Grupos', 'Não encontrado'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
         ], 'dashboard');

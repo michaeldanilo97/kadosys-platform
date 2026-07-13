@@ -28,9 +28,9 @@ final class MinisterioController extends Controller
         $result = Ministerio::paginate($page, self::PER_PAGE, $search);
 
         echo $this->view('dashboard.ministerios.index', [
-            'pageTitle' => 'Ministerios - KADOSYS Igrejas',
+            'pageTitle' => 'Ministérios - KADOSYS Igrejas',
             'activeMenu' => 'ministerios',
-            'breadcrumb' => ['Dashboard', 'Ministerios'],
+            'breadcrumb' => ['Dashboard', 'Ministérios'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
             'ministerios' => $result['items'],
@@ -46,9 +46,9 @@ final class MinisterioController extends Controller
     public function create(): void
     {
         echo $this->view('dashboard.ministerios.form', [
-            'pageTitle' => 'Novo ministerio - KADOSYS Igrejas',
+            'pageTitle' => 'Novo ministério - KADOSYS Igrejas',
             'activeMenu' => 'ministerios',
-            'breadcrumb' => ['Dashboard', 'Ministerios', 'Novo'],
+            'breadcrumb' => ['Dashboard', 'Ministérios', 'Novo'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
             'ministerio' => null,
@@ -63,7 +63,7 @@ final class MinisterioController extends Controller
     public function store(): void
     {
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('ministerio_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('ministerio_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect('/dashboard/ministerios/novo');
         }
 
@@ -78,7 +78,7 @@ final class MinisterioController extends Controller
 
         Ministerio::create($data);
 
-        Session::flash('ministerio_success', 'Ministerio cadastrado com sucesso.');
+        Session::flash('ministerio_success', 'Ministério cadastrado com sucesso.');
         $this->redirect('/dashboard/ministerios');
     }
 
@@ -95,7 +95,7 @@ final class MinisterioController extends Controller
         echo $this->view('dashboard.ministerios.form', [
             'pageTitle' => 'Editar ' . $ministerio->nome . ' - KADOSYS Igrejas',
             'activeMenu' => 'ministerios',
-            'breadcrumb' => ['Dashboard', 'Ministerios', $ministerio->nome],
+            'breadcrumb' => ['Dashboard', 'Ministérios', $ministerio->nome],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
             'ministerio' => $ministerio,
@@ -116,7 +116,7 @@ final class MinisterioController extends Controller
         }
 
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('ministerio_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('ministerio_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect("/dashboard/ministerios/{$id}/editar");
         }
 
@@ -131,7 +131,7 @@ final class MinisterioController extends Controller
 
         Ministerio::update((int) $id, $data);
 
-        Session::flash('ministerio_success', 'Ministerio atualizado com sucesso.');
+        Session::flash('ministerio_success', 'Ministério atualizado com sucesso.');
         $this->redirect('/dashboard/ministerios');
     }
 
@@ -139,7 +139,7 @@ final class MinisterioController extends Controller
     {
         if (Csrf::verify($this->request->input('_csrf_token'))) {
             Ministerio::delete((int) $id);
-            Session::flash('ministerio_success', 'Ministerio removido com sucesso.');
+            Session::flash('ministerio_success', 'Ministério removido com sucesso.');
         }
 
         $this->redirect('/dashboard/ministerios');
@@ -151,7 +151,7 @@ final class MinisterioController extends Controller
 
         if (Csrf::verify($this->request->input('_csrf_token')) && $membroId > 0) {
             Ministerio::addVoluntario((int) $id, $membroId);
-            Session::flash('ministerio_success', 'Voluntario adicionado ao ministerio.');
+            Session::flash('ministerio_success', 'Voluntário adicionado ao ministério.');
         }
 
         $this->redirect("/dashboard/ministerios/{$id}/editar");
@@ -161,7 +161,7 @@ final class MinisterioController extends Controller
     {
         if (Csrf::verify($this->request->input('_csrf_token'))) {
             Ministerio::removeVoluntario((int) $id, (int) $membroId);
-            Session::flash('ministerio_success', 'Voluntario removido do ministerio.');
+            Session::flash('ministerio_success', 'Voluntário removido do ministério.');
         }
 
         $this->redirect("/dashboard/ministerios/{$id}/editar");
@@ -176,17 +176,17 @@ final class MinisterioController extends Controller
         $errors = [];
 
         if (trim((string) ($data['nome'] ?? '')) === '') {
-            $errors[] = 'Informe o nome do ministerio.';
+            $errors[] = 'Informe o nome do ministério.';
         }
 
         $status = $data['status'] ?? 'ativo';
         if (!in_array($status, ['ativo', 'inativo'], true)) {
-            $errors[] = 'Status invalido.';
+            $errors[] = 'Status inválido.';
         }
 
         $liderId = trim((string) ($data['lider_membro_id'] ?? ''));
         if ($liderId !== '' && Membro::find((int) $liderId) === null) {
-            $errors[] = 'Lider selecionado invalido.';
+            $errors[] = 'Líder selecionado inválido.';
         }
 
         return $errors;
@@ -197,9 +197,9 @@ final class MinisterioController extends Controller
         http_response_code(404);
 
         echo $this->view('errors.404', [
-            'pageTitle' => 'Pagina nao encontrada - KADOSYS Igrejas',
+            'pageTitle' => 'Página não encontrada - KADOSYS Igrejas',
             'activeMenu' => 'ministerios',
-            'breadcrumb' => ['Dashboard', 'Ministerios', 'Nao encontrado'],
+            'breadcrumb' => ['Dashboard', 'Ministérios', 'Não encontrado'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
         ], 'dashboard');

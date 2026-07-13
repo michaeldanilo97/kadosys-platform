@@ -9,9 +9,9 @@ $basePath = $config['base_path'] ?? '';
 
 <div class="dash-page-head">
     <div>
-        <h1 class="dash-page-title">Permissoes</h1>
+        <h1 class="dash-page-title">Permissões</h1>
         <p class="dash-page-subtitle">
-            Restrinja quais modulos cada usuario pode acessar. Administradores sempre tem acesso total.
+            Restrinja quais módulos cada usuário pode acessar. Administradores sempre têm acesso total.
         </p>
     </div>
 </div>
@@ -20,10 +20,10 @@ $basePath = $config['base_path'] ?? '';
     <?php if ($usuarios === []): ?>
         <div class="crud-empty">
             <div class="icon"><i class="bi bi-shield-lock"></i></div>
-            <h2>Nenhum usuario com papel "Usuario" ainda</h2>
+            <h2>Nenhum usuário com papel "Usuário" ainda</h2>
             <p>
-                Permissoes so se aplicam a usuarios com papel "Usuario" - administradores sempre veem tudo.
-                Cadastre ou edite um usuario em <a href="<?= $basePath ?>/dashboard/usuarios">Usuarios</a>.
+                Permissões só se aplicam a usuários com papel "Usuário" - administradores sempre veem tudo.
+                Cadastre ou edite um usuário em <a href="<?= $basePath ?>/dashboard/usuarios">Usuários</a>.
             </p>
         </div>
     <?php else: ?>
@@ -40,7 +40,7 @@ $basePath = $config['base_path'] ?? '';
                         </span>
                     </div>
                     <a href="<?= $basePath ?>/dashboard/permissoes/<?= $usuario->id ?>/editar" class="btn-k btn-k-ghost">
-                        <i class="bi bi-sliders"></i> Editar permissoes
+                        <i class="bi bi-sliders"></i> Editar permissões
                     </a>
                 </li>
             <?php endforeach; ?>

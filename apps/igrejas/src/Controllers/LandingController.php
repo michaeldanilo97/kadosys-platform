@@ -24,7 +24,7 @@ final class LandingController extends Controller
         }
 
         echo $this->view('landing.home', [
-            'pageTitle' => 'KADOSYS Igrejas - Gestao completa para sua igreja',
+            'pageTitle' => 'KADOSYS Igrejas - Gestão completa para sua igreja',
         ], 'landing');
     }
 }

@@ -9,8 +9,8 @@ $basePath = $config['base_path'] ?? '';
 <div class="preletor-entrada">
     <div class="preletor-card">
         <div class="glyph"><i class="bi bi-display"></i></div>
-        <h1>Acesso do telao</h1>
-        <p>Digite o PIN de 6 digitos informado pelo operador da projecao.</p>
+        <h1>Acesso do telão</h1>
+        <p>Digite o PIN de 6 dígitos informado pelo operador da projeção.</p>
 
         <?php if (!empty($error)): ?>
             <div class="preletor-erro"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></div>

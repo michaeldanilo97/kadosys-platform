@@ -11,10 +11,10 @@
  */
 $basePath = $config['base_path'] ?? '';
 
-$tipoLabels = ['celula' => 'Celula', 'classe' => 'Classe', 'grupo' => 'Grupo'];
+$tipoLabels = ['celula' => 'Célula', 'classe' => 'Classe', 'grupo' => 'Grupo'];
 $diaLabels = [
-    'domingo' => 'Domingo', 'segunda' => 'Segunda', 'terca' => 'Terca',
-    'quarta' => 'Quarta', 'quinta' => 'Quinta', 'sexta' => 'Sexta', 'sabado' => 'Sabado',
+    'domingo' => 'Domingo', 'segunda' => 'Segunda', 'terca' => 'Terça',
+    'quarta' => 'Quarta', 'quinta' => 'Quinta', 'sexta' => 'Sexta', 'sabado' => 'Sábado',
 ];
 ?>
 
@@ -59,7 +59,7 @@ $diaLabels = [
             <p>
                 <?= $search !== ''
                     ? 'Tente buscar por outro nome.'
-                    : 'Comece cadastrando o primeiro pequeno grupo, celula ou classe da igreja.' ?>
+                    : 'Comece cadastrando o primeiro pequeno grupo, célula ou classe da igreja.' ?>
             </p>
             <?php if ($search === ''): ?>
                 <a href="<?= $basePath ?>/dashboard/grupos/novo" class="btn-k btn-k-grad">
@@ -74,11 +74,11 @@ $diaLabels = [
                     <tr>
                         <th>Grupo</th>
                         <th>Tipo</th>
-                        <th>Lider</th>
+                        <th>Líder</th>
                         <th>Encontro</th>
                         <th>Participantes</th>
                         <th>Status</th>
-                        <th class="actions-col">Acoes</th>
+                        <th class="actions-col">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -96,17 +96,17 @@ $diaLabels = [
                             <td>
                                 <?= $grupo->liderNome
                                     ? htmlspecialchars($grupo->liderNome, ENT_QUOTES, 'UTF-8')
-                                    : '<span class="crud-text-dim">Sem lider definido</span>' ?>
+                                    : '<span class="crud-text-dim">Sem líder definido</span>' ?>
                             </td>
                             <td>
                                 <?php if ($grupo->diaSemana !== null || $grupo->local !== null): ?>
                                     <?= $grupo->diaSemana !== null ? htmlspecialchars($diaLabels[$grupo->diaSemana] ?? $grupo->diaSemana, ENT_QUOTES, 'UTF-8') : '' ?>
-                                    <?= $grupo->horario !== null ? ' as ' . substr($grupo->horario, 0, 5) : '' ?>
+                                    <?= $grupo->horario !== null ? ' às ' . substr($grupo->horario, 0, 5) : '' ?>
                                     <?php if ($grupo->local !== null): ?>
                                         <div class="crud-text-dim" style="font-size: 0.78rem;"><?= htmlspecialchars($grupo->local, ENT_QUOTES, 'UTF-8') ?></div>
                                     <?php endif; ?>
                                 <?php else: ?>
-                                    <span class="crud-text-dim">Nao definido</span>
+                                    <span class="crud-text-dim">Não definido</span>
                                 <?php endif; ?>
                             </td>
                             <td><?= $grupo->totalParticipantes ?></td>

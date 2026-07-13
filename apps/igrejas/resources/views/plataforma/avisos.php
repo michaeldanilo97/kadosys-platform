@@ -17,8 +17,8 @@ $basePath = $config['base_path'] ?? '';
     <div>
         <h1 class="dash-page-title">Avisos para as igrejas</h1>
         <p class="dash-page-subtitle">
-            Publique um aviso e escolha quem ve - admins, membros ou todo mundo - util pra manutencao
-            programada, novo recurso disponivel, etc.
+            Publique um aviso e escolha quem vê - admins, membros ou todo mundo - útil pra manutenção
+            programada, novo recurso disponível, etc.
         </p>
     </div>
 </div>
@@ -56,7 +56,7 @@ $basePath = $config['base_path'] ?? '';
             <div>
                 <?= nl2br(htmlspecialchars($avisoAtivo->mensagem, ENT_QUOTES, 'UTF-8')) ?>
                 <span class="crud-text-dim" style="display: block; font-size: 0.74rem; margin-top: 0.3rem;">
-                    Publico: <?= htmlspecialchars(PlataformaAviso::PUBLICO_LABELS[$avisoAtivo->publicoAlvo] ?? $avisoAtivo->publicoAlvo, ENT_QUOTES, 'UTF-8') ?>
+                    Público: <?= htmlspecialchars(PlataformaAviso::PUBLICO_LABELS[$avisoAtivo->publicoAlvo] ?? $avisoAtivo->publicoAlvo, ENT_QUOTES, 'UTF-8') ?>
                 </span>
             </div>
         </div>
@@ -72,10 +72,10 @@ $basePath = $config['base_path'] ?? '';
             <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
             <div class="crud-field crud-field-full">
                 <label for="mensagem">Mensagem</label>
-                <textarea id="mensagem" name="mensagem" rows="3" placeholder="Ex.: Manutencao programada hoje as 22h - o sistema pode ficar indisponivel por alguns minutos." required autofocus></textarea>
+                <textarea id="mensagem" name="mensagem" rows="3" placeholder="Ex.: Manutenção programada hoje às 22h - o sistema pode ficar indisponível por alguns minutos." required autofocus></textarea>
             </div>
             <div class="crud-field crud-field-full">
-                <label>Publico</label>
+                <label>Público</label>
                 <div style="display: flex; gap: 1.2rem; margin-top: 0.3rem;">
                     <?php foreach (PlataformaAviso::PUBLICO_LABELS as $valor => $rotulo): ?>
                         <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; font-weight: 400;">
@@ -95,7 +95,7 @@ $basePath = $config['base_path'] ?? '';
 <?php if ($historico !== []): ?>
     <div class="dash-panel" style="margin-top: 1.2rem;">
         <div class="dash-panel-head">
-            <h2><i class="bi bi-clock-history"></i> Historico</h2>
+            <h2><i class="bi bi-clock-history"></i> Histórico</h2>
         </div>
 
         <div class="crud-table-wrapper">
@@ -103,7 +103,7 @@ $basePath = $config['base_path'] ?? '';
                 <thead>
                     <tr>
                         <th>Mensagem</th>
-                        <th>Publico</th>
+                        <th>Público</th>
                         <th>Status</th>
                         <th>Publicado em</th>
                     </tr>

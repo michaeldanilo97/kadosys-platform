@@ -14,15 +14,15 @@
 $basePath = $config['base_path'] ?? '';
 
 $categoriaLabels = [
-    'imovel' => 'Imovel', 'veiculo' => 'Veiculo', 'equipamento' => 'Equipamento',
-    'mobiliario' => 'Mobiliario', 'eletronico' => 'Eletronico', 'outro' => 'Outro',
+    'imovel' => 'Imóvel', 'veiculo' => 'Veículo', 'equipamento' => 'Equipamento',
+    'mobiliario' => 'Mobiliário', 'eletronico' => 'Eletrônico', 'outro' => 'Outro',
 ];
-$statusLabels = ['ativo' => 'Ativo', 'manutencao' => 'Em manutencao', 'baixado' => 'Baixado'];
+$statusLabels = ['ativo' => 'Ativo', 'manutencao' => 'Em manutenção', 'baixado' => 'Baixado'];
 ?>
 
 <div class="dash-page-head">
     <div>
-        <h1 class="dash-page-title">Patrimonio</h1>
+        <h1 class="dash-page-title">Patrimônio</h1>
         <p class="dash-page-subtitle">
             <?= $total ?> bem<?= $total === 1 ? '' : 's' ?> cadastrado<?= $total === 1 ? '' : 's' ?>.
         </p>
@@ -62,7 +62,7 @@ $statusLabels = ['ativo' => 'Ativo', 'manutencao' => 'Em manutencao', 'baixado' 
             type="search"
             name="busca"
             value="<?= htmlspecialchars($search, ENT_QUOTES, 'UTF-8') ?>"
-            placeholder="Buscar por nome, numero de patrimonio ou local..."
+            placeholder="Buscar por nome, número de patrimônio ou local..."
         >
         <?php if ($search !== ''): ?>
             <a href="<?= $basePath ?>/dashboard/patrimonio" class="crud-search-clear" aria-label="Limpar busca">
@@ -78,7 +78,7 @@ $statusLabels = ['ativo' => 'Ativo', 'manutencao' => 'Em manutencao', 'baixado' 
             <p>
                 <?= $search !== ''
                     ? 'Tente buscar por outro termo.'
-                    : 'Comece cadastrando o primeiro bem, imovel ou equipamento da igreja.' ?>
+                    : 'Comece cadastrando o primeiro bem, imóvel ou equipamento da igreja.' ?>
             </p>
             <?php if ($search === ''): ?>
                 <a href="<?= $basePath ?>/dashboard/patrimonio/novo" class="btn-k btn-k-grad">
@@ -93,11 +93,11 @@ $statusLabels = ['ativo' => 'Ativo', 'manutencao' => 'Em manutencao', 'baixado' 
                     <tr>
                         <th>Bem</th>
                         <th>Categoria</th>
-                        <th>Numero</th>
+                        <th>Número</th>
                         <th>Local</th>
                         <th>Valor estimado</th>
                         <th>Status</th>
-                        <th class="actions-col">Acoes</th>
+                        <th class="actions-col">Ações</th>
                     </tr>
                 </thead>
                 <tbody>

@@ -88,7 +88,7 @@
       if (!livroId || !capitulo || !versao) {
         popularSelect(inicioSelect, 0, 'Vers...');
         if (fimSelect) {
-          popularSelect(fimSelect, 0, 'Ate (opcional)');
+          popularSelect(fimSelect, 0, 'Até (opcional)');
         }
         return Promise.resolve();
       }
@@ -106,7 +106,7 @@
           var total = dados.totalVersiculos || 0;
           popularSelect(inicioSelect, total, total ? 'Vers...' : 'Sem texto');
           if (fimSelect) {
-            popularSelect(fimSelect, total, 'Ate (opcional)');
+            popularSelect(fimSelect, total, 'Até (opcional)');
           }
         })
         .catch(function () {});

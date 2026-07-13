@@ -26,8 +26,8 @@ $statusLabel = [
         <h1 class="dash-page-title">Igrejas provisionadas</h1>
         <p class="dash-page-subtitle">
             <?= count($igrejas) ?> igreja<?= count($igrejas) === 1 ? '' : 's' ?> no total.
-            Excluir aqui apaga o banco de dados e o usuario do banco no cPanel - nao tem como desfazer.
-            O subdominio precisa ser removido manualmente pelo cPanel (essa hospedagem nao suporta exclusao de subdominio via API).
+            Excluir aqui apaga o banco de dados e o usuário do banco no cPanel - não tem como desfazer.
+            O subdomínio precisa ser removido manualmente pelo cPanel (essa hospedagem não suporta exclusão de subdomínio via API).
         </p>
     </div>
 </div>
@@ -59,7 +59,7 @@ $statusLabel = [
         <div class="crud-empty">
             <div class="icon"><i class="bi bi-building"></i></div>
             <h2>Nenhuma igreja provisionada ainda</h2>
-            <p>Igrejas criadas pelo cadastro publico automatico aparecem aqui.</p>
+            <p>Igrejas criadas pelo cadastro público automático aparecem aqui.</p>
         </div>
     <?php else: ?>
         <div class="crud-table-wrapper">
@@ -67,14 +67,14 @@ $statusLabel = [
                 <thead>
                     <tr>
                         <th>Igreja</th>
-                        <th>Subdominio</th>
+                        <th>Subdomínio</th>
                         <th>Plano</th>
-                        <th>Metodo</th>
-                        <th>Situacao do pagamento</th>
+                        <th>Método</th>
+                        <th>Situação do pagamento</th>
                         <th>Status</th>
-                        <th>Ultimo acesso</th>
+                        <th>Último acesso</th>
                         <th>Criada em</th>
-                        <th class="actions-col">Acoes</th>
+                        <th class="actions-col">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -97,8 +97,8 @@ $statusLabel = [
                             <td>
                                 <?= match ($igreja->metodoPagamento) {
                                     'pix' => 'Pix',
-                                    'cartao' => 'Cartao',
-                                    'trial' => 'Teste gratis',
+                                    'cartao' => 'Cartão',
+                                    'trial' => 'Teste grátis',
                                     default => htmlspecialchars($igreja->metodoPagamento, ENT_QUOTES, 'UTF-8'),
                                 } ?>
                             </td>
@@ -123,7 +123,7 @@ $statusLabel = [
                                 <form
                                     method="POST"
                                     action="<?= $basePath ?>/plataforma/igrejas/<?= $igreja->id ?>/excluir"
-                                    data-confirm="ATENCAO: isso vai apagar PERMANENTEMENTE a igreja &quot;<?= htmlspecialchars($igreja->nomeIgreja, ENT_QUOTES, 'UTF-8') ?>&quot; - banco de dados (todos os membros/cultos/dados) e usuario do banco no cPanel. Nao tem como desfazer. Voce ainda vai precisar remover o subdominio &quot;<?= htmlspecialchars($igreja->subdominio, ENT_QUOTES, 'UTF-8') ?>&quot; manualmente pelo cPanel depois. Confirma?"
+                                    data-confirm="ATENÇÃO: isso vai apagar PERMANENTEMENTE a igreja &quot;<?= htmlspecialchars($igreja->nomeIgreja, ENT_QUOTES, 'UTF-8') ?>&quot; - banco de dados (todos os membros/cultos/dados) e usuário do banco no cPanel. Não tem como desfazer. Você ainda vai precisar remover o subdomínio &quot;<?= htmlspecialchars($igreja->subdominio, ENT_QUOTES, 'UTF-8') ?>&quot; manualmente pelo cPanel depois. Confirma?"
                                 >
                                     <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
                                     <button

@@ -39,7 +39,7 @@ $actionUrl = $isEdit
         <p class="dash-page-subtitle">
             <?= $isEdit
                 ? 'Atualize os dados de ' . htmlspecialchars($evento->titulo, ENT_QUOTES, 'UTF-8') . '.'
-                : 'Preencha os dados para agendar um evento, reuniao ou reserva de espaco.' ?>
+                : 'Preencha os dados para agendar um evento, reunião ou reserva de espaço.' ?>
         </p>
     </div>
     <div class="dash-page-actions">
@@ -68,15 +68,15 @@ $actionUrl = $isEdit
             <h3><i class="bi bi-calendar3"></i> Dados do evento</h3>
             <div class="crud-form-grid">
                 <div class="crud-field crud-field-full">
-                    <label for="titulo">Titulo *</label>
-                    <input type="text" id="titulo" name="titulo" value="<?= htmlspecialchars($titulo, ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex.: Reuniao de lideranca" required autofocus>
+                    <label for="titulo">Título *</label>
+                    <input type="text" id="titulo" name="titulo" value="<?= htmlspecialchars($titulo, ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex.: Reunião de liderança" required autofocus>
                 </div>
                 <div class="crud-field">
                     <label for="tipo">Tipo</label>
                     <select id="tipo" name="tipo">
                         <option value="evento" <?= $tipo === 'evento' ? 'selected' : '' ?>>Evento</option>
-                        <option value="reuniao" <?= $tipo === 'reuniao' ? 'selected' : '' ?>>Reuniao</option>
-                        <option value="reserva" <?= $tipo === 'reserva' ? 'selected' : '' ?>>Reserva de espaco</option>
+                        <option value="reuniao" <?= $tipo === 'reuniao' ? 'selected' : '' ?>>Reunião</option>
+                        <option value="reserva" <?= $tipo === 'reserva' ? 'selected' : '' ?>>Reserva de espaço</option>
                         <option value="outro" <?= $tipo === 'outro' ? 'selected' : '' ?>>Outro</option>
                     </select>
                 </div>
@@ -85,21 +85,21 @@ $actionUrl = $isEdit
                     <input type="date" id="data" name="data" value="<?= htmlspecialchars($data, ENT_QUOTES, 'UTF-8') ?>" required>
                 </div>
                 <div class="crud-field">
-                    <label for="hora_inicio">Horario de inicio</label>
+                    <label for="hora_inicio">Horário de início</label>
                     <input type="time" id="hora_inicio" name="hora_inicio" value="<?= htmlspecialchars($horaInicio, ENT_QUOTES, 'UTF-8') ?>">
                 </div>
                 <div class="crud-field">
-                    <label for="hora_fim">Horario de termino</label>
+                    <label for="hora_fim">Horário de término</label>
                     <input type="time" id="hora_fim" name="hora_fim" value="<?= htmlspecialchars($horaFim, ENT_QUOTES, 'UTF-8') ?>">
                 </div>
                 <div class="crud-field">
                     <label for="local">Local</label>
-                    <input type="text" id="local" name="local" value="<?= htmlspecialchars($local, ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex.: Salao social">
+                    <input type="text" id="local" name="local" value="<?= htmlspecialchars($local, ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex.: Salão social">
                 </div>
                 <div class="crud-field">
-                    <label for="responsavel_membro_id">Responsavel</label>
+                    <label for="responsavel_membro_id">Responsável</label>
                     <select id="responsavel_membro_id" name="responsavel_membro_id">
-                        <option value="">Nao definido</option>
+                        <option value="">Não definido</option>
                         <?php foreach ($membrosAtivos as $membro): ?>
                             <option value="<?= $membro->id ?>" <?= (string) $responsavelMembroId === (string) $membro->id ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($membro->nome, ENT_QUOTES, 'UTF-8') ?>
@@ -116,7 +116,7 @@ $actionUrl = $isEdit
                     </select>
                 </div>
                 <div class="crud-field crud-field-full">
-                    <label for="descricao">Descricao</label>
+                    <label for="descricao">Descrição</label>
                     <textarea id="descricao" name="descricao" rows="3" placeholder="Detalhes adicionais (opcional)"><?= htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8') ?></textarea>
                 </div>
             </div>
@@ -125,7 +125,7 @@ $actionUrl = $isEdit
         <div class="crud-form-actions">
             <a href="<?= $basePath ?>/dashboard/agenda" class="btn-k btn-k-ghost">Cancelar</a>
             <button type="submit" class="btn-k btn-k-grad">
-                <i class="bi bi-check-lg"></i> <?= $isEdit ? 'Salvar alteracoes' : 'Agendar evento' ?>
+                <i class="bi bi-check-lg"></i> <?= $isEdit ? 'Salvar alterações' : 'Agendar evento' ?>
             </button>
         </div>
     </form>

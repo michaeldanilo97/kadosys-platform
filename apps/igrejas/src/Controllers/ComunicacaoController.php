@@ -28,9 +28,9 @@ final class ComunicacaoController extends Controller
         $result = ComunicacaoAviso::paginate($page, self::PER_PAGE, $search);
 
         echo $this->view('dashboard.comunicacao.index', [
-            'pageTitle' => 'Comunicacao - KADOSYS Igrejas',
+            'pageTitle' => 'Comunicação - KADOSYS Igrejas',
             'activeMenu' => 'comunicacao',
-            'breadcrumb' => ['Dashboard', 'Comunicacao'],
+            'breadcrumb' => ['Dashboard', 'Comunicação'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
             'avisos' => $result['items'],
@@ -67,7 +67,7 @@ final class ComunicacaoController extends Controller
         echo $this->view('dashboard.comunicacao.show', [
             'pageTitle' => $aviso->titulo . ' - KADOSYS Igrejas',
             'activeMenu' => 'comunicacao',
-            'breadcrumb' => ['Dashboard', 'Comunicacao', $aviso->titulo],
+            'breadcrumb' => ['Dashboard', 'Comunicação', $aviso->titulo],
             'user' => $user,
             'modules' => DashboardController::modules(),
             'aviso' => $aviso,
@@ -79,7 +79,7 @@ final class ComunicacaoController extends Controller
         echo $this->view('dashboard.comunicacao.form', [
             'pageTitle' => 'Novo aviso - KADOSYS Igrejas',
             'activeMenu' => 'comunicacao',
-            'breadcrumb' => ['Dashboard', 'Comunicacao', 'Novo'],
+            'breadcrumb' => ['Dashboard', 'Comunicação', 'Novo'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
             'aviso' => null,
@@ -92,7 +92,7 @@ final class ComunicacaoController extends Controller
     public function store(): void
     {
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('comunicacao_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('comunicacao_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect('/dashboard/comunicacao/novo');
         }
 
@@ -124,7 +124,7 @@ final class ComunicacaoController extends Controller
         echo $this->view('dashboard.comunicacao.form', [
             'pageTitle' => 'Editar ' . $aviso->titulo . ' - KADOSYS Igrejas',
             'activeMenu' => 'comunicacao',
-            'breadcrumb' => ['Dashboard', 'Comunicacao', $aviso->titulo],
+            'breadcrumb' => ['Dashboard', 'Comunicação', $aviso->titulo],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
             'aviso' => $aviso,
@@ -143,7 +143,7 @@ final class ComunicacaoController extends Controller
         }
 
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
-            Session::flash('comunicacao_errors', ['Sessao expirada. Tente novamente.']);
+            Session::flash('comunicacao_errors', ['Sessão expirada. Tente novamente.']);
             $this->redirect("/dashboard/comunicacao/{$id}/editar");
         }
 
@@ -181,11 +181,11 @@ final class ComunicacaoController extends Controller
         $errors = [];
 
         if (trim((string) ($data['titulo'] ?? '')) === '') {
-            $errors[] = 'Informe o titulo do aviso.';
+            $errors[] = 'Informe o título do aviso.';
         }
 
         if (trim((string) ($data['conteudo'] ?? '')) === '') {
-            $errors[] = 'Informe o conteudo do aviso.';
+            $errors[] = 'Informe o conteúdo do aviso.';
         }
 
         return $errors;
@@ -196,9 +196,9 @@ final class ComunicacaoController extends Controller
         http_response_code(404);
 
         echo $this->view('errors.404', [
-            'pageTitle' => 'Pagina nao encontrada - KADOSYS Igrejas',
+            'pageTitle' => 'Página não encontrada - KADOSYS Igrejas',
             'activeMenu' => 'comunicacao',
-            'breadcrumb' => ['Dashboard', 'Comunicacao', 'Nao encontrado'],
+            'breadcrumb' => ['Dashboard', 'Comunicação', 'Não encontrado'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
         ], 'dashboard');

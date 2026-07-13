@@ -17,7 +17,7 @@ $basePath = $config['base_path'] ?? '';
     <div>
         <h1 class="dash-page-title">Playbacks</h1>
         <p class="dash-page-subtitle">
-            <?= $total ?> playback<?= $total === 1 ? '' : 's' ?> na biblioteca do ministerio de louvor.
+            <?= $total ?> playback<?= $total === 1 ? '' : 's' ?> na biblioteca do ministério de louvor.
         </p>
     </div>
     <div class="dash-page-actions">
@@ -38,7 +38,7 @@ $basePath = $config['base_path'] ?? '';
             type="search"
             name="busca"
             value="<?= htmlspecialchars($search, ENT_QUOTES, 'UTF-8') ?>"
-            placeholder="Buscar por titulo ou artista..."
+            placeholder="Buscar por título ou artista..."
         >
         <?php if ($search !== ''): ?>
             <a href="<?= $basePath ?>/dashboard/playbacks" class="crud-search-clear" aria-label="Limpar busca">
@@ -53,8 +53,8 @@ $basePath = $config['base_path'] ?? '';
             <h2><?= $search !== '' ? 'Nenhum playback encontrado' : 'Nenhum playback enviado ainda' ?></h2>
             <p>
                 <?= $search !== ''
-                    ? 'Tente buscar por outro titulo ou artista.'
-                    : 'Envie o primeiro audio da biblioteca do ministerio de louvor.' ?>
+                    ? 'Tente buscar por outro título ou artista.'
+                    : 'Envie o primeiro áudio da biblioteca do ministério de louvor.' ?>
             </p>
             <?php if ($search === ''): ?>
                 <a href="<?= $basePath ?>/dashboard/playbacks/novo" class="btn-k btn-k-grad">

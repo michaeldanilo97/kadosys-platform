@@ -13,12 +13,12 @@ $basePath = $config['base_path'] ?? '';
 ?>
 <div class="auth-form-card">
     <div class="eyebrow"><?= htmlspecialchars($nomeIgreja ?? 'Nossa igreja', ENT_QUOTES, 'UTF-8') ?></div>
-    <h1>Fazer uma doacao</h1>
+    <h1>Fazer uma doação</h1>
 
     <?php if (!$habilitado): ?>
-        <p class="subtitle">Esta igreja ainda nao configurou o recebimento de doacoes via Pix. Fale com a secretaria.</p>
+        <p class="subtitle">Esta igreja ainda não configurou o recebimento de doações via Pix. Fale com a secretaria.</p>
     <?php else: ?>
-        <p class="subtitle">Escolha o valor e a categoria - voce recebera um QR code Pix pra pagar direto pelo app do seu banco.</p>
+        <p class="subtitle">Escolha o valor e a categoria - você receberá um QR code Pix pra pagar direto pelo app do seu banco.</p>
 
         <?php if ($errors !== []): ?>
             <div class="auth-alert error">
@@ -32,7 +32,7 @@ $basePath = $config['base_path'] ?? '';
             <?= $csrf ?>
 
             <div class="auth-field">
-                <label for="valor">Valor da doacao</label>
+                <label for="valor">Valor da doação</label>
                 <input
                     type="text"
                     class="form-control"
@@ -50,7 +50,7 @@ $basePath = $config['base_path'] ?? '';
                 <div class="auth-field">
                     <label for="categoria_id">Categoria (opcional)</label>
                     <select id="categoria_id" name="categoria_id" class="form-control">
-                        <option value="">Nao especificar</option>
+                        <option value="">Não especificar</option>
                         <?php foreach ($categorias as $categoria): ?>
                             <option value="<?= $categoria->id ?>" <?= (string) ($old['categoria_id'] ?? '') === (string) $categoria->id ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($categoria->nome, ENT_QUOTES, 'UTF-8') ?>
@@ -81,7 +81,7 @@ $basePath = $config['base_path'] ?? '';
                     id="mensagem"
                     name="mensagem"
                     value="<?= htmlspecialchars($old['mensagem'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                    placeholder="Uma palavra, um pedido de oracao..."
+                    placeholder="Uma palavra, um pedido de oração..."
                 >
             </div>
 

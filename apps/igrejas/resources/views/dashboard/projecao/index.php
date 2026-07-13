@@ -20,55 +20,55 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
 
 <div class="dash-page-head">
     <div>
-        <h1 class="dash-page-title">Projecao</h1>
-        <p class="dash-page-subtitle">Controle o telao do culto: biblia, videos e o acesso do preletor.</p>
+        <h1 class="dash-page-title">Projeção</h1>
+        <p class="dash-page-subtitle">Controle o telão do culto: bíblia, vídeos e o acesso do preletor.</p>
     </div>
 </div>
 
 <?php if (!$bibliaImportada): ?>
     <div class="crud-alert error">
         <i class="bi bi-exclamation-triangle"></i>
-        <div>O texto da Biblia ainda nao foi importado. As referencias podem ser selecionadas, mas o texto so aparece apos a importacao.</div>
+        <div>O texto da Bíblia ainda não foi importado. As referências podem ser selecionadas, mas o texto só aparece após a importação.</div>
     </div>
 <?php endif; ?>
 
 <?php if (!$sessao): ?>
     <div class="crud-empty dash-panel">
         <div class="icon"><i class="bi bi-easel2"></i></div>
-        <h2>Nenhuma sessao de projecao ativa</h2>
-        <p>Inicie uma sessao para gerar o link do telao e o PIN de acesso do preletor.</p>
+        <h2>Nenhuma sessão de projeção ativa</h2>
+        <p>Inicie uma sessão para gerar o link do telão e o PIN de acesso do preletor.</p>
         <form method="POST" action="<?= $basePath ?>/dashboard/projecao/iniciar">
             <?= $csrf ?>
-            <button type="submit" class="btn-k btn-k-grad"><i class="bi bi-play-fill"></i> Iniciar sessao de projecao</button>
+            <button type="submit" class="btn-k btn-k-grad"><i class="bi bi-play-fill"></i> Iniciar sessão de projeção</button>
         </form>
     </div>
 <?php else: ?>
     <div class="dash-panel projecao-sessao-panel">
         <div class="dash-panel-head">
-            <h2><i class="bi bi-broadcast"></i> Sessao ativa</h2>
+            <h2><i class="bi bi-broadcast"></i> Sessão ativa</h2>
             <span class="panel-badge" style="background: rgba(52,211,153,0.12); border-color: rgba(52,211,153,0.35); color: var(--success);">ao vivo</span>
         </div>
 
         <div class="projecao-acessos">
             <div class="projecao-acesso-card">
-                <span class="label"><i class="bi bi-display"></i> Telao (projetor ou TV)</span>
+                <span class="label"><i class="bi bi-display"></i> Telão (projetor ou TV)</span>
                 <p>No computador ligado ao projetor, abra o link abaixo:</p>
                 <a href="<?= htmlspecialchars($telaoUrl, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener" class="btn-k btn-k-ghost">
-                    <i class="bi bi-box-arrow-up-right"></i> Abrir telao
+                    <i class="bi bi-box-arrow-up-right"></i> Abrir telão
                 </a>
-                <p class="projecao-acesso-alt">Numa Smart TV, digitar esse link pelo controle remoto e dificil - acesse <strong><?= $basePath ?>/telao</strong> e digite o mesmo PIN do preletor ao lado.</p>
+                <p class="projecao-acesso-alt">Numa Smart TV, digitar esse link pelo controle remoto é difícil - acesse <strong><?= $basePath ?>/telao</strong> e digite o mesmo PIN do preletor ao lado.</p>
             </div>
             <div class="projecao-acesso-card">
                 <span class="label"><i class="bi bi-tablet"></i> Preletor (tablet do pastor)</span>
-                <p>Peca para o pastor acessar <strong><?= $basePath ?>/preletor</strong> e digitar o PIN:</p>
+                <p>Peça para o pastor acessar <strong><?= $basePath ?>/preletor</strong> e digitar o PIN:</p>
                 <div class="projecao-pin"><?= htmlspecialchars($sessao->pin, ENT_QUOTES, 'UTF-8') ?></div>
             </div>
         </div>
 
-        <form method="POST" action="<?= $basePath ?>/dashboard/projecao/encerrar" data-confirm="Encerrar a sessao de projecao? O telao e o preletor perderao o acesso." style="margin-top: 1.2rem;">
+        <form method="POST" action="<?= $basePath ?>/dashboard/projecao/encerrar" data-confirm="Encerrar a sessão de projeção? O telão e o preletor perderão o acesso." style="margin-top: 1.2rem;">
             <?= $csrf ?>
             <button type="submit" class="btn-k btn-k-outline" style="border-color: rgba(248,113,113,0.4); color: var(--danger);">
-                <i class="bi bi-stop-fill"></i> Encerrar sessao
+                <i class="bi bi-stop-fill"></i> Encerrar sessão
             </button>
         </form>
     </div>
@@ -76,7 +76,7 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
     <div data-projecao-controles data-token="<?= htmlspecialchars($sessao->token, ENT_QUOTES, 'UTF-8') ?>" data-poll-url="<?= $basePath ?>/projecao/<?= $sessao->token ?>/estado" data-capitulo-info-url="<?= $basePath ?>/projecao/<?= $sessao->token ?>/biblia/capitulo">
         <div class="dash-panel biblia-panel-full">
             <div class="dash-panel-head">
-                <h2><i class="bi bi-book"></i> Biblia</h2>
+                <h2><i class="bi bi-book"></i> Bíblia</h2>
                 <span class="panel-badge panel-badge-comando" data-comando-indicador hidden><i class="bi bi-person-fill"></i> <span data-comando-indicador-texto></span></span>
                 <span class="panel-badge"><i class="bi bi-lightning-charge-fill"></i> projeta ao clicar</span>
             </div>
@@ -85,7 +85,7 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                 <div class="biblia-picker-controles">
                     <div class="biblia-linha-topo">
                         <div>
-                            <div class="biblia-secao-label">Versao</div>
+                            <div class="biblia-secao-label">Versão</div>
                             <div class="biblia-versoes" data-versao-pills>
                                 <input type="hidden" data-campo="biblia_versao" required>
                                 <?php foreach ($versoes as $codigo => $nome): ?>
@@ -100,7 +100,7 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                             <div class="biblia-secao-label">Livro</div>
                             <div class="livro-combo" data-livro-combo>
                                 <i class="bi bi-search"></i>
-                                <input type="text" class="livro-combo-input" data-livro-combo-input placeholder="Buscar livro (ex.: joao, salmos, gn)..." autocomplete="off" aria-expanded="false">
+                                <input type="text" class="livro-combo-input" data-livro-combo-input placeholder="Buscar livro (ex.: joão, salmos, gn)..." autocomplete="off" aria-expanded="false">
                                 <input type="hidden" data-campo="livro_id" required>
                                 <div class="livro-combo-lista" data-livro-combo-lista hidden>
                                     <?php $testamentoAtual = null; ?>
@@ -115,32 +115,32 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                                 </div>
                             </div>
                             <p class="biblia-livro-dica" data-livro-dica>
-                                <i class="bi bi-arrow-up-short"></i> Escolha um livro para ver os capitulos e versiculos
+                                <i class="bi bi-arrow-up-short"></i> Escolha um livro para ver os capítulos e versículos
                             </p>
                         </div>
                     </div>
 
                     <div class="biblia-secao" data-secao-capitulo>
-                        <div class="biblia-secao-label"><i class="bi bi-bookmark"></i> Capitulo</div>
+                        <div class="biblia-secao-label"><i class="bi bi-bookmark"></i> Capítulo</div>
                         <input type="hidden" data-campo="capitulo" required>
                         <div class="biblia-chips" data-capitulo-chips></div>
                     </div>
 
                     <div class="biblia-secao" data-secao-versiculo>
-                        <div class="biblia-secao-label"><i class="bi bi-text-paragraph"></i> Versiculo <span class="hint">(shift+clique seleciona um intervalo)</span></div>
+                        <div class="biblia-secao-label"><i class="bi bi-text-paragraph"></i> Versículo <span class="hint">(shift+clique seleciona um intervalo)</span></div>
                         <input type="hidden" data-campo="versiculo_inicio" required>
                         <input type="hidden" data-campo="versiculo_fim">
                         <div class="biblia-chips" data-versiculo-chips></div>
                         <p class="biblia-livro-dica" style="margin-top: 0.6rem;">
-                            <i class="bi bi-info-circle"></i> Intervalos longos (muitos versiculos de uma vez) diminuem automaticamente o tamanho da letra no telao pra caber tudo - prefira intervalos curtos se a legibilidade for importante.
+                            <i class="bi bi-info-circle"></i> Intervalos longos (muitos versículos de uma vez) diminuem automaticamente o tamanho da letra no telão pra caber tudo - prefira intervalos curtos se a legibilidade for importante.
                         </p>
                     </div>
                 </div>
 
                 <div class="biblia-picker-sidebar">
                     <div class="biblia-preview-live" data-preview-live>
-                        <div class="ref" data-preview-ref><i class="bi bi-broadcast"></i> Nada em projecao</div>
-                        <div class="texto" data-preview-texto><span class="vazio">Escolha versao, livro, capitulo e versiculo acima para comecar.</span></div>
+                        <div class="ref" data-preview-ref><i class="bi bi-broadcast"></i> Nada em projeção</div>
+                        <div class="texto" data-preview-texto><span class="vazio">Escolha versão, livro, capítulo e versículo acima para começar.</span></div>
                         <div class="biblia-preview-proximo" data-preview-proximo hidden>
                             <div class="label"><i class="bi bi-skip-forward"></i> A seguir</div>
                             <div data-preview-proximo-texto></div>
@@ -152,13 +152,13 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                             <i class="bi bi-arrow-left"></i> Anterior
                         </button>
                         <button type="button" class="btn-k btn-k-ghost" data-nav-acao="proximo">
-                            Proximo <i class="bi bi-arrow-right"></i>
+                            Próximo <i class="bi bi-arrow-right"></i>
                         </button>
                     </div>
                     <button type="button" class="btn-k btn-k-ghost" data-acao-ler-agora hidden style="width: 100%; margin-top: 0.6rem;">
-                        <i class="bi bi-megaphone-fill"></i> Ler agora no telao
+                        <i class="bi bi-megaphone-fill"></i> Ler agora no telão
                     </button>
-                    <p class="projecao-nav-dica">Atalhos: <kbd>&larr;</kbd> anterior &middot; <kbd>&rarr;</kbd> proximo (fora dos campos de busca)</p>
+                    <p class="projecao-nav-dica">Atalhos: <kbd>&larr;</kbd> anterior &middot; <kbd>&rarr;</kbd> próximo (fora dos campos de busca)</p>
                 </div>
             </div>
         </div>
@@ -166,20 +166,20 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
         <div class="dash-panels-row" style="margin-top: 1.1rem;">
             <div class="dash-panel">
                 <div class="dash-panel-head">
-                    <h2><i class="bi bi-youtube"></i> Video (YouTube)</h2>
+                    <h2><i class="bi bi-youtube"></i> Vídeo (YouTube)</h2>
                 </div>
                 <div class="crud-alert" style="background: rgba(59, 130, 246, 0.08); border-color: rgba(59, 130, 246, 0.3); color: var(--primary-soft);">
                     <i class="bi bi-info-circle"></i>
-                    Recomendamos usar uma conta com YouTube Premium para reproduzir os videos aqui - sem ele, o video pode exibir anuncios durante a exibicao no telao.
+                    Recomendamos usar uma conta com YouTube Premium para reproduzir os vídeos aqui - sem ele, o vídeo pode exibir anúncios durante a exibição no telão.
                 </div>
 
                 <form class="crud-form" data-form-video onsubmit="return false;">
                     <div class="crud-field">
-                        <label for="video_url">Link do video</label>
+                        <label for="video_url">Link do vídeo</label>
                         <input type="url" id="video_url" placeholder="https://www.youtube.com/watch?v=..." required>
                     </div>
                     <div class="crud-form-actions" style="justify-content: flex-start;">
-                        <button type="submit" class="btn-k btn-k-grad"><i class="bi bi-play-circle"></i> Carregar video</button>
+                        <button type="submit" class="btn-k btn-k-grad"><i class="bi bi-play-circle"></i> Carregar vídeo</button>
                     </div>
                 </form>
 
@@ -199,10 +199,10 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
 
             <div class="dash-panel">
                 <div class="dash-panel-head">
-                    <h2><i class="bi bi-lightning-charge-fill"></i> Exibicoes rapidas</h2>
+                    <h2><i class="bi bi-lightning-charge-fill"></i> Exibições rápidas</h2>
                 </div>
                 <p class="dash-page-subtitle" style="margin-bottom: 1rem;">
-                    Um clique ja exibe no telao - dizimo e oferta usam a mesma chave Pix e aparecem juntos, ja que sao recolhidos no mesmo momento do culto.
+                    Um clique já exibe no telão - dízimo e oferta usam a mesma chave Pix e aparecem juntos, já que são recolhidos no mesmo momento do culto.
                 </p>
                 <div class="projecao-video-controles">
                     <button type="button" class="btn-k btn-k-ghost" data-acao-logo><i class="bi bi-image"></i> Logo</button>
@@ -210,20 +210,20 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                         type="button"
                         class="btn-k btn-k-ghost"
                         data-acao-pix
-                        <?= $doacaoPixHabilitada ? '' : 'disabled title="Cadastre uma chave Pix em Configuracoes para habilitar"' ?>
-                    ><i class="bi bi-qr-code"></i> Dizimo e Oferta</button>
+                        <?= $doacaoPixHabilitada ? '' : 'disabled title="Cadastre uma chave Pix em Configurações para habilitar"' ?>
+                    ><i class="bi bi-qr-code"></i> Dízimo e Oferta</button>
                 </div>
                 <?php if (!$doacaoPixHabilitada): ?>
                     <p class="auth-field-hint" style="margin-top: 0.8rem;">
                         <i class="bi bi-info-circle"></i> Cadastre a chave Pix da igreja em
-                        <a href="<?= $basePath ?>/dashboard/configuracoes">Configuracoes</a> pra habilitar Dizimo/Oferta.
+                        <a href="<?= $basePath ?>/dashboard/configuracoes">Configurações</a> pra habilitar Dízimo/Oferta.
                     </p>
                 <?php endif; ?>
             </div>
 
             <div class="dash-panel">
                 <div class="dash-panel-head">
-                    <h2><i class="bi bi-sliders"></i> Outras acoes</h2>
+                    <h2><i class="bi bi-sliders"></i> Outras ações</h2>
                 </div>
                 <div class="projecao-video-controles">
                     <button type="button" class="btn-k btn-k-ghost" data-acao-limpar><i class="bi bi-x-circle"></i> Limpar tela</button>
@@ -237,7 +237,7 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                 <h2><i class="bi bi-images"></i> Imagens</h2>
             </div>
             <p class="dash-page-subtitle" style="margin-bottom: 1rem;">
-                Suba cartazes/avisos e marque como favoritos - eles ficam a um clique de distancia pra exibir no telao.
+                Suba cartazes/avisos e marque como favoritos - eles ficam a um clique de distância pra exibir no telão.
             </p>
 
             <?php if ($imagensErrors !== []): ?>
@@ -251,7 +251,7 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
             <form method="POST" action="<?= $basePath ?>/dashboard/projecao/imagens" enctype="multipart/form-data" class="crud-form" style="margin-bottom: 1.2rem;">
                 <?= $csrf ?>
                 <div class="crud-field">
-                    <label for="imagem">Enviar nova imagem (PNG, JPG, WEBP ou GIF, ate 8MB)</label>
+                    <label for="imagem">Enviar nova imagem (PNG, JPG, WEBP ou GIF, até 8MB)</label>
                     <input type="file" id="imagem" name="imagem" accept="image/png,image/jpeg,image/webp,image/gif" required>
                 </div>
                 <div class="crud-form-actions" style="justify-content: flex-start;">
@@ -267,7 +267,7 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                         <div class="projecao-imagem-card <?= $imagem->favorita ? 'is-favorita' : '' ?>" data-imagem-card="<?= $imagem->id ?>">
                             <img src="<?= $basePath ?>/<?= htmlspecialchars($imagem->path, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($imagem->nomeArquivo, ENT_QUOTES, 'UTF-8') ?>">
                             <div class="projecao-imagem-acoes">
-                                <button type="button" class="btn-k btn-k-ghost" data-acao-imagem="<?= $imagem->id ?>" title="Exibir no telao">
+                                <button type="button" class="btn-k btn-k-ghost" data-acao-imagem="<?= $imagem->id ?>" title="Exibir no telão">
                                     <i class="bi bi-broadcast"></i>
                                 </button>
                                 <form method="POST" action="<?= $basePath ?>/dashboard/projecao/imagens/<?= $imagem->id ?>/favoritar">

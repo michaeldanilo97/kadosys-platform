@@ -29,11 +29,11 @@ $disponiveisParaVoluntario = array_filter(
 
 <div class="dash-page-head">
     <div>
-        <h1 class="dash-page-title"><?= $isEdit ? 'Editar ministerio' : 'Novo ministerio' ?></h1>
+        <h1 class="dash-page-title"><?= $isEdit ? 'Editar ministério' : 'Novo ministério' ?></h1>
         <p class="dash-page-subtitle">
             <?= $isEdit
                 ? 'Atualize os dados de ' . htmlspecialchars($ministerio->nome, ENT_QUOTES, 'UTF-8') . '.'
-                : 'Preencha os dados para cadastrar um novo ministerio.' ?>
+                : 'Preencha os dados para cadastrar um novo ministério.' ?>
         </p>
     </div>
     <div class="dash-page-actions">
@@ -59,20 +59,20 @@ $disponiveisParaVoluntario = array_filter(
         <?= $csrf ?>
 
         <div class="crud-form-section">
-            <h3><i class="bi bi-diagram-3"></i> Dados do ministerio</h3>
+            <h3><i class="bi bi-diagram-3"></i> Dados do ministério</h3>
             <div class="crud-form-grid">
                 <div class="crud-field crud-field-full">
-                    <label for="nome">Nome do ministerio *</label>
-                    <input type="text" id="nome" name="nome" value="<?= htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex.: Ministerio de Louvor" required autofocus>
+                    <label for="nome">Nome do ministério *</label>
+                    <input type="text" id="nome" name="nome" value="<?= htmlspecialchars($nome, ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex.: Ministério de Louvor" required autofocus>
                 </div>
                 <div class="crud-field crud-field-full">
-                    <label for="descricao">Descricao</label>
-                    <textarea id="descricao" name="descricao" rows="3" placeholder="Proposito e atividades do ministerio (opcional)"><?= htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8') ?></textarea>
+                    <label for="descricao">Descrição</label>
+                    <textarea id="descricao" name="descricao" rows="3" placeholder="Propósito e atividades do ministério (opcional)"><?= htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8') ?></textarea>
                 </div>
                 <div class="crud-field">
-                    <label for="lider_membro_id">Lider</label>
+                    <label for="lider_membro_id">Líder</label>
                     <select id="lider_membro_id" name="lider_membro_id">
-                        <option value="">Sem lider definido</option>
+                        <option value="">Sem líder definido</option>
                         <?php foreach ($membrosAtivos as $membro): ?>
                             <option value="<?= $membro->id ?>" <?= (string) $liderMembroId === (string) $membro->id ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($membro->nome, ENT_QUOTES, 'UTF-8') ?>
@@ -93,7 +93,7 @@ $disponiveisParaVoluntario = array_filter(
         <div class="crud-form-actions">
             <a href="<?= $basePath ?>/dashboard/ministerios" class="btn-k btn-k-ghost">Cancelar</a>
             <button type="submit" class="btn-k btn-k-grad">
-                <i class="bi bi-check-lg"></i> <?= $isEdit ? 'Salvar alteracoes' : 'Cadastrar ministerio' ?>
+                <i class="bi bi-check-lg"></i> <?= $isEdit ? 'Salvar alterações' : 'Cadastrar ministério' ?>
             </button>
         </div>
     </form>
@@ -102,7 +102,7 @@ $disponiveisParaVoluntario = array_filter(
 <?php if ($isEdit): ?>
     <div class="dash-panel" style="margin-top: 1.4rem;">
         <div class="dash-panel-head">
-            <h2><i class="bi bi-people"></i> Voluntarios</h2>
+            <h2><i class="bi bi-people"></i> Voluntários</h2>
             <span class="panel-badge"><?= count($voluntarios) ?> vinculado<?= count($voluntarios) === 1 ? '' : 's' ?></span>
         </div>
 
@@ -116,13 +116,13 @@ $disponiveisParaVoluntario = array_filter(
                     <?php endforeach; ?>
                 </select>
                 <button type="submit" class="btn-k btn-k-ghost">
-                    <i class="bi bi-plus-lg"></i> Adicionar voluntario
+                    <i class="bi bi-plus-lg"></i> Adicionar voluntário
                 </button>
             </form>
         <?php endif; ?>
 
         <?php if ($voluntarios === []): ?>
-            <p class="crud-text-dim" style="margin-top: 1rem;">Nenhum voluntario vinculado a este ministerio ainda.</p>
+            <p class="crud-text-dim" style="margin-top: 1rem;">Nenhum voluntário vinculado a este ministério ainda.</p>
         <?php else: ?>
             <ul class="crud-people-list">
                 <?php foreach ($voluntarios as $membro): ?>
@@ -136,7 +136,7 @@ $disponiveisParaVoluntario = array_filter(
                         <form
                             method="POST"
                             action="<?= $basePath ?>/dashboard/ministerios/<?= $ministerio->id ?>/voluntarios/<?= $membro->id ?>/remover"
-                            data-confirm="Remover <?= htmlspecialchars($membro->nome, ENT_QUOTES, 'UTF-8') ?> deste ministerio?"
+                            data-confirm="Remover <?= htmlspecialchars($membro->nome, ENT_QUOTES, 'UTF-8') ?> deste ministério?"
                         >
                             <?= $csrf ?>
                             <button type="submit" class="crud-icon-btn danger" aria-label="Remover <?= htmlspecialchars($membro->nome, ENT_QUOTES, 'UTF-8') ?>">

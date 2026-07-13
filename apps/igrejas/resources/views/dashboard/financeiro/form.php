@@ -27,8 +27,8 @@ $actionUrl = $isEdit
 $formasPagamento = [
     'dinheiro' => 'Dinheiro',
     'pix' => 'Pix',
-    'cartao' => 'Cartao',
-    'transferencia' => 'Transferencia',
+    'cartao' => 'Cartão',
+    'transferencia' => 'Transferência',
     'boleto' => 'Boleto',
     'outro' => 'Outro',
 ];
@@ -36,9 +36,9 @@ $formasPagamento = [
 
 <div class="dash-page-head">
     <div>
-        <h1 class="dash-page-title"><?= $isEdit ? 'Editar lancamento' : 'Novo lancamento' ?></h1>
+        <h1 class="dash-page-title"><?= $isEdit ? 'Editar lançamento' : 'Novo lançamento' ?></h1>
         <p class="dash-page-subtitle">
-            <?= $isEdit ? 'Atualize os dados do lancamento.' : 'Registre uma entrada (dizimo, oferta) ou saida (despesa).' ?>
+            <?= $isEdit ? 'Atualize os dados do lançamento.' : 'Registre uma entrada (dízimo, oferta) ou saída (despesa).' ?>
         </p>
     </div>
     <div class="dash-page-actions">
@@ -64,13 +64,13 @@ $formasPagamento = [
         <?= $csrf ?>
 
         <div class="crud-form-section">
-            <h3><i class="bi bi-cash-coin"></i> Dados do lancamento</h3>
+            <h3><i class="bi bi-cash-coin"></i> Dados do lançamento</h3>
             <div class="crud-form-grid">
                 <div class="crud-field">
                     <label for="tipo">Tipo *</label>
                     <select id="tipo" name="tipo" data-financeiro-tipo required>
-                        <option value="entrada" <?= $tipo === 'entrada' ? 'selected' : '' ?>>Entrada (dizimo, oferta, doacao...)</option>
-                        <option value="saida" <?= $tipo === 'saida' ? 'selected' : '' ?>>Saida (despesa)</option>
+                        <option value="entrada" <?= $tipo === 'entrada' ? 'selected' : '' ?>>Entrada (dízimo, oferta, doação...)</option>
+                        <option value="saida" <?= $tipo === 'saida' ? 'selected' : '' ?>>Saída (despesa)</option>
                     </select>
                 </div>
                 <div class="crud-field">
@@ -86,8 +86,8 @@ $formasPagamento = [
                     </select>
                 </div>
                 <div class="crud-field crud-field-full">
-                    <label for="descricao">Descricao *</label>
-                    <input type="text" id="descricao" name="descricao" value="<?= htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex.: Dizimo do culto de domingo" required autofocus>
+                    <label for="descricao">Descrição *</label>
+                    <input type="text" id="descricao" name="descricao" value="<?= htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex.: Dízimo do culto de domingo" required autofocus>
                 </div>
                 <div class="crud-field">
                     <label for="valor">Valor (R$) *</label>
@@ -108,7 +108,7 @@ $formasPagamento = [
                 <div class="crud-field">
                     <label for="membro_id">Vincular a um membro (opcional)</label>
                     <select id="membro_id" name="membro_id">
-                        <option value="">Nao vincular</option>
+                        <option value="">Não vincular</option>
                         <?php foreach ($membrosAtivos as $membro): ?>
                             <option value="<?= $membro->id ?>" <?= (string) $membroId === (string) $membro->id ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($membro->nome, ENT_QUOTES, 'UTF-8') ?>
@@ -117,7 +117,7 @@ $formasPagamento = [
                     </select>
                 </div>
                 <div class="crud-field crud-field-full">
-                    <label for="observacoes">Observacoes</label>
+                    <label for="observacoes">Observações</label>
                     <textarea id="observacoes" name="observacoes" rows="3" placeholder="Detalhes adicionais (opcional)"><?= htmlspecialchars($observacoes, ENT_QUOTES, 'UTF-8') ?></textarea>
                 </div>
             </div>
@@ -126,7 +126,7 @@ $formasPagamento = [
         <div class="crud-form-actions">
             <a href="<?= $basePath ?>/dashboard/financeiro" class="btn-k btn-k-ghost">Cancelar</a>
             <button type="submit" class="btn-k btn-k-grad">
-                <i class="bi bi-check-lg"></i> <?= $isEdit ? 'Salvar alteracoes' : 'Cadastrar lancamento' ?>
+                <i class="bi bi-check-lg"></i> <?= $isEdit ? 'Salvar alterações' : 'Cadastrar lançamento' ?>
             </button>
         </div>
     </form>

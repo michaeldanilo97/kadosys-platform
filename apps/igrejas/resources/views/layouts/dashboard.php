@@ -23,7 +23,7 @@ use Igrejas\Models\User;
  * @var array $modules
  */
 $basePath = $config['base_path'] ?? '';
-$userName = $user?->name ?? 'Usuario';
+$userName = $user?->name ?? 'Usuário';
 $userInitial = mb_strtoupper(mb_substr($userName, 0, 1));
 $planoAtual = ConfiguracaoIgreja::atual()->plano;
 $emTrial = TenantResolver::atual()?->metodoPagamento === 'trial';
@@ -100,7 +100,7 @@ if ($activeMenu !== 'trial-expirado' && $activeMenu !== 'fatura-vencida') {
             // e 1 dia de diferenca de calendario, nao 2).
             $diasRestantes = (int) $agora->setTime(0, 0, 0)->diff($expiraEm->setTime(0, 0, 0))->days;
             $avisoTrialTexto = sprintf(
-                'Seu teste gratis termina em %d dia%s (%s). Clique aqui para escolher um plano.',
+                'Seu teste grátis termina em %d dia%s (%s). Clique aqui para escolher um plano.',
                 $diasRestantes,
                 $diasRestantes === 1 ? '' : 's',
                 $expiraEm->format('d/m/Y')
@@ -229,7 +229,7 @@ $avisosSidebar = ($comunicacaoDisponivel && $user !== null)
                 <i class="bi bi-speedometer2"></i> <span class="dash-nav-link-label">Dashboard</span>
             </a>
 
-            <div class="dash-nav-group-label">Modulos</div>
+            <div class="dash-nav-group-label">Módulos</div>
             <?php foreach ($modules as $slug => $module): ?>
                 <?php
                 $bloqueadoPeloPlano = !Plano::disponivel($planoAtual, $slug, $emTrial);
@@ -240,9 +240,9 @@ $avisosSidebar = ($comunicacaoDisponivel && $user !== null)
                     <i class="bi <?= htmlspecialchars($module['icon'], ENT_QUOTES, 'UTF-8') ?>"></i>
                     <span class="dash-nav-link-label"><?= htmlspecialchars($module['title'], ENT_QUOTES, 'UTF-8') ?></span>
                     <?php if ($bloqueadoPeloPlano): ?>
-                        <i class="bi bi-lock-fill dash-nav-lock-icon" title="Disponivel no plano <?= htmlspecialchars(Plano::label($module['planoMinimo']), ENT_QUOTES, 'UTF-8') ?>"></i>
+                        <i class="bi bi-lock-fill dash-nav-lock-icon" title="Disponível no plano <?= htmlspecialchars(Plano::label($module['planoMinimo']), ENT_QUOTES, 'UTF-8') ?>"></i>
                     <?php elseif ($bloqueadoPelaPermissao): ?>
-                        <i class="bi bi-shield-lock dash-nav-lock-icon" title="Sem permissao pra acessar este modulo"></i>
+                        <i class="bi bi-shield-lock dash-nav-lock-icon" title="Sem permissão pra acessar este módulo"></i>
                     <?php endif; ?>
                 </a>
             <?php endforeach; ?>
@@ -263,7 +263,7 @@ $avisosSidebar = ($comunicacaoDisponivel && $user !== null)
                             <?php foreach ($avisosSidebar as $avisoSidebar): ?>
                                 <li>
                                     <a href="<?= $basePath ?>/dashboard/comunicacao/<?= $avisoSidebar->id ?>" class="dash-aviso-item">
-                                        <?php if (!$avisoSidebar->lido): ?><span class="dash-aviso-dot" title="Nao lido"></span><?php endif; ?>
+                                        <?php if (!$avisoSidebar->lido): ?><span class="dash-aviso-dot" title="Não lido"></span><?php endif; ?>
                                         <span class="dash-aviso-titulo"><?= htmlspecialchars($avisoSidebar->titulo, ENT_QUOTES, 'UTF-8') ?></span>
                                     </a>
                                 </li>
@@ -301,22 +301,22 @@ $avisosSidebar = ($comunicacaoDisponivel && $user !== null)
 
             <div class="dash-topbar-search">
                 <i class="bi bi-search"></i>
-                <input type="search" placeholder="Buscar membros, cultos, lancamentos..." aria-label="Buscar no sistema">
+                <input type="search" placeholder="Buscar membros, cultos, lançamentos..." aria-label="Buscar no sistema">
                 <span class="kbd">/</span>
             </div>
 
             <div class="dash-topbar-right">
                 <div class="topbar-dropdown" data-topbar-dropdown>
-                    <button class="topbar-icon-btn" type="button" aria-label="Notificacoes" aria-expanded="false" data-dropdown-toggle>
+                    <button class="topbar-icon-btn" type="button" aria-label="Notificações" aria-expanded="false" data-dropdown-toggle>
                         <i class="bi bi-bell"></i>
                         <?php if ($notificacoes !== []): ?><span class="dot"></span><?php endif; ?>
                     </button>
 
                     <div class="topbar-dropdown-panel notif-panel" data-dropdown-panel hidden>
-                        <div class="topbar-dropdown-head">Notificacoes</div>
+                        <div class="topbar-dropdown-head">Notificações</div>
 
                         <?php if ($notificacoes === []): ?>
-                            <div class="notif-empty">Nenhuma notificacao no momento.</div>
+                            <div class="notif-empty">Nenhuma notificação no momento.</div>
                         <?php else: ?>
                             <?php foreach ($notificacoes as $notificacao): ?>
                                 <a href="<?= htmlspecialchars($notificacao['url'], ENT_QUOTES, 'UTF-8') ?>" class="notif-item">
@@ -345,7 +345,7 @@ $avisosSidebar = ($comunicacaoDisponivel && $user !== null)
                     <div class="topbar-dropdown-panel user-menu-panel" data-dropdown-panel hidden>
                         <?php if ($isAdmin): ?>
                             <a href="<?= $basePath ?>/dashboard/configuracoes" class="user-menu-item">
-                                <i class="bi bi-gear"></i> Configuracoes
+                                <i class="bi bi-gear"></i> Configurações
                             </a>
                         <?php elseif ($temAcessoFinanceiro): ?>
                             <a href="<?= $basePath ?>/dashboard/financeiro/plano" class="user-menu-item">

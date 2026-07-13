@@ -183,7 +183,7 @@
 
   function renderTexto(biblia) {
     if (!biblia || !biblia.versiculos || !biblia.versiculos.length) {
-      texto.innerHTML = '<p class="preletor-empty">Escolha um livro, capitulo e versiculo acima para projetar.</p>';
+      texto.innerHTML = '<p class="preletor-empty">Escolha um livro, capítulo e versículo acima para projetar.</p>';
       refEl.textContent = '';
 
       return;
@@ -376,11 +376,11 @@
     var mensagem;
 
     if (outroTemComando && mudandoModo) {
-      mensagem = NOMES_ORIGEM[controladoPorAtual] + ' esta no comando agora, exibindo ' + (NOMES_MODO[modoAtual] || 'outro conteudo') + '. Assumir o comando e trocar para a Biblia?';
+      mensagem = NOMES_ORIGEM[controladoPorAtual] + ' está no comando agora, exibindo ' + (NOMES_MODO[modoAtual] || 'outro conteúdo') + '. Assumir o comando e trocar para a Bíblia?';
     } else if (outroTemComando) {
-      mensagem = NOMES_ORIGEM[controladoPorAtual] + ' esta no comando agora. Assumir o comando e continuar?';
+      mensagem = NOMES_ORIGEM[controladoPorAtual] + ' está no comando agora. Assumir o comando e continuar?';
     } else {
-      mensagem = 'Ja tem ' + (NOMES_MODO[modoAtual] || 'outro conteudo') + ' em exibicao no telao. Trocar para a Biblia agora?';
+      mensagem = 'Já tem ' + (NOMES_MODO[modoAtual] || 'outro conteúdo') + ' em exibição no telão. Trocar para a Bíblia agora?';
     }
 
     if (!window.KadosysModal) {

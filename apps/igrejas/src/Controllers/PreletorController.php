@@ -33,7 +33,7 @@ final class PreletorController extends Controller
         $sessao = $pin !== '' ? ProjecaoSessao::findAtivaByPin($pin) : null;
 
         if (!$sessao) {
-            Session::flash('preletor_error', 'PIN invalido ou sessao de projecao encerrada.');
+            Session::flash('preletor_error', 'PIN inválido ou sessão de projeção encerrada.');
             $this->redirect('/preletor');
         }
 

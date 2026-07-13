@@ -17,6 +17,27 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 66 - 2026-07-13
+
+**Revisao geral de acentuacao PT-BR em todo o sistema**
+
+- Pedido: revisar os textos do site (pagina publica e sistema interno)
+  incluindo acentuacao correta em portugues, ex.: "gratis" -> "Grátis".
+- Todo o texto visivel ao usuario foi revisado - landing page, tela de
+  cadastro, doacao/Pix publico, login, todas as telas do dashboard
+  (membros, ministerios, grupos, cultos, agenda, financeiro,
+  patrimonio, comunicacao, relatorios, usuarios, permissoes,
+  configuracoes, faturas, playbacks, projecao), telao/preletor, painel
+  da plataforma, mensagens de erro/sucesso e dialogos de confirmacao.
+- NAO foram alterados: nomes de variaveis/funcoes/classes, chaves de
+  array, nomes de rotas/URLs, classes CSS, nomes de colunas do banco e
+  comentarios de codigo (esses continuam sem acento, que e so
+  documentacao interna pra quem mexe no codigo, nao texto do site).
+- Validado com `php -l`/`node --check` em todos os arquivos alterados
+  (93 arquivos) e testado visualmente no navegador (landing page,
+  login e varias telas do dashboard) - tudo carregando normalmente,
+  sem erros e com os acentos aparecendo corretamente.
+
 ## Ajuste 65 - 2026-07-10
 
 **YouTube: video ficava com tela preta sem audio pra sempre, mesmo esperando bastante tempo**

@@ -47,7 +47,7 @@ final class ProjecaoEstadoController extends Controller
         $fim = (int) $this->request->input('versiculo_fim', 0) ?: $inicio;
 
         if (!BibliaVersao::valida($bibliaVersao) || $livroId <= 0 || $capitulo <= 0 || $inicio <= 0) {
-            $this->jsonResponse(['erro' => 'Dados invalidos.'], 422);
+            $this->jsonResponse(['erro' => 'Dados inválidos.'], 422);
         }
 
         ProjecaoEstado::definirBiblia($sessao->id, $bibliaVersao, $livroId, $capitulo, $inicio, $fim, $this->origemDaRequisicao());
@@ -67,7 +67,7 @@ final class ProjecaoEstadoController extends Controller
         $estadoAtual = ProjecaoEstado::atual($sessao->id);
 
         if (!$estadoAtual || $estadoAtual->modo !== 'biblia' || $estadoAtual->livroId === null || $estadoAtual->capitulo === null || $estadoAtual->bibliaVersao === null) {
-            $this->jsonResponse(['erro' => 'Nenhuma referencia biblica em projecao no momento.'], 422);
+            $this->jsonResponse(['erro' => 'Nenhuma referência bíblica em projeção no momento.'], 422);
         }
 
         $posicaoAtual = $estadoAtual->versiculoFim ?? $estadoAtual->versiculoInicio ?? 1;
@@ -77,7 +77,7 @@ final class ProjecaoEstadoController extends Controller
             : BibliaVersiculo::proximaReferencia($estadoAtual->bibliaVersao, $estadoAtual->livroId, $estadoAtual->capitulo, $posicaoAtual);
 
         if ($nova === null) {
-            $this->jsonResponse(['erro' => 'Limite da biblia atingido.'], 422);
+            $this->jsonResponse(['erro' => 'Limite da bíblia atingido.'], 422);
         }
 
         ProjecaoEstado::definirBiblia(
@@ -107,7 +107,7 @@ final class ProjecaoEstadoController extends Controller
         $capitulo = (int) $this->request->input('capitulo', 0);
 
         if (!BibliaVersao::valida($bibliaVersao) || $livroId <= 0 || $capitulo <= 0) {
-            $this->jsonResponse(['erro' => 'Dados invalidos.'], 422);
+            $this->jsonResponse(['erro' => 'Dados inválidos.'], 422);
         }
 
         $this->jsonResponse(['totalVersiculos' => BibliaVersiculo::totalVersiculos($bibliaVersao, $livroId, $capitulo)]);
@@ -125,7 +125,7 @@ final class ProjecaoEstadoController extends Controller
         $bruto = json_decode((string) $this->request->input('tracos', '[]'), true);
 
         if (!is_array($bruto)) {
-            $this->jsonResponse(['erro' => 'Dados invalidos.'], 422);
+            $this->jsonResponse(['erro' => 'Dados inválidos.'], 422);
         }
 
         $tracos = [];
@@ -169,7 +169,7 @@ final class ProjecaoEstadoController extends Controller
         $url = trim((string) $this->request->input('url', ''));
 
         if ($url === '' || self::extrairIdYoutube($url) === null) {
-            $this->jsonResponse(['erro' => 'Informe um link valido do YouTube.'], 422);
+            $this->jsonResponse(['erro' => 'Informe um link válido do YouTube.'], 422);
         }
 
         ProjecaoEstado::definirVideo($sessao->id, $url, $this->origemDaRequisicao());
@@ -197,7 +197,7 @@ final class ProjecaoEstadoController extends Controller
         $duracao = (int) $this->request->input('duracao', -1);
 
         if ($tempoAtual < 0 || $duracao < 0) {
-            $this->jsonResponse(['erro' => 'Dados invalidos.'], 422);
+            $this->jsonResponse(['erro' => 'Dados inválidos.'], 422);
         }
 
         ProjecaoEstado::atualizarTempoVideo($sessao->id, $tempoAtual, $duracao);
@@ -234,7 +234,7 @@ final class ProjecaoEstadoController extends Controller
         $imagemId = (int) $this->request->input('imagem_id', 0);
 
         if ($imagemId <= 0 || !ProjecaoImagem::find($imagemId)) {
-            $this->jsonResponse(['erro' => 'Imagem invalida.'], 422);
+            $this->jsonResponse(['erro' => 'Imagem inválida.'], 422);
         }
 
         ProjecaoEstado::mostrarImagem($sessao->id, $imagemId, $this->origemDaRequisicao());
@@ -246,7 +246,7 @@ final class ProjecaoEstadoController extends Controller
         $sessao = ProjecaoSessao::findAtivaByToken($token);
 
         if (!$sessao) {
-            $this->jsonResponse(['erro' => 'Sessao de projecao encerrada.'], 404);
+            $this->jsonResponse(['erro' => 'Sessão de projeção encerrada.'], 404);
         }
 
         return $sessao;

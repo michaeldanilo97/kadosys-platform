@@ -146,7 +146,7 @@
     var textos = {
       cartao: 'Criar conta e ir para o pagamento',
       pix: 'Criar conta e ir para o pagamento',
-      trial: 'Criar minha conta e testar gratis'
+      trial: 'Criar minha conta e testar grátis'
     };
 
     function atualizar() {

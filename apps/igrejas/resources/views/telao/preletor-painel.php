@@ -31,7 +31,7 @@ $basePath = $config['base_path'] ?? '';
     <div class="preletor-body">
         <form class="preletor-picker" data-preletor-form onsubmit="return false;">
             <div class="preletor-field">
-                <label>Versao</label>
+                <label>Versão</label>
                 <div class="preletor-versoes" data-versao-pills>
                     <input type="hidden" data-campo="biblia_versao" required>
                     <?php foreach ($versoes as $codigo => $nome): ?>
@@ -82,9 +82,9 @@ $basePath = $config['base_path'] ?? '';
                 </div>
             </div>
             <div class="preletor-field preletor-field-sm">
-                <label>Ate <i class="bi bi-info-circle" title="Intervalos longos (muitos versiculos de uma vez) diminuem automaticamente a letra no telao pra caber tudo - prefira intervalos curtos se a legibilidade for importante."></i></label>
+                <label>Até <i class="bi bi-info-circle" title="Intervalos longos (muitos versículos de uma vez) diminuem automaticamente a letra no telão pra caber tudo - prefira intervalos curtos se a legibilidade for importante."></i></label>
                 <div class="num-combo" data-num-combo="versiculo_fim">
-                    <button type="button" class="num-combo-toggle" data-num-combo-toggle aria-expanded="false" title="Intervalos longos diminuem a letra no telao pra caber tudo.">Opcional</button>
+                    <button type="button" class="num-combo-toggle" data-num-combo-toggle aria-expanded="false" title="Intervalos longos diminuem a letra no telão pra caber tudo.">Opcional</button>
                     <input type="hidden" data-campo="versiculo_fim">
                     <div class="livro-combo-lista num-combo-lista" data-num-combo-lista hidden>
                         <div class="biblia-chips" data-num-combo-grid></div>
@@ -94,23 +94,23 @@ $basePath = $config['base_path'] ?? '';
 
             <div class="preletor-field-actions">
                 <button type="submit" data-preletor-projetar><i class="bi bi-broadcast"></i> Projetar</button>
-                <button type="button" class="preletor-nav-btn" data-nav-acao="anterior" aria-label="Versiculo anterior">
+                <button type="button" class="preletor-nav-btn" data-nav-acao="anterior" aria-label="Versículo anterior">
                     <i class="bi bi-arrow-left"></i>
                 </button>
-                <button type="button" class="preletor-nav-btn" data-nav-acao="proximo" aria-label="Proximo versiculo">
+                <button type="button" class="preletor-nav-btn" data-nav-acao="proximo" aria-label="Próximo versículo">
                     <i class="bi bi-arrow-right"></i>
                 </button>
                 <span class="preletor-actions-divisor"></span>
                 <button type="button" class="preletor-nav-btn" data-tool-pen aria-label="Ativar caneta" aria-pressed="false" title="Caneta">
                     <i class="bi bi-pencil-fill"></i>
                 </button>
-                <button type="button" class="preletor-nav-btn" data-tool-clear aria-label="Apagar marcacao" title="Apagar marcacao">
+                <button type="button" class="preletor-nav-btn" data-tool-clear aria-label="Apagar marcação" title="Apagar marcação">
                     <i class="bi bi-eraser-fill"></i>
                 </button>
                 <button type="button" class="preletor-nav-btn" data-tool-fullscreen aria-label="Tela cheia" aria-pressed="false" title="Tela cheia">
                     <i class="bi bi-arrows-fullscreen"></i>
                 </button>
-                <button type="button" class="preletor-nav-btn" data-tool-ajuda aria-label="Ajuda sobre os botoes" title="O que cada botao faz">
+                <button type="button" class="preletor-nav-btn" data-tool-ajuda aria-label="Ajuda sobre os botões" title="O que cada botão faz">
                     <i class="bi bi-question-lg"></i>
                 </button>
             </div>
@@ -120,12 +120,12 @@ $basePath = $config['base_path'] ?? '';
             <button type="button" class="preletor-ajuda-fechar" data-preletor-ajuda-fechar aria-label="Fechar ajuda">
                 <i class="bi bi-x-lg"></i>
             </button>
-            <strong>O que cada botao faz</strong>
+            <strong>O que cada botão faz</strong>
             <ul>
-                <li><i class="bi bi-broadcast"></i> <strong>Projetar</strong> &middot; envia a referencia escolhida para o telao</li>
-                <li><i class="bi bi-arrow-left"></i><i class="bi bi-arrow-right"></i> <strong>Setas</strong> &middot; versiculo anterior / proximo (ja projeta direto)</li>
-                <li><i class="bi bi-pencil-fill"></i> <strong>Caneta</strong> &middot; ativa/desativa a marcacao a lapis sobre o texto (aparece tambem no telao)</li>
-                <li><i class="bi bi-eraser-fill"></i> <strong>Apagar</strong> &middot; limpa a marcacao atual</li>
+                <li><i class="bi bi-broadcast"></i> <strong>Projetar</strong> &middot; envia a referência escolhida para o telão</li>
+                <li><i class="bi bi-arrow-left"></i><i class="bi bi-arrow-right"></i> <strong>Setas</strong> &middot; versículo anterior / próximo (já projeta direto)</li>
+                <li><i class="bi bi-pencil-fill"></i> <strong>Caneta</strong> &middot; ativa/desativa a marcação a lápis sobre o texto (aparece também no telão)</li>
+                <li><i class="bi bi-eraser-fill"></i> <strong>Apagar</strong> &middot; limpa a marcação atual</li>
                 <li><i class="bi bi-arrows-fullscreen"></i> <strong>Tela cheia</strong> &middot; modo foco, esconde menus para caber mais texto</li>
             </ul>
         </div>
@@ -140,7 +140,7 @@ $basePath = $config['base_path'] ?? '';
             <div class="preletor-stage" data-preletor-stage>
                 <div class="stage-biblia">
                     <div class="preletor-texto stage-biblia-texto" data-preletor-texto>
-                        <p class="preletor-empty">Escolha a versao, livro, capitulo e versiculo acima para projetar.</p>
+                        <p class="preletor-empty">Escolha a versão, livro, capítulo e versículo acima para projetar.</p>
                     </div>
                     <div class="stage-biblia-ref" data-preletor-ref></div>
                 </div>

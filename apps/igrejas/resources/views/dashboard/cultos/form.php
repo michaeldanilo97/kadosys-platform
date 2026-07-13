@@ -69,15 +69,15 @@ $disponiveisParaPresenca = array_filter(
             <h3><i class="bi bi-calendar2-week"></i> Dados do culto</h3>
             <div class="crud-form-grid">
                 <div class="crud-field crud-field-full">
-                    <label for="titulo">Titulo *</label>
-                    <input type="text" id="titulo" name="titulo" value="<?= htmlspecialchars($titulo, ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex.: Culto de Celebracao" required autofocus>
+                    <label for="titulo">Título *</label>
+                    <input type="text" id="titulo" name="titulo" value="<?= htmlspecialchars($titulo, ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex.: Culto de Celebração" required autofocus>
                 </div>
                 <div class="crud-field">
                     <label for="data">Data *</label>
                     <input type="date" id="data" name="data" value="<?= htmlspecialchars($data, ENT_QUOTES, 'UTF-8') ?>" required>
                 </div>
                 <div class="crud-field">
-                    <label for="hora">Horario</label>
+                    <label for="hora">Horário</label>
                     <input type="time" id="hora" name="hora" value="<?= htmlspecialchars($hora, ENT_QUOTES, 'UTF-8') ?>">
                 </div>
                 <div class="crud-field">
@@ -93,8 +93,8 @@ $disponiveisParaPresenca = array_filter(
                     </select>
                 </div>
                 <div class="crud-field crud-field-full">
-                    <label for="descricao">Descricao</label>
-                    <textarea id="descricao" name="descricao" rows="3" placeholder="Tema, pregador ou observacoes (opcional)"><?= htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8') ?></textarea>
+                    <label for="descricao">Descrição</label>
+                    <textarea id="descricao" name="descricao" rows="3" placeholder="Tema, pregador ou observações (opcional)"><?= htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8') ?></textarea>
                 </div>
             </div>
         </div>
@@ -102,7 +102,7 @@ $disponiveisParaPresenca = array_filter(
         <div class="crud-form-actions">
             <a href="<?= $basePath ?>/dashboard/cultos" class="btn-k btn-k-ghost">Cancelar</a>
             <button type="submit" class="btn-k btn-k-grad">
-                <i class="bi bi-check-lg"></i> <?= $isEdit ? 'Salvar alteracoes' : 'Agendar culto' ?>
+                <i class="bi bi-check-lg"></i> <?= $isEdit ? 'Salvar alterações' : 'Agendar culto' ?>
             </button>
         </div>
     </form>
@@ -111,7 +111,7 @@ $disponiveisParaPresenca = array_filter(
 <?php if ($isEdit): ?>
     <div class="dash-panel" style="margin-top: 1.4rem;">
         <div class="dash-panel-head">
-            <h2><i class="bi bi-people"></i> Frequencia</h2>
+            <h2><i class="bi bi-people"></i> Frequência</h2>
             <span class="panel-badge"><?= count($presentes) ?> presente<?= count($presentes) === 1 ? '' : 's' ?></span>
         </div>
 
@@ -125,13 +125,13 @@ $disponiveisParaPresenca = array_filter(
                     <?php endforeach; ?>
                 </select>
                 <button type="submit" class="btn-k btn-k-ghost">
-                    <i class="bi bi-plus-lg"></i> Registrar presenca
+                    <i class="bi bi-plus-lg"></i> Registrar presença
                 </button>
             </form>
         <?php endif; ?>
 
         <?php if ($presentes === []): ?>
-            <p class="crud-text-dim" style="margin-top: 1rem;">Nenhuma presenca registrada para este culto ainda.</p>
+            <p class="crud-text-dim" style="margin-top: 1rem;">Nenhuma presença registrada para este culto ainda.</p>
         <?php else: ?>
             <ul class="crud-people-list">
                 <?php foreach ($presentes as $membro): ?>
@@ -145,7 +145,7 @@ $disponiveisParaPresenca = array_filter(
                         <form
                             method="POST"
                             action="<?= $basePath ?>/dashboard/cultos/<?= $culto->id ?>/presencas/<?= $membro->id ?>/remover"
-                            data-confirm="Remover a presenca de <?= htmlspecialchars($membro->nome, ENT_QUOTES, 'UTF-8') ?>?"
+                            data-confirm="Remover a presença de <?= htmlspecialchars($membro->nome, ENT_QUOTES, 'UTF-8') ?>?"
                         >
                             <?= $csrf ?>
                             <button type="submit" class="crud-icon-btn danger" aria-label="Remover <?= htmlspecialchars($membro->nome, ENT_QUOTES, 'UTF-8') ?>">

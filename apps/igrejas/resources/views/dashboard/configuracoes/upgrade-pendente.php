@@ -12,7 +12,7 @@ $vencimento = new DateTimeImmutable($fatura->vencimento);
 ?>
 
 <h1 class="dash-page-title">Confirme o upgrade</h1>
-<p class="dash-page-subtitle">Seu acesso continua normal enquanto isso - isso e so o complemento pra liberar o plano maior antes do fim do ciclo atual.</p>
+<p class="dash-page-subtitle">Seu acesso continua normal enquanto isso - isso é só o complemento pra liberar o plano maior antes do fim do ciclo atual.</p>
 
 <div class="placeholder-box placeholder-box-plano" style="max-width: 480px; margin: 0 auto;">
     <div class="icon"><i class="bi bi-qr-code"></i></div>
@@ -20,7 +20,7 @@ $vencimento = new DateTimeImmutable($fatura->vencimento);
     <h2>Pague com Pix pra liberar o plano <?= htmlspecialchars(Plano::label($fatura->plano), ENT_QUOTES, 'UTF-8') ?></h2>
 
     <div class="pix-valor">R$ <?= number_format($fatura->valor, 2, ',', '.') ?></div>
-    <p class="auth-field-hint" style="margin-bottom: 1rem;">Valor proporcional aos dias restantes do seu ciclo atual - nao e o valor cheio do plano.</p>
+    <p class="auth-field-hint" style="margin-bottom: 1rem;">Valor proporcional aos dias restantes do seu ciclo atual - não é o valor cheio do plano.</p>
 
     <?php if ($fatura->pixQrCodeBase64): ?>
         <div class="pix-qr-wrap">
@@ -32,13 +32,13 @@ $vencimento = new DateTimeImmutable($fatura->vencimento);
         <label for="pix_copia_cola">Pix copia e cola</label>
         <div class="auth-slug-input">
             <input type="text" class="form-control" id="pix_copia_cola" value="<?= htmlspecialchars((string) $fatura->pixQrCode, ENT_QUOTES, 'UTF-8') ?>" readonly>
-            <button type="button" class="pix-copiar-btn" data-pix-copiar aria-label="Copiar codigo Pix">
+            <button type="button" class="pix-copiar-btn" data-pix-copiar aria-label="Copiar código Pix">
                 <i class="bi bi-clipboard"></i>
             </button>
         </div>
     </div>
 
-    <span class="auth-field-hint">Vence em <?= $vencimento->format('d/m/Y \à\s H:i') ?> - se expirar, e so voltar em Configuracoes e clicar em upgrade de novo.</span>
+    <span class="auth-field-hint">Vence em <?= $vencimento->format('d/m/Y \à\s H:i') ?> - se expirar, é só voltar em Configurações e clicar em upgrade de novo.</span>
 
     <div class="pix-status" data-pix-status>
         <i class="bi bi-hourglass-split"></i> Aguardando o pagamento...

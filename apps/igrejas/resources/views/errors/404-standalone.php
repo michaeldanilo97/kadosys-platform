@@ -11,7 +11,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagina nao encontrada - KADOSYS Igrejas</title>
+    <title>Página não encontrada - KADOSYS Igrejas</title>
     <style>
         body {
             margin: 0;
@@ -68,10 +68,10 @@
 </head>
 <body>
     <div>
-        <div class="kicker">Rota nao encontrada</div>
+        <div class="kicker">Rota não encontrada</div>
         <h1>404</h1>
-        <p>A pagina que voce procura nao existe ou foi movida.</p>
-        <a href="<?= ($this->config['base_path'] ?? '') !== '' ? $this->config['base_path'] : '/' ?>">Voltar para o inicio</a>
+        <p>A página que você procura não existe ou foi movida.</p>
+        <a href="<?= ($this->config['base_path'] ?? '') !== '' ? $this->config['base_path'] : '/' ?>">Voltar para o início</a>
     </div>
 </body>
 </html>

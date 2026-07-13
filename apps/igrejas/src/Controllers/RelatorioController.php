@@ -32,9 +32,9 @@ final class RelatorioController extends Controller
         $inicioDoMes = new \DateTimeImmutable($mes . '-01 00:00:00');
 
         echo $this->view('dashboard.relatorios.index', [
-            'pageTitle' => 'Relatorios - KADOSYS Igrejas',
+            'pageTitle' => 'Relatórios - KADOSYS Igrejas',
             'activeMenu' => 'relatorios',
-            'breadcrumb' => ['Dashboard', 'Relatorios'],
+            'breadcrumb' => ['Dashboard', 'Relatórios'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
             'mes' => $mes,
