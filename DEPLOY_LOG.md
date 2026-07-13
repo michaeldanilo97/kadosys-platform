@@ -17,6 +17,37 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 69 - 2026-07-13
+
+**Painel do operador: comandos de volume, mudo e reiniciar no vídeo**
+
+Além de Play/Pausar/Fadeout, o painel agora tem um slider de volume
+(0-100), um botão de mudo/desmudo e um botão de reiniciar (volta o vídeo
+pro segundo 0 sem precisar recarregar o link). Os três comandos são
+persistidos no servidor (nova migração 038) e aplicados no telão via
+polling, do mesmo jeito que os outros comandos de vídeo - inclusive
+funcionam vindos de outro dispositivo (ex.: o preletor, se algum dia
+ganhar os mesmos controles).
+
+Aproveitado também para trocar `/preletor` e `/telao` (mostrados como
+texto simples na tela do operador) pela URL completa (com domínio) -
+sem isso, quem não é da área técnica não sabia que precisava completar
+o endereço com o domínio da igreja antes de digitar no navegador do
+tablet do pastor ou da Smart TV.
+
+Arquivos alterados: `apps/igrejas/database/migrations/038_add_video_volume_mudo_reiniciar.sql`
+(nova), `apps/igrejas/src/Models/ProjecaoEstado.php`,
+`apps/igrejas/src/Controllers/ProjecaoEstadoController.php`,
+`apps/igrejas/src/Controllers/ProjecaoController.php`,
+`apps/igrejas/src/Core/Controller.php`, `apps/igrejas/routes/web.php`,
+`apps/igrejas/resources/views/dashboard/projecao/index.php`,
+`apps/igrejas/public/assets/css/biblia-picker.css`,
+`apps/igrejas/public/assets/js/projecao-admin.js`,
+`apps/igrejas/public/assets/js/telao.js`.
+
+**IMPORTANTE:** rodar a migração 038 no banco de cada igreja depois do
+deploy (mesma regra das outras migrações de módulo).
+
 ## Ajuste 68 - 2026-07-13
 
 **Painel do operador: barrinha de progresso do video "voltando" no meio da

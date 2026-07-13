@@ -43,6 +43,9 @@
 
   var lastVersao = null;
   var lastLeituraId = null;
+  var lastReiniciarId = null;
+  var videoVolumeDesejado = 100;
+  var videoMudoDesejado = false;
   var player = null;
   var ytReady = false;
   var currentVideoId = null;
@@ -282,6 +285,30 @@
   var fadeoutTimer = null;
 
   /**
+   * Aplica o volume/mudo pedido pelo operador (ver aplicarVideo() abaixo,
+   * que atualiza videoVolumeDesejado/videoMudoDesejado a cada poll) -
+   * chamada em todo ponto que antes so fazia unMute()+setVolume(100) na
+   * marra, respeitando agora um mudo intencional em vez de sempre forcar
+   * som ligado a 100%.
+   */
+  function aplicarVolumeDesejado() {
+    if (!player || typeof player.setVolume !== 'function' || fadeoutTimer) {
+      return;
+    }
+
+    try {
+      if (videoMudoDesejado) {
+        player.mute();
+      } else {
+        player.unMute();
+        player.setVolume(videoVolumeDesejado);
+      }
+    } catch (erro) {
+      // Player ainda nao pronto; tenta de novo no proximo poll.
+    }
+  }
+
+  /**
    * Cancela um fadeout em andamento (se houver) - chamado sempre que um
    * comando novo de play/pausa/video chega, pra nao deixar o volume
    * baixo depois de um fadeout interrompido por um "play" seguinte.
@@ -292,12 +319,8 @@
       fadeoutTimer = null;
     }
 
-    if (restaurarVolume && player && typeof player.setVolume === 'function') {
-      try {
-        player.setVolume(100);
-      } catch (erro) {
-        // Ignora; o proximo play tenta de novo.
-      }
+    if (restaurarVolume) {
+      aplicarVolumeDesejado();
     }
   }
 
@@ -598,6 +621,9 @@
   function aplicarVideo(video) {
     var videoId = extrairIdYoutube(video.url);
 
+    videoVolumeDesejado = typeof video.volume === 'number' ? video.volume : 100;
+    videoMudoDesejado = !!video.mudo;
+
     if (!ytReady) {
       pendingVideo = video;
       pendingVideoId = videoId;
@@ -635,6 +661,24 @@
       }
     }
 
+    // "Reiniciar" (botao dedicado no painel do operador) - mesmo padrao
+    // de contador de lerAgora()/leituraId: um pedido de voltar ao
+    // segundo 0 do MESMO video em exibicao nao muda "versao" de
+    // proposito (ver ProjecaoEstado::reiniciarVideo()), entao precisa
+    // ser comparado aqui a cada poll, independente de mudanca de estado.
+    if (video.reiniciarId !== undefined && video.reiniciarId !== lastReiniciarId) {
+      lastReiniciarId = video.reiniciarId;
+
+      if (player && typeof player.seekTo === 'function' && currentVideoId === videoId) {
+        try {
+          player.seekTo(0, true);
+          player.playVideo();
+        } catch (erro) {
+          // Player ainda nao pronto; nao ha nada pra reiniciar ainda.
+        }
+      }
+    }
+
     ultimoEstadoVideo = video.estado;
 
     if (video.estado === 'fadeout') {
@@ -664,8 +708,7 @@
         // mudo) geralmente e permitido, diferente de comecar tocando
         // com som direto. Tenta de novo a cada poll (1.5s) ate
         // conseguir, caso a primeira tentativa seja ignorada.
-        player.unMute();
-        player.setVolume(100);
+        aplicarVolumeDesejado();
       } catch (erro) {
         // Player ainda nao pronto; sera reaplicado no proximo poll.
       }
@@ -679,8 +722,11 @@
       // Se mesmo assim o navegador manteve o video mudo (politica mais
       // rigorosa que exige mesmo um toque), mostra o aviso - inofensivo
       // numa TV sem toque (so fica ali), mas resolve o caso de abrir o
-      // telao num notebook/tablet com toque disponivel.
-      var aindaMudo = typeof player.isMuted === 'function' && player.isMuted();
+      // telao num notebook/tablet com toque disponivel. Nao mostra esse
+      // aviso quando o mudo foi um pedido explicito do operador
+      // (videoMudoDesejado) - nesse caso o video estar mudo e esperado,
+      // nao um bloqueio de autoplay a ser contornado.
+      var aindaMudo = !videoMudoDesejado && typeof player.isMuted === 'function' && player.isMuted();
 
       if (aindaMudo && !audioDesbloqueado && avisoAudio) {
         avisoAudio.classList.add('is-visivel');
@@ -1151,8 +1197,7 @@
     if (player && ultimoEstadoVideo === 'tocando') {
       try {
         player.playVideo();
-        player.unMute();
-        player.setVolume(100);
+        aplicarVolumeDesejado();
       } catch (erro) {
         // Ignora; sera reaplicado no proximo poll ou proximo toque.
       }

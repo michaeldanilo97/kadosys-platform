@@ -13,6 +13,9 @@ use Igrejas\Core\View;
  * @var array<int, \Igrejas\Models\ProjecaoImagem> $imagens
  * @var array<int, string> $imagensErrors
  * @var string $csrf
+ * @var string $telaoUrlAbsoluta
+ * @var string $telaoUrlAbsolutaBase
+ * @var string $preletorUrlAbsoluta
  */
 $basePath = $config['base_path'] ?? '';
 $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
@@ -56,11 +59,11 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                 <a href="<?= htmlspecialchars($telaoUrl, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener" class="btn-k btn-k-ghost">
                     <i class="bi bi-box-arrow-up-right"></i> Abrir telão
                 </a>
-                <p class="projecao-acesso-alt">Numa Smart TV, digitar esse link pelo controle remoto é difícil - acesse <strong><?= $basePath ?>/telao</strong> e digite o mesmo PIN do preletor ao lado.</p>
+                <p class="projecao-acesso-alt">Numa Smart TV, digitar esse link pelo controle remoto é difícil - acesse <strong><?= htmlspecialchars($telaoUrlAbsolutaBase, ENT_QUOTES, 'UTF-8') ?></strong> e digite o mesmo PIN do preletor ao lado.</p>
             </div>
             <div class="projecao-acesso-card">
                 <span class="label"><i class="bi bi-tablet"></i> Preletor (tablet do pastor)</span>
-                <p>Peça para o pastor acessar <strong><?= $basePath ?>/preletor</strong> e digitar o PIN:</p>
+                <p>Peça para o pastor acessar <strong><?= htmlspecialchars($preletorUrlAbsoluta, ENT_QUOTES, 'UTF-8') ?></strong> e digitar o PIN:</p>
                 <div class="projecao-pin"><?= htmlspecialchars($sessao->pin, ENT_QUOTES, 'UTF-8') ?></div>
             </div>
         </div>
@@ -187,6 +190,15 @@ $telaoUrl = $sessao ? $basePath . '/telao/' . $sessao->token : '';
                     <button type="button" class="btn-k btn-k-ghost" data-video-acao="tocando"><i class="bi bi-play-fill"></i> Play</button>
                     <button type="button" class="btn-k btn-k-ghost" data-video-acao="pausado"><i class="bi bi-pause-fill"></i> Pausar</button>
                     <button type="button" class="btn-k btn-k-ghost" data-video-acao="fadeout"><i class="bi bi-moon-fill"></i> Fadeout</button>
+                    <button type="button" class="btn-k btn-k-ghost" data-video-reiniciar><i class="bi bi-arrow-counterclockwise"></i> Reiniciar</button>
+                </div>
+
+                <div class="video-volume-controles">
+                    <button type="button" class="btn-k btn-k-ghost btn-k-icone" data-video-mudo title="Ativar/desativar mudo">
+                        <i class="bi bi-volume-up-fill" data-video-mudo-icone></i>
+                    </button>
+                    <input type="range" min="0" max="100" value="100" data-video-volume aria-label="Volume do vídeo">
+                    <span class="video-volume-valor" data-video-volume-valor>100%</span>
                 </div>
 
                 <div class="video-progresso" data-video-progresso hidden>

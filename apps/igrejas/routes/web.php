@@ -307,6 +307,9 @@ $router->post('/projecao/{token}/biblia/marcacao', [ProjecaoEstadoController::cl
 $router->post('/projecao/{token}/biblia/ler', [ProjecaoEstadoController::class, 'lerBiblia']);
 $router->post('/projecao/{token}/video', [ProjecaoEstadoController::class, 'definirVideo']);
 $router->post('/projecao/{token}/video/estado', [ProjecaoEstadoController::class, 'definirEstadoVideo']);
+$router->post('/projecao/{token}/video/volume', [ProjecaoEstadoController::class, 'definirVolumeVideo']);
+$router->post('/projecao/{token}/video/mudo', [ProjecaoEstadoController::class, 'alternarMudoVideo']);
+$router->post('/projecao/{token}/video/reiniciar', [ProjecaoEstadoController::class, 'reiniciarVideo']);
 $router->post('/projecao/{token}/video/tempo', [ProjecaoEstadoController::class, 'atualizarTempoVideo']);
 $router->post('/projecao/{token}/logo', [ProjecaoEstadoController::class, 'mostrarLogo']);
 $router->post('/projecao/{token}/limpar', [ProjecaoEstadoController::class, 'limpar']);

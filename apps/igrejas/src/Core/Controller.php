@@ -51,4 +51,23 @@ abstract class Controller
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
         exit;
     }
+
+    /**
+     * URL absoluta (com protocolo e host) da requisicao atual - usa o
+     * host de verdade (subdominio da igreja) em vez de qualquer valor
+     * fixo de configuracao, pra funcionar automaticamente em qualquer
+     * ambiente (producao, staging, dominio customizado). Necessario em
+     * qualquer texto/link que sera repassado de viva voz ou digitado por
+     * alguem sem conhecimento tecnico (ex.: pedir pro pastor acessar um
+     * endereco) - so o caminho relativo nao basta, porque quem nao
+     * entende do assunto nao sabe que precisa completar com o dominio.
+     */
+    protected function urlAbsoluta(string $path): string
+    {
+        $https = !empty($this->request->server['HTTPS']) && $this->request->server['HTTPS'] !== 'off';
+        $protocolo = $https ? 'https' : 'http';
+        $host = (string) ($this->request->server['HTTP_HOST'] ?? 'localhost');
+
+        return $protocolo . '://' . $host . $this->url($path);
+    }
 }

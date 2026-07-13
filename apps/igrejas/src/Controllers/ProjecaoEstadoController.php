@@ -185,6 +185,35 @@ final class ProjecaoEstadoController extends Controller
         $this->jsonResponse(['ok' => true]);
     }
 
+    public function definirVolumeVideo(string $token): void
+    {
+        $sessao = $this->sessaoOuErro($token);
+        $volume = (int) $this->request->input('volume', -1);
+
+        if ($volume < 0 || $volume > 100) {
+            $this->jsonResponse(['erro' => 'Volume inválido.'], 422);
+        }
+
+        ProjecaoEstado::definirVolumeVideo($sessao->id, $volume);
+        $this->jsonResponse(['ok' => true]);
+    }
+
+    public function alternarMudoVideo(string $token): void
+    {
+        $sessao = $this->sessaoOuErro($token);
+        $mudo = (string) $this->request->input('mudo', '0') === '1';
+
+        ProjecaoEstado::alternarMudoVideo($sessao->id, $mudo);
+        $this->jsonResponse(['ok' => true]);
+    }
+
+    public function reiniciarVideo(string $token): void
+    {
+        $sessao = $this->sessaoOuErro($token);
+        ProjecaoEstado::reiniciarVideo($sessao->id);
+        $this->jsonResponse(['ok' => true]);
+    }
+
     /**
      * Progresso de reproducao (tempo atual/duracao) reportado
      * periodicamente pelo telao, para o operador ver o andamento exato
