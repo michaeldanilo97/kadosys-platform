@@ -133,6 +133,30 @@
   font-weight: 600;
 }
 
+/* Aviso flutuante chamando atencao que o tom mudou de verdade - some
+   sozinho depois de alguns segundos, sem travar a tela. */
+.mc-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 2rem;
+  transform: translate(-50%, 1rem);
+  z-index: 9999;
+  padding: 0.8rem 1.2rem;
+  border-radius: 0.6rem;
+  background: var(--primary-soft, #6c4fd6);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.mc-toast.is-visivel {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
 .mc-abas {
   display: flex;
   gap: 0.5rem;

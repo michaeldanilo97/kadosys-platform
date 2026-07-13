@@ -1225,3 +1225,31 @@ textarea.crud-field-mono {
   border: 1px solid var(--glass-border);
 }
 
+/* Aviso flutuante (toast) - chama atencao pra uma acao que acabou de
+   acontecer (ex.: transposicao aplicada) sem travar a tela feito
+   window.alert(). Some sozinho depois de alguns segundos. */
+.kadosys-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 2rem;
+  transform: translate(-50%, 1rem);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: var(--radius-sm);
+  background: var(--primary, #6c4fd6);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.kadosys-toast.is-visivel {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+

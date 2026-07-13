@@ -17,6 +17,21 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 78 - 2026-07-13
+
+**Aviso visual quando o tom muda (transposição e Modo Culto)**
+
+- Ao clicar em "Transpor Letra/Cifra automaticamente" no cadastro do
+  louvor, a letra/cifra mudavam de tom silenciosamente - sem nenhuma
+  confirmação visível de que a transposição realmente aconteceu. Agora
+  aparece um aviso flutuante ("Tom alterado para X - letra e cifra
+  transpostas.") chamando atenção.
+- No Modo Culto, quando o líder muda o tom da música ao vivo, além do
+  aviso no chat (ver Ajuste 77), agora aparece o mesmo tipo de aviso
+  flutuante na tela de TODOS os músicos assim que a mudança chega pelo
+  polling - reforça visualmente que o tom mudou, mesmo pra quem não
+  está de olho no chat.
+
 ## Ajuste 77 - 2026-07-13
 
 **Modo Culto: líder muda o tom da música ao vivo, sincronizado pra todos**
