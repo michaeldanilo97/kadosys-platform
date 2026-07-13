@@ -105,6 +105,13 @@ $modoInicial = $cifra !== '' ? 'separadas' : 'juntas';
                                 <option value="<?= $tom ?>" <?= $tomAtual === $tom ? 'selected' : '' ?>><?= $tom ?></option>
                             <?php endforeach; ?>
                         </optgroup>
+                        <?php if ($tomAtual !== '' && !in_array($tomAtual, [...Louvor::TONS_MAIORES, ...Louvor::TONS_MENORES], true)): ?>
+                            <optgroup label="Outro (grafia antiga, ajuste se puder)">
+                                <option value="<?= htmlspecialchars($tomAtual, ENT_QUOTES, 'UTF-8') ?>" selected>
+                                    <?= htmlspecialchars($tomAtual, ENT_QUOTES, 'UTF-8') ?>
+                                </option>
+                            </optgroup>
+                        <?php endif; ?>
                     </select>
                     <span class="auth-field-hint">Mudar o tom aqui registra automaticamente no histórico abaixo (quem mudou e quando).</span>
                     <span class="auth-field-hint" data-tom-sugestao-hint hidden></span>

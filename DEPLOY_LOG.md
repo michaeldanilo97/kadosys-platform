@@ -17,6 +17,22 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 76 - 2026-07-13
+
+**Tom "Db" (e outras grafias antigas) sumia do formulario do louvor**
+
+- A lista fixa de "Tom atual" (`Louvor::TONS_MAIORES`/`TONS_MENORES`) so
+  tem uma grafia por nota (ex.: `C#`, nao `Db`; `F#`, nao `Gb`). Louvores
+  cadastrados antes desse `<select>` existir (quando o campo era texto
+  livre) podiam ter salvo `tom_atual` numa grafia que nao esta nessa
+  lista - o `<select>` nao achava a opcao correspondente e mostrava
+  silenciosamente "Nenhum" em vez do tom real, arriscando sobrescrever o
+  tom certo caso o formulario fosse salvo sem o usuario notar.
+- Corrigido: se o tom salvo nao estiver nas listas padrao, o formulario
+  agora mostra ele mesmo assim, num grupo separado "Outro (grafia
+  antiga, ajuste se puder)", selecionado - nada e perdido ou trocado sem
+  o usuario escolher outro tom de propósito.
+
 ## Ajuste 75 - 2026-07-13
 
 **install.sql desatualizado: igrejas novas nao ganhavam o modulo de
