@@ -16,6 +16,7 @@ use Igrejas\Controllers\FaturaController;
 use Igrejas\Controllers\FinanceiroController;
 use Igrejas\Controllers\GrupoController;
 use Igrejas\Controllers\LandingController;
+use Igrejas\Controllers\LouvorController;
 use Igrejas\Controllers\MembroController;
 use Igrejas\Controllers\MinisterioController;
 use Igrejas\Controllers\PatrimonioController;
@@ -120,6 +121,14 @@ $router->post('/dashboard/playbacks', [PlaybackController::class, 'store'], [Aut
 $router->get('/dashboard/playbacks/{id}/editar', [PlaybackController::class, 'edit'], [AuthMiddleware::class]);
 $router->post('/dashboard/playbacks/{id}', [PlaybackController::class, 'update'], [AuthMiddleware::class]);
 $router->post('/dashboard/playbacks/{id}/excluir', [PlaybackController::class, 'destroy'], [AuthMiddleware::class]);
+
+$router->get('/dashboard/louvores', [LouvorController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/louvores/novo', [LouvorController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/louvores', [LouvorController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/louvores/{id}/editar', [LouvorController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/dashboard/louvores/{id}', [LouvorController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/louvores/{id}/excluir', [LouvorController::class, 'destroy'], [AuthMiddleware::class]);
+$router->get('/dashboard/louvores/{id}', [LouvorController::class, 'show'], [AuthMiddleware::class]);
 
 // Modulo Agenda. Mesmo motivo: precisa vir antes do catch-all. Sem
 // PlanoMiddleware - Agenda esta liberada em todos os planos, mesmo

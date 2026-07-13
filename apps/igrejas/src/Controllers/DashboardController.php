@@ -68,6 +68,11 @@ final class DashboardController extends Controller
                 'icon' => 'bi-music-note-beamed',
                 'description' => 'Biblioteca de playbacks para o ministério de louvor, liberada em todos os planos.',
             ],
+            'louvores' => [
+                'title' => 'Louvores',
+                'icon' => 'bi-music-note-list',
+                'description' => 'Letras, cifras e tons dos louvores, com histórico de mudanças - acesso liberado para músicos.',
+            ],
             'agenda' => [
                 'title' => 'Agenda',
                 'icon' => 'bi-calendar3',

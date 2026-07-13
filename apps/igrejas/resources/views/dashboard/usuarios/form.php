@@ -16,6 +16,7 @@ $name = $old['name'] ?? $usuarioEditado->name ?? '';
 $email = $old['email'] ?? $usuarioEditado->email ?? '';
 $role = $old['role'] ?? $usuarioEditado->role ?? User::ROLE_USUARIO;
 $active = array_key_exists('active', $old) ? !empty($old['active']) : ($usuarioEditado->active ?? true);
+$musico = array_key_exists('musico', $old) ? !empty($old['musico']) : ($usuarioEditado->musico ?? false);
 
 $actionUrl = $isEdit
     ? $basePath . '/dashboard/usuarios/' . $usuarioEditado->id
@@ -81,6 +82,16 @@ $actionUrl = $isEdit
                         </select>
                     </div>
                 <?php endif; ?>
+                <div class="crud-field crud-field-full">
+                    <label class="toggle-switch-field">
+                        <input type="checkbox" name="musico" value="1" <?= $musico ? 'checked' : '' ?>>
+                        <span class="toggle-switch"></span>
+                        <span class="toggle-switch-label">
+                            Músico
+                            <span class="auth-field-hint">Libera automaticamente o acesso ao módulo Louvores (letras, cifras e tons), sem precisar mexer em Permissões.</span>
+                        </span>
+                    </label>
+                </div>
                 <div class="crud-field">
                     <label for="password"><?= $isEdit ? 'Nova senha' : 'Senha *' ?></label>
                     <input type="password" id="password" name="password" placeholder="<?= $isEdit ? 'Deixe em branco para manter a atual' : 'Mínimo 8 caracteres' ?>" autocomplete="new-password" <?= $isEdit ? '' : 'required' ?>>

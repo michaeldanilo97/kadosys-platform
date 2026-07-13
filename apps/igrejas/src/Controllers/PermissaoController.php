@@ -99,6 +99,13 @@ final class PermissaoController extends Controller
                 continue;
             }
 
+            // Louvores nao e configuravel aqui - o acesso e todo-ou-nada
+            // via a flag "musico" (ver tela de Usuarios), nao uma
+            // liberacao manual por usuario como os demais modulos.
+            if (in_array($slug, User::MODULOS_SOMENTE_MUSICO, true)) {
+                continue;
+            }
+
             if (!Plano::disponivel($planoAtual, $slug, $emTrial)) {
                 continue;
             }
