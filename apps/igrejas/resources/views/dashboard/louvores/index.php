@@ -11,6 +11,45 @@
  * @var string $csrfToken
  */
 $basePath = $config['base_path'] ?? '';
+
+/**
+ * "Ha X dias/semanas" a partir de um timestamp - ajuda o time a variar
+ * o repertorio (ver o card do modulo em vez de repetir sempre os
+ * mesmos louvores mais faceis de lembrar).
+ */
+function louvorTocadoRelativo(?string $timestamp): string
+{
+    if ($timestamp === null) {
+        return 'Nunca tocado';
+    }
+
+    $segundos = time() - strtotime($timestamp);
+
+    if ($segundos < 60) {
+        return 'Agora mesmo';
+    }
+
+    $unidades = [
+        ['divisor' => 31536000, 'singular' => 'ano', 'plural' => 'anos'],
+        ['divisor' => 2592000, 'singular' => 'mês', 'plural' => 'meses'],
+        ['divisor' => 604800, 'singular' => 'semana', 'plural' => 'semanas'],
+        ['divisor' => 86400, 'singular' => 'dia', 'plural' => 'dias'],
+        ['divisor' => 3600, 'singular' => 'hora', 'plural' => 'horas'],
+        ['divisor' => 60, 'singular' => 'minuto', 'plural' => 'minutos'],
+    ];
+
+    foreach ($unidades as $unidade) {
+        $quantidade = (int) floor($segundos / $unidade['divisor']);
+
+        if ($quantidade >= 1) {
+            $rotulo = $quantidade === 1 ? $unidade['singular'] : $unidade['plural'];
+
+            return "Há {$quantidade} {$rotulo}";
+        }
+    }
+
+    return 'Agora mesmo';
+}
 ?>
 
 <div class="dash-page-head">
@@ -72,6 +111,7 @@ $basePath = $config['base_path'] ?? '';
                     <tr>
                         <th>Louvor</th>
                         <th>Tom atual</th>
+                        <th>Tocado por último</th>
                         <th>Áudio vinculado</th>
                         <th>Status</th>
                         <th class="actions-col">Ações</th>
@@ -92,6 +132,13 @@ $basePath = $config['base_path'] ?? '';
                                 <?= $louvor->tomAtual !== null
                                     ? htmlspecialchars($louvor->tomAtual, ENT_QUOTES, 'UTF-8')
                                     : '<span class="crud-text-dim">&mdash;</span>' ?>
+                            </td>
+                            <td>
+                                <?php if ($louvor->ultimaExecucao === null): ?>
+                                    <span class="crud-text-dim">Nunca tocado</span>
+                                <?php else: ?>
+                                    <?= htmlspecialchars(louvorTocadoRelativo($louvor->ultimaExecucao), ENT_QUOTES, 'UTF-8') ?>
+                                <?php endif; ?>
                             </td>
                             <td>
                                 <?= $louvor->playbackTitulo !== null

@@ -42,6 +42,7 @@ final class Louvor
         public readonly ?int $playbackId,
         public readonly ?string $playbackTitulo,
         public readonly string $status,
+        public readonly ?string $ultimaExecucao,
         public readonly ?int $criadoPor,
         public readonly ?string $criadoPorNome,
         public readonly string $createdAt,
@@ -177,6 +178,20 @@ final class Louvor
     }
 
     /**
+     * Registra que o louvor tocou de verdade agora - chamado quando ele
+     * vira a musica "atual" no Modo Culto (ver
+     * Repertorio::definirAtual()/RepertorioController::moverAtual()).
+     * Ajuda o time a ver na listagem quando cada louvor tocou pela
+     * ultima vez, pra variar o repertorio em vez de repetir sempre os
+     * mesmos.
+     */
+    public static function marcarExecutado(int $id): void
+    {
+        $stmt = Database::connection()->prepare('UPDATE louvores SET ultima_execucao = NOW() WHERE id = :id');
+        $stmt->execute(['id' => $id]);
+    }
+
+    /**
      * @param array<string, mixed> $data
      * @return array<string, mixed>
      */
@@ -219,6 +234,7 @@ final class Louvor
             playbackId: $row['playback_id'] !== null ? (int) $row['playback_id'] : null,
             playbackTitulo: $row['playback_titulo'] ?? null,
             status: (string) $row['status'],
+            ultimaExecucao: $row['ultima_execucao'],
             criadoPor: $row['criado_por'] !== null ? (int) $row['criado_por'] : null,
             criadoPorNome: $row['criado_por_nome'] ?? null,
             createdAt: (string) $row['created_at'],
