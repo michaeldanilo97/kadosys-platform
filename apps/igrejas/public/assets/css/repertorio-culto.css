@@ -94,10 +94,43 @@
 
 .mc-meta {
   display: flex;
+  align-items: center;
   gap: 1rem;
   color: var(--primary-soft);
   font-weight: 600;
   margin-bottom: 1.2rem;
+}
+
+.mc-tom-controles {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.mc-tom-btn {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.2));
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mc-tom-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mc-tom-controles select {
+  background: transparent;
+  color: inherit;
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.2));
+  border-radius: 0.4rem;
+  padding: 0.2rem 0.4rem;
+  font-weight: 600;
 }
 
 .mc-abas {

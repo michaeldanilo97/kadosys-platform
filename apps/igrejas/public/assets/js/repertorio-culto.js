@@ -11,12 +11,60 @@
   var avancarUrl = root.getAttribute('data-avancar-url');
   var voltarUrl = root.getAttribute('data-voltar-url');
   var mensagemUrl = root.getAttribute('data-mensagem-url');
+  var tomUrlBase = root.getAttribute('data-tom-url-base');
 
   var vazioEl = root.querySelector('[data-culto-vazio]');
   var conteudoEl = root.querySelector('[data-culto-conteudo]');
   var tituloEl = root.querySelector('[data-culto-titulo]');
   var tomEl = root.querySelector('[data-culto-tom]');
   var bpmEl = root.querySelector('[data-culto-bpm]');
+
+  var tomControlesEl = root.querySelector('[data-culto-tom-controles]');
+  var tomSelectEl = root.querySelector('[data-culto-tom-select]');
+  var tomBaixarBtn = root.querySelector('[data-culto-tom-baixar]');
+  var tomSubirBtn = root.querySelector('[data-culto-tom-subir]');
+
+  // Mesma tabela cromatica do transpositor de cifras (ver
+  // louvor-transpositor.js) - aqui so precisamos transpor a nota-raiz
+  // do tom (ex.: "Fm" -> "F#m"), nao uma cifra inteira.
+  var NOTAS_CANONICAS = (window.KADOSYS_TONS && window.KADOSYS_TONS.maiores) || ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
+  var INDICE_NOTA = {
+    'C': 0, 'B#': 0,
+    'C#': 1, 'Db': 1,
+    'D': 2,
+    'D#': 3, 'Eb': 3,
+    'E': 4, 'Fb': 4,
+    'F': 5, 'E#': 5,
+    'F#': 6, 'Gb': 6,
+    'G': 7,
+    'G#': 8, 'Ab': 8,
+    'A': 9,
+    'A#': 10, 'Bb': 10,
+    'B': 11, 'Cb': 11,
+  };
+
+  var todosTons = (window.KADOSYS_TONS ? window.KADOSYS_TONS.maiores.concat(window.KADOSYS_TONS.menores) : []);
+
+  if (tomSelectEl) {
+    todosTons.forEach(function (tom) {
+      var option = document.createElement('option');
+      option.value = tom;
+      option.textContent = tom;
+      tomSelectEl.appendChild(option);
+    });
+  }
+
+  function transporTom(tom, semitons) {
+    var match = /^([A-G](?:#|b)?)(m?)$/.exec(tom || '');
+
+    if (!match || INDICE_NOTA[match[1]] === undefined) {
+      return null;
+    }
+
+    var novoIndice = ((INDICE_NOTA[match[1]] + semitons) % 12 + 12) % 12;
+
+    return NOTAS_CANONICAS[novoIndice] + match[2];
+  }
   var proximoEl = root.querySelector('[data-culto-proximo]');
   var letraEl = root.querySelector('[data-culto-texto="letra"]');
   var cifraEl = root.querySelector('[data-culto-texto="cifra"]');
@@ -38,6 +86,8 @@
   var lastMensagemId = 0;
   var naoLidas = 0;
   var chatAberto = false;
+  var atualItemId = null;
+  var alterandoTom = false;
 
   function mostrarAba(aba) {
     var ehCifra = aba === 'cifra';
@@ -64,18 +114,29 @@
       vazioEl.hidden = false;
       conteudoEl.hidden = true;
       proximoEl.textContent = '';
+      atualItemId = null;
+
+      if (tomControlesEl) {
+        tomControlesEl.hidden = true;
+      }
 
       return;
     }
 
     vazioEl.hidden = true;
     conteudoEl.hidden = false;
+    atualItemId = atual.id;
 
     tituloEl.textContent = atual.titulo;
     tomEl.textContent = atual.tomAtual ? 'Tom: ' + atual.tomAtual : '';
     bpmEl.textContent = atual.andamentoBpm ? atual.andamentoBpm + ' BPM' : '';
     letraEl.textContent = atual.letra || 'Letra ainda não cadastrada.';
     cifraEl.textContent = atual.cifra || 'Cifra ainda não cadastrada.';
+
+    if (tomControlesEl && !alterandoTom) {
+      tomControlesEl.hidden = false;
+      tomSelectEl.value = atual.tomAtual || '';
+    }
 
     var posicaoAtual = itens.findIndex(function (item) { return item.id === atual.id; });
     var proximo = itens[posicaoAtual + 1];
@@ -178,6 +239,47 @@
 
   if (botaoVoltar) {
     botaoVoltar.addEventListener('click', function () { enviarComando(voltarUrl); });
+  }
+
+  function alterarTom(novoTom) {
+    if (!atualItemId || !novoTom || alterandoTom) {
+      return;
+    }
+
+    alterandoTom = true;
+
+    var dados = new URLSearchParams();
+    dados.set('tom', novoTom);
+
+    fetch(tomUrlBase + '/' + atualItemId + '/tom', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: dados.toString(),
+    })
+      .then(function (resposta) { return resposta.json(); })
+      .then(function (resultado) {
+        alterandoTom = false;
+
+        if (resultado.versao !== undefined) {
+          lastVersao = resultado.versao;
+          renderizarAtual(resultado);
+        }
+      })
+      .catch(function () {
+        alterandoTom = false;
+      });
+  }
+
+  if (tomSelectEl) {
+    tomSelectEl.addEventListener('change', function () { alterarTom(tomSelectEl.value); });
+  }
+
+  if (tomBaixarBtn) {
+    tomBaixarBtn.addEventListener('click', function () { alterarTom(transporTom(tomSelectEl.value, -1)); });
+  }
+
+  if (tomSubirBtn) {
+    tomSubirBtn.addEventListener('click', function () { alterarTom(transporTom(tomSelectEl.value, 1)); });
   }
 
   function poll() {

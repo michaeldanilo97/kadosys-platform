@@ -1,6 +1,7 @@
 <?php
 
 use Igrejas\Core\View;
+use Igrejas\Models\Louvor;
 
 /**
  * @var array $config
@@ -25,8 +26,12 @@ $estadoInicial['mensagens'] = array_map(
     data-avancar-url="<?= $basePath ?>/dashboard/louvores/repertorios/<?= $repertorio->id ?>/avancar"
     data-voltar-url="<?= $basePath ?>/dashboard/louvores/repertorios/<?= $repertorio->id ?>/voltar"
     data-mensagem-url="<?= $basePath ?>/dashboard/louvores/repertorios/<?= $repertorio->id ?>/mensagens"
+    data-tom-url-base="<?= $basePath ?>/dashboard/louvores/repertorios/<?= $repertorio->id ?>/itens"
 >
     <script id="culto-estado-inicial" type="application/json"><?= json_encode($estadoInicial, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?></script>
+    <?php if ($ehLider): ?>
+        <script id="culto-tons">window.KADOSYS_TONS = <?= json_encode(['maiores' => Louvor::TONS_MAIORES, 'menores' => Louvor::TONS_MENORES], JSON_HEX_TAG) ?>;</script>
+    <?php endif; ?>
 
     <div class="mc-topo">
         <div>
@@ -47,6 +52,13 @@ $estadoInicial['mensagens'] = array_map(
             <h1 class="mc-titulo" data-culto-titulo></h1>
             <div class="mc-meta">
                 <span data-culto-tom></span>
+                <?php if ($ehLider): ?>
+                    <span class="mc-tom-controles" data-culto-tom-controles hidden>
+                        <button type="button" class="mc-tom-btn" data-culto-tom-baixar aria-label="Baixar meio tom"><i class="bi bi-dash-lg"></i></button>
+                        <select data-culto-tom-select aria-label="Escolher tom"></select>
+                        <button type="button" class="mc-tom-btn" data-culto-tom-subir aria-label="Subir meio tom"><i class="bi bi-plus-lg"></i></button>
+                    </span>
+                <?php endif; ?>
                 <span data-culto-bpm></span>
             </div>
             <div class="mc-abas">

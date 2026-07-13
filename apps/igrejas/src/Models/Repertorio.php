@@ -163,7 +163,14 @@ final class Repertorio
         $stmt->execute(['item_id' => $itemId, 'id' => $repertorioId]);
     }
 
-    private static function bumparVersao(int $repertorioId): void
+    /**
+     * Bump manual da versao, pra quando o conteudo do repertorio muda
+     * por uma via indireta (ex.: o tom de um louvor foi alterado ao
+     * vivo no Modo Culto, ver RepertorioController::alterarTom()) -
+     * mesmo mecanismo de "avisar quem esta no polling" usado por todas
+     * as outras acoes de edicao deste model.
+     */
+    public static function bumparVersao(int $repertorioId): void
     {
         $stmt = Database::connection()->prepare('UPDATE repertorios SET versao = versao + 1 WHERE id = :id');
         $stmt->execute(['id' => $repertorioId]);

@@ -139,6 +139,7 @@ $router->get('/dashboard/louvores/repertorios/{id}/culto', [RepertorioController
 $router->get('/dashboard/louvores/repertorios/{id}/estado', [RepertorioController::class, 'estado'], [AuthMiddleware::class]);
 $router->post('/dashboard/louvores/repertorios/{id}/itens', [RepertorioController::class, 'adicionarItem'], [AuthMiddleware::class]);
 $router->post('/dashboard/louvores/repertorios/{id}/itens/{itemId}/remover', [RepertorioController::class, 'removerItem'], [AuthMiddleware::class]);
+$router->post('/dashboard/louvores/repertorios/{id}/itens/{itemId}/tom', [RepertorioController::class, 'alterarTom'], [AuthMiddleware::class]);
 $router->post('/dashboard/louvores/repertorios/{id}/reordenar', [RepertorioController::class, 'reordenar'], [AuthMiddleware::class]);
 $router->post('/dashboard/louvores/repertorios/{id}/avancar', [RepertorioController::class, 'avancar'], [AuthMiddleware::class]);
 $router->post('/dashboard/louvores/repertorios/{id}/voltar', [RepertorioController::class, 'voltar'], [AuthMiddleware::class]);

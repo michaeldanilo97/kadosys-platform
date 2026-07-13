@@ -193,6 +193,55 @@ final class RepertorioController extends Controller
         $this->jsonResponse(['ok' => true] + (Repertorio::find($id)?->paraJson() ?? []));
     }
 
+    /**
+     * Lider muda o tom da musica atual ao vivo, durante o culto - vale
+     * pra qualquer item do repertorio (nao so o "tocando agora"), mas
+     * na pratica e usado nele. Atualiza o louvor de verdade (mesma
+     * tabela usada em qualquer outro lugar do sistema, ver
+     * Louvor::alterarTom()), registra no historico de tons, e bumpa a
+     * versao do repertorio pra sincronizar com todos os musicos no
+     * proximo poll - alem de deixar um aviso automatico no chat, pra
+     * quem nao estiver de olho no tom exibido perceber a mudanca.
+     */
+    public function alterarTom(string $id, string $itemId): void
+    {
+        $this->exigirLiderJson();
+
+        $repertorio = Repertorio::find((int) $id);
+
+        if (!$repertorio) {
+            $this->jsonResponse(['erro' => 'Repertório não encontrado.'], 404);
+        }
+
+        $item = null;
+        foreach ($repertorio->itens as $itemAtual) {
+            if ($itemAtual->id === (int) $itemId) {
+                $item = $itemAtual;
+                break;
+            }
+        }
+
+        if (!$item) {
+            $this->jsonResponse(['erro' => 'Música não encontrada neste repertório.'], 404);
+        }
+
+        $novoTom = trim((string) $this->request->input('tom', ''));
+
+        if ($novoTom === '') {
+            $this->jsonResponse(['erro' => 'Informe o novo tom.'], 422);
+        }
+
+        $user = (new Auth($this->config))->user();
+
+        Louvor::alterarTom($item->louvorId, $novoTom, $user?->id);
+        Repertorio::bumparVersao((int) $id);
+
+        $nomeLider = $user?->name ?? 'O líder';
+        RepertorioMensagem::enviar((int) $id, $user?->id, "{$nomeLider} mudou o tom de \"{$item->tituloLouvor}\" para {$novoTom}.");
+
+        $this->jsonResponse(['ok' => true] + (Repertorio::find((int) $id)?->paraJson() ?? []));
+    }
+
     public function encerrar(string $id): void
     {
         $this->exigirLider();
