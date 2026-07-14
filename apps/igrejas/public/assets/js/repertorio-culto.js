@@ -355,7 +355,16 @@
 
   function poll() {
     fetch(estadoUrl, { cache: 'no-store' })
-      .then(function (resposta) { return resposta.json(); })
+      .then(function (resposta) {
+        // O Service Worker (ver public/service-worker.js) marca com
+        // esse header quando a rede falhou de verdade e ele devolveu
+        // uma copia salva em cache - so aí avisamos que a tela pode
+        // estar desatualizada, mesmo o fetch() "tendo dado certo".
+        var deCache = resposta.headers.get('X-Kadosys-From-Cache') === '1';
+        window.dispatchEvent(new Event(deCache ? 'kadosys:offline' : 'kadosys:online'));
+
+        return resposta.json();
+      })
       .then(function (dados) {
         if (dados.ativo === false) {
           return;
@@ -371,7 +380,10 @@
         }
       })
       .catch(function () {
-        // Falha de rede pontual; tenta de novo no proximo ciclo.
+        // Sem rede e sem nada em cache (ver public/service-worker.js) -
+        // avisa quem esta acompanhando que a tela pode estar
+        // desatualizada; tenta de novo sozinho no proximo ciclo.
+        window.dispatchEvent(new Event('kadosys:offline'));
       });
   }
 

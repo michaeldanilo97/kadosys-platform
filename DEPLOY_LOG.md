@@ -17,6 +17,32 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 90 - 2026-07-14
+
+**Modo Culto continua funcionando se a internet cair (modo offline de emergência)**
+
+- Se o aparelho perder a internet durante o culto, o Modo Culto e a
+  tela cheia de louvor não quebram mais - continuam mostrando a
+  última cifra/tom/repertório recebidos em vez de dar erro ao
+  recarregar a página. Assim que a conexão volta, a sincronização
+  automática (polling) retoma sozinha, sem precisar recarregar nada.
+- Feito com um Service Worker (`public/service-worker.js`) que guarda
+  em cache as páginas e dados mais recentes; a rede é sempre tentada
+  primeiro (quem está online não vê nada em cache), e o cache só
+  entra em ação quando a rede falha de verdade.
+- Um aviso aparece no topo da tela quando o app detecta que está
+  offline, deixando claro que o aparelho está sem internet e o que
+  fica indisponível nessa hora: no Modo Culto, avançar/voltar
+  música, mudar tom e o chat exigem internet e ficam inativos; na
+  tela cheia de louvor (menos dependente de rede) o aviso só avisa
+  que está mostrando a última versão salva.
+- Ações do líder (avançar música, mudar tom, mensagens) não são
+  enfileiradas para reenvio depois - continuam exigindo conexão de
+  verdade, pra evitar dessincronizar quem está vendo a projeção.
+- Limitação: a primeiríssima visita a uma página, se já for feita
+  offline (nunca carregou antes com internet), não tem o que mostrar
+  do cache.
+
 ## Ajuste 89 - 2026-07-14
 
 **Toggle switch quase invisível no tema claro**

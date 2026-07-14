@@ -12,8 +12,9 @@ $temLetra = $louvor->letra !== null && trim($louvor->letra) !== '';
 $abaInicial = $temCifra ? 'cifra' : 'letra';
 ?>
 <link rel="stylesheet" href="<?= $basePath ?>/assets/css/louvor-tela-cheia.css?v=<?= View::assetVersion('assets/css/louvor-tela-cheia.css') ?>">
+<link rel="stylesheet" href="<?= $basePath ?>/assets/css/culto-offline.css?v=<?= View::assetVersion('assets/css/culto-offline.css') ?>">
 
-<div data-lct-root>
+<div data-lct-root data-sw-scope="<?= $basePath ?>/dashboard/louvores/" data-sw-url="<?= $basePath ?>/service-worker.js" data-sw-offline-msg="Aparelho sem internet - mostrando a última versão salva desta cifra/letra.">
     <div class="lct-topo">
         <div>
             <h1 class="lct-titulo"><?= htmlspecialchars($louvor->titulo, ENT_QUOTES, 'UTF-8') ?></h1>
@@ -72,3 +73,4 @@ $abaInicial = $temCifra ? 'cifra' : 'letra';
 </div>
 
 <script src="<?= $basePath ?>/assets/js/louvor-tela-cheia.js?v=<?= View::assetVersion('assets/js/louvor-tela-cheia.js') ?>"></script>
+<script src="<?= $basePath ?>/assets/js/culto-offline.js?v=<?= View::assetVersion('assets/js/culto-offline.js') ?>"></script>
