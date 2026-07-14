@@ -206,6 +206,28 @@ final class Culto
         return array_map(Membro::fromRow(...), $stmt->fetchAll());
     }
 
+    /**
+     * Cultos em que o membro esteve presente, mais recentes primeiro -
+     * usado na aba "Participações" do perfil do membro (inverso de
+     * presentes()).
+     *
+     * @return array<int, self>
+     */
+    public static function doMembro(int $membroId, int $limite = 0): array
+    {
+        $limiteSql = $limite > 0 ? ' LIMIT ' . $limite : '';
+
+        $stmt = Database::connection()->prepare(
+            "SELECT c.* FROM cultos c
+             INNER JOIN culto_frequencias cf ON cf.culto_id = c.id
+             WHERE cf.membro_id = :membro_id
+             ORDER BY c.data DESC, c.hora DESC{$limiteSql}"
+        );
+        $stmt->execute(['membro_id' => $membroId]);
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
     public static function addPresenca(int $cultoId, int $membroId): void
     {
         $stmt = Database::connection()->prepare(

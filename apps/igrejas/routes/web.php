@@ -82,9 +82,13 @@ $router->get('/dashboard', [DashboardController::class, 'index'], [AuthMiddlewar
 $router->get('/dashboard/membros', [MembroController::class, 'index'], [AuthMiddleware::class]);
 $router->get('/dashboard/membros/novo', [MembroController::class, 'create'], [AuthMiddleware::class]);
 $router->post('/dashboard/membros', [MembroController::class, 'store'], [AuthMiddleware::class]);
-$router->get('/dashboard/membros/{id}/editar', [MembroController::class, 'edit'], [AuthMiddleware::class]);
 $router->post('/dashboard/membros/{id}', [MembroController::class, 'update'], [AuthMiddleware::class]);
 $router->post('/dashboard/membros/{id}/excluir', [MembroController::class, 'destroy'], [AuthMiddleware::class]);
+$router->post('/dashboard/membros/{id}/documentos', [MembroController::class, 'documentoStore'], [AuthMiddleware::class]);
+$router->post('/dashboard/membros/{id}/documentos/{documentoId}/excluir', [MembroController::class, 'documentoDestroy'], [AuthMiddleware::class]);
+// Precisa vir por ultimo entre as rotas de membros: e a mais generica
+// ({id} sozinho) e casaria com "novo" se viesse antes dela.
+$router->get('/dashboard/membros/{id}', [MembroController::class, 'show'], [AuthMiddleware::class]);
 
 // Equipe (galeria estilo rede social) e Meu Perfil (autoatendimento) -
 // mesmo motivo acima, precisam vir antes do catch-all de modulo.

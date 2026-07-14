@@ -149,6 +149,37 @@ final class Ministerio
         return array_map(Membro::fromRow(...), $stmt->fetchAll());
     }
 
+    /**
+     * Ministerios em que o membro atua (como lider ou voluntario) -
+     * usado na aba "Ministérios" do perfil do membro (inverso de
+     * voluntarios()). "papel" vem de comparar o membro com o
+     * lider_membro_id do proprio ministerio - nao existe um papel por
+     * vinculo hoje, so um lider unico por ministerio.
+     *
+     * @return array<int, array{id: int, nome: string, papel: string}>
+     */
+    public static function doMembro(int $membroId): array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT mi.id, mi.nome,
+                    (mi.lider_membro_id = :membro_id_lider) AS eh_lider
+             FROM ministerios mi
+             INNER JOIN ministerio_membros mm ON mm.ministerio_id = mi.id
+             WHERE mm.membro_id = :membro_id
+             ORDER BY mi.nome ASC'
+        );
+        $stmt->execute(['membro_id_lider' => $membroId, 'membro_id' => $membroId]);
+
+        return array_map(
+            static fn (array $row): array => [
+                'id' => (int) $row['id'],
+                'nome' => (string) $row['nome'],
+                'papel' => ((int) $row['eh_lider']) === 1 ? 'Líder' : 'Membro',
+            ],
+            $stmt->fetchAll()
+        );
+    }
+
     public static function addVoluntario(int $ministerioId, int $membroId): void
     {
         $stmt = Database::connection()->prepare(

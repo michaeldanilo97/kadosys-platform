@@ -3,44 +3,40 @@
 use Igrejas\Core\View;
 
 /**
+ * Cadastro de um novo membro - a edicao de um membro existente
+ * acontece na propria tela de perfil (dashboard.membros.show), nao
+ * mais aqui.
+ *
  * @var array $config
- * @var \Igrejas\Models\Membro|null $membro
  * @var array $old
  * @var array $errors
  * @var string $csrf
  */
 $basePath = $config['base_path'] ?? '';
-$isEdit = $membro !== null;
 
-$nome = $old['nome'] ?? $membro->nome ?? '';
-$email = $old['email'] ?? $membro->email ?? '';
-$telefone = $old['telefone'] ?? $membro->telefone ?? '';
-$dataNascimento = $old['data_nascimento'] ?? $membro->dataNascimento ?? '';
-$genero = $old['genero'] ?? $membro->genero ?? '';
-$estadoCivil = $old['estado_civil'] ?? $membro->estadoCivil ?? '';
-$endereco = $old['endereco'] ?? $membro->endereco ?? '';
-$cidade = $old['cidade'] ?? $membro->cidade ?? '';
-$estado = $old['estado'] ?? $membro->estado ?? '';
-$dataMembresia = $old['data_membresia'] ?? $membro->dataMembresia ?? '';
-$status = $old['status'] ?? $membro->status ?? 'ativo';
-$observacoes = $old['observacoes'] ?? $membro->observacoes ?? '';
+$nome = $old['nome'] ?? '';
+$email = $old['email'] ?? '';
+$telefone = $old['telefone'] ?? '';
+$dataNascimento = $old['data_nascimento'] ?? '';
+$genero = $old['genero'] ?? '';
+$estadoCivil = $old['estado_civil'] ?? '';
+$endereco = $old['endereco'] ?? '';
+$cidade = $old['cidade'] ?? '';
+$estado = $old['estado'] ?? '';
+$dataMembresia = $old['data_membresia'] ?? '';
+$status = $old['status'] ?? 'ativo';
+$observacoes = $old['observacoes'] ?? '';
 $criarAcesso = !empty($old['criar_acesso']);
 $acessoMusico = !empty($old['musico']);
 $acessoLiderLouvor = !empty($old['lider_louvor']);
 
-$actionUrl = $isEdit
-    ? $basePath . '/dashboard/membros/' . $membro->id
-    : $basePath . '/dashboard/membros';
+$actionUrl = $basePath . '/dashboard/membros';
 ?>
 
 <div class="dash-page-head">
     <div>
-        <h1 class="dash-page-title"><?= $isEdit ? 'Editar membro' : 'Novo membro' ?></h1>
-        <p class="dash-page-subtitle">
-            <?= $isEdit
-                ? 'Atualize os dados de ' . htmlspecialchars($membro->nome, ENT_QUOTES, 'UTF-8') . '.'
-                : 'Preencha os dados para cadastrar um novo membro.' ?>
-        </p>
+        <h1 class="dash-page-title">Novo membro</h1>
+        <p class="dash-page-subtitle">Preencha os dados para cadastrar um novo membro.</p>
     </div>
     <div class="dash-page-actions">
         <a href="<?= $basePath ?>/dashboard/membros" class="btn-k btn-k-ghost">
@@ -145,8 +141,7 @@ $actionUrl = $isEdit
             </div>
         </div>
 
-        <?php if (!$isEdit): ?>
-            <div class="crud-form-section">
+        <div class="crud-form-section">
                 <h3><i class="bi bi-key"></i> Acesso ao sistema</h3>
                 <div class="crud-form-grid">
                     <div class="crud-field crud-field-full">
@@ -188,18 +183,15 @@ $actionUrl = $isEdit
                         </label>
                     </div>
                 </div>
-            </div>
-        <?php endif; ?>
+        </div>
 
         <div class="crud-form-actions">
             <a href="<?= $basePath ?>/dashboard/membros" class="btn-k btn-k-ghost">Cancelar</a>
             <button type="submit" class="btn-k btn-k-grad">
-                <i class="bi bi-check-lg"></i> <?= $isEdit ? 'Salvar alterações' : 'Cadastrar membro' ?>
+                <i class="bi bi-check-lg"></i> Cadastrar membro
             </button>
         </div>
     </form>
 </div>
 
-<?php if (!$isEdit): ?>
-    <script src="<?= $basePath ?>/assets/js/membro-form.js?v=<?= View::assetVersion('assets/js/membro-form.js') ?>"></script>
-<?php endif; ?>
+<script src="<?= $basePath ?>/assets/js/membro-form.js?v=<?= View::assetVersion('assets/js/membro-form.js') ?>"></script>

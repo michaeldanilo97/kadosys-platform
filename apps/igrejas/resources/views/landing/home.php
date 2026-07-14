@@ -403,7 +403,7 @@ $modulosComparacao = array_filter(
                 <div class="plan-icon"><i class="bi bi-gem"></i></div>
                 <h3>Premium</h3>
                 <p class="plan-desc">Para igrejas médias e grandes que querem controle e prioridade.</p>
-                <div class="plan-price">R$ 179,90<span>/mês</span></div>
+                <div class="plan-price">R$ 139,90<span>/mês</span></div>
                 <ul class="plan-features">
                     <li class="plan-feature"><i class="bi bi-check2"></i> Tudo do plano Plus</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Patrimônio (bens, imóveis e equipamentos)</li>
