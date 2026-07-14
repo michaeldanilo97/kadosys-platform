@@ -96,7 +96,7 @@ $modulosComparacao = array_filter(
         <div class="destaques-grid">
             <div class="destaque-card glass-card reveal">
                 <div class="destaque-card-media">
-                    <img src="<?= $basePath ?>/assets/img/recursos/louvores.png" alt="Modo Culto mostrando a cifra e o tom da música ao vivo" loading="lazy">
+                    <img src="<?= $basePath ?>/assets/img/modo_culto.png" alt="Modo Culto mostrando a cifra e o tom da música ao vivo" loading="lazy">
                 </div>
                 <div class="destaque-card-body">
                     <span class="destaque-badge"><i class="bi bi-broadcast"></i> Destaque</span>
@@ -322,7 +322,7 @@ $modulosComparacao = array_filter(
 
         <div class="screens-grid">
             <a href="<?= $basePath ?>/recursos/louvores" class="screen-thumb glass-card reveal">
-                <img src="<?= $basePath ?>/assets/img/recursos/louvores.png" alt="Modo Culto com cifra e tom ao vivo" loading="lazy">
+                <img src="<?= $basePath ?>/assets/img/modo_culto.png" alt="Modo Culto com cifra e tom ao vivo" loading="lazy">
                 <span class="screen-thumb-label"><i class="bi bi-music-note-list"></i> Louvores &middot; Modo Culto</span>
             </a>
             <a href="<?= $basePath ?>/recursos/projecao" class="screen-thumb glass-card reveal">
