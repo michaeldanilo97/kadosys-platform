@@ -14,8 +14,7 @@ $basePath = $config['base_path'] ?? '';
 // relacao ao que o sistema realmente libera em cada plano.
 $planosComparacao = [Plano::ESSENCIAL, Plano::PREMIUM, Plano::ENTERPRISE];
 // "configuracoes" e "usuarios" ficam fora da tabela: nao sao recursos de
-// venda (configuracoes e so ajuste do sistema, e usuarios ja tem sua
-// propria linha "Usuarios administradores" com a contagem de assentos).
+// venda, e sim ajustes basicos do sistema disponiveis em qualquer plano.
 $modulosComparacao = array_filter(
     DashboardController::modules(),
     static fn (string $slug) => !in_array($slug, ['configuracoes', 'usuarios'], true),
@@ -31,7 +30,7 @@ $modulosComparacao = array_filter(
             <h1>A gestão da sua igreja, <span class="text-gradient">inteligente e conectada</span>.</h1>
             <p class="lead">
                 Membros, ministérios, cultos, agenda, financeiro e patrimônio em uma única
-                plataforma moderna, com automação e inteligência artificial a serviço da
+                plataforma moderna, com automação e sincronização em tempo real a serviço da
                 rotina real de quem administra a igreja.
             </p>
             <div class="hero-actions">
@@ -43,7 +42,7 @@ $modulosComparacao = array_filter(
             <div class="hero-meta">
                 <div><strong data-counter="14">0</strong> módulos integrados</div>
                 <div><strong data-counter="100">0</strong><span class="unit">%</span> dados na sua própria base</div>
-                <div><strong>IA</strong> integrada a plataforma</div>
+                <div><strong>Ao vivo</strong> cifra, tom e telão sincronizados</div>
             </div>
         </div>
 
@@ -71,12 +70,12 @@ $modulosComparacao = array_filter(
                         <span class="tag glow">atualizado</span>
                     </div>
                     <div class="hero-row">
-                        <span><i class="bi bi-stars"></i> Insight da IA</span>
-                        <span class="tag ai">frequência +12%</span>
+                        <span><i class="bi bi-music-note-list"></i> Modo Culto</span>
+                        <span class="tag ai">tom: G &rarr; A, ao vivo</span>
                     </div>
                 </div>
             </div>
-            <div class="floating-badge badge-1"><i class="bi bi-stars"></i> IA Ativa</div>
+            <div class="floating-badge badge-1"><i class="bi bi-broadcast"></i> Ao vivo</div>
             <div class="floating-badge badge-2"><i class="bi bi-graph-up-arrow"></i> +85% Organização</div>
         </div>
     </div>
@@ -107,9 +106,9 @@ $modulosComparacao = array_filter(
                 <p>Cada igreja com seu próprio banco de dados, autenticação protegida e controle de acesso.</p>
             </div>
             <div class="sobre-item glass-card reveal">
-                <div class="icon"><i class="bi bi-cpu"></i></div>
-                <h3>Inteligente</h3>
-                <p>Estrutura preparada para automações e recursos de IA que evoluem junto com a sua gestão.</p>
+                <div class="icon"><i class="bi bi-broadcast"></i></div>
+                <h3>Em tempo real</h3>
+                <p>Modo Culto, telão e preletor sincronizados ao vivo entre os aparelhos - sem recarregar página.</p>
             </div>
         </div>
     </div>
@@ -193,7 +192,7 @@ $modulosComparacao = array_filter(
             <h2 class="section-title">Um painel administrativo <span class="text-gradient">de nova geração</span></h2>
             <p class="section-lead">
                 Dashboard moderno, com visão clara dos indicadores, navegação simples e
-                insights automáticos entre os módulos.
+                controle detalhado de quem acessa o quê.
             </p>
         </div>
 
@@ -201,22 +200,22 @@ $modulosComparacao = array_filter(
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-speedometer2"></i></div>
                 <h3>Dashboard com indicadores</h3>
-                <p>Visão geral da igreja com números atualizados dos principais módulos.</p>
+                <p>Visão geral da igreja com números atualizados dos principais módulos, direto na tela inicial.</p>
             </div>
             <div class="feature-card glass-card reveal">
-                <div class="icon"><i class="bi bi-stars"></i></div>
-                <h3>Insights com IA</h3>
-                <p>Resumos e alertas inteligentes sobre frequência, finanças e engajamento.</p>
+                <div class="icon"><i class="bi bi-person-plus"></i></div>
+                <h3>Autocadastro de membros</h3>
+                <p>Link público opcional onde o próprio membro se cadastra, com endereço preenchido automaticamente pelo CEP.</p>
             </div>
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-shield-lock"></i></div>
                 <h3>Usuários e permissões</h3>
-                <p>Controle de quem acessa cada área do sistema, por perfil de usuário.</p>
+                <p>Convide sua equipe com login próprio - escolha, módulo a módulo, quem só visualiza e quem pode editar.</p>
             </div>
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-bar-chart-line"></i></div>
                 <h3>Relatórios</h3>
-                <p>Relatórios consolidados para acompanhar a evolução da igreja.</p>
+                <p>Indicadores consolidados de frequência, membros e finanças, sem precisar montar planilha.</p>
             </div>
         </div>
     </div>
@@ -235,28 +234,28 @@ $modulosComparacao = array_filter(
                 <div class="check"><i class="bi bi-check-lg"></i></div>
                 <div>
                     <h4>Menos planilhas, mais clareza</h4>
-                    <p>Substitua controles manuais por um sistema único, organizado e automatizado.</p>
+                    <p>Membros, financeiro, agenda e patrimônio saem das planilhas soltas e do papel para um sistema único, organizado por módulo.</p>
                 </div>
             </div>
             <div class="beneficio-row glass-card reveal">
                 <div class="check"><i class="bi bi-check-lg"></i></div>
                 <div>
                     <h4>Dados exclusivos da sua igreja</h4>
-                    <p>Cada instalação utiliza seu próprio banco de dados, sem compartilhamento.</p>
+                    <p>Cada instalação utiliza seu próprio banco de dados, sem compartilhamento com outras igrejas.</p>
                 </div>
             </div>
             <div class="beneficio-row glass-card reveal">
                 <div class="check"><i class="bi bi-check-lg"></i></div>
                 <div>
-                    <h4>Fácil de usar</h4>
-                    <p>Interface simples e moderna, pensada para secretarias, tesoureiros e liderança.</p>
+                    <h4>Pix direto pra conta da igreja</h4>
+                    <p>Doações via Pix caem direto na conta da própria igreja - sem intermediário, sem taxa da plataforma em cima do valor.</p>
                 </div>
             </div>
             <div class="beneficio-row glass-card reveal">
                 <div class="check"><i class="bi bi-check-lg"></i></div>
                 <div>
-                    <h4>Pronto para o futuro</h4>
-                    <p>Estrutura preparada para novos módulos e recursos de IA nas próximas etapas.</p>
+                    <h4>Evolui continuamente</h4>
+                    <p>Novos módulos e melhorias são lançados com frequência, sem custo extra pra igreja e sem precisar migrar nada.</p>
                 </div>
             </div>
         </div>
@@ -320,12 +319,12 @@ $modulosComparacao = array_filter(
                 <p class="plan-desc">Para igrejas pequenas que estão começando a organizar sua gestão.</p>
                 <div class="plan-price">R$ 49,90<span>/mês</span></div>
                 <ul class="plan-features">
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Cadastro de membros</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Cultos (programação e frequência)</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Projeção/Telão (Bíblia e vídeo)</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> 1 usuário administrador</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Backup automático</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Suporte por e-mail</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Membros e Equipe</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Cultos e Agenda, com recorrência automática</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Projeção/Telão com controle do preletor em tempo real</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Louvores e Modo Culto, com transposição de tom ao vivo</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Playbacks (biblioteca de áudio)</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Backup automático e suporte por e-mail</li>
                 </ul>
                 <a href="<?= $basePath ?>/cadastro?plano=essencial" class="btn-k btn-k-outline">Começar agora</a>
             </div>
@@ -334,12 +333,14 @@ $modulosComparacao = array_filter(
                 <span class="badge-featured">Mais escolhido</span>
                 <div class="plan-icon"><i class="bi bi-stars"></i></div>
                 <h3>Plus</h3>
-                <p class="plan-desc">Para igrejas em crescimento, com ministérios ativos.</p>
+                <p class="plan-desc">Para igrejas em crescimento, com ministérios e finanças ativas.</p>
                 <div class="plan-price">R$ 99,90<span>/mês</span></div>
                 <ul class="plan-features">
                     <li class="plan-feature"><i class="bi bi-check2"></i> Tudo do plano Essencial</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Ministérios (líderes e voluntários)</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Usuários administradores ilimitados</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Grupos, células e classes</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Financeiro, com doação via Pix direto pra conta da igreja</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Comunicação (avisos pra todos ou só liderança)</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Suporte prioritário</li>
                 </ul>
                 <a href="<?= $basePath ?>/cadastro?plano=premium" class="btn-k btn-k-grad">Começar agora</a>
@@ -348,12 +349,13 @@ $modulosComparacao = array_filter(
             <div class="plan-card glass-card reveal">
                 <div class="plan-icon"><i class="bi bi-gem"></i></div>
                 <h3>Premium</h3>
-                <p class="plan-desc">Para igrejas médias e grandes que querem prioridade.</p>
+                <p class="plan-desc">Para igrejas médias e grandes que querem controle e prioridade.</p>
                 <div class="plan-price">R$ 179,90<span>/mês</span></div>
                 <ul class="plan-features">
                     <li class="plan-feature"><i class="bi bi-check2"></i> Tudo do plano Plus</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Acesso prioritário a novos módulos (financeiro, comunicação, relatórios)</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Playbacks: mudar o tom da música em tempo real</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Patrimônio (bens, imóveis e equipamentos)</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Relatórios consolidados</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Permissões por usuário: escolha quem só visualiza e quem edita cada módulo</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Atendimento dedicado</li>
                 </ul>
                 <a href="<?= $basePath ?>/cadastro?plano=enterprise" class="btn-k btn-k-outline">Começar agora</a>
@@ -397,22 +399,10 @@ $modulosComparacao = array_filter(
                             </tr>
                         <?php endforeach; ?>
                         <tr>
-                            <td class="plan-compare-feature-col"><i class="bi bi-person-badge"></i> Usuários administradores</td>
-                            <td>1</td>
-                            <td>Ilimitados</td>
-                            <td>Ilimitados</td>
-                        </tr>
-                        <tr>
                             <td class="plan-compare-feature-col"><i class="bi bi-headset"></i> Suporte</td>
                             <td>E-mail</td>
                             <td>E-mail prioritário</td>
                             <td>Dedicado</td>
-                        </tr>
-                        <tr>
-                            <td class="plan-compare-feature-col"><i class="bi bi-music-note-beamed"></i> Playbacks: mudar tom da música</td>
-                            <td><i class="bi bi-dash-lg plan-compare-no"></i></td>
-                            <td><i class="bi bi-dash-lg plan-compare-no"></i></td>
-                            <td><i class="bi bi-check-circle-fill plan-compare-yes"></i></td>
                         </tr>
                     </tbody>
                 </table>
@@ -464,25 +454,52 @@ $modulosComparacao = array_filter(
 
             <div class="faq-item glass-card reveal" data-faq-item>
                 <button class="faq-question">
-                    O que são os Playbacks e como funciona a troca de tom?
+                    O que é o Modo Culto e como funciona a troca de tom ao vivo?
                     <span class="plus">+</span>
                 </button>
                 <div class="faq-answer">
-                    <p>O módulo de Playbacks disponibiliza uma biblioteca de faixas para o ministério
-                        de louvor, liberada em todos os planos. No plano Premium, será possível ainda
-                        mudar o tom da música em tempo real durante a execução - recurso em
-                        desenvolvimento, com previsão de lançamento em breve.</p>
+                    <p>É o modo de tela do módulo Louvores feito pra usar durante o culto: o time de
+                        louvor acompanha a cifra da música em qualquer celular ou tablet, e quando o
+                        líder muda o tom, a cifra de todo mundo se ajusta sozinha, na hora, sem
+                        precisar recarregar a página. Disponível em todos os planos.</p>
                 </div>
             </div>
 
             <div class="faq-item glass-card reveal" data-faq-item>
                 <button class="faq-question">
-                    Quais módulos estarão disponíveis em seguida?
+                    O que são os Playbacks?
                     <span class="plus">+</span>
                 </button>
                 <div class="faq-answer">
-                    <p>Módulos como Grupos, Agenda, Financeiro, Comunicação, CRM e ERP estão
-                        planejados para sprints futuras de desenvolvimento.</p>
+                    <p>É a biblioteca de faixas de áudio do ministério de louvor: upload, organização
+                        e player pra tocar as bases direto do sistema, sem depender de pendrive ou
+                        app externo. Disponível em todos os planos.</p>
+                </div>
+            </div>
+
+            <div class="faq-item glass-card reveal" data-faq-item>
+                <button class="faq-question">
+                    Como funcionam os níveis de permissão por usuário?
+                    <span class="plus">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>No plano Premium, cada usuário da equipe pode receber acesso configurado
+                        módulo a módulo: sem acesso, só visualizar ou visualizar e editar. Assim dá
+                        pra convidar voluntários e líderes com o acesso certo pra função de cada um,
+                        sem abrir mão de controle.</p>
+                </div>
+            </div>
+
+            <div class="faq-item glass-card reveal" data-faq-item>
+                <button class="faq-question">
+                    Como funcionam as doações via Pix?
+                    <span class="plus">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>A igreja cadastra sua própria chave Pix, e o sistema gera um link público e um
+                        QR Code de doação - inclusive pra exibir direto no telão durante o culto. O
+                        valor cai direto na conta da igreja, sem intermediário nem taxa da
+                        plataforma em cima da doação.</p>
                 </div>
             </div>
         </div>

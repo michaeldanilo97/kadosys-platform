@@ -16,7 +16,7 @@ $basePath = $config['base_path'] ?? '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle ?? 'KADOSYS Igrejas', ENT_QUOTES, 'UTF-8') ?></title>
-    <meta name="description" content="KADOSYS Igrejas - plataforma inteligente de gestão para igrejas: membros, ministérios, financeiro, agenda e muito mais, com tecnologia e IA.">
+    <meta name="description" content="KADOSYS Igrejas - plataforma completa de gestão para igrejas: membros, ministérios, financeiro, agenda, projeção e muito mais, com sincronização em tempo real.">
     <script>document.documentElement.classList.add('js');</script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
@@ -80,8 +80,8 @@ $basePath = $config['base_path'] ?? '';
                     <span class="text-gradient">KADOSYS</span>&nbsp;Igrejas
                 </div>
                 <p class="footer-about">
-                    Plataforma inteligente de gestão para igrejas. Tecnologia moderna,
-                    automação e IA a serviço da sua comunidade.
+                    Plataforma completa de gestão para igrejas. Tecnologia moderna,
+                    automação e sincronização em tempo real a serviço da sua comunidade.
                 </p>
             </div>
             <div class="footer-col">

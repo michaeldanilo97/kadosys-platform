@@ -17,6 +17,40 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 96 - 2026-07-14
+
+**Site institucional: correção de textos desatualizados na home e no FAQ**
+
+- Removidas todas as menções a "IA"/"inteligência artificial" como
+  recurso do produto (hero, meta description, rodapé) - esse recurso
+  nunca existiu de verdade (o antigo painel "Insights da IA" era texto
+  fixo, substituído pelo painel "Novidades" no Ajuste 28) e ainda
+  aparecia como diferencial de venda.
+- Card "Inteligente" da seção Sobre trocado por "Em tempo real",
+  destacando a sincronização ao vivo entre Modo Culto, telão e
+  preletor (o diferencial real do sistema).
+- Seção Recursos ganhou o card "Louvores e Modo Culto" que faltava -
+  era um dos maiores diferenciais do sistema e não tinha card nenhum.
+- Seção Funcionalidades e Benefícios reescritas com o que o sistema
+  entrega hoje (dashboard, autocadastro de membros, permissões,
+  relatórios, doação via Pix direto pra conta da igreja), sem falar
+  mais em IA.
+- Cards de plano (Essencial/Plus/Premium) e tabela de comparação
+  corrigidos módulo a módulo conforme `Plano::MODULO_MINIMO` - removida
+  a linha "Usuários administradores" (1 / ilimitados), que não é uma
+  regra realmente aplicada no sistema, e a linha de troca de tom nos
+  Playbacks, recurso removido do produto (Ajuste 45).
+- FAQ reescrito: a pergunta sobre "troca de tom nos Playbacks" descrevia
+  como recurso "em desenvolvimento", mas na verdade foi implementado e
+  depois removido (Ajuste 43-45) por não ficar bom o suficiente; e a
+  pergunta "quais módulos estarão disponíveis em seguida" listava
+  Grupos, Agenda, Financeiro e Comunicação como futuros, sendo que os
+  quatro já estão no ar. Foram trocadas por perguntas reais sobre como
+  funciona o Modo Culto (tom ao vivo), os Playbacks (biblioteca de
+  áudio), os níveis de permissão por usuário e as doações via Pix.
+
+---
+
 ## Ajuste 95 - 2026-07-14
 
 **Site institucional: página dedicada por módulo, com screenshot real do sistema**
