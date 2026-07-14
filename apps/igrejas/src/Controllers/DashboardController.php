@@ -58,6 +58,11 @@ final class DashboardController extends Controller
                 'icon' => 'bi-people-fill',
                 'description' => 'Pequenos grupos, células e classes, com encontros e participantes.',
             ],
+            'kids' => [
+                'title' => 'Kids',
+                'icon' => 'bi-emoji-smile',
+                'description' => 'Ministério infantil: turmas, cadastro das crianças e check-in/check-out com código de segurança.',
+            ],
             'cultos' => [
                 'title' => 'Cultos',
                 'icon' => 'bi-calendar2-week',

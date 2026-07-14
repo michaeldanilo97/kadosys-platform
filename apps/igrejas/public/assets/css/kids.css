@@ -1,0 +1,242 @@
+/* Modulo KADOSYS Kids (Fase 1 - operacional): grade de criancas, perfil
+   individual com gamificacao (XP/moedas/sequencia) e tela de check-in
+   com o banner do codigo de seguranca. Mesmo vocabulario visual do
+   restante do painel (crud.css/dashboard.css), com um acento colorido
+   proprio (dourado) pra sinalizar gamificacao sem fugir do padrao. */
+
+.kids-crianca-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.2rem;
+}
+
+.kids-crianca-card {
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 1.2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.kids-crianca-card:hover {
+  border-color: var(--primary-soft);
+  transform: translateY(-2px);
+}
+
+.kids-crianca-card-foto {
+  width: 76px;
+  height: 76px;
+  margin-bottom: 0.3rem;
+}
+
+.kids-crianca-card-foto img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.kids-crianca-card-inicial {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--gradient);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.6rem;
+  box-shadow: 0 0 16px rgba(59, 130, 246, 0.3);
+}
+
+.kids-crianca-card-nome {
+  font-weight: 600;
+  color: var(--white);
+}
+
+[data-theme="light"] .kids-crianca-card-nome {
+  color: #0F172A;
+}
+
+.kids-crianca-card-turma {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.kids-crianca-card-status {
+  margin: 0.3rem 0;
+}
+
+.kids-crianca-card-stats {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 0.7rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.kids-crianca-card-stats i {
+  color: #FBBF24;
+  margin-right: 0.2rem;
+}
+
+/* Perfil da crianca (dashboard/kids/criancas/show.php). */
+.kids-perfil-header {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 1.4rem;
+  margin-bottom: 1.4rem;
+}
+
+.kids-perfil-foto {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+}
+
+.kids-perfil-foto img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.kids-perfil-nome-linha {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.kids-perfil-nome-linha h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--white);
+}
+
+[data-theme="light"] .kids-perfil-nome-linha h2 {
+  color: #0F172A;
+}
+
+.kids-perfil-stats {
+  display: flex;
+  gap: 1.2rem;
+  margin-top: 0.6rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.kids-perfil-stats i {
+  color: #FBBF24;
+  margin-right: 0.3rem;
+}
+
+/* Banner do codigo de seguranca, exibido uma unica vez logo apos o
+   check-in (ver dashboard/kids/checkin/index.php). */
+.kids-codigo-banner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.16), rgba(139, 92, 246, 0.12));
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  border-radius: var(--radius-md);
+  padding: 1.2rem 1.4rem;
+  margin-bottom: 1.4rem;
+}
+
+.kids-codigo-banner-icone {
+  font-size: 1.8rem;
+  color: #FBBF24;
+  flex-shrink: 0;
+}
+
+.kids-codigo-banner-titulo {
+  font-weight: 600;
+  color: var(--white);
+}
+
+[data-theme="light"] .kids-codigo-banner-titulo {
+  color: #0F172A;
+}
+
+.kids-codigo-banner-codigo {
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.3rem;
+  color: #FBBF24;
+  margin: 0.2rem 0;
+}
+
+.kids-codigo-banner p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* Lista de criancas na sala (tela de Check-in). */
+.kids-checkin-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.kids-checkin-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  padding: 0.8rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+}
+
+.kids-checkin-saida-form {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.kids-checkin-saida-form input[type="text"] {
+  background: var(--surface-strong);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.8rem;
+  color: var(--white);
+  font-size: 0.85rem;
+}
+
+.kids-checkin-saida-form input[name="codigo_seguranca"] {
+  width: 90px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.15rem;
+  text-align: center;
+}
+
+[data-theme="light"] .kids-checkin-saida-form input[type="text"] {
+  background: rgba(30, 41, 59, 0.04);
+  border-color: rgba(30, 41, 59, 0.12);
+  color: #0F172A;
+}

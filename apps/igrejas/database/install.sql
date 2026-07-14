@@ -762,3 +762,78 @@ CREATE TABLE IF NOT EXISTS repertorio_mensagens (
     CONSTRAINT repertorio_mensagens_user_id_foreign
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ----------------------------------------------------------------------------
+-- 049/050/051 - Modulo KADOSYS Kids (Fase 1 - operacional: turmas,
+-- criancas e check-in/check-out do ministerio infantil, ja com colunas
+-- minimas de gamificacao em kids_criancas - xp/moedas/sequencia,
+-- incrementadas a cada check-in). Ver database/migrations/049 a 051
+-- para o detalhamento de cada tabela.
+-- ----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS kids_turmas (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    faixa_etaria_min TINYINT UNSIGNED NULL,
+    faixa_etaria_max TINYINT UNSIGNED NULL,
+    professor_membro_id INT UNSIGNED NULL,
+    descricao TEXT NULL,
+    status ENUM('ativo', 'inativo') NOT NULL DEFAULT 'ativo',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY kids_turmas_status_index (status),
+    CONSTRAINT kids_turmas_professor_membro_id_foreign
+        FOREIGN KEY (professor_membro_id) REFERENCES membros (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS kids_criancas (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    foto_path VARCHAR(255) NULL,
+    data_nascimento DATE NULL,
+    genero ENUM('masculino', 'feminino') NULL,
+    turma_id INT UNSIGNED NULL,
+    responsavel_membro_id INT UNSIGNED NULL,
+    responsavel_nome VARCHAR(150) NULL,
+    responsavel_telefone VARCHAR(20) NULL,
+    autorizados_retirada TEXT NULL,
+    alergias TEXT NULL,
+    observacoes_medicas TEXT NULL,
+    observacoes TEXT NULL,
+    status ENUM('ativo', 'inativo') NOT NULL DEFAULT 'ativo',
+    xp INT UNSIGNED NOT NULL DEFAULT 0,
+    moedas INT UNSIGNED NOT NULL DEFAULT 0,
+    sequencia_dias INT UNSIGNED NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY kids_criancas_status_index (status),
+    KEY kids_criancas_turma_id_index (turma_id),
+    CONSTRAINT kids_criancas_turma_id_foreign
+        FOREIGN KEY (turma_id) REFERENCES kids_turmas (id) ON DELETE SET NULL,
+    CONSTRAINT kids_criancas_responsavel_membro_id_foreign
+        FOREIGN KEY (responsavel_membro_id) REFERENCES membros (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS kids_checkins (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    crianca_id INT UNSIGNED NOT NULL,
+    data DATE NOT NULL,
+    codigo_seguranca VARCHAR(6) NOT NULL,
+    hora_entrada DATETIME NOT NULL,
+    hora_saida DATETIME NULL,
+    entregue_por VARCHAR(150) NULL,
+    retirado_por VARCHAR(150) NULL,
+    observacoes TEXT NULL,
+    registrado_por_user_id INT UNSIGNED NULL,
+    encerrado_por_user_id INT UNSIGNED NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY kids_checkins_crianca_id_index (crianca_id),
+    KEY kids_checkins_data_index (data),
+    CONSTRAINT kids_checkins_crianca_id_foreign
+        FOREIGN KEY (crianca_id) REFERENCES kids_criancas (id) ON DELETE CASCADE,
+    CONSTRAINT kids_checkins_registrado_por_user_id_foreign
+        FOREIGN KEY (registrado_por_user_id) REFERENCES users (id) ON DELETE SET NULL,
+    CONSTRAINT kids_checkins_encerrado_por_user_id_foreign
+        FOREIGN KEY (encerrado_por_user_id) REFERENCES users (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
