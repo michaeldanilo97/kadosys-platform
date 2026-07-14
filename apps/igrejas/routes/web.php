@@ -16,8 +16,10 @@ use Igrejas\Controllers\EquipeController;
 use Igrejas\Controllers\FaturaController;
 use Igrejas\Controllers\FinanceiroController;
 use Igrejas\Controllers\GrupoController;
+use Igrejas\Controllers\KidsBibliotecaController;
 use Igrejas\Controllers\KidsCheckinController;
 use Igrejas\Controllers\KidsController;
+use Igrejas\Controllers\KidsConteudoController;
 use Igrejas\Controllers\KidsCriancaController;
 use Igrejas\Controllers\KidsTurmaController;
 use Igrejas\Controllers\LandingController;
@@ -153,6 +155,26 @@ $router->post('/dashboard/kids/criancas/{id}/excluir', [KidsCriancaController::c
 // Precisa vir por ultimo entre as rotas de criancas: e a mais generica
 // ({id} sozinho) e casaria com "novo" se viesse antes dela.
 $router->get('/dashboard/kids/criancas/{id}', [KidsCriancaController::class, 'show'], [AuthMiddleware::class, PlanoMiddleware::class]);
+
+// CMS de conteudo (Kids > Conteúdos - historias, videos, quiz etc.
+// criados pela propria igreja; o conteudo oficial "kadosys" aparece
+// na mesma lista, so leitura). Mesmo motivo de sempre: precisa vir
+// antes do catch-all.
+$router->get('/dashboard/kids/conteudos', [KidsConteudoController::class, 'index'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->get('/dashboard/kids/conteudos/novo', [KidsConteudoController::class, 'create'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/kids/conteudos', [KidsConteudoController::class, 'store'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->get('/dashboard/kids/conteudos/{id}/editar', [KidsConteudoController::class, 'edit'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/kids/conteudos/{id}', [KidsConteudoController::class, 'update'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/kids/conteudos/{id}/excluir', [KidsConteudoController::class, 'destroy'], [AuthMiddleware::class, PlanoMiddleware::class]);
+
+// Biblioteca Kids no "modo criança" (tela colorida/cartoon - ver
+// KidsBibliotecaController). Mesmo motivo: precisa vir antes do
+// catch-all.
+$router->get('/dashboard/kids/biblioteca', [KidsBibliotecaController::class, 'index'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/kids/biblioteca/crianca', [KidsBibliotecaController::class, 'selecionarCrianca'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->get('/dashboard/kids/biblioteca/tipo/{tipo}', [KidsBibliotecaController::class, 'porTipo'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->get('/dashboard/kids/biblioteca/conteudo/{id}', [KidsBibliotecaController::class, 'show'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/kids/biblioteca/conteudo/{id}/concluir', [KidsBibliotecaController::class, 'concluir'], [AuthMiddleware::class, PlanoMiddleware::class]);
 
 // Modulo Cultos. Mesmo motivo: precisam vir antes do catch-all.
 $router->get('/dashboard/cultos', [CultoController::class, 'index'], [AuthMiddleware::class]);

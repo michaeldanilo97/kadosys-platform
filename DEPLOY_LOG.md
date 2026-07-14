@@ -17,6 +17,39 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 115 - 2026-07-14
+
+**KADOSYS Kids (Fase 2): biblioteca de conteúdo + tela colorida "modo criança"**
+
+- Nova estrutura de conteúdo do módulo Kids: histórias, vídeos,
+  áudios, devocionais, estudos, quiz, atividades para colorir,
+  desafios, versículos ilustrados e mais - com idade recomendada,
+  categoria, tema, livro bíblico, personagem e recompensa (XP/moedas)
+  configuráveis por conteúdo.
+- Cada conteúdo tem uma origem: **⭐ oficial KADOSYS** (semeada
+  automaticamente em `install.sql` - já vem com 8 conteúdos de
+  exemplo variados) ou **🏠 da própria igreja** (cadastrada pela
+  equipe em Kids > Conteúdos). O conteúdo oficial é somente leitura -
+  a igreja não pode editar nem excluir.
+- CMS de conteúdo (Kids > Conteúdos) no mesmo padrão visual do
+  restante do painel: listagem com busca/filtro por tipo e origem,
+  formulário completo (incluindo upload de capa/mídia e um construtor
+  simples de perguntas de quiz).
+- **Biblioteca (modo criança)**: nova tela com visual completamente
+  diferente do painel administrativo - colorida, com cards grandes
+  arredondados, gradientes vibrantes e emojis, no estilo
+  Duolingo/Khan Academy Kids pedido. Mostra os conteúdos agrupados por
+  tipo, com um seletor de "quem está navegando" (ainda não existe
+  login próprio da criança, é um placeholder até essa fase futura) e
+  um botão "Concluir" que concede XP/moedas automaticamente - só uma
+  vez por conteúdo, mesmo se a criança repetir.
+- As tabelas novas (`kids_conteudos`, `kids_conteudo_conclusoes`) e os
+  conteúdos de exemplo já fazem parte do `install.sql`, então toda
+  igreja nova criada a partir de agora já nasce com a biblioteca
+  populada.
+
+---
+
 ## Ajuste 114 - 2026-07-14
 
 **Novo módulo: KADOSYS Kids (Fase 1 - Turmas, Crianças e Check-in)**

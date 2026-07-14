@@ -201,6 +201,20 @@ final class KidsCrianca
         $stmt->execute(['xp' => $xp, 'moedas' => $moedas, 'sequencia_dias' => $sequenciaDias, 'id' => $id]);
     }
 
+    /**
+     * Concede XP/moedas sem mexer na sequencia de presenca - usado ao
+     * concluir um conteudo da Biblioteca (ver
+     * KidsConteudo::registrarConclusaoPor()), que e independente do
+     * check-in do dia.
+     */
+    public static function adicionarPontos(int $id, int $xp, int $moedas): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE kids_criancas SET xp = xp + :xp, moedas = moedas + :moedas WHERE id = :id'
+        );
+        $stmt->execute(['xp' => $xp, 'moedas' => $moedas, 'id' => $id]);
+    }
+
     public function idade(): ?int
     {
         if ($this->dataNascimento === null) {

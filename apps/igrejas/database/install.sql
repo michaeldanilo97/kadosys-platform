@@ -837,3 +837,95 @@ CREATE TABLE IF NOT EXISTS kids_checkins (
     CONSTRAINT kids_checkins_encerrado_por_user_id_foreign
         FOREIGN KEY (encerrado_por_user_id) REFERENCES users (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ----------------------------------------------------------------------------
+-- 052/053 - Modulo KADOSYS Kids (Fase 2 - biblioteca de conteudo:
+-- historias, videos, devocionais, quiz etc., com origem "kadosys"
+-- (oficial, semeada abaixo, somente leitura pra igreja) ou "igreja"
+-- (criado pela propria equipe em Kids > Conteudos). Ver
+-- database/migrations/052 e 053 para o detalhamento de cada tabela.
+-- ----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS kids_conteudos (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    tipo ENUM(
+        'historia', 'video', 'audio', 'slide', 'hq', 'devocional', 'estudo',
+        'plano_leitura', 'quiz', 'colorir', 'pdf', 'atividade', 'jogo',
+        'desafio', 'versiculo_ilustrado'
+    ) NOT NULL,
+    origem ENUM('kadosys', 'igreja') NOT NULL DEFAULT 'igreja',
+    titulo VARCHAR(150) NOT NULL,
+    descricao TEXT NULL,
+    categoria VARCHAR(60) NULL,
+    tema VARCHAR(100) NULL,
+    livro_biblico VARCHAR(60) NULL,
+    personagem VARCHAR(100) NULL,
+    dificuldade ENUM('facil', 'medio', 'dificil') NULL,
+    idade_min TINYINT UNSIGNED NULL,
+    idade_max TINYINT UNSIGNED NULL,
+    duracao_minutos SMALLINT UNSIGNED NULL,
+    xp_recompensa SMALLINT UNSIGNED NOT NULL DEFAULT 10,
+    moedas_recompensa SMALLINT UNSIGNED NOT NULL DEFAULT 5,
+    texto_conteudo LONGTEXT NULL,
+    midia_url VARCHAR(255) NULL,
+    midia_path VARCHAR(255) NULL,
+    capa_path VARCHAR(255) NULL,
+    quiz_perguntas TEXT NULL,
+    status ENUM('rascunho', 'publicado') NOT NULL DEFAULT 'publicado',
+    criado_por INT UNSIGNED NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY kids_conteudos_tipo_index (tipo),
+    KEY kids_conteudos_status_index (status),
+    KEY kids_conteudos_origem_index (origem),
+    KEY kids_conteudos_categoria_index (categoria),
+    CONSTRAINT kids_conteudos_criado_por_foreign
+        FOREIGN KEY (criado_por) REFERENCES users (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS kids_conteudo_conclusoes (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    crianca_id INT UNSIGNED NOT NULL,
+    conteudo_id INT UNSIGNED NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY kids_conteudo_conclusoes_unique (crianca_id, conteudo_id),
+    CONSTRAINT kids_conteudo_conclusoes_crianca_id_foreign
+        FOREIGN KEY (crianca_id) REFERENCES kids_criancas (id) ON DELETE CASCADE,
+    CONSTRAINT kids_conteudo_conclusoes_conteudo_id_foreign
+        FOREIGN KEY (conteudo_id) REFERENCES kids_conteudos (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Biblioteca oficial KADOSYS: um punhado de conteudos de exemplo,
+-- variados por tipo, ja disponiveis pra toda igreja nova assim que o
+-- banco e provisionado (origem 'kadosys' - somente leitura pra
+-- igreja, ver KidsConteudoController). A equipe KADOSYS pode
+-- adicionar mais conteudos rodando o mesmo INSERT no banco de cada
+-- igreja ja existente (nao ha ainda um mecanismo central de
+-- replicacao automatica - ver observacao no PR).
+INSERT INTO kids_conteudos
+    (tipo, origem, titulo, descricao, categoria, tema, livro_biblico, personagem, dificuldade, idade_min, idade_max, duracao_minutos, xp_recompensa, moedas_recompensa, texto_conteudo, quiz_perguntas, status, created_at)
+VALUES
+    ('historia', 'kadosys', 'A Arca de Noé', 'Deus pede a Noé para construir uma arca gigante antes do grande dilúvio.', 'Velho Testamento', 'Obediência', 'Gênesis', 'Noé', 'facil', 4, 8, 8, 15, 8,
+     'Há muito tempo, Deus viu que as pessoas na Terra estavam fazendo coisas erradas. Mas havia um homem chamado Noé que amava a Deus. Deus pediu que Noé construísse uma arca enorme, de madeira, para salvar sua família e dois de cada animal do mundo. Noé obedeceu, mesmo sem entender tudo. Choveu por 40 dias e 40 noites, mas a arca flutuou e todos ficaram em segurança. Quando a chuva parou, Deus colocou um arco-íris no céu, prometendo nunca mais destruir a Terra com um dilúvio. Essa é a promessa do arco-íris até hoje!',
+     NULL, 'publicado', NOW()),
+    ('video', 'kadosys', 'Davi e Golias', 'O jovem pastor Davi enfrenta o gigante Golias confiando em Deus.', 'Velho Testamento', 'Coragem', '1 Samuel', 'Davi', 'facil', 6, 10, 5, 15, 8,
+     'Adicione o link do vídeo em Kids > Conteúdos > Editar.', NULL, 'publicado', NOW()),
+    ('devocional', 'kadosys', 'Deus cuida de mim', 'Um devocional curto sobre o cuidado de Deus com cada criança.', 'Valores', 'Cuidado de Deus', NULL, NULL, 'facil', 3, 6, 3, 10, 5,
+     'Você sabia que Deus conhece até quantos fios de cabelo você tem na cabeça? Ele te ama tanto que cuida de cada detalhezinho da sua vida! Quando você acorda de manhã, Deus está com você. Quando você brinca, Deus está com você. Quando você tem medo, pode conversar com Ele, porque Ele sempre escuta. Hoje, agradeça a Deus por cuidar de você o dia inteiro!',
+     NULL, 'publicado', NOW()),
+    ('quiz', 'kadosys', 'Quiz: Personagens da Bíblia', 'Teste o que você sabe sobre os grandes personagens bíblicos!', 'Geral', 'Personagens', NULL, NULL, 'medio', 6, 10, 5, 20, 10,
+     NULL,
+     '[{"pergunta":"Quem construiu a arca?","alternativas":["Moisés","Noé","Davi","Abraão"],"correta":1},{"pergunta":"Quantos dias e noites choveu no dilúvio?","alternativas":["7","40","100","3"],"correta":1},{"pergunta":"Quem derrotou o gigante Golias?","alternativas":["Saul","Salomão","Davi","Sansão"],"correta":2}]',
+     'publicado', NOW()),
+    ('colorir', 'kadosys', 'Jonas e a Baleia', 'Desenho para colorir da história de Jonas dentro do grande peixe.', 'Velho Testamento', 'Obediência', 'Jonas', 'Jonas', 'facil', 3, 8, NULL, 10, 5,
+     NULL, NULL, 'publicado', NOW()),
+    ('versiculo_ilustrado', 'kadosys', 'João 3:16', 'O versículo mais conhecido da Bíblia, em linguagem para crianças.', 'Novo Testamento', 'Amor de Deus', 'João', 'Jesus', 'facil', 4, 10, 2, 10, 5,
+     '"Porque Deus amou tanto o mundo, que deu o seu único Filho, para que todo aquele que nele crê não pereça, mas tenha a vida eterna." João 3:16',
+     NULL, 'publicado', NOW()),
+    ('desafio', 'kadosys', 'Desafio da Semana: Ore por alguém', 'Um desafio simples para praticar o amor ao próximo.', 'Missões', 'Oração', NULL, NULL, 'facil', 5, 12, NULL, 20, 10,
+     'Esta semana, escolha uma pessoa da sua família ou um amigo e ore por ela todos os dias. Pode ser um pedido de saúde, de alegria ou só agradecendo por essa pessoa existir. No fim da semana, conte pra ela que você orou!',
+     NULL, 'publicado', NOW()),
+    ('estudo', 'kadosys', 'Os frutos do Espírito', 'Um estudo simples sobre as qualidades que Deus quer desenvolver em nós.', 'Novo Testamento', 'Caráter cristão', 'Gálatas', NULL, 'medio', 7, 12, 10, 15, 8,
+     'A Bíblia ensina que, quando deixamos o Espírito Santo agir em nossa vida, alguns "frutos" aparecem: amor, alegria, paz, paciência, amabilidade, bondade, fidelidade, mansidão e domínio próprio (Gálatas 5:22-23). Assim como uma árvore boa dá frutos bons, uma vida com Deus produz essas qualidades. Qual desses frutos você quer pedir a Deus para crescer mais em você esta semana?',
+     NULL, 'publicado', NOW());
