@@ -17,6 +17,22 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 100 - 2026-07-14
+
+**Página /recursos/projecao também passa a usar assets/img/telao.png**
+
+- A página dedicada de Projeção e Telão usava `projecao.png` +
+  `preletor.png` (screenshot composta gerada via Playwright). Trocado
+  pra usar a mesma imagem `assets/img/telao.png` já referenciada na
+  home (Ajuste 99), a pedido do usuário.
+- `RecursoController::MODULOS` reorganizado: cada módulo agora guarda
+  o caminho completo da imagem (a maioria com prefixo `recursos/`,
+  já que ficam em `assets/img/recursos/`), em vez de assumir sempre
+  essa subpasta - permite que o módulo de Projeção aponte pra
+  `assets/img/telao.png`, fora da subpasta `recursos/`.
+
+---
+
 ## Ajuste 99 - 2026-07-14
 
 **Selo do menu Recursos ainda sobrepunha texto em telas mais estreitas; troca da imagem de Projeção**
