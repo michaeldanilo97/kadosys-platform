@@ -17,6 +17,20 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 84 - 2026-07-14
+
+**Projeção e Louvores destacados no topo do menu ("Ao vivo")**
+
+- Esses dois módulos são usados AO VIVO durante o culto (telão pro
+  operador, cifras pro time de louvor) - antes ficavam misturados no
+  meio da lista alfabética/lógica de módulos administrativos, difícil
+  de achar rápido em cima da hora.
+- Criado um grupo novo "Ao vivo" no topo do menu lateral, logo abaixo
+  de "Dashboard", com Projeção e Louvores destacados: borda de acento
+  verde e um pontinho pulsando (só quando o módulo está liberado pro
+  usuário, sem cadeado). O restante dos módulos continua na lista
+  "Módulos" normal, sem duplicar os dois que subiram.
+
 ## Ajuste 83 - 2026-07-14
 
 **Icone de Modo Culto na listagem de repertorios nao abria em nova
