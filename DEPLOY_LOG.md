@@ -17,6 +17,22 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 87 - 2026-07-14
+
+**Toggle switch (Músico, Líder de louvor, etc.) em cima do texto em
+vez de do lado**
+
+- Quando um toggle switch (`.toggle-switch-field`) fica dentro de um
+  campo `.crud-field` (padrão usado nos formulários de cadastro), uma
+  regra de CSS mais genérica (`.crud-field label`) tinha mais peso e
+  forçava `display: block`, cancelando o `display: flex` que
+  posiciona o switch ao lado do texto - o switch encolhia e ficava em
+  cima da primeira letra do rótulo.
+- Afetava o cadastro/edição de usuário ("Músico", "Líder de louvor")
+  e o de louvor ("Remover anexo atual"). Corrigido aumentando a
+  especificidade da regra do toggle.
+- Testado visualmente com Playwright antes/depois em ambas as telas.
+
 ## Ajuste 86 - 2026-07-14
 
 **Louvores: anotações pessoais (privadas) em cada música**
