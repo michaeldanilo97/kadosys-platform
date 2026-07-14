@@ -17,6 +17,19 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 86 - 2026-07-14
+
+**Louvores: anotações pessoais (privadas) em cada música**
+
+- Nova seção "Minhas anotações" na página de detalhe do louvor: cada
+  músico pode escrever lembretes pessoais (ex.: "usar capotraste na 2ª
+  casa", "trocar pra guitarra limpa", "solo começa no segundo
+  refrão"), visíveis SÓ pra quem escreveu - nunca compartilhado com o
+  resto do time.
+- Migração 043: nova tabela `louvor_anotacoes` (uma anotação por
+  usuário por louvor), já refletida em `install.sql`.
+- Deixar o texto em branco e salvar apaga a anotação.
+
 ## Ajuste 85 - 2026-07-14
 
 **Novo módulo Equipe: galeria estilo rede social (foto + cargo +

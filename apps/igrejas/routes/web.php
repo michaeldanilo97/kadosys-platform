@@ -156,6 +156,7 @@ $router->post('/dashboard/louvores/repertorios/{id}/mensagens', [RepertorioContr
 
 $router->get('/dashboard/louvores/{id}/editar', [LouvorController::class, 'edit'], [AuthMiddleware::class]);
 $router->get('/dashboard/louvores/{id}/tela-cheia', [LouvorController::class, 'telaCheia'], [AuthMiddleware::class]);
+$router->post('/dashboard/louvores/{id}/anotacao', [LouvorController::class, 'salvarAnotacao'], [AuthMiddleware::class]);
 $router->post('/dashboard/louvores/{id}', [LouvorController::class, 'update'], [AuthMiddleware::class]);
 $router->post('/dashboard/louvores/{id}/excluir', [LouvorController::class, 'destroy'], [AuthMiddleware::class]);
 $router->get('/dashboard/louvores/{id}', [LouvorController::class, 'show'], [AuthMiddleware::class]);
