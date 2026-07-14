@@ -17,6 +17,30 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 81 - 2026-07-14
+
+**Corrigido bug serio: transpor tom as vezes corrompia palavras da
+letra**
+
+- O detector de "linha de acordes" (que decide se transpõe uma linha
+  ou deixa ela como letra) aceitava QUALQUER combinacao de letras/
+  numeros depois da nota como se fosse uma qualidade de acorde valida
+  (m, 7, sus4 etc.). Isso significa que uma linha de letra composta so
+  por palavras que comecam com A-G (bem comum em português: "Deus Fala
+  Comigo", "Graça e Amor", "Bendito", "Coração"...) era interpretada
+  errado como "linha de acordes" e tinha suas palavras mutiladas na
+  transposicao (ex.: "Deus" virando "C#eus").
+- Corrigido nos dois lugares que fazem essa deteccao (o botao "Transpor"
+  do cadastro E a mudanca de tom ao vivo no Modo Culto, que usa a mesma
+  logica portada pro PHP): agora só uma lista fechada de qualidades/
+  extensões de acorde reais (m, 7, 9, dim, sus2, sus4, add9, maj7, 7M,
+  m7b5 etc.) é aceita - qualquer outra coisa é tratada como letra normal
+  e nunca é transposta.
+- Testado com varias linhas de acordes reais (incluindo baixo com
+  inversão, extensões entre parênteses, sustenido/bemol) pra garantir
+  que continuam transpondo certinho, e com linhas de letra em português
+  que antes quebravam, confirmando que agora ficam intactas.
+
 ## Ajuste 80 - 2026-07-14
 
 **Modo Culto: botao X do chat "Avisos rapidos" nao fechava o painel**
