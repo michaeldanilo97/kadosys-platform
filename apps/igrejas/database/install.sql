@@ -640,6 +640,20 @@ CREATE TABLE IF NOT EXISTS louvor_tons_historico (
         FOREIGN KEY (alterado_por) REFERENCES users (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS louvor_anotacoes (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    louvor_id INT UNSIGNED NOT NULL,
+    user_id INT UNSIGNED NOT NULL,
+    texto TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY louvor_anotacoes_unique (louvor_id, user_id),
+    CONSTRAINT louvor_anotacoes_louvor_id_foreign
+        FOREIGN KEY (louvor_id) REFERENCES louvores (id) ON DELETE CASCADE,
+    CONSTRAINT louvor_anotacoes_user_id_foreign
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS repertorios (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(150) NOT NULL,

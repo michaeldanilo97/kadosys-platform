@@ -4,9 +4,16 @@
  * @var array $config
  * @var \Igrejas\Models\Louvor $louvor
  * @var array<int, \Igrejas\Models\LouvorTomHistorico> $historico
+ * @var \Igrejas\Models\LouvorAnotacao|null $minhaAnotacao
+ * @var string|null $anotacaoSuccess
+ * @var string $csrfToken
  */
 $basePath = $config['base_path'] ?? '';
 ?>
+
+<?php if (!empty($anotacaoSuccess)): ?>
+    <div class="crud-alert success"><i class="bi bi-check-circle"></i> <?= htmlspecialchars($anotacaoSuccess, ENT_QUOTES, 'UTF-8') ?></div>
+<?php endif; ?>
 
 <div class="dash-page-head">
     <div>
@@ -65,6 +72,26 @@ $basePath = $config['base_path'] ?? '';
             </p>
         <?php endif; ?>
     </div>
+</div>
+
+<div class="dash-panel" style="margin-top: 1.1rem;">
+    <div class="dash-panel-head">
+        <h2><i class="bi bi-journal-text"></i> Minhas anotações</h2>
+    </div>
+    <p class="crud-text-dim" style="margin-top: -0.4rem; margin-bottom: 0.8rem;">
+        Só você vê isso - use pra lembretes pessoais (ex.: "usar capotraste na 2ª casa", "trocar pra guitarra limpa", "solo começa no segundo refrão").
+    </p>
+    <form method="POST" action="<?= $basePath ?>/dashboard/louvores/<?= $louvor->id ?>/anotacao">
+        <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+        <div class="crud-field crud-field-full">
+            <textarea name="texto" rows="4" class="crud-field-mono" placeholder="Sua anotação pessoal sobre este louvor..."><?= htmlspecialchars($minhaAnotacao->texto ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+        </div>
+        <div class="crud-form-actions">
+            <button type="submit" class="btn-k btn-k-grad">
+                <i class="bi bi-check-lg"></i> Salvar anotação
+            </button>
+        </div>
+    </form>
 </div>
 
 <div class="dash-panel" style="margin-top: 1.1rem;">

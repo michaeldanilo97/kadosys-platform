@@ -10,6 +10,7 @@ use Igrejas\Core\Csrf;
 use Igrejas\Core\Session;
 use Igrejas\Core\TenantResolver;
 use Igrejas\Models\Louvor;
+use Igrejas\Models\LouvorAnotacao;
 use Igrejas\Models\LouvorTomHistorico;
 use Igrejas\Models\Playback;
 
@@ -68,15 +69,50 @@ final class LouvorController extends Controller
             return;
         }
 
+        $user = (new Auth($this->config))->user();
+
         echo $this->view('dashboard.louvores.show', [
             'pageTitle' => $louvor->titulo . ' - KADOSYS Igrejas',
             'activeMenu' => 'louvores',
             'breadcrumb' => ['Dashboard', 'Louvores', $louvor->titulo],
-            'user' => (new Auth($this->config))->user(),
+            'user' => $user,
             'modules' => DashboardController::modules(),
             'louvor' => $louvor,
             'historico' => LouvorTomHistorico::doLouvor($louvor->id),
+            'minhaAnotacao' => $user !== null ? LouvorAnotacao::doUsuario($louvor->id, $user->id) : null,
+            'anotacaoSuccess' => Session::flash('anotacao_success'),
+            'csrfToken' => Csrf::token(),
         ], 'dashboard');
+    }
+
+    /**
+     * Salva (ou apaga, se vazio) a anotacao PESSOAL do usuario logado
+     * nesse louvor - nunca visivel pra outros musicos, ver
+     * LouvorAnotacao. Qualquer musico pode anotar em qualquer louvor,
+     * nao so quem cadastrou.
+     */
+    public function salvarAnotacao(string $id): void
+    {
+        $louvor = Louvor::find((int) $id);
+
+        if (!$louvor) {
+            $this->renderNotFound();
+
+            return;
+        }
+
+        if (!Csrf::verify($this->request->input('_csrf_token'))) {
+            $this->redirect("/dashboard/louvores/{$id}");
+        }
+
+        $user = (new Auth($this->config))->user();
+
+        if ($user !== null) {
+            LouvorAnotacao::salvar($louvor->id, $user->id, (string) $this->request->input('texto', ''));
+            Session::flash('anotacao_success', 'Anotação salva.');
+        }
+
+        $this->redirect("/dashboard/louvores/{$id}");
     }
 
     /**
