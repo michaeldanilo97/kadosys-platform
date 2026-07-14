@@ -83,6 +83,8 @@ $statusLabels = ['planejado' => 'Planejado', 'encerrado' => 'Encerrado'];
                             <td class="actions-col">
                                 <a
                                     href="<?= $basePath ?>/dashboard/louvores/repertorios/<?= $repertorio->id ?>/culto"
+                                    target="_blank"
+                                    rel="noopener"
                                     class="crud-icon-btn"
                                     aria-label="Abrir Modo Culto de <?= htmlspecialchars($repertorio->titulo, ENT_QUOTES, 'UTF-8') ?>"
                                     title="Modo Culto"
