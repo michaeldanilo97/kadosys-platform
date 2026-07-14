@@ -17,6 +17,20 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 93 - 2026-07-14
+
+**Corrige cartões de Permissões quase ilegíveis no tema claro**
+
+- O cartão de cada módulo (Permissões e Configurações > Permissões
+  padrão) usa um fundo escuro semi-transparente e título em branco
+  pensados pro tema escuro - no tema claro isso deixava o nome do
+  módulo (ex.: "Membros", "Financeiro") com contraste muito baixo,
+  quase ilegível, tanto no cartão normal quanto no selecionado.
+- Adicionado fundo e cor de texto próprios pro tema claro (mesmo
+  problema do toggle switch no Ajuste 89 e dos rótulos "Sem
+  acesso/Só visualizar/Editar" no Ajuste 92 - variáveis de cor
+  pensadas só pro tema escuro sendo usadas sem revisar o claro).
+
 ## Ajuste 92 - 2026-07-14
 
 **Permissões: nível "só visualizar" x "editar" por módulo, e perfil padrão pra novos acessos**
