@@ -17,6 +17,7 @@ use Igrejas\Controllers\FaturaController;
 use Igrejas\Controllers\FinanceiroController;
 use Igrejas\Controllers\GrupoController;
 use Igrejas\Controllers\LandingController;
+use Igrejas\Controllers\RecursoController;
 use Igrejas\Controllers\LouvorController;
 use Igrejas\Controllers\MembroController;
 use Igrejas\Controllers\MinisterioController;
@@ -45,6 +46,10 @@ use Igrejas\Core\Middleware\PlataformaAuthMiddleware;
 
 // Landing page publica.
 $router->get('/', [LandingController::class, 'index']);
+
+// Paginas dedicadas de cada modulo no site institucional (recursos e
+// diferenciais detalhados, com screenshot real do sistema).
+$router->get('/recursos/{slug}', [RecursoController::class, 'show']);
 
 // Cadastro publico autoatendido (igreja + administrador + plano),
 // redireciona pro checkout do Mercado Pago. O provisionamento em si
