@@ -446,6 +446,12 @@
   color: #334155;
 }
 
+.crud-field-hint {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin: 0.5rem 0 0;
+}
+
 .crud-field input,
 .crud-field select,
 .crud-field textarea {

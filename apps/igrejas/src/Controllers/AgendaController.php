@@ -75,14 +75,17 @@ final class AgendaController extends Controller
 
     public function create(): void
     {
+        $user = (new Auth($this->config))->user();
+
         echo $this->view('dashboard.agenda.form', [
             'pageTitle' => 'Novo evento - KADOSYS Igrejas',
             'activeMenu' => 'agenda',
             'breadcrumb' => ['Dashboard', 'Agenda', 'Novo'],
-            'user' => (new Auth($this->config))->user(),
+            'user' => $user,
             'modules' => DashboardController::modules(),
             'evento' => null,
             'membrosAtivos' => Membro::allActive(),
+            'podeTornarPublico' => User::podeAcessarModulo($user, 'agenda', User::NIVEL_EDITAR),
             'old' => Session::flash('agenda_old') ?? [],
             'errors' => Session::flash('agenda_errors') ?? [],
             'csrf' => Csrf::field(),
@@ -131,6 +134,7 @@ final class AgendaController extends Controller
             'modules' => DashboardController::modules(),
             'evento' => $evento,
             'membrosAtivos' => Membro::allActive(),
+            'podeTornarPublico' => User::podeAcessarModulo($user, 'agenda', User::NIVEL_EDITAR),
             'old' => Session::flash('agenda_old') ?? [],
             'errors' => Session::flash('agenda_errors') ?? [],
             'csrf' => Csrf::field(),
@@ -160,6 +164,15 @@ final class AgendaController extends Controller
             Session::flash('agenda_errors', $errors);
             Session::flash('agenda_old', $data);
             $this->redirect("/dashboard/agenda/{$id}/editar");
+        }
+
+        // Quem so pode mexer aqui por ser dono de um evento privado (ver
+        // AuthMiddleware::podeGerenciarEventoPrivado, sem nivel "editar"
+        // liberado no modulo) nao pode aproveitar essa brecha pra tornar
+        // o proprio evento publico - isso exigiria nivel "editar" de
+        // verdade, senao vira uma forma de burlar a permissao.
+        if (!User::podeAcessarModulo($user, 'agenda', User::NIVEL_EDITAR)) {
+            $data['visibilidade'] = 'privado';
         }
 
         AgendaEvento::update((int) $id, $data);
