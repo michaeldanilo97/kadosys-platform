@@ -70,8 +70,8 @@ $basePath = $config['base_path'] ?? '';
             <?php foreach ($membros as $membro): ?>
                 <?php
                 $acesso = $acessoPorMembroId[$membro->id] ?? null;
-                $temCargo = $acesso !== null && $acesso['cargo'] !== User::CARGO_MEMBRO;
-                $cargoInfo = $temCargo ? (User::CARGOS[$acesso['cargo']] ?? null) : null;
+                $cargoSlug = $acesso['cargo'] ?? User::CARGO_MEMBRO;
+                $cargoInfo = User::CARGOS[$cargoSlug] ?? User::CARGOS[User::CARGO_MEMBRO];
                 ?>
                 <div class="membro-card">
                     <a href="<?= $basePath ?>/dashboard/membros/<?= $membro->id ?>" class="membro-card-link">
@@ -82,25 +82,21 @@ $basePath = $config['base_path'] ?? '';
                                 <span class="membro-card-inicial"><?= htmlspecialchars(mb_strtoupper(mb_substr($membro->nome, 0, 1)), ENT_QUOTES, 'UTF-8') ?></span>
                             <?php endif; ?>
 
-                            <?php if ($cargoInfo !== null): ?>
-                                <span class="membro-card-badge" title="<?= htmlspecialchars($cargoInfo['label'], ENT_QUOTES, 'UTF-8') ?>">
-                                    <?php if ($acesso['cargo'] === User::CARGO_MUSICO && $acesso['instrumento'] !== null && isset(User::INSTRUMENTOS[$acesso['instrumento']])): ?>
-                                        <?= User::INSTRUMENTOS[$acesso['instrumento']]['emoji'] ?>
-                                    <?php else: ?>
-                                        <i class="bi <?= htmlspecialchars($cargoInfo['icon'], ENT_QUOTES, 'UTF-8') ?>"></i>
-                                    <?php endif; ?>
-                                </span>
-                            <?php endif; ?>
+                            <span class="membro-card-badge" title="<?= htmlspecialchars($cargoInfo['label'], ENT_QUOTES, 'UTF-8') ?>">
+                                <?php if ($cargoSlug === User::CARGO_MUSICO && $acesso['instrumento'] !== null && isset(User::INSTRUMENTOS[$acesso['instrumento']])): ?>
+                                    <?= User::INSTRUMENTOS[$acesso['instrumento']]['emoji'] ?>
+                                <?php else: ?>
+                                    <i class="bi <?= htmlspecialchars($cargoInfo['icon'], ENT_QUOTES, 'UTF-8') ?>"></i>
+                                <?php endif; ?>
+                            </span>
                         </div>
                         <div class="membro-card-nome"><?= htmlspecialchars($membro->nome, ENT_QUOTES, 'UTF-8') ?></div>
-                        <?php if ($cargoInfo !== null): ?>
-                            <div class="membro-card-cargo">
-                                <?= htmlspecialchars($cargoInfo['label'], ENT_QUOTES, 'UTF-8') ?>
-                                <?php if ($acesso['cargo'] === User::CARGO_MUSICO && $acesso['instrumento'] !== null && isset(User::INSTRUMENTOS[$acesso['instrumento']])): ?>
-                                    &middot; <?= htmlspecialchars(User::INSTRUMENTOS[$acesso['instrumento']]['label'], ENT_QUOTES, 'UTF-8') ?>
-                                <?php endif; ?>
-                            </div>
-                        <?php endif; ?>
+                        <div class="membro-card-cargo">
+                            <?= htmlspecialchars($cargoInfo['label'], ENT_QUOTES, 'UTF-8') ?>
+                            <?php if ($cargoSlug === User::CARGO_MUSICO && $acesso['instrumento'] !== null && isset(User::INSTRUMENTOS[$acesso['instrumento']])): ?>
+                                &middot; <?= htmlspecialchars(User::INSTRUMENTOS[$acesso['instrumento']]['label'], ENT_QUOTES, 'UTF-8') ?>
+                            <?php endif; ?>
+                        </div>
                     </a>
 
                     <span class="status-badge membro-card-status <?= $membro->status === 'ativo' ? 'is-ativo' : 'is-inativo' ?>">
