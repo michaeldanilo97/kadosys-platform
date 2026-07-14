@@ -242,3 +242,31 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
         </div>
     </form>
 </div>
+
+<div class="dash-panel">
+    <div class="dash-panel-head">
+        <h2><i class="bi bi-gift"></i> Aniversariantes</h2>
+    </div>
+    <p class="dash-page-subtitle" style="margin-bottom: 1.4rem;">
+        Todo dia, quem faz aniversário e tem e-mail cadastrado recebe automaticamente uma mensagem de parabéns.
+        Personalize o texto abaixo - use <code>{nome}</code> onde quiser que apareça o nome do aniversariante, e
+        <code>{igreja}</code> para o nome da igreja.
+    </p>
+
+    <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/mensagem-aniversario" class="crud-form">
+        <?= $csrf ?>
+        <div class="crud-field">
+            <label for="mensagem_aniversario">Mensagem do e-mail de parabéns</label>
+            <textarea
+                id="mensagem_aniversario"
+                name="mensagem_aniversario"
+                rows="3"
+                placeholder="<?= htmlspecialchars(\Igrejas\Models\ConfiguracaoIgreja::MENSAGEM_ANIVERSARIO_PADRAO, ENT_QUOTES, 'UTF-8') ?>"
+            ><?= htmlspecialchars($configuracao->mensagemAniversario ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+            <span class="auth-field-hint">Deixe em branco para usar a mensagem padrão mostrada acima como exemplo.</span>
+        </div>
+        <div class="crud-form-actions" style="justify-content: flex-start;">
+            <button type="submit" class="btn-k btn-k-grad"><i class="bi bi-check-lg"></i> Salvar</button>
+        </div>
+    </form>
+</div>

@@ -19,6 +19,7 @@ $local = $old['local'] ?? $evento->local ?? '';
 $responsavelMembroId = $old['responsavel_membro_id'] ?? $evento->responsavelMembroId ?? '';
 $descricao = $old['descricao'] ?? $evento->descricao ?? '';
 $status = $old['status'] ?? $evento->status ?? 'agendado';
+$visibilidade = $old['visibilidade'] ?? $evento->visibilidade ?? 'publico';
 
 // Inputs type="time" esperam HH:MM; a coluna vem como HH:MM:SS do banco.
 if ($horaInicio !== '' && strlen($horaInicio) > 5) {
@@ -118,6 +119,19 @@ $actionUrl = $isEdit
                 <div class="crud-field crud-field-full">
                     <label for="descricao">Descrição</label>
                     <textarea id="descricao" name="descricao" rows="3" placeholder="Detalhes adicionais (opcional)"><?= htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8') ?></textarea>
+                </div>
+                <div class="crud-field crud-field-full">
+                    <label>Quem pode ver este evento?</label>
+                    <div style="display: flex; gap: 1.4rem; margin-top: 0.3rem;">
+                        <label style="display: flex; align-items: center; gap: 0.4rem; font-weight: 400;">
+                            <input type="radio" name="visibilidade" value="publico" <?= $visibilidade === 'publico' ? 'checked' : '' ?>>
+                            Todo mundo (aparece no calendário de todos)
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.4rem; font-weight: 400;">
+                            <input type="radio" name="visibilidade" value="privado" <?= $visibilidade === 'privado' ? 'checked' : '' ?>>
+                            Só eu (compromisso pessoal)
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>

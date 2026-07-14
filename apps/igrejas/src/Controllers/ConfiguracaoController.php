@@ -377,6 +377,23 @@ final class ConfiguracaoController extends Controller
         $this->redirect('/dashboard/configuracoes');
     }
 
+    /**
+     * Mensagem personalizada do e-mail automatico de aniversario (ver
+     * cron/enviar_parabens_aniversario.php e
+     * ConfiguracaoIgreja::MENSAGEM_ANIVERSARIO_PADRAO).
+     */
+    public function atualizarMensagemAniversario(): void
+    {
+        if (Csrf::verify($this->request->input('_csrf_token'))) {
+            $mensagem = trim((string) $this->request->input('mensagem_aniversario', ''));
+            ConfiguracaoIgreja::atualizarMensagemAniversario($mensagem !== '' ? $mensagem : null);
+
+            Session::flash('config_success', 'Mensagem de aniversário atualizada.');
+        }
+
+        $this->redirect('/dashboard/configuracoes');
+    }
+
     private function removerArquivosLogo(string $destinoDir): void
     {
         foreach (glob($destinoDir . '/logo.*') ?: [] as $arquivoAntigo) {

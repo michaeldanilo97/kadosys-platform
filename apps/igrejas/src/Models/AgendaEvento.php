@@ -25,20 +25,54 @@ final class AgendaEvento
         public readonly ?string $responsavelNome,
         public readonly ?string $descricao,
         public readonly string $status,
+        public readonly string $visibilidade,
+        public readonly ?int $criadoPorUserId,
         public readonly string $createdAt,
     ) {
+    }
+
+    public function ehPrivado(): bool
+    {
+        return $this->visibilidade === 'privado';
+    }
+
+    public function podeSerVistoPor(int $userId): bool
+    {
+        return $this->visibilidade === 'publico' || $this->criadoPorUserId === $userId;
+    }
+
+    /**
+     * Eventos publicos (visiveis pra todo mundo) mais os privados do
+     * proprio usuario logado, dentro de um mes (YYYY-MM) - usado na
+     * tela de calendario.
+     *
+     * @return array<int, self>
+     */
+    public static function noMesVisiveisPara(string $mes, int $userId): array
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT ae.*, me.nome AS responsavel_nome
+             FROM agenda_eventos ae
+             LEFT JOIN membros me ON me.id = ae.responsavel_membro_id
+             WHERE DATE_FORMAT(ae.data, '%Y-%m') = :mes
+               AND (ae.visibilidade = 'publico' OR ae.criado_por_user_id = :user_id)
+             ORDER BY ae.data ASC, ae.hora_inicio ASC"
+        );
+        $stmt->execute(['mes' => $mes, 'user_id' => $userId]);
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
     }
 
     /**
      * @return array{items: array<int, self>, total: int, page: int, perPage: int, lastPage: int}
      */
-    public static function paginate(int $page, int $perPage, string $search = ''): array
+    public static function paginate(int $page, int $perPage, string $search, int $userId): array
     {
         $page = max(1, $page);
         $offset = ($page - 1) * $perPage;
 
-        $where = '';
-        $params = [];
+        $condicoes = ["(ae.visibilidade = 'publico' OR ae.criado_por_user_id = :user_id)"];
+        $params = ['user_id' => $userId];
 
         if ($search !== '') {
             // Parametros nomeados repetidos na mesma query nao sao
@@ -46,10 +80,12 @@ final class AgendaEvento
             // (PDO::ATTR_EMULATE_PREPARES => false, ver Database.php) -
             // cada ocorrencia de LIKE precisa do seu proprio placeholder,
             // mesmo vinculado ao mesmo valor.
-            $where = 'WHERE ae.titulo LIKE :search_titulo OR ae.local LIKE :search_local';
+            $condicoes[] = '(ae.titulo LIKE :search_titulo OR ae.local LIKE :search_local)';
             $params['search_titulo'] = '%' . $search . '%';
             $params['search_local'] = '%' . $search . '%';
         }
+
+        $where = 'WHERE ' . implode(' AND ', $condicoes);
 
         $totalStmt = Database::connection()->prepare("SELECT COUNT(*) FROM agenda_eventos ae {$where}");
         $totalStmt->execute($params);
@@ -119,15 +155,15 @@ final class AgendaEvento
     /**
      * @param array<string, mixed> $data
      */
-    public static function create(array $data): int
+    public static function create(array $data, ?int $criadoPorUserId): int
     {
         $stmt = Database::connection()->prepare(
             'INSERT INTO agenda_eventos
-                (titulo, tipo, data, hora_inicio, hora_fim, local, responsavel_membro_id, descricao, status, created_at)
+                (titulo, tipo, data, hora_inicio, hora_fim, local, responsavel_membro_id, descricao, status, visibilidade, criado_por_user_id, created_at)
              VALUES
-                (:titulo, :tipo, :data, :hora_inicio, :hora_fim, :local, :responsavel_membro_id, :descricao, :status, NOW())'
+                (:titulo, :tipo, :data, :hora_inicio, :hora_fim, :local, :responsavel_membro_id, :descricao, :status, :visibilidade, :criado_por_user_id, NOW())'
         );
-        $stmt->execute(self::bindings($data));
+        $stmt->execute(self::bindings($data) + ['criado_por_user_id' => $criadoPorUserId]);
 
         return (int) Database::connection()->lastInsertId();
     }
@@ -141,7 +177,7 @@ final class AgendaEvento
             'UPDATE agenda_eventos SET
                 titulo = :titulo, tipo = :tipo, data = :data, hora_inicio = :hora_inicio,
                 hora_fim = :hora_fim, local = :local, responsavel_membro_id = :responsavel_membro_id,
-                descricao = :descricao, status = :status
+                descricao = :descricao, status = :status, visibilidade = :visibilidade
              WHERE id = :id'
         );
         $stmt->execute(self::bindings($data) + ['id' => $id]);
@@ -190,6 +226,7 @@ final class AgendaEvento
             'status' => in_array($data['status'] ?? null, ['agendado', 'realizado', 'cancelado'], true)
                 ? $data['status']
                 : 'agendado',
+            'visibilidade' => ($data['visibilidade'] ?? null) === 'privado' ? 'privado' : 'publico',
         ];
     }
 
@@ -214,6 +251,8 @@ final class AgendaEvento
             responsavelNome: $row['responsavel_nome'] ?? null,
             descricao: $row['descricao'],
             status: (string) $row['status'],
+            visibilidade: (string) ($row['visibilidade'] ?? 'publico'),
+            criadoPorUserId: $row['criado_por_user_id'] !== null ? (int) $row['criado_por_user_id'] : null,
             createdAt: (string) $row['created_at'],
         );
     }

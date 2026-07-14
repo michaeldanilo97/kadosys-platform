@@ -242,6 +242,21 @@ final class Tenant
     }
 
     /**
+     * Todos os tenants ativos, independente do metodo de pagamento -
+     * usado por crons que precisam varrer toda igreja provisionada
+     * automaticamente (ex.: e-mail de aniversario).
+     *
+     * @return array<int, self>
+     */
+    public static function ativas(): array
+    {
+        $stmt = Database::central()->prepare(self::SELECT_BASE . " WHERE status = 'ativo'");
+        $stmt->execute();
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /**
      * Todas as igrejas provisionadas, mais recentes primeiro - usada
      * pelo painel administrativo da plataforma (ver PlataformaController).
      *

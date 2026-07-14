@@ -14,6 +14,7 @@ $basePath = $config['base_path'] ?? '';
 $statusLabels = ['agendado' => 'Agendado', 'realizado' => 'Realizado', 'cancelado' => 'Cancelado'];
 $tipoLabels = ['evento' => 'Evento', 'reuniao' => 'Reunião', 'reserva' => 'Reserva de espaço', 'outro' => 'Outro'];
 ?>
+<link rel="stylesheet" href="<?= $basePath ?>/assets/css/agenda-calendario.css?v=<?= \Igrejas\Core\View::assetVersion('assets/css/agenda-calendario.css') ?>">
 
 <div class="dash-page-head">
     <div>
@@ -33,8 +34,13 @@ $tipoLabels = ['evento' => 'Evento', 'reuniao' => 'Reunião', 'reserva' => 'Rese
     <div class="crud-alert success"><i class="bi bi-check-circle"></i> <?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8') ?></div>
 <?php endif; ?>
 
+<div class="agenda-tabs">
+    <a href="<?= $basePath ?>/dashboard/agenda" class="agenda-tab"><i class="bi bi-calendar3"></i> Calendário</a>
+    <a href="<?= $basePath ?>/dashboard/agenda/lista" class="agenda-tab is-active"><i class="bi bi-list-ul"></i> Lista</a>
+</div>
+
 <div class="dash-panel">
-    <form method="GET" action="<?= $basePath ?>/dashboard/agenda" class="crud-search">
+    <form method="GET" action="<?= $basePath ?>/dashboard/agenda/lista" class="crud-search">
         <i class="bi bi-search"></i>
         <input
             type="search"
@@ -43,7 +49,7 @@ $tipoLabels = ['evento' => 'Evento', 'reuniao' => 'Reunião', 'reserva' => 'Rese
             placeholder="Buscar por título ou local..."
         >
         <?php if ($search !== ''): ?>
-            <a href="<?= $basePath ?>/dashboard/agenda" class="crud-search-clear" aria-label="Limpar busca">
+            <a href="<?= $basePath ?>/dashboard/agenda/lista" class="crud-search-clear" aria-label="Limpar busca">
                 <i class="bi bi-x-lg"></i>
             </a>
         <?php endif; ?>
@@ -84,9 +90,14 @@ $tipoLabels = ['evento' => 'Evento', 'reuniao' => 'Reunião', 'reserva' => 'Rese
                             <td>
                                 <div class="crud-person">
                                     <span class="crud-avatar">
-                                        <i class="bi bi-calendar3" style="font-size: 0.95rem;"></i>
+                                        <i class="bi <?= $evento->ehPrivado() ? 'bi-lock-fill' : 'bi-calendar3' ?>" style="font-size: 0.95rem;"></i>
                                     </span>
-                                    <span><?= htmlspecialchars($evento->titulo, ENT_QUOTES, 'UTF-8') ?></span>
+                                    <span>
+                                        <?= htmlspecialchars($evento->titulo, ENT_QUOTES, 'UTF-8') ?>
+                                        <?php if ($evento->ehPrivado()): ?>
+                                            <span class="crud-text-dim" style="font-size: 0.72rem;">(só você vê)</span>
+                                        <?php endif; ?>
+                                    </span>
                                 </div>
                             </td>
                             <td><?= $tipoLabels[$evento->tipo] ?? $evento->tipo ?></td>
@@ -139,7 +150,7 @@ $tipoLabels = ['evento' => 'Evento', 'reuniao' => 'Reunião', 'reserva' => 'Rese
             <div class="crud-pagination">
                 <?php for ($i = 1; $i <= $lastPage; $i++): ?>
                     <a
-                        href="<?= $basePath ?>/dashboard/agenda?pagina=<?= $i ?><?= $search !== '' ? '&busca=' . urlencode($search) : '' ?>"
+                        href="<?= $basePath ?>/dashboard/agenda/lista?pagina=<?= $i ?><?= $search !== '' ? '&busca=' . urlencode($search) : '' ?>"
                         class="<?= $i === $page ? 'active' : '' ?>"
                     ><?= $i ?></a>
                 <?php endfor; ?>

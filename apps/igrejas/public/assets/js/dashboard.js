@@ -11,6 +11,7 @@
     initTopbarDropdowns();
     initCopiarLink();
     initPixMensagemForm();
+    initCultoRecorrencia();
   });
 
   function initTheme() {
@@ -244,6 +245,26 @@
       radio.addEventListener('change', atualizar);
     });
 
+    atualizar();
+  }
+
+  /**
+   * Cadastro de culto: o campo "Repetir ate" so faz sentido quando
+   * "Toda semana" esta selecionado no select de recorrencia.
+   */
+  function initCultoRecorrencia() {
+    var select = document.querySelector('[data-culto-recorrencia]');
+    var wrap = document.querySelector('[data-culto-repetir-ate-wrap]');
+
+    if (!select || !wrap) {
+      return;
+    }
+
+    function atualizar() {
+      wrap.hidden = select.value !== 'semanal';
+    }
+
+    select.addEventListener('change', atualizar);
     atualizar();
   }
 

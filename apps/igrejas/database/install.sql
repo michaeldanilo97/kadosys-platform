@@ -194,6 +194,7 @@ CREATE TABLE IF NOT EXISTS configuracoes_igreja (
     pix_mensagem_versiculo_inicio SMALLINT UNSIGNED NULL,
     pix_mensagem_versiculo_fim SMALLINT UNSIGNED NULL,
     cadastro_membros_habilitado TINYINT(1) NOT NULL DEFAULT 0,
+    mensagem_aniversario TEXT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -503,12 +504,31 @@ CREATE TABLE IF NOT EXISTS agenda_eventos (
     responsavel_membro_id INT UNSIGNED NULL,
     descricao TEXT NULL,
     status ENUM('agendado', 'realizado', 'cancelado') NOT NULL DEFAULT 'agendado',
+    visibilidade ENUM('publico', 'privado') NOT NULL DEFAULT 'publico',
+    criado_por_user_id INT UNSIGNED NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     KEY agenda_eventos_data_index (data),
     KEY agenda_eventos_status_index (status),
     CONSTRAINT agenda_eventos_responsavel_membro_id_foreign
-        FOREIGN KEY (responsavel_membro_id) REFERENCES membros (id) ON DELETE SET NULL
+        FOREIGN KEY (responsavel_membro_id) REFERENCES membros (id) ON DELETE SET NULL,
+    CONSTRAINT agenda_eventos_criado_por_user_id_foreign
+        FOREIGN KEY (criado_por_user_id) REFERENCES users (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ----------------------------------------------------------------------------
+-- 044 - Aniversariantes: controle de envio do e-mail de parabens
+-- ----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS aniversario_envios (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    membro_id INT UNSIGNED NOT NULL,
+    ano SMALLINT UNSIGNED NOT NULL,
+    enviado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY aniversario_envios_unique (membro_id, ano),
+    CONSTRAINT aniversario_envios_membro_id_foreign
+        FOREIGN KEY (membro_id) REFERENCES membros (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 

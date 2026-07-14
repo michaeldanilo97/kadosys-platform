@@ -96,6 +96,20 @@ $disponiveisParaPresenca = array_filter(
                     <label for="descricao">Descrição</label>
                     <textarea id="descricao" name="descricao" rows="3" placeholder="Tema, pregador ou observações (opcional)"><?= htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8') ?></textarea>
                 </div>
+                <?php if (!$isEdit): ?>
+                    <div class="crud-field">
+                        <label for="recorrencia">Repetição</label>
+                        <select id="recorrencia" name="recorrencia" data-culto-recorrencia>
+                            <option value="nenhuma" selected>Não repetir</option>
+                            <option value="semanal">Toda semana (mesmo dia e horário)</option>
+                        </select>
+                    </div>
+                    <div class="crud-field" data-culto-repetir-ate-wrap hidden>
+                        <label for="repetir_ate">Repetir até</label>
+                        <input type="date" id="repetir_ate" name="repetir_ate">
+                        <span class="auth-field-hint">Um culto é criado toda semana nessa mesma data/horário, até a data escolhida aqui.</span>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
 
