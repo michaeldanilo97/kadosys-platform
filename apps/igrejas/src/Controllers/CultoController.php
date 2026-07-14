@@ -20,6 +20,11 @@ final class CultoController extends Controller
 {
     private const PER_PAGE = 15;
 
+    // Limite de seguranca pra recorrencia semanal (ver store()) - evita
+    // gerar uma quantidade absurda de cultos se alguem digitar uma data
+    // limite muito distante por engano. 60 semanas cobre mais de um ano.
+    private const MAX_OCORRENCIAS_RECORRENCIA = 60;
+
     public function index(): void
     {
         $page = max(1, (int) $this->request->input('pagina', 1));
@@ -77,9 +82,51 @@ final class CultoController extends Controller
         }
 
         Culto::create($data);
+        $criados = 1 + $this->criarOcorrenciasRecorrentes($data);
 
-        Session::flash('culto_success', 'Culto cadastrado com sucesso.');
+        Session::flash(
+            'culto_success',
+            $criados > 1 ? "Culto cadastrado - {$criados} datas geradas (recorrência semanal)." : 'Culto cadastrado com sucesso.'
+        );
         $this->redirect('/dashboard/cultos');
+    }
+
+    /**
+     * Quando "Repetir toda semana" e marcado no cadastro, gera cultos
+     * independentes (mesmo titulo/horario/local) toda semana a partir
+     * da data informada ate a data limite escolhida - cada ocorrencia
+     * fica com sua propria linha (e sua propria lista de frequencia),
+     * sem vinculo entre elas.
+     *
+     * @param array<string, mixed> $data
+     */
+    private function criarOcorrenciasRecorrentes(array $data): int
+    {
+        $recorrencia = (string) $this->request->input('recorrencia', 'nenhuma');
+        $repetirAte = trim((string) $this->request->input('repetir_ate', ''));
+
+        if ($recorrencia !== 'semanal' || $repetirAte === '' || \DateTime::createFromFormat('Y-m-d', $repetirAte) === false) {
+            return 0;
+        }
+
+        $dataLimite = new \DateTime($repetirAte);
+        $proxima = (new \DateTime((string) $data['data']))->modify('+1 week');
+        $geradas = 0;
+
+        while ($proxima <= $dataLimite && $geradas < self::MAX_OCORRENCIAS_RECORRENCIA) {
+            Culto::create([
+                'titulo' => $data['titulo'],
+                'data' => $proxima->format('Y-m-d'),
+                'hora' => $data['hora'] ?? null,
+                'local' => $data['local'] ?? null,
+                'descricao' => $data['descricao'] ?? null,
+                'status' => 'agendado',
+            ]);
+            $proxima->modify('+1 week');
+            $geradas++;
+        }
+
+        return $geradas;
     }
 
     public function edit(string $id): void

@@ -17,6 +17,45 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 91 - 2026-07-14
+
+**Novo módulo Agenda: calendário com cultos, eventos e aniversariantes**
+
+- A tela de Agenda agora abre num calendário mensal (antiga listagem
+  continua disponível na aba "Lista") mostrando, no mesmo lugar: os
+  cultos cadastrados, os eventos/reuniões/reservas do módulo Agenda e
+  quem faz aniversário naquele mês - cada tipo com uma cor própria e
+  legenda no rodapé.
+- Evento da Agenda agora tem visibilidade: "Todo mundo" (como sempre
+  foi - aparece pra qualquer usuário, ex.: ensaio do grupo marcado
+  pelo admin/líder) ou "Só eu" (compromisso pessoal, ex.: uma visita -
+  só quem cadastrou vê, tanto no calendário quanto na lista; tentar
+  abrir a URL de edição de um evento privado de outra pessoa dá 404,
+  mesmo pra outro usuário logado).
+- Cadastro de culto ganhou opção de recorrência: marcando "Toda semana"
+  e escolhendo até quando repetir, o sistema já cria um culto
+  independente pra cada semana automaticamente (limite de segurança de
+  60 ocorrências), evitando cadastrar manualmente toda semana um culto
+  fixo (ex.: domingo às 18h).
+- Aniversariantes deixam de ser só uma lista: todo dia, quem faz
+  aniversário e tem e-mail cadastrado recebe automaticamente um e-mail
+  de parabéns (novo cron `enviar_parabens_aniversario.php`, mesmo
+  padrão dos crons de Pix já existentes - varre toda igreja
+  provisionada automaticamente). A mensagem é personalizável em
+  Configurações > Aniversariantes, com os marcadores `{nome}` e
+  `{igreja}`; sem personalização, usa uma mensagem padrão. Uma tabela
+  de controle (`aniversario_envios`) garante no máximo um e-mail por
+  membro por ano, mesmo se o cron rodar mais de uma vez no mesmo dia -
+  e só marca como enviado quando o envio realmente funciona (senão
+  tenta de novo no dia seguinte).
+- **Importante**: cadastrar o novo cron no "Cron Jobs" do cPanel, ex.:
+  `php /home/kadosys1/apps/igrejas/cron/enviar_parabens_aniversario.php`
+  rodando uma vez por dia (sugestão: de manhã, ex. 7h).
+- Migração 044 (rodar no banco de cada igreja): adiciona
+  `visibilidade`/`criado_por_user_id` em `agenda_eventos`,
+  `mensagem_aniversario` em `configuracoes_igreja` e cria a tabela
+  `aniversario_envios`.
+
 ## Ajuste 90 - 2026-07-14
 
 **Modo Culto continua funcionando se a internet cair (modo offline de emergência)**

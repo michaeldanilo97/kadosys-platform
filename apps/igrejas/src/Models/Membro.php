@@ -187,6 +187,42 @@ final class Membro
     }
 
     /**
+     * Aniversariantes de um mes (1-12), ordenados pelo dia - usado na
+     * tela de calendario (modulo Agenda).
+     *
+     * @return array<int, self>
+     */
+    public static function aniversariantesNoMes(int $mes): array
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT * FROM membros
+             WHERE status = 'ativo' AND data_nascimento IS NOT NULL AND MONTH(data_nascimento) = :mes
+             ORDER BY DAY(data_nascimento) ASC"
+        );
+        $stmt->execute(['mes' => $mes]);
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /**
+     * Aniversariantes de hoje, usado pelo cron que envia o e-mail
+     * automatico de parabens (ver cron/enviar_parabens_aniversario.php).
+     *
+     * @return array<int, self>
+     */
+    public static function aniversariantesHoje(): array
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT * FROM membros
+             WHERE status = 'ativo' AND data_nascimento IS NOT NULL
+               AND MONTH(data_nascimento) = MONTH(CURDATE()) AND DAY(data_nascimento) = DAY(CURDATE())"
+        );
+        $stmt->execute();
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /**
      * @param array<string, mixed> $data
      * @return array<string, mixed>
      */

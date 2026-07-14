@@ -163,8 +163,11 @@ $router->get('/dashboard/louvores/{id}', [LouvorController::class, 'show'], [Aut
 
 // Modulo Agenda. Mesmo motivo: precisa vir antes do catch-all. Sem
 // PlanoMiddleware - Agenda esta liberada em todos os planos, mesmo
-// nivel de acesso de Membros/Cultos.
-$router->get('/dashboard/agenda', [AgendaController::class, 'index'], [AuthMiddleware::class]);
+// nivel de acesso de Membros/Cultos. O calendario (cultos + eventos +
+// aniversariantes do mes) e a tela principal; a lista antiga continua
+// disponivel em /lista pra gerenciar os eventos cadastrados.
+$router->get('/dashboard/agenda', [AgendaController::class, 'calendario'], [AuthMiddleware::class]);
+$router->get('/dashboard/agenda/lista', [AgendaController::class, 'index'], [AuthMiddleware::class]);
 $router->get('/dashboard/agenda/novo', [AgendaController::class, 'create'], [AuthMiddleware::class]);
 $router->post('/dashboard/agenda', [AgendaController::class, 'store'], [AuthMiddleware::class]);
 $router->get('/dashboard/agenda/{id}/editar', [AgendaController::class, 'edit'], [AuthMiddleware::class]);
@@ -234,6 +237,7 @@ $router->post('/dashboard/configuracoes/logo/remover', [ConfiguracaoController::
 $router->post('/dashboard/configuracoes/cadastro-membros', [ConfiguracaoController::class, 'atualizarCadastroMembros'], [AuthMiddleware::class]);
 $router->post('/dashboard/configuracoes/chave-pix', [ConfiguracaoController::class, 'atualizarChavePix'], [AuthMiddleware::class]);
 $router->post('/dashboard/configuracoes/mensagem-pix', [ConfiguracaoController::class, 'atualizarMensagemPix'], [AuthMiddleware::class]);
+$router->post('/dashboard/configuracoes/mensagem-aniversario', [ConfiguracaoController::class, 'atualizarMensagemAniversario'], [AuthMiddleware::class]);
 
 // Assinatura recorrente do plano via Mercado Pago (Checkout Pro). Sem
 // PlanoMiddleware pelo mesmo motivo das rotas de Configuracoes acima.

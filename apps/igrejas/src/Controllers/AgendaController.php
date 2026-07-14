@@ -9,28 +9,59 @@ use Igrejas\Core\Controller;
 use Igrejas\Core\Csrf;
 use Igrejas\Core\Session;
 use Igrejas\Models\AgendaEvento;
+use Igrejas\Models\Culto;
 use Igrejas\Models\Membro;
+use Igrejas\Models\User;
 
 /**
- * Controller do modulo Agenda: eventos, reunioes e reservas de espaco
- * da igreja, com listagem com busca e paginacao, edicao e remocao.
+ * Controller do modulo Agenda: calendario mensal (cultos + eventos +
+ * aniversariantes) e a listagem/CRUD de eventos, reunioes e reservas
+ * de espaco da igreja.
+ *
+ * Um evento pode ser publico (visivel pra todo mundo, ex.: ensaio do
+ * grupo) ou privado (so quem criou ve, ex.: um compromisso pessoal) -
+ * ver AgendaEvento::podeSerVistoPor().
  */
 final class AgendaController extends Controller
 {
     private const PER_PAGE = 15;
 
+    public function calendario(): void
+    {
+        $user = (new Auth($this->config))->user();
+        $mesParam = trim((string) $this->request->input('mes', ''));
+        $referencia = \DateTime::createFromFormat('Y-m', $mesParam) ?: new \DateTime('first day of this month');
+        $mes = $referencia->format('Y-m');
+
+        echo $this->view('dashboard.agenda.calendario', [
+            'pageTitle' => 'Agenda - KADOSYS Igrejas',
+            'activeMenu' => 'agenda',
+            'breadcrumb' => ['Dashboard', 'Agenda'],
+            'user' => $user,
+            'modules' => DashboardController::modules(),
+            'mesReferencia' => $referencia,
+            'mesAnterior' => (clone $referencia)->modify('-1 month')->format('Y-m'),
+            'mesProximo' => (clone $referencia)->modify('+1 month')->format('Y-m'),
+            'cultos' => Culto::noMes($mes),
+            'eventos' => AgendaEvento::noMesVisiveisPara($mes, $user->id),
+            'aniversariantes' => Membro::aniversariantesNoMes((int) $referencia->format('n')),
+            'success' => Session::flash('agenda_success'),
+        ], 'dashboard');
+    }
+
     public function index(): void
     {
+        $user = (new Auth($this->config))->user();
         $page = max(1, (int) $this->request->input('pagina', 1));
         $search = trim((string) $this->request->input('busca', ''));
 
-        $result = AgendaEvento::paginate($page, self::PER_PAGE, $search);
+        $result = AgendaEvento::paginate($page, self::PER_PAGE, $search, $user->id);
 
         echo $this->view('dashboard.agenda.index', [
             'pageTitle' => 'Agenda - KADOSYS Igrejas',
             'activeMenu' => 'agenda',
-            'breadcrumb' => ['Dashboard', 'Agenda'],
-            'user' => (new Auth($this->config))->user(),
+            'breadcrumb' => ['Dashboard', 'Agenda', 'Lista'],
+            'user' => $user,
             'modules' => DashboardController::modules(),
             'eventos' => $result['items'],
             'total' => $result['total'],
@@ -65,7 +96,7 @@ final class AgendaController extends Controller
             $this->redirect('/dashboard/agenda/novo');
         }
 
-        $data = $this->request->only(['titulo', 'tipo', 'data', 'hora_inicio', 'hora_fim', 'local', 'responsavel_membro_id', 'descricao', 'status']);
+        $data = $this->request->only(['titulo', 'tipo', 'data', 'hora_inicio', 'hora_fim', 'local', 'responsavel_membro_id', 'descricao', 'status', 'visibilidade']);
         $errors = $this->validate($data);
 
         if ($errors !== []) {
@@ -74,7 +105,8 @@ final class AgendaController extends Controller
             $this->redirect('/dashboard/agenda/novo');
         }
 
-        AgendaEvento::create($data);
+        $user = (new Auth($this->config))->user();
+        AgendaEvento::create($data, $user->id);
 
         Session::flash('agenda_success', 'Evento cadastrado com sucesso.');
         $this->redirect('/dashboard/agenda');
@@ -83,8 +115,9 @@ final class AgendaController extends Controller
     public function edit(string $id): void
     {
         $evento = AgendaEvento::find((int) $id);
+        $user = (new Auth($this->config))->user();
 
-        if (!$evento) {
+        if (!$evento || !$this->podeGerenciar($evento, $user)) {
             $this->renderNotFound();
 
             return;
@@ -94,7 +127,7 @@ final class AgendaController extends Controller
             'pageTitle' => 'Editar ' . $evento->titulo . ' - KADOSYS Igrejas',
             'activeMenu' => 'agenda',
             'breadcrumb' => ['Dashboard', 'Agenda', $evento->titulo],
-            'user' => (new Auth($this->config))->user(),
+            'user' => $user,
             'modules' => DashboardController::modules(),
             'evento' => $evento,
             'membrosAtivos' => Membro::allActive(),
@@ -106,7 +139,10 @@ final class AgendaController extends Controller
 
     public function update(string $id): void
     {
-        if (!AgendaEvento::find((int) $id)) {
+        $evento = AgendaEvento::find((int) $id);
+        $user = (new Auth($this->config))->user();
+
+        if (!$evento || !$this->podeGerenciar($evento, $user)) {
             $this->renderNotFound();
 
             return;
@@ -117,7 +153,7 @@ final class AgendaController extends Controller
             $this->redirect("/dashboard/agenda/{$id}/editar");
         }
 
-        $data = $this->request->only(['titulo', 'tipo', 'data', 'hora_inicio', 'hora_fim', 'local', 'responsavel_membro_id', 'descricao', 'status']);
+        $data = $this->request->only(['titulo', 'tipo', 'data', 'hora_inicio', 'hora_fim', 'local', 'responsavel_membro_id', 'descricao', 'status', 'visibilidade']);
         $errors = $this->validate($data);
 
         if ($errors !== []) {
@@ -134,12 +170,29 @@ final class AgendaController extends Controller
 
     public function destroy(string $id): void
     {
-        if (Csrf::verify($this->request->input('_csrf_token'))) {
+        $evento = AgendaEvento::find((int) $id);
+        $user = (new Auth($this->config))->user();
+
+        if ($evento && $this->podeGerenciar($evento, $user) && Csrf::verify($this->request->input('_csrf_token'))) {
             AgendaEvento::delete((int) $id);
             Session::flash('agenda_success', 'Evento removido com sucesso.');
         }
 
         $this->redirect('/dashboard/agenda');
+    }
+
+    /**
+     * Um evento privado so pode ser editado/excluido por quem criou (ou
+     * por um admin) - eventos publicos continuam abertos pra qualquer
+     * usuario logado gerenciar, como sempre foi neste modulo.
+     */
+    private function podeGerenciar(AgendaEvento $evento, User $user): bool
+    {
+        if (!$evento->ehPrivado()) {
+            return true;
+        }
+
+        return $evento->criadoPorUserId === $user->id || $user->role === User::ROLE_ADMIN;
     }
 
     /**

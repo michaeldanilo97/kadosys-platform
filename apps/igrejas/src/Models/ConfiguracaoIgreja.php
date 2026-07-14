@@ -32,15 +32,26 @@ final class ConfiguracaoIgreja
         public readonly ?int $pixMensagemCapitulo = null,
         public readonly ?int $pixMensagemVersiculoInicio = null,
         public readonly ?int $pixMensagemVersiculoFim = null,
+        public readonly ?string $mensagemAniversario = null,
     ) {
     }
+
+    /**
+     * Mensagem padrao usada quando a igreja ainda nao personalizou o
+     * texto do e-mail de aniversario em Configuracoes. Suporta o
+     * marcador {nome}, substituido pelo nome do aniversariante na hora
+     * do envio (ver cron/enviar_parabens_aniversario.php).
+     */
+    public const MENSAGEM_ANIVERSARIO_PADRAO = 'Feliz aniversário, {nome}! 🎉 Toda a nossa igreja se alegra em '
+        . 'comemorar sua vida. Que Deus continue te abençoando grandemente. Com carinho, {igreja}.';
 
     public static function atual(): self
     {
         $stmt = Database::connection()->prepare(
             'SELECT nome_igreja, logo_path, plano, cadastro_membros_habilitado, cep, endereco, numero, cidade, estado,
                     pix_chave, pix_nome_beneficiario, pix_mensagem_tipo, pix_mensagem_texto, pix_mensagem_biblia_versao,
-                    pix_mensagem_livro_id, pix_mensagem_capitulo, pix_mensagem_versiculo_inicio, pix_mensagem_versiculo_fim
+                    pix_mensagem_livro_id, pix_mensagem_capitulo, pix_mensagem_versiculo_inicio, pix_mensagem_versiculo_fim,
+                    mensagem_aniversario
              FROM configuracoes_igreja WHERE id = 1 LIMIT 1'
         );
         $stmt->execute();
@@ -65,7 +76,19 @@ final class ConfiguracaoIgreja
             pixMensagemCapitulo: $row['pix_mensagem_capitulo'] !== null ? (int) $row['pix_mensagem_capitulo'] : null,
             pixMensagemVersiculoInicio: $row['pix_mensagem_versiculo_inicio'] !== null ? (int) $row['pix_mensagem_versiculo_inicio'] : null,
             pixMensagemVersiculoFim: $row['pix_mensagem_versiculo_fim'] !== null ? (int) $row['pix_mensagem_versiculo_fim'] : null,
+            mensagemAniversario: $row['mensagem_aniversario'] ?? null,
         );
+    }
+
+    /**
+     * Mensagem de fato usada no envio - a personalizada da igreja, ou a
+     * padrao quando nenhuma foi configurada ainda.
+     */
+    public function mensagemAniversarioEfetiva(): string
+    {
+        $mensagem = trim((string) ($this->mensagemAniversario ?? ''));
+
+        return $mensagem !== '' ? $mensagem : self::MENSAGEM_ANIVERSARIO_PADRAO;
     }
 
     /**
@@ -144,6 +167,23 @@ final class ConfiguracaoIgreja
              ON DUPLICATE KEY UPDATE plano = VALUES(plano)'
         );
         $stmt->execute(['plano' => $plano]);
+    }
+
+    /**
+     * Mensagem personalizada enviada por e-mail aos membros no dia do
+     * aniversario (ver cron/enviar_parabens_aniversario.php). Null/vazio
+     * volta a usar a mensagem padrao (MENSAGEM_ANIVERSARIO_PADRAO).
+     */
+    public static function atualizarMensagemAniversario(?string $mensagem): void
+    {
+        $mensagem = $mensagem !== null && trim($mensagem) !== '' ? trim($mensagem) : null;
+
+        $stmt = Database::connection()->prepare(
+            'INSERT INTO configuracoes_igreja (id, mensagem_aniversario)
+             VALUES (1, :mensagem)
+             ON DUPLICATE KEY UPDATE mensagem_aniversario = VALUES(mensagem_aniversario)'
+        );
+        $stmt->execute(['mensagem' => $mensagem]);
     }
 
     public static function atualizarCadastroMembros(bool $habilitado): void
