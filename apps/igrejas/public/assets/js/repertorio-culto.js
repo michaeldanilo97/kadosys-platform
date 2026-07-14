@@ -80,6 +80,40 @@
     });
   }
 
+  /**
+   * Garante que o tom atual da musica sempre apareca certo no select,
+   * mesmo quando ele nao esta nas listas padrao (grafia antiga, ex.:
+   * "Db" em vez de "C#") - sem isso, atribuir um valor sem <option>
+   * correspondente faz o navegador desmarcar a selecao (select.value
+   * volta pra "") e os botoes de +/- meio tom passam a calcular a
+   * partir de um tom errado.
+   */
+  function garantirOpcaoTom(tom) {
+    if (!tomSelectEl || !tom) {
+      return;
+    }
+
+    var existe = Array.prototype.some.call(tomSelectEl.options, function (opcao) {
+      return opcao.value === tom;
+    });
+
+    if (existe) {
+      return;
+    }
+
+    var anterior = tomSelectEl.querySelector('[data-tom-outro]');
+
+    if (anterior) {
+      anterior.remove();
+    }
+
+    var opcao = document.createElement('option');
+    opcao.value = tom;
+    opcao.textContent = tom + ' (outro)';
+    opcao.setAttribute('data-tom-outro', '1');
+    tomSelectEl.appendChild(opcao);
+  }
+
   function transporTom(tom, semitons) {
     var match = /^([A-G](?:#|b)?)(m?)$/.exec(tom || '');
 
@@ -171,6 +205,7 @@
 
     if (tomControlesEl && !alterandoTom) {
       tomControlesEl.hidden = false;
+      garantirOpcaoTom(atual.tomAtual);
       tomSelectEl.value = atual.tomAtual || '';
     }
 

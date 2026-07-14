@@ -17,6 +17,27 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 79 - 2026-07-14
+
+**Modo Culto: mudar o tom ao vivo agora transpõe a letra/cifra de
+verdade, e tons fora da lista não quebram mais a exibição**
+
+- Não precisa importar nada no banco pra isso - a funcionalidade usa só
+  tabelas que já existiam.
+- Corrigido: mudar o tom ao vivo no Modo Culto só trocava o rótulo do
+  tom (registrava no histórico), mas os acordes escritos na letra/cifra
+  continuavam no tom antigo. Agora a letra/cifra são transpostas de
+  verdade pro novo tom, igual ao botão "Transpor" do cadastro (mesmo
+  cálculo, portado pro PHP em `Igrejas\Core\Transpositor`, já que o Modo
+  Culto só exibe o que está salvo no banco).
+- Corrigido: quando a música atual estava num tom que não é uma das
+  opções fixas do seletor (grafia antiga, ex.: cadastrada antes do
+  Ajuste 76), o seletor ficava com o valor "desmarcado" por baixo dos
+  panos - fazendo os botões de meio tom (+/-) calcularem a partir do
+  tom errado e não mudarem nada visível. Agora o tom atual sempre
+  aparece certo no seletor, mesmo quando é uma grafia fora da lista
+  padrão.
+
 ## Ajuste 78 - 2026-07-13
 
 **Aviso visual quando o tom muda (transposição e Modo Culto)**
