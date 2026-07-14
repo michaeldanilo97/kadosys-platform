@@ -1,0 +1,464 @@
+/* Biblioteca Kids - "modo crianca" (dashboard/kids/biblioteca/*.php).
+   Ao contrario do resto do painel (tema escuro/vidro, ver
+   dashboard.css), esta secao assume de proposito um mundo colorido
+   proprio, sempre no mesmo estilo claro e cartoon, independente do
+   tema escuro/claro escolhido pelo adulto logado - e a tela que a
+   crianca ve, entao a prioridade e ser alegre e facil de usar, nao
+   seguir a paleta administrativa. Fica dentro do mesmo <main> do
+   painel (sidebar/topbar continuam normais) pra equipe conseguir
+   voltar facil pro modo adulto. */
+
+.kids-mundo {
+  --kids-amarelo: #FFD93D;
+  --kids-azul: #4CC9F0;
+  --kids-rosa: #FF6FA5;
+  --kids-verde: #6BCB77;
+  --kids-roxo: #9B5DE5;
+  --kids-laranja: #FF9F1C;
+  --kids-vermelho: #FF6B6B;
+  --kids-texto: #3A2E5C;
+  --kids-texto-suave: #6B5E95;
+
+  margin: -1.8rem -1.6rem 0;
+  padding: 2rem 1.8rem 3rem;
+  border-radius: 0 0 32px 32px;
+  background:
+    radial-gradient(circle at 8% 10%, rgba(255, 217, 61, 0.35), transparent 40%),
+    radial-gradient(circle at 92% 15%, rgba(155, 93, 229, 0.28), transparent 45%),
+    radial-gradient(circle at 50% 100%, rgba(76, 201, 240, 0.25), transparent 55%),
+    linear-gradient(180deg, #FFF9F0 0%, #F3F0FF 100%);
+  color: var(--kids-texto);
+  font-family: var(--font-body);
+}
+
+@media (min-width: 900px) {
+  .kids-mundo {
+    padding: 2.4rem 2.4rem 3.4rem;
+  }
+}
+
+.kids-mundo * {
+  box-sizing: border-box;
+}
+
+.kids-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.8rem;
+}
+
+.kids-saudacao h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 2.4vw, 2.1rem);
+  color: var(--kids-texto);
+  margin: 0 0 0.3rem;
+  text-wrap: balance;
+}
+
+.kids-saudacao p {
+  margin: 0;
+  color: var(--kids-texto-suave);
+  font-weight: 500;
+}
+
+.kids-voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.1rem;
+  border-radius: 999px;
+  background: #FFFFFF;
+  color: var(--kids-texto);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 0 rgba(58, 46, 92, 0.12);
+  border: 2px solid rgba(58, 46, 92, 0.08);
+  transition: transform 0.15s ease;
+}
+
+.kids-voltar:hover {
+  transform: translateY(-2px);
+}
+
+/* Seletor de "quem esta navegando" - substituto temporario do login
+   infantil de verdade (ver KidsBibliotecaController). */
+.kids-seletor {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 1rem 1.3rem;
+  margin-bottom: 1.8rem;
+  box-shadow: 0 6px 0 rgba(58, 46, 92, 0.08);
+}
+
+.kids-seletor form {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.kids-seletor select {
+  border: 2px solid rgba(58, 46, 92, 0.12);
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  color: var(--kids-texto);
+  background: #FBFAFF;
+}
+
+.kids-seletor button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.55rem 1.2rem;
+  font-weight: 700;
+  background: var(--kids-roxo);
+  color: #FFFFFF;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #6E37B8;
+  transition: transform 0.12s ease;
+}
+
+.kids-seletor button:hover {
+  transform: translateY(-2px);
+}
+
+.kids-crianca-ativa-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem 0.5rem 0.5rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--kids-amarelo), var(--kids-laranja));
+  font-weight: 700;
+  color: #4A3200;
+}
+
+.kids-crianca-ativa-chip .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: var(--kids-laranja);
+  overflow: hidden;
+}
+
+.kids-crianca-ativa-chip .avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kids-stats-mini {
+  display: flex;
+  gap: 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--kids-texto-suave);
+}
+
+/* Grade de cartoes grandes por tipo de conteudo. */
+.kids-tipo-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.1rem;
+}
+
+.kids-tipo-card {
+  --cor-cartao: var(--kids-azul);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.5rem 1.3rem;
+  border-radius: 28px;
+  background: var(--cor-cartao);
+  color: #FFFFFF;
+  text-decoration: none;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.12);
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
+  overflow: hidden;
+  min-height: 148px;
+  justify-content: flex-end;
+}
+
+.kids-tipo-card::after {
+  content: "";
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.kids-tipo-card:hover {
+  transform: translateY(-4px) rotate(-1deg) scale(1.02);
+  box-shadow: 0 12px 0 rgba(0, 0, 0, 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kids-tipo-card:hover,
+  .kids-voltar:hover,
+  .kids-seletor button:hover {
+    transform: none;
+  }
+}
+
+.kids-tipo-card .emoji {
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.kids-tipo-card .nome {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  text-wrap: balance;
+}
+
+.kids-tipo-card .contagem {
+  font-size: 0.8rem;
+  font-weight: 700;
+  opacity: 0.92;
+}
+
+/* Secao "Novidades" - conteudos recentes em destaque. */
+.kids-secao-titulo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--kids-texto);
+  margin: 2.2rem 0 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.kids-conteudo-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.1rem;
+}
+
+.kids-conteudo-card {
+  display: flex;
+  flex-direction: column;
+  background: #FFFFFF;
+  border-radius: 24px;
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--kids-texto);
+  box-shadow: 0 6px 0 rgba(58, 46, 92, 0.08);
+  transition: transform 0.15s ease;
+}
+
+.kids-conteudo-card:hover {
+  transform: translateY(-3px);
+}
+
+.kids-conteudo-card .capa {
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.6rem;
+  background: linear-gradient(135deg, var(--kids-azul), var(--kids-roxo));
+  color: #FFFFFF;
+}
+
+.kids-conteudo-card .capa img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kids-conteudo-card .corpo {
+  padding: 0.9rem 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.kids-conteudo-card .titulo {
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.25;
+}
+
+.kids-conteudo-card .meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.kids-badge-origem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+}
+
+.kids-badge-origem.kadosys {
+  background: rgba(255, 217, 61, 0.35);
+  color: #7A5C00;
+}
+
+.kids-badge-origem.igreja {
+  background: rgba(107, 203, 119, 0.3);
+  color: #1F6B2C;
+}
+
+.kids-badge-recompensa {
+  color: var(--kids-texto-suave);
+}
+
+.kids-vazio {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 2.4rem 1.6rem;
+  text-align: center;
+  color: var(--kids-texto-suave);
+  font-weight: 600;
+}
+
+/* Tela de um conteudo (dashboard/kids/biblioteca/show.php). */
+.kids-conteudo-painel {
+  background: #FFFFFF;
+  border-radius: 28px;
+  padding: 1.8rem;
+  box-shadow: 0 8px 0 rgba(58, 46, 92, 0.08);
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.kids-conteudo-painel .capa-grande {
+  height: 200px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  background: linear-gradient(135deg, var(--kids-rosa), var(--kids-roxo));
+  color: #FFFFFF;
+  margin-bottom: 1.4rem;
+  overflow: hidden;
+}
+
+.kids-conteudo-painel .capa-grande img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kids-conteudo-painel h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin: 0 0 0.5rem;
+  text-wrap: balance;
+}
+
+.kids-conteudo-painel .texto {
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: #4A4160;
+  white-space: pre-line;
+}
+
+.kids-conteudo-painel video,
+.kids-conteudo-painel audio {
+  width: 100%;
+  border-radius: 16px;
+  margin: 1rem 0;
+}
+
+.kids-quiz-pergunta {
+  background: #F7F5FF;
+  border-radius: 18px;
+  padding: 1.1rem 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.kids-quiz-pergunta p {
+  font-weight: 700;
+  margin: 0 0 0.6rem;
+}
+
+.kids-quiz-alternativas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.kids-quiz-alternativa {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 14px;
+  background: #FFFFFF;
+  border: 2px solid rgba(58, 46, 92, 0.1);
+  font-weight: 600;
+}
+
+.kids-btn-concluir {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 999px;
+  padding: 0.9rem 1.8rem;
+  font-weight: 800;
+  font-size: 1rem;
+  color: #FFFFFF;
+  background: linear-gradient(135deg, var(--kids-verde), #3FA34D);
+  cursor: pointer;
+  box-shadow: 0 5px 0 #2E7D38;
+  transition: transform 0.15s ease;
+}
+
+.kids-btn-concluir:hover {
+  transform: translateY(-2px);
+}
+
+.kids-btn-concluir:disabled {
+  background: #C9C4E0;
+  box-shadow: 0 5px 0 #A9A3C7;
+  cursor: default;
+  transform: none;
+}
+
+.kids-premio-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background: linear-gradient(135deg, var(--kids-amarelo), var(--kids-laranja));
+  border-radius: 20px;
+  padding: 1.1rem 1.4rem;
+  margin-bottom: 1.4rem;
+  color: #4A3200;
+  font-weight: 700;
+}
+
+.kids-premio-banner .emoji {
+  font-size: 2.2rem;
+}

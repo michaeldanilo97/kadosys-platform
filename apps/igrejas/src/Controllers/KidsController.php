@@ -7,6 +7,7 @@ namespace Igrejas\Controllers;
 use Igrejas\Core\Auth;
 use Igrejas\Core\Controller;
 use Igrejas\Models\KidsCheckin;
+use Igrejas\Models\KidsConteudo;
 use Igrejas\Models\KidsCrianca;
 use Igrejas\Models\KidsTurma;
 
@@ -31,6 +32,7 @@ final class KidsController extends Controller
             'criancasAtivas' => KidsCrianca::countAtivas(),
             'checkinsHoje' => KidsCheckin::totalHoje(),
             'presentesAgora' => count(KidsCheckin::abertosHoje()),
+            'conteudosPublicados' => KidsConteudo::countPublicados(),
         ], 'dashboard');
     }
 }

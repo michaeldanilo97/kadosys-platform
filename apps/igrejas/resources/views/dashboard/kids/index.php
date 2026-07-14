@@ -5,6 +5,7 @@
  * @var int $criancasAtivas
  * @var int $checkinsHoje
  * @var int $presentesAgora
+ * @var int $conteudosPublicados
  */
 $basePath = $config['base_path'] ?? '';
 ?>
@@ -12,9 +13,12 @@ $basePath = $config['base_path'] ?? '';
 <div class="dash-page-head">
     <div>
         <h1 class="dash-page-title"><i class="bi bi-emoji-smile"></i> KADOSYS Kids</h1>
-        <p class="dash-page-subtitle">Ministério infantil: turmas, cadastro das crianças e check-in com código de segurança.</p>
+        <p class="dash-page-subtitle">Ministério infantil: turmas, crianças, check-in e a biblioteca de conteúdo.</p>
     </div>
     <div class="dash-page-actions">
+        <a href="<?= $basePath ?>/dashboard/kids/biblioteca" class="btn-k btn-k-ghost">
+            <i class="bi bi-stars"></i> Ver biblioteca
+        </a>
         <a href="<?= $basePath ?>/dashboard/kids/checkin" class="btn-k btn-k-grad">
             <i class="bi bi-qr-code-scan"></i> Ir para o Check-in
         </a>
@@ -54,6 +58,14 @@ $basePath = $config['base_path'] ?? '';
         <div class="label">Check-ins hoje</div>
         <div class="delta">Total do dia</div>
     </div>
+    <div class="kpi-card">
+        <div class="kpi-top">
+            <div class="kpi-icon blue"><i class="bi bi-stars"></i></div>
+        </div>
+        <div class="value"><?= $conteudosPublicados ?></div>
+        <div class="label">Conteúdos na biblioteca</div>
+        <div class="delta"><a href="<?= $basePath ?>/dashboard/kids/conteudos">Gerenciar conteúdos</a></div>
+    </div>
 </div>
 
 <div class="dash-panel">
@@ -82,6 +94,22 @@ $basePath = $config['base_path'] ?? '';
             <div>
                 <div class="name">Check-in</div>
                 <div class="desc">Registre entrada e saída na porta da sala, com código de segurança de 4 dígitos para a retirada.</div>
+            </div>
+            <i class="bi bi-arrow-right-short arrow"></i>
+        </a>
+        <a href="<?= $basePath ?>/dashboard/kids/conteudos" class="module-card">
+            <div class="icon"><i class="bi bi-collection-play"></i></div>
+            <div>
+                <div class="name">Conteúdos</div>
+                <div class="desc">Histórias, vídeos, devocionais, quiz e mais - biblioteca oficial KADOSYS + o que sua igreja publicar.</div>
+            </div>
+            <i class="bi bi-arrow-right-short arrow"></i>
+        </a>
+        <a href="<?= $basePath ?>/dashboard/kids/biblioteca" class="module-card">
+            <div class="icon"><i class="bi bi-stars"></i></div>
+            <div>
+                <div class="name">Biblioteca (modo criança)</div>
+                <div class="desc">A tela colorida que a criança vê, com cards grandes por tipo de conteúdo e recompensas.</div>
             </div>
             <i class="bi bi-arrow-right-short arrow"></i>
         </a>
