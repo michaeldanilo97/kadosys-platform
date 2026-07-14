@@ -17,6 +17,17 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 89 - 2026-07-14
+
+**Toggle switch quase invisível no tema claro**
+
+- O fundo do switch desligado usava uma variável pensada pro tema
+  escuro (branco bem transparente), que sobre um card branco do tema
+  claro ficava quase invisível - não parecia um botão. Adicionado um
+  cinza de verdade pro tema claro (mesmo tom já usado em outros
+  controles, ex.: `.crud-icon-btn`), com a bolinha branca por cima pra
+  manter contraste.
+
 ## Ajuste 88 - 2026-07-14
 
 **Cadastrar membro já com acesso ao sistema, num passo só**
