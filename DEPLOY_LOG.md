@@ -17,6 +17,29 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 109 - 2026-07-14
+
+**Meu perfil ganha endereço e dados pessoais, vinculado ao cadastro em Membros**
+
+- Até agora, quem tinha acesso ao sistema (usuário/login) e quem
+  aparecia em Membros eram dois cadastros separados, sem nenhuma
+  ligação - "Meu perfil" só editava foto/cargo/instrumento, sem
+  endereço nem telefone.
+- Cada usuário passa a ficar vinculado ao seu registro em Membros
+  (`users.membro_id`, migração 048) - contas antigas se vinculam
+  automaticamente na primeira vez que a pessoa abrir "Meu perfil"
+  (reaproveita um Membro já existente com o mesmo e-mail, ou cria um
+  novo se não achar nenhum).
+- "Meu perfil" ganhou as seções "Dados pessoais" (telefone, data de
+  nascimento, sexo, estado civil, CPF, RG, naturalidade) e "Endereço"
+  (com o mesmo autopreenchimento por CEP usado em Membros) - editando
+  o MESMO cadastro que aparece pra secretaria em Membros, sem
+  duplicar dado.
+- Como consequência, a tela Membros agora mostra todo mundo que tem
+  acesso ao sistema, inclusive administradores.
+
+---
+
 ## Ajuste 108 - 2026-07-14
 
 **Equipe: só entra na galeria quem tem um cargo de verdade**

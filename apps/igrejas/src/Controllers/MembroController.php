@@ -152,7 +152,7 @@ final class MembroController extends Controller
             $this->redirect('/dashboard/membros/novo');
         }
 
-        Membro::create($data);
+        $membroId = Membro::create($data);
 
         if ($criarAcesso) {
             $userId = User::create([
@@ -165,6 +165,7 @@ final class MembroController extends Controller
                 'cargo' => $musico ? User::CARGO_MUSICO : User::CARGO_MEMBRO,
             ]);
             User::aplicarPerfilPadrao($userId);
+            User::findById($userId)->vincularMembro($membroId);
         }
 
         Session::flash('membro_success', 'Membro cadastrado com sucesso.' . ($criarAcesso ? ' Acesso ao sistema criado.' : ''));

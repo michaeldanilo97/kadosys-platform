@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS users (
     cargo ENUM('musico', 'midia', 'equipamento', 'membro') NOT NULL DEFAULT 'membro',
     instrumento VARCHAR(20) NULL,
     foto_path VARCHAR(255) NULL,
+    membro_id INT UNSIGNED NULL,
     active TINYINT(1) NOT NULL DEFAULT 1,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -106,6 +107,13 @@ CREATE TABLE IF NOT EXISTS membros (
     KEY membros_nome_index (nome),
     KEY membros_status_index (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- So depois daqui a tabela membros existe, entao o vinculo
+-- users.membro_id (declarado la em cima, no 001) so pode ganhar sua
+-- FOREIGN KEY aqui.
+ALTER TABLE users
+    ADD CONSTRAINT users_membro_id_foreign
+        FOREIGN KEY (membro_id) REFERENCES membros (id) ON DELETE SET NULL;
 
 CREATE TABLE IF NOT EXISTS membro_documentos (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

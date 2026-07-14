@@ -59,10 +59,10 @@ final class User
     public const CARGO_MEMBRO = 'membro';
 
     /**
-     * Rotulo e icone (Bootstrap Icons) de cada cargo, usados na tela
-     * "Equipe" (galeria estilo rede social, ver EquipeController) e no
-     * cadastro de usuario - "membro" (padrao) mostra o logo da igreja
-     * em vez de um icone fixo (ver dashboard/equipe/index.php).
+     * Rotulo e icone (Bootstrap Icons) de cada cargo, usados no
+     * cadastro de usuario - "membro" e o padrao de quem nao tem uma
+     * funcao definida na equipe (ex.: um admin), e por isso fica de
+     * fora da galeria "Equipe" (ver User::todosAtivosParaEquipe()).
      *
      * @var array<string, array{label: string, icon: string}>
      */
@@ -90,7 +90,7 @@ final class User
         'outro' => ['label' => 'Outro', 'emoji' => '🎵'],
     ];
 
-    private const SELECT_COLUNAS = 'id, name, email, password, role, active, musico, lider_louvor, cargo, instrumento, foto_path, created_at';
+    private const SELECT_COLUNAS = 'id, name, email, password, role, active, musico, lider_louvor, cargo, instrumento, foto_path, membro_id, created_at';
 
     public function __construct(
         public readonly int $id,
@@ -104,6 +104,7 @@ final class User
         public readonly string $cargo = self::CARGO_MEMBRO,
         public readonly ?string $instrumento = null,
         public readonly ?string $fotoPath = null,
+        public readonly ?int $membroId = null,
         public readonly ?string $createdAt = null,
     ) {
     }
@@ -154,7 +155,7 @@ final class User
     public static function findByValidRememberToken(string $tokenHash): ?self
     {
         $stmt = Database::connection()->prepare(
-            'SELECT u.id, u.name, u.email, u.password, u.role, u.active, u.musico, u.lider_louvor, u.cargo, u.instrumento, u.foto_path, u.created_at
+            'SELECT u.id, u.name, u.email, u.password, u.role, u.active, u.musico, u.lider_louvor, u.cargo, u.instrumento, u.foto_path, u.membro_id, u.created_at
              FROM remember_tokens rt
              INNER JOIN users u ON u.id = rt.user_id
              WHERE rt.token_hash = :token_hash AND rt.expires_at > NOW()
@@ -327,6 +328,19 @@ final class User
         $stmt->execute(['id' => $this->id, 'foto_path' => $fotoPath]);
     }
 
+    /**
+     * Vincula este usuario a um registro de Membros (mesma pessoa) -
+     * ver Membro::vincularOuCriarParaUsuario(), chamado ao criar
+     * qualquer conta de acesso, pra "Meu perfil" (PerfilController)
+     * editar endereco/telefone/etc no mesmo lugar que aparece em
+     * Membros, sem duplicar esse cadastro.
+     */
+    public function vincularMembro(int $membroId): void
+    {
+        $stmt = Database::connection()->prepare('UPDATE users SET membro_id = :membro_id WHERE id = :id');
+        $stmt->execute(['id' => $this->id, 'membro_id' => $membroId]);
+    }
+
     private static function cargoValido(mixed $cargo): string
     {
         $cargo = (string) $cargo;
@@ -475,6 +489,7 @@ final class User
             cargo: (string) ($row['cargo'] ?? self::CARGO_MEMBRO),
             instrumento: $row['instrumento'] ?? null,
             fotoPath: $row['foto_path'] ?? null,
+            membroId: isset($row['membro_id']) ? (int) $row['membro_id'] : null,
             createdAt: isset($row['created_at']) ? (string) $row['created_at'] : null,
         );
     }

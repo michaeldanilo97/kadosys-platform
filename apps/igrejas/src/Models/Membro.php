@@ -101,6 +101,33 @@ final class Membro
         return $row ? self::fromRow($row) : null;
     }
 
+    public static function findByEmail(string $email): ?self
+    {
+        $stmt = Database::connection()->prepare('SELECT * FROM membros WHERE email = :email LIMIT 1');
+        $stmt->execute(['email' => $email]);
+        $row = $stmt->fetch();
+
+        return $row ? self::fromRow($row) : null;
+    }
+
+    /**
+     * Vincula um usuario (login) ao registro de Membros da mesma
+     * pessoa - usado ao criar uma conta de acesso "solta" (ver
+     * UsuarioController::store()), sem passar pelo formulario de
+     * Membros. Reaproveita um Membro existente com o mesmo e-mail se
+     * houver (evita duplicar cadastro), senao cria um registro minimo
+     * - garante que TODO usuario com acesso ao sistema tambem tenha um
+     * perfil em Membros (endereco, telefone etc, editavel em "Meu
+     * perfil"), inclusive admin.
+     */
+    public static function vincularOuCriarParaUsuario(User $user, string $nome, ?string $email): void
+    {
+        $membro = $email !== null && $email !== '' ? self::findByEmail($email) : null;
+        $membroId = $membro?->id ?? self::create(['nome' => $nome, 'email' => $email, 'status' => 'ativo']);
+
+        $user->vincularMembro($membroId);
+    }
+
     /**
      * Lista enxuta de membros ativos (id + nome), ordenada por nome.
      * Usada em selects de outros modulos (ex.: lider/voluntarios de

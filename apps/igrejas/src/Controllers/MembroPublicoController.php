@@ -74,7 +74,7 @@ final class MembroPublicoController extends Controller
             $this->redirect('/cadastro');
         }
 
-        Membro::create($data + ['status' => 'ativo']);
+        $membroId = Membro::create($data + ['status' => 'ativo']);
 
         $userId = User::create([
             'name' => trim((string) $data['nome']),
@@ -83,6 +83,7 @@ final class MembroPublicoController extends Controller
             'role' => User::ROLE_USUARIO,
         ]);
         User::aplicarPerfilPadrao($userId);
+        User::findById($userId)->vincularMembro($membroId);
 
         Session::flash('cadastro_membro_sucesso', true);
         $this->redirect('/cadastro');

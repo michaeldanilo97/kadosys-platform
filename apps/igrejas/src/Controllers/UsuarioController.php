@@ -8,6 +8,7 @@ use Igrejas\Core\Auth;
 use Igrejas\Core\Controller;
 use Igrejas\Core\Csrf;
 use Igrejas\Core\Session;
+use Igrejas\Models\Membro;
 use Igrejas\Models\User;
 
 /**
@@ -70,6 +71,12 @@ final class UsuarioController extends Controller
         if (($data['role'] ?? null) === User::ROLE_USUARIO) {
             User::aplicarPerfilPadrao($userId);
         }
+
+        Membro::vincularOuCriarParaUsuario(
+            User::findById($userId),
+            trim((string) $data['name']),
+            trim((string) $data['email']) ?: null
+        );
 
         Session::flash('usuario_success', 'Usuário cadastrado com sucesso.');
         $this->redirect('/dashboard/usuarios');
