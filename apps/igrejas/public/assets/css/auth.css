@@ -294,6 +294,25 @@
   word-break: break-word;
 }
 
+/* O fundo escuro semi-transparente e o texto branco do titulo (.nome)
+   sao pensados pro tema escuro - no tema claro (usado hoje so nas
+   telas de Configuracoes/Permissoes, ja que a pagina de cadastro
+   publico nao tem alternador de tema) isso deixava o titulo do modulo
+   quase ilegivel, tanto no cartao normal quanto no selecionado. */
+[data-theme="light"] .plano-escolha-card {
+  background: #F1F5F9;
+  border-color: rgba(30, 41, 59, 0.15);
+}
+
+[data-theme="light"] .plano-escolha-card.selecionado {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: var(--primary);
+}
+
+[data-theme="light"] .plano-escolha-card .nome {
+  color: #0F172A;
+}
+
 /* Cartao de permissao por modulo: em vez de um unico checkbox
    (label inteira clicavel), agora e um grupo de 3 radios (sem
    acesso/visualizar/editar) - o cartao so serve de moldura visual,
