@@ -18,6 +18,7 @@ $estadoInicial['mensagens'] = array_map(
 );
 ?>
 <link rel="stylesheet" href="<?= $basePath ?>/assets/css/repertorio-culto.css?v=<?= View::assetVersion('assets/css/repertorio-culto.css') ?>">
+<link rel="stylesheet" href="<?= $basePath ?>/assets/css/culto-offline.css?v=<?= View::assetVersion('assets/css/culto-offline.css') ?>">
 
 <div
     data-culto-root
@@ -27,6 +28,9 @@ $estadoInicial['mensagens'] = array_map(
     data-voltar-url="<?= $basePath ?>/dashboard/louvores/repertorios/<?= $repertorio->id ?>/voltar"
     data-mensagem-url="<?= $basePath ?>/dashboard/louvores/repertorios/<?= $repertorio->id ?>/mensagens"
     data-tom-url-base="<?= $basePath ?>/dashboard/louvores/repertorios/<?= $repertorio->id ?>/itens"
+    data-sw-url="<?= $basePath ?>/service-worker.js"
+    data-sw-scope="<?= $basePath ?>/dashboard/louvores/"
+    data-sw-offline-msg="Aparelho sem internet - mostrando a última cifra/tom recebidos. Avançar/voltar música, mudar tom e o chat estão inativos até a conexão voltar."
 >
     <script id="culto-estado-inicial" type="application/json"><?= json_encode($estadoInicial, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?></script>
     <?php if ($ehLider): ?>
@@ -91,3 +95,4 @@ $estadoInicial['mensagens'] = array_map(
 </div>
 
 <script src="<?= $basePath ?>/assets/js/repertorio-culto.js?v=<?= View::assetVersion('assets/js/repertorio-culto.js') ?>"></script>
+<script src="<?= $basePath ?>/assets/js/culto-offline.js?v=<?= View::assetVersion('assets/js/culto-offline.js') ?>"></script>
