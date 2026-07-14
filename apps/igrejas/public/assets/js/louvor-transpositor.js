@@ -57,14 +57,23 @@
     'B': 11, 'Cb': 11,
   };
 
+  // Qualidades/extensoes de acorde reconhecidas (m, 7, 9, dim, sus4,
+  // add9, 7M etc.) - uma LISTA FECHADA, e nao "qualquer letra", porque
+  // varias palavras comuns em letras de louvor (ex.: "Deus", "Fala",
+  // "Comigo", "Graça") comecam com uma nota (D, F, C...) seguida de mais
+  // letras, e bateriam num formato de acorde permissivo demais - o que
+  // fazia linhaEhDeAcordes() achar que uma linha de LETRA inteira era
+  // "so acordes" e transpor palavras da letra por engano, virando texto
+  // sem sentido (ex.: "Deus" virando "C#eus").
+  var SUFIXO_ACORDE = '(?:dim7|dim|aug|sus2|sus4|sus|add2|add4|add6|add9|add11|add13|maj7|maj9|maj11|maj13|maj|min7|min9|min11|min13|min|m7b5|m7#5|m9b5|m6|m69|m7|m9|m11|m13|m2|m4|m|6|69|9|11|13|7M|9M|11M|13M|7|5|4|2)?';
+
   // Formato de um "token" de acorde valido: nota (A-G, com sustenido ou
-  // bemol), seguida de qualquer combinacao de qualidade/extensao
-  // (m, 7, 9, dim, sus4, add9, 7M etc.), extensao entre parenteses
-  // opcional (ex.: "(4/9)") e baixo opcional depois de uma barra (ex.:
-  // "/B", acorde com inversao) - usado tanto pra decidir se uma LINHA
-  // inteira e "so acordes" (todo token bate com isso) quanto, dentro de
-  // transporAcorde(), pra separar raiz/resto de cada token.
-  var FORMATO_ACORDE = /^[A-G](#|b)?([a-zA-Z0-9]*)(\([^)]*\))?(\/[A-G](#|b)?)?$/;
+  // bemol), seguida da qualidade/extensao (lista acima), extensao entre
+  // parenteses opcional (ex.: "(4/9)") e baixo opcional depois de uma
+  // barra (ex.: "/B", acorde com inversao) - usado tanto pra decidir se
+  // uma LINHA inteira e "so acordes" (todo token bate com isso) quanto,
+  // dentro de transporAcorde(), pra separar raiz/resto de cada token.
+  var FORMATO_ACORDE = new RegExp('^[A-G](#|b)?' + SUFIXO_ACORDE + '(\\([^)]*\\))?(\\/[A-G](#|b)?)?$', 'i');
 
   function transporNota(nota, semitons) {
     var indice = INDICE_NOTA[nota];
