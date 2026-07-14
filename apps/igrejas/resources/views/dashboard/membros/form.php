@@ -1,4 +1,7 @@
 <?php
+
+use Igrejas\Core\View;
+
 /**
  * @var array $config
  * @var \Igrejas\Models\Membro|null $membro
@@ -21,6 +24,9 @@ $estado = $old['estado'] ?? $membro->estado ?? '';
 $dataMembresia = $old['data_membresia'] ?? $membro->dataMembresia ?? '';
 $status = $old['status'] ?? $membro->status ?? 'ativo';
 $observacoes = $old['observacoes'] ?? $membro->observacoes ?? '';
+$criarAcesso = !empty($old['criar_acesso']);
+$acessoMusico = !empty($old['musico']);
+$acessoLiderLouvor = !empty($old['lider_louvor']);
 
 $actionUrl = $isEdit
     ? $basePath . '/dashboard/membros/' . $membro->id
@@ -139,6 +145,52 @@ $actionUrl = $isEdit
             </div>
         </div>
 
+        <?php if (!$isEdit): ?>
+            <div class="crud-form-section">
+                <h3><i class="bi bi-key"></i> Acesso ao sistema</h3>
+                <div class="crud-form-grid">
+                    <div class="crud-field crud-field-full">
+                        <label class="toggle-switch-field">
+                            <input type="checkbox" name="criar_acesso" value="1" data-criar-acesso <?= $criarAcesso ? 'checked' : '' ?>>
+                            <span class="toggle-switch"></span>
+                            <span class="toggle-switch-label">
+                                Criar acesso ao sistema para este membro
+                                <span class="auth-field-hint">Cria um login (usando o e-mail acima) já com o cargo escolhido, sem precisar cadastrar de novo em Usuários depois.</span>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="crud-field" data-acesso-campo <?= $criarAcesso ? '' : 'hidden' ?>>
+                        <label for="senha">Senha *</label>
+                        <input type="password" id="senha" name="senha" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
+                    </div>
+                    <div class="crud-field" data-acesso-campo <?= $criarAcesso ? '' : 'hidden' ?>>
+                        <label for="senha_confirmacao">Confirmar senha *</label>
+                        <input type="password" id="senha_confirmacao" name="senha_confirmacao" placeholder="Repita a senha" autocomplete="new-password">
+                    </div>
+                    <div class="crud-field crud-field-full" data-acesso-campo <?= $criarAcesso ? '' : 'hidden' ?>>
+                        <label class="toggle-switch-field">
+                            <input type="checkbox" name="musico" value="1" <?= $acessoMusico ? 'checked' : '' ?>>
+                            <span class="toggle-switch"></span>
+                            <span class="toggle-switch-label">
+                                Músico
+                                <span class="auth-field-hint">Libera automaticamente o acesso ao módulo Louvores (letras, cifras e tons).</span>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="crud-field crud-field-full" data-acesso-campo <?= $criarAcesso ? '' : 'hidden' ?>>
+                        <label class="toggle-switch-field">
+                            <input type="checkbox" name="lider_louvor" value="1" <?= $acessoLiderLouvor ? 'checked' : '' ?>>
+                            <span class="toggle-switch"></span>
+                            <span class="toggle-switch-label">
+                                Líder de louvor
+                                <span class="auth-field-hint">Além do acesso de músico, pode montar/reordenar a programação de culto e avançar a música atual no Modo Culto.</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <div class="crud-form-actions">
             <a href="<?= $basePath ?>/dashboard/membros" class="btn-k btn-k-ghost">Cancelar</a>
             <button type="submit" class="btn-k btn-k-grad">
@@ -147,3 +199,7 @@ $actionUrl = $isEdit
         </div>
     </form>
 </div>
+
+<?php if (!$isEdit): ?>
+    <script src="<?= $basePath ?>/assets/js/membro-form.js?v=<?= View::assetVersion('assets/js/membro-form.js') ?>"></script>
+<?php endif; ?>

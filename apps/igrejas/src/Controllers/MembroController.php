@@ -9,6 +9,7 @@ use Igrejas\Core\Controller;
 use Igrejas\Core\Csrf;
 use Igrejas\Core\Session;
 use Igrejas\Models\Membro;
+use Igrejas\Models\User;
 
 /**
  * Controller do modulo Membros: primeiro modulo de negocio da v2
@@ -72,15 +73,41 @@ final class MembroController extends Controller
         $data = $this->request->only(self::FIELDS);
         $errors = $this->validate($data);
 
+        $criarAcesso = !empty($this->request->input('criar_acesso'));
+        $senha = (string) $this->request->input('senha', '');
+        $senhaConfirmacao = (string) $this->request->input('senha_confirmacao', '');
+        $musico = !empty($this->request->input('musico'));
+        $liderLouvor = !empty($this->request->input('lider_louvor'));
+
+        if ($criarAcesso) {
+            $errors = [...$errors, ...$this->validateAcesso($data, $senha, $senhaConfirmacao)];
+        }
+
         if ($errors !== []) {
             Session::flash('membro_errors', $errors);
-            Session::flash('membro_old', $data);
+            Session::flash('membro_old', $data + [
+                'criar_acesso' => $criarAcesso,
+                'musico' => $musico,
+                'lider_louvor' => $liderLouvor,
+            ]);
             $this->redirect('/dashboard/membros/novo');
         }
 
         Membro::create($data);
 
-        Session::flash('membro_success', 'Membro cadastrado com sucesso.');
+        if ($criarAcesso) {
+            User::create([
+                'name' => trim((string) $data['nome']),
+                'email' => trim((string) $data['email']),
+                'password' => $senha,
+                'role' => User::ROLE_USUARIO,
+                'musico' => $musico,
+                'lider_louvor' => $liderLouvor,
+                'cargo' => $musico ? User::CARGO_MUSICO : User::CARGO_MEMBRO,
+            ]);
+        }
+
+        Session::flash('membro_success', 'Membro cadastrado com sucesso.' . ($criarAcesso ? ' Acesso ao sistema criado.' : ''));
         $this->redirect('/dashboard/membros');
     }
 
@@ -165,6 +192,36 @@ final class MembroController extends Controller
         $status = $data['status'] ?? 'ativo';
         if (!in_array($status, ['ativo', 'inativo'], true)) {
             $errors[] = 'Status inválido.';
+        }
+
+        return $errors;
+    }
+
+    /**
+     * Validacao extra so quando o admin marca "criar acesso ao
+     * sistema" - o e-mail (ja preenchido acima nos dados do membro)
+     * vira o login, entao precisa ser obrigatorio e unico tanto entre
+     * membros quanto entre usuarios (ver User::create()).
+     *
+     * @param array<string, mixed> $data
+     * @return array<int, string>
+     */
+    private function validateAcesso(array $data, string $senha, string $senhaConfirmacao): array
+    {
+        $errors = [];
+
+        $email = trim((string) ($data['email'] ?? ''));
+
+        if ($email === '') {
+            $errors[] = 'Informe o e-mail do membro pra criar o acesso - ele vira o login.';
+        } elseif (User::emailEmUso($email)) {
+            $errors[] = 'Já existe um usuário com esse e-mail.';
+        }
+
+        if (mb_strlen($senha) < 8) {
+            $errors[] = 'A senha do acesso precisa ter pelo menos 8 caracteres.';
+        } elseif ($senha !== $senhaConfirmacao) {
+            $errors[] = 'A confirmação de senha do acesso não confere.';
         }
 
         return $errors;
