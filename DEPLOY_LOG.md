@@ -17,6 +17,22 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 113 - 2026-07-14
+
+**Equipe e Membros ganham o mesmo padrão visual de card**
+
+- Equipe agora agrupa a galeria por departamento (Músicos, Mídia,
+  Equipamento), cada um com seu título e contagem de pessoas.
+- Os cards de Equipe e Membros passam a seguir o mesmo modelo: foto
+  com emblema de cargo, nome, cargo, status "Ativo/Inativo" e
+  contato - antes só o card de Membros tinha esse nível de detalhe.
+- Em Membros, quem não tem uma função de verdade na equipe (a
+  maioria da congregação) passa a mostrar "Membro" com um ícone de
+  pessoa no emblema, em vez de ficar sem nenhum rótulo de cargo -
+  mesmo padrão de quem é "Músico - Teclado", por exemplo.
+
+---
+
 ## Ajuste 112 - 2026-07-14
 
 **"Ao vivo" no menu só quando tem sessão de projeção de verdade**

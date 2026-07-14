@@ -1,9 +1,54 @@
 /* Galeria da Equipe (estilo rede social) - cards com foto, nome e um
-   badge de cargo/instrumento, ver EquipeController/User::CARGOS. */
+   badge de cargo/instrumento, ver EquipeController/User::CARGOS,
+   agrupados por departamento (Musicos/Midia/Equipamento). */
+
+.equipe-departamento {
+  margin-bottom: 2.2rem;
+}
+
+.equipe-departamento:last-child {
+  margin-bottom: 0;
+}
+
+.equipe-departamento-titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--white);
+  margin: 0 0 1rem;
+}
+
+[data-theme="light"] .equipe-departamento-titulo {
+  color: #0F172A;
+}
+
+.equipe-departamento-contagem {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--surface-strong);
+  border: 1px solid var(--glass-border);
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+[data-theme="light"] .equipe-departamento-contagem {
+  background: rgba(30, 41, 59, 0.06);
+  border-color: rgba(30, 41, 59, 0.12);
+  color: #475569;
+}
 
 .equipe-grade {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 1.2rem;
 }
 
@@ -97,6 +142,34 @@
 .equipe-card-cargo {
   font-size: 0.78rem;
   color: var(--text-dim);
+}
+
+.equipe-card-status {
+  margin: 0.5rem 0 0.7rem;
+}
+
+.equipe-card-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.equipe-card-info-linha {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.equipe-card-info-linha i {
+  color: var(--primary-soft);
+  flex-shrink: 0;
 }
 
 /* Botoes de gerenciamento no perfil de equipe (ver dashboard/equipe/show.php),
