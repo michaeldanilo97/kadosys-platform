@@ -81,6 +81,49 @@ $modulosComparacao = array_filter(
     </div>
 </section>
 
+<!-- DESTAQUES -->
+<section class="landing-section" id="destaques">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="eyebrow">Os maiores diferenciais</span>
+            <h2 class="section-title">Feito pra acontecer <span class="text-gradient">ao vivo</span>, durante o culto</h2>
+            <p class="section-lead">
+                As duas partes do sistema que a igreja usa toda semana, na hora do culto - sincronizadas em
+                tempo real entre o celular do líder, o tablet do preletor e o telão, sem operador dedicado.
+            </p>
+        </div>
+
+        <div class="destaques-grid">
+            <div class="destaque-card glass-card reveal">
+                <div class="destaque-card-media">
+                    <img src="<?= $basePath ?>/assets/img/recursos/louvores.png" alt="Modo Culto mostrando a cifra e o tom da música ao vivo" loading="lazy">
+                </div>
+                <div class="destaque-card-body">
+                    <span class="destaque-badge"><i class="bi bi-broadcast"></i> Ao vivo</span>
+                    <h3><i class="bi bi-music-note-list"></i> Louvores e Modo Culto</h3>
+                    <p>O líder muda o tom da música no próprio celular, e a cifra inteira se reescreve
+                        sozinha na hora, pra todo o time - ninguém mais fica perdido no meio da música.</p>
+                    <a href="<?= $basePath ?>/recursos/louvores" class="feature-card-link">Ver como funciona <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="destaque-card glass-card reveal">
+                <div class="destaque-card-media">
+                    <img src="<?= $basePath ?>/assets/img/recursos/projecao-marcacao.png" alt="Telão mostrando uma marcação feita ao vivo pelo preletor sobre o versículo" loading="lazy">
+                    <img src="<?= $basePath ?>/assets/img/recursos/preletor-marcacao.png" alt="Preletor circulando o versículo no tablet" loading="lazy" class="destaque-card-media-float">
+                </div>
+                <div class="destaque-card-body">
+                    <span class="destaque-badge"><i class="bi bi-broadcast"></i> Ao vivo</span>
+                    <h3><i class="bi bi-easel2"></i> Projeção e Telão</h3>
+                    <p>O preletor circula, sublinha ou destaca o versículo direto no tablet - e a marcação
+                        aparece no telão na mesma hora, pra igreja inteira ver, sem precisar de operador.</p>
+                    <a href="<?= $basePath ?>/recursos/projecao" class="feature-card-link">Ver como funciona <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- SOBRE -->
 <section class="landing-section" id="sobre">
     <div class="container">
@@ -256,6 +299,13 @@ $modulosComparacao = array_filter(
                 <div>
                     <h4>Evolui continuamente</h4>
                     <p>Novos módulos e melhorias são lançados com frequência, sem custo extra pra igreja e sem precisar migrar nada.</p>
+                </div>
+            </div>
+            <div class="beneficio-row glass-card reveal">
+                <div class="check"><i class="bi bi-check-lg"></i></div>
+                <div>
+                    <h4>Endereço próprio da sua igreja</h4>
+                    <p>Sua igreja ganha um endereço só dela (ex: suaigreja.kadosys.com.br), separado de todas as outras - é por ali que os membros acessam o login, se cadastram e fazem doações.</p>
                 </div>
             </div>
         </div>

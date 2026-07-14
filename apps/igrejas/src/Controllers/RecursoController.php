@@ -58,6 +58,7 @@ final class RecursoController extends Controller
                 . 'bíblico, vídeo do YouTube, tela de Pix ou uma imagem - tudo aparece no telão no '
                 . 'mesmo instante, sem precisar de alguém dedicado no computador só pra acompanhar.',
             'diferenciais' => [
+                ['icon' => 'bi-pencil', 'titulo' => 'Marcação ao vivo no versículo', 'texto' => 'O preletor circula, sublinha ou destaca trechos do versículo na tela do próprio tablet - e a marcação aparece no telão na mesma hora, pra igreja inteira ver.'],
                 ['icon' => 'bi-tablet', 'titulo' => 'Controle pelo próprio tablet', 'texto' => 'O preletor navega pela Bíblia e troca de tela sozinho, do púlpito, sem depender de um operador.'],
                 ['icon' => 'bi-youtube', 'titulo' => 'Vídeos com controle remoto', 'texto' => 'Play, pausa e volume de vídeos do YouTube controlados a distância, direto pro telão.'],
                 ['icon' => 'bi-qr-code', 'titulo' => 'Tela de Pix no telão', 'texto' => 'QR code de dízimo/oferta aparece na hora certa, sem precisar trocar de slide manualmente.'],

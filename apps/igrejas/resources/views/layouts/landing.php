@@ -45,7 +45,12 @@ $basePath = $config['base_path'] ?? '';
                 <div class="landing-nav-dropdown-panel">
                     <?php foreach (\Igrejas\Controllers\RecursoController::MODULOS as $slug => $modulo): ?>
                         <a href="<?= $basePath ?>/recursos/<?= $slug ?>">
-                            <i class="bi <?= htmlspecialchars($modulo['icon'], ENT_QUOTES, 'UTF-8') ?>"></i> <?= htmlspecialchars($modulo['title'], ENT_QUOTES, 'UTF-8') ?>
+                            <span class="landing-nav-dropdown-label">
+                                <i class="bi <?= htmlspecialchars($modulo['icon'], ENT_QUOTES, 'UTF-8') ?>"></i> <?= htmlspecialchars($modulo['title'], ENT_QUOTES, 'UTF-8') ?>
+                            </span>
+                            <?php if (in_array($slug, ['louvores', 'projecao'], true)): ?>
+                                <span class="landing-nav-dropdown-badge">Ao vivo</span>
+                            <?php endif; ?>
                         </a>
                     <?php endforeach; ?>
                 </div>
