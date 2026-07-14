@@ -17,6 +17,24 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 99 - 2026-07-14
+
+**Selo do menu Recursos ainda sobrepunha texto em telas mais estreitas; troca da imagem de Projeção**
+
+- O Ajuste 98 tentou corrigir o selo "Destaque" reservando um espaço
+  fixo em pixels ao lado do texto - funcionava em algumas larguras de
+  tela e sobrepunha em outras, porque o cálculo dependia do tamanho
+  exato do texto do navegador. Trocado por uma solução que não depende
+  de conta de pixel: o selo agora fica numa linha própria, embaixo do
+  nome do módulo, só nos dois itens marcados como destaque - garante
+  que nunca mais sobrepõe o texto, em qualquer largura de tela.
+- Card de "Projeção e Telão" na home passou a usar uma imagem única
+  (`assets/img/telao.png`) em vez da composição telão+tablet gerada
+  antes - arquivo ainda precisa ser adicionado ao repositório pra
+  aparecer (fica como imagem quebrada até lá).
+
+---
+
 ## Ajuste 98 - 2026-07-14
 
 **Corrige selo "Ao vivo" cortando/sobrepondo texto no menu Recursos e na home**
