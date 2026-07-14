@@ -17,6 +17,19 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 103 - 2026-07-14
+
+**Nova seção "Como funciona" (linha do tempo) em cada página de recurso**
+
+- Cada uma das 12 páginas `/recursos/{modulo}` ganhou uma seção com o
+  passo a passo real de uso daquele módulo, numa linha do tempo
+  vertical (número, título curto e descrição), entre o screenshot e
+  os diferenciais.
+- `RecursoController::MODULOS` ganhou o campo `passos` em cada módulo,
+  com 4 etapas cada, descrevendo o fluxo real de cadastro/uso.
+
+---
+
 ## Ajuste 102 - 2026-07-14
 
 **Corrige textos de Projeção que davam a entender que o cargo de operador foi eliminado**

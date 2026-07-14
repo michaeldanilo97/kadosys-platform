@@ -5,7 +5,7 @@ use Igrejas\Controllers\RecursoController;
 /**
  * @var array $config
  * @var string $slug
- * @var array{title:string, icon:string, tagline:string, intro:string, diferenciais:array, imagem:string, imagemSecundaria:?string, imagemAlt:string} $modulo
+ * @var array{title:string, icon:string, tagline:string, intro:string, diferenciais:array, passos:array, imagem:string, imagemSecundaria:?string, imagemAlt:string} $modulo
  * @var string $proximoSlug
  * @var array{title:string, icon:string, tagline:string} $proximoModulo
  */
@@ -48,6 +48,28 @@ $imgBase = $basePath . '/assets/img/';
                 >
             <?php endif; ?>
         </div>
+    </div>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section class="landing-section" id="como-funciona">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="eyebrow">Como funciona</span>
+            <h2 class="section-title">Do cadastro ao <span class="text-gradient">dia a dia</span>, em poucos passos</h2>
+        </div>
+
+        <ol class="recurso-timeline">
+            <?php foreach ($modulo['passos'] as $indice => $passo): ?>
+                <li class="recurso-timeline-item reveal">
+                    <span class="recurso-timeline-numero"><?= $indice + 1 ?></span>
+                    <div class="recurso-timeline-body">
+                        <h3><?= htmlspecialchars($passo['titulo'], ENT_QUOTES, 'UTF-8') ?></h3>
+                        <p><?= htmlspecialchars($passo['texto'], ENT_QUOTES, 'UTF-8') ?></p>
+                    </div>
+                </li>
+            <?php endforeach; ?>
+        </ol>
     </div>
 </section>
 
