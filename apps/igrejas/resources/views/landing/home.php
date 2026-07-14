@@ -89,7 +89,9 @@ $modulosComparacao = array_filter(
             <h2 class="section-title">Feito pra acontecer <span class="text-gradient">ao vivo</span>, durante o culto</h2>
             <p class="section-lead">
                 As duas partes do sistema que a igreja usa toda semana, na hora do culto - sincronizadas em
-                tempo real entre o celular do líder, o tablet do preletor e o telão, sem operador dedicado.
+                tempo real entre o celular do líder, o tablet do preletor e o telão. A igreja escolhe como
+                operar: com um operador dedicado no computador, com o preletor controlando direto do próprio
+                tablet, ou os dois juntos, cada um numa tela.
             </p>
         </div>
 
@@ -115,7 +117,8 @@ $modulosComparacao = array_filter(
                     <span class="destaque-badge"><i class="bi bi-broadcast"></i> Destaque</span>
                     <h3><i class="bi bi-easel2"></i> Projeção e Telão</h3>
                     <p>O preletor circula, sublinha ou destaca o versículo direto no tablet - e a marcação
-                        aparece no telão na mesma hora, pra igreja inteira ver, sem precisar de operador.</p>
+                        aparece no telão na mesma hora, pra igreja inteira ver. Funciona com o preletor
+                        controlando sozinho ou junto com um operador dedicado no computador, como a igreja preferir.</p>
                     <a href="<?= $basePath ?>/recursos/projecao" class="feature-card-link">Ver como funciona <i class="bi bi-arrow-right"></i></a>
                 </div>
             </div>

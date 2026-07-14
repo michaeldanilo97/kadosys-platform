@@ -17,6 +17,20 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 102 - 2026-07-14
+
+**Corrige textos de Projeção que davam a entender que o cargo de operador foi eliminado**
+
+- Os textos sobre a Projeção (home e página `/recursos/projecao`)
+  enfatizavam demais "sem operador", "sem precisar de alguém dedicado
+  no computador" - dando a entender que essa função da equipe deixou
+  de existir. Reescritos pra deixar claro que é uma opção a mais, não
+  uma substituição: a igreja continua podendo operar com um operador
+  dedicado no computador, com o preletor controlando direto do
+  tablet, ou os dois ao mesmo tempo, cada um na sua tela.
+
+---
+
 ## Ajuste 101 - 2026-07-14
 
 **Louvores/Modo Culto também passa a usar imagem própria fora da pasta recursos/**
