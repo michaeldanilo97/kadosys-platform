@@ -65,7 +65,11 @@ final class UsuarioController extends Controller
             $this->redirect('/dashboard/usuarios/novo');
         }
 
-        User::create($data);
+        $userId = User::create($data);
+
+        if (($data['role'] ?? null) === User::ROLE_USUARIO) {
+            User::aplicarPerfilPadrao($userId);
+        }
 
         Session::flash('usuario_success', 'Usuário cadastrado com sucesso.');
         $this->redirect('/dashboard/usuarios');

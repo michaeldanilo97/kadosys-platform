@@ -541,11 +541,32 @@ CREATE TABLE IF NOT EXISTS user_modulos (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id INT UNSIGNED NOT NULL,
     modulo_slug VARCHAR(50) NOT NULL,
+    nivel ENUM('visualizar', 'editar') NOT NULL DEFAULT 'editar',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY user_modulos_unique (user_id, modulo_slug),
     CONSTRAINT user_modulos_user_id_foreign
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ----------------------------------------------------------------------------
+-- 045 - Permissoes: perfil padrao pra novos acessos
+-- ----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS permissoes_padrao (
+    modulo_slug VARCHAR(50) NOT NULL PRIMARY KEY,
+    nivel ENUM('visualizar', 'editar') NOT NULL DEFAULT 'visualizar',
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT IGNORE INTO permissoes_padrao (modulo_slug, nivel) VALUES
+    ('agenda', 'visualizar'),
+    ('equipe', 'visualizar'),
+    ('cultos', 'visualizar'),
+    ('ministerios', 'visualizar'),
+    ('grupos', 'visualizar'),
+    ('membros', 'visualizar'),
+    ('playbacks', 'visualizar');
 
 
 -- ----------------------------------------------------------------------------

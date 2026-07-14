@@ -23,6 +23,15 @@ final class User
     public const ROLE_USUARIO = 'usuario';
 
     /**
+     * Nivel de acesso a um modulo liberado em user_modulos:
+     * "visualizar" so ve a tela (formularios/tabelas ficam de leitura,
+     * qualquer acao que grava algo - POST - e bloqueada), "editar" e o
+     * acesso completo de sempre. Ver podeAcessarModulo().
+     */
+    public const NIVEL_VISUALIZAR = 'visualizar';
+    public const NIVEL_EDITAR = 'editar';
+
+    /**
      * Modulos que so um 'admin' pode acessar, independente do plano
      * contratado ou de qualquer permissao especifica em user_modulos -
      * gerenciar outros usuarios, permissoes e o plano/faturamento da
@@ -31,19 +40,6 @@ final class User
      * @var array<int, string>
      */
     public const MODULOS_SOMENTE_ADMIN = ['usuarios', 'permissoes', 'configuracoes'];
-
-    /**
-     * Slug "fantasma" (nunca corresponde a um modulo de verdade) usado
-     * pra marcar em user_modulos que um usuario foi criado
-     * EXPLICITAMENTE sem nenhum acesso - diferente de simplesmente nao
-     * ter nenhuma linha em user_modulos, que hoje significa "sem
-     * restricao" (acesso a tudo que o plano libera, ver
-     * podeAcessarModulo()). Usado pelo login criado automaticamente no
-     * auto-cadastro publico de membros (ver MembroPublicoController) -
-     * o membro ganha uma conta, mas o admin precisa liberar
-     * manualmente em Permissoes o que ela pode acessar.
-     */
-    public const SEM_ACESSO_PADRAO = '__membro_sem_acesso__';
 
     /**
      * Modulos que so ficam disponiveis pra 'admin' OU pra um usuario
@@ -351,18 +347,18 @@ final class User
     }
 
     /**
-     * Modulos liberados especificamente pra este usuario (allow-list) -
-     * ver podeAcessarModulo() pra como isso se combina com o papel e o
-     * plano contratado.
+     * Modulos liberados especificamente pra este usuario (allow-list),
+     * com o nivel de acesso de cada um - ver podeAcessarModulo() pra
+     * como isso se combina com o papel e o plano contratado.
      *
-     * @return array<int, string>
+     * @return array<string, string> slug => nivel (NIVEL_VISUALIZAR|NIVEL_EDITAR)
      */
     public static function modulosPermitidos(int $userId): array
     {
-        $stmt = Database::connection()->prepare('SELECT modulo_slug FROM user_modulos WHERE user_id = :user_id');
+        $stmt = Database::connection()->prepare('SELECT modulo_slug, nivel FROM user_modulos WHERE user_id = :user_id');
         $stmt->execute(['user_id' => $userId]);
 
-        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
     }
 
     /**
@@ -371,9 +367,9 @@ final class User
      * volta a ter acesso a tudo que o plano libera, ver
      * podeAcessarModulo()).
      *
-     * @param array<int, string> $slugs
+     * @param array<string, string> $modulosComNivel slug => nivel
      */
-    public static function definirModulosPermitidos(int $userId, array $slugs): void
+    public static function definirModulosPermitidos(int $userId, array $modulosComNivel): void
     {
         $pdo = Database::connection();
         $pdo->beginTransaction();
@@ -382,13 +378,26 @@ final class User
         $delete->execute(['user_id' => $userId]);
 
         $insert = $pdo->prepare(
-            'INSERT INTO user_modulos (user_id, modulo_slug, created_at) VALUES (:user_id, :modulo_slug, NOW())'
+            'INSERT INTO user_modulos (user_id, modulo_slug, nivel, created_at) VALUES (:user_id, :modulo_slug, :nivel, NOW())'
         );
-        foreach (array_unique($slugs) as $slug) {
-            $insert->execute(['user_id' => $userId, 'modulo_slug' => $slug]);
+        foreach ($modulosComNivel as $slug => $nivel) {
+            $nivel = in_array($nivel, [self::NIVEL_VISUALIZAR, self::NIVEL_EDITAR], true) ? $nivel : self::NIVEL_VISUALIZAR;
+            $insert->execute(['user_id' => $userId, 'modulo_slug' => $slug, 'nivel' => $nivel]);
         }
 
         $pdo->commit();
+    }
+
+    /**
+     * Aplica o perfil padrao configurado pela igreja (Configuracoes >
+     * Permissoes padrao, ver PermissaoPadrao) a um usuario recem-criado
+     * - usado nos tres lugares que criam uma conta 'usuario': cadastro
+     * combinado membro+acesso, autocadastro publico de membro e
+     * cadastro manual em Usuarios.
+     */
+    public static function aplicarPerfilPadrao(int $userId): void
+    {
+        self::definirModulosPermitidos($userId, PermissaoPadrao::todas());
     }
 
     /**
@@ -396,15 +405,23 @@ final class User
      * plano contratado, ver Igrejas\Models\Plano::disponivel() pra essa
      * outra camada - as duas precisam liberar pro acesso valer):
      *   1. sem usuario logado -> nunca acessa.
-     *   2. 'admin' -> acessa tudo.
+     *   2. 'admin' -> acessa tudo, sempre com nivel "editar".
      *   3. Usuarios/Permissoes/Configuracoes -> so 'admin' acessa, nunca
      *      configuravel via user_modulos.
      *   4. 'usuario' sem nenhuma linha em user_modulos -> acessa
-     *      qualquer outro modulo (padrao: tudo que o plano libera).
+     *      qualquer outro modulo com nivel "editar" (padrao: tudo que o
+     *      plano libera, sem restricao - comportamento legado mantido
+     *      pra contas criadas antes dessa distincao existir).
      *   5. 'usuario' com pelo menos uma linha em user_modulos -> vira
-     *      allow-list, so os modulos listados ficam liberados.
+     *      allow-list; cada modulo listado so libera $acaoMinima se o
+     *      nivel salvo pra ele for igual ou maior (visualizar < editar).
+     *
+     * $acaoMinima: NIVEL_VISUALIZAR (padrao) pra checar "consegue ver a
+     * tela", NIVEL_EDITAR pra checar "consegue salvar/excluir algo" -
+     * ver AuthMiddleware::bloquearSePermissaoNegada(), que escolhe com
+     * base no metodo HTTP da requisicao.
      */
-    public static function podeAcessarModulo(?self $user, string $slug): bool
+    public static function podeAcessarModulo(?self $user, string $slug, string $acaoMinima = self::NIVEL_VISUALIZAR): bool
     {
         if ($user === null) {
             return false;
@@ -424,7 +441,19 @@ final class User
 
         $modulosPermitidos = self::modulosPermitidos($user->id);
 
-        return $modulosPermitidos === [] || in_array($slug, $modulosPermitidos, true);
+        if ($modulosPermitidos === []) {
+            return true;
+        }
+
+        if (!array_key_exists($slug, $modulosPermitidos)) {
+            return false;
+        }
+
+        if ($acaoMinima === self::NIVEL_EDITAR) {
+            return $modulosPermitidos[$slug] === self::NIVEL_EDITAR;
+        }
+
+        return true;
     }
 
     private static function fromRow(array $row): self

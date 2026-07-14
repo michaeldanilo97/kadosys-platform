@@ -6,8 +6,9 @@
   });
 
   // Mesmo padrao visual do initPlanoEscolha() do cadastro.js (classe
-  // .selecionado controlada por JS) - mas com checkbox em vez de
-  // radio, entao cada card alterna independente dos outros.
+  // .selecionado controlada por JS) - cada card tem 3 radios (sem
+  // acesso/visualizar/editar); "selecionado" quando qualquer opcao
+  // diferente de "sem acesso" (value vazio) estiver marcada.
   function initPermissoesGrid() {
     var cartoes = document.querySelectorAll('[data-permissao-card]');
 
@@ -16,17 +17,20 @@
     }
 
     cartoes.forEach(function (cartao) {
-      var checkbox = cartao.querySelector('input[type="checkbox"]');
+      var radios = cartao.querySelectorAll('input[type="radio"]');
 
-      if (!checkbox) {
+      if (!radios.length) {
         return;
       }
 
       function atualizar() {
-        cartao.classList.toggle('selecionado', checkbox.checked);
+        var marcado = cartao.querySelector('input[type="radio"]:checked');
+        cartao.classList.toggle('selecionado', !!marcado && marcado.value !== '');
       }
 
-      checkbox.addEventListener('change', atualizar);
+      radios.forEach(function (radio) {
+        radio.addEventListener('change', atualizar);
+      });
       atualizar();
     });
   }

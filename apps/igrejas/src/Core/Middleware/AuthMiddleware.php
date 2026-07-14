@@ -157,7 +157,12 @@ final class AuthMiddleware implements MiddlewareInterface
             return;
         }
 
-        if (User::podeAcessarModulo($auth->user(), $slug)) {
+        // GET (ver a tela) so exige nivel "visualizar"; qualquer outro
+        // metodo (POST, o unico usado pra escrita neste app) exige
+        // nivel "editar" - ver User::podeAcessarModulo().
+        $acaoMinima = $request->method === 'GET' ? User::NIVEL_VISUALIZAR : User::NIVEL_EDITAR;
+
+        if (User::podeAcessarModulo($auth->user(), $slug, $acaoMinima)) {
             return;
         }
 

@@ -294,6 +294,50 @@
   word-break: break-word;
 }
 
+/* Cartao de permissao por modulo: em vez de um unico checkbox
+   (label inteira clicavel), agora e um grupo de 3 radios (sem
+   acesso/visualizar/editar) - o cartao so serve de moldura visual,
+   cada radio tem seu proprio label clicavel. */
+.permissao-card {
+  cursor: default;
+}
+
+.permissao-card .nome {
+  padding-right: 0;
+}
+
+.permissao-niveis {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.9rem;
+  margin-top: 0.6rem;
+}
+
+.permissao-niveis label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+/* .plano-escolha-card usa um fundo escuro semi-transparente pensado
+   pro tema escuro - sobre o fundo claro do tema claro, isso vira um
+   cinza medio, quase igual ao cinza claro de var(--text-muted), o que
+   deixava os rotulos "Sem acesso/Só visualizar/Editar" praticamente
+   invisiveis (mesmo problema de contraste ja visto no toggle switch,
+   Ajuste 89). */
+[data-theme="light"] .permissao-niveis label {
+  color: #1F2937;
+}
+
+.permissao-niveis input[type="radio"] {
+  position: static;
+  accent-color: var(--primary);
+}
+
 .plano-escolha-card .nome {
   display: block;
   font-weight: 700;

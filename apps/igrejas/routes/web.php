@@ -238,6 +238,7 @@ $router->post('/dashboard/configuracoes/cadastro-membros', [ConfiguracaoControll
 $router->post('/dashboard/configuracoes/chave-pix', [ConfiguracaoController::class, 'atualizarChavePix'], [AuthMiddleware::class]);
 $router->post('/dashboard/configuracoes/mensagem-pix', [ConfiguracaoController::class, 'atualizarMensagemPix'], [AuthMiddleware::class]);
 $router->post('/dashboard/configuracoes/mensagem-aniversario', [ConfiguracaoController::class, 'atualizarMensagemAniversario'], [AuthMiddleware::class]);
+$router->post('/dashboard/configuracoes/permissoes-padrao', [ConfiguracaoController::class, 'atualizarPermissoesPadrao'], [AuthMiddleware::class]);
 
 // Assinatura recorrente do plano via Mercado Pago (Checkout Pro). Sem
 // PlanoMiddleware pelo mesmo motivo das rotas de Configuracoes acima.

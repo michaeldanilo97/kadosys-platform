@@ -8,9 +8,6 @@ use Igrejas\Core\Auth;
 use Igrejas\Core\Controller;
 use Igrejas\Core\Csrf;
 use Igrejas\Core\Session;
-use Igrejas\Core\TenantResolver;
-use Igrejas\Models\ConfiguracaoIgreja;
-use Igrejas\Models\Plano;
 use Igrejas\Models\User;
 
 /**
@@ -50,7 +47,7 @@ final class PermissaoController extends Controller
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
             'usuarioEditado' => $usuarioEditado,
-            'modulosDisponiveis' => $this->modulosConfiguraveis(),
+            'modulosDisponiveis' => DashboardController::modulosConfiguraveisParaPermissoes(),
             'modulosPermitidos' => User::modulosPermitidos($usuarioEditado->id),
             'success' => Session::flash('permissao_success'),
             'csrf' => Csrf::field(),
@@ -69,51 +66,22 @@ final class PermissaoController extends Controller
             $this->redirect("/dashboard/permissoes/{$id}/editar");
         }
 
-        $modulosValidos = array_keys($this->modulosConfiguraveis());
-        $modulosSelecionados = array_values(array_intersect((array) $this->request->input('modulos', []), $modulosValidos));
+        $modulosValidos = array_keys(DashboardController::modulosConfiguraveisParaPermissoes());
+        $niveisEnviados = (array) $this->request->input('modulos', []);
 
-        User::definirModulosPermitidos($usuarioEditado->id, $modulosSelecionados);
+        $modulosComNivel = [];
+        foreach ($niveisEnviados as $slug => $nivel) {
+            if (!in_array($slug, $modulosValidos, true) || !in_array($nivel, [User::NIVEL_VISUALIZAR, User::NIVEL_EDITAR], true)) {
+                continue;
+            }
+
+            $modulosComNivel[$slug] = $nivel;
+        }
+
+        User::definirModulosPermitidos($usuarioEditado->id, $modulosComNivel);
 
         Session::flash('permissao_success', 'Permissões de ' . $usuarioEditado->name . ' atualizadas com sucesso.');
         $this->redirect("/dashboard/permissoes/{$id}/editar");
-    }
-
-    /**
-     * Modulos configuraveis por Permissoes: exclui os exclusivos de
-     * admin (nunca configuraveis, ver User::MODULOS_SOMENTE_ADMIN) e os
-     * que o plano atual da igreja nem libera (restringir algo ja
-     * bloqueado pelo plano nao faz sentido) - respeitando o trial
-     * gratis, que libera tudo temporariamente (mesma regra usada em
-     * todo o resto do painel, ver AuthMiddleware/PlanoMiddleware).
-     *
-     * @return array<string, array{title:string, icon:string}>
-     */
-    private function modulosConfiguraveis(): array
-    {
-        $planoAtual = ConfiguracaoIgreja::atual()->plano;
-        $emTrial = TenantResolver::atual()?->metodoPagamento === 'trial';
-        $modulos = [];
-
-        foreach (DashboardController::modules() as $slug => $modulo) {
-            if (in_array($slug, User::MODULOS_SOMENTE_ADMIN, true)) {
-                continue;
-            }
-
-            // Louvores nao e configuravel aqui - o acesso e todo-ou-nada
-            // via a flag "musico" (ver tela de Usuarios), nao uma
-            // liberacao manual por usuario como os demais modulos.
-            if (in_array($slug, User::MODULOS_SOMENTE_MUSICO, true)) {
-                continue;
-            }
-
-            if (!Plano::disponivel($planoAtual, $slug, $emTrial)) {
-                continue;
-            }
-
-            $modulos[$slug] = $modulo;
-        }
-
-        return $modulos;
     }
 
     private function buscarUsuarioOuFalhar(int $id): ?User
