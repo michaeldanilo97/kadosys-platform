@@ -46,7 +46,9 @@ $basePath = $config['base_path'] ?? '';
                     <?php foreach (\Igrejas\Controllers\RecursoController::MODULOS as $slug => $modulo): ?>
                         <?php $destaque = in_array($slug, ['louvores', 'projecao'], true); ?>
                         <a href="<?= $basePath ?>/recursos/<?= $slug ?>" class="<?= $destaque ? 'has-destaque' : '' ?>">
-                            <i class="bi <?= htmlspecialchars($modulo['icon'], ENT_QUOTES, 'UTF-8') ?>"></i> <?= htmlspecialchars($modulo['title'], ENT_QUOTES, 'UTF-8') ?>
+                            <span class="landing-nav-dropdown-label">
+                                <i class="bi <?= htmlspecialchars($modulo['icon'], ENT_QUOTES, 'UTF-8') ?>"></i> <?= htmlspecialchars($modulo['title'], ENT_QUOTES, 'UTF-8') ?>
+                            </span>
                             <?php if ($destaque): ?>
                                 <span class="landing-nav-dropdown-badge">Destaque</span>
                             <?php endif; ?>

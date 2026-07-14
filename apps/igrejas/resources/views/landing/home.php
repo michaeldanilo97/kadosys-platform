@@ -109,8 +109,7 @@ $modulosComparacao = array_filter(
 
             <div class="destaque-card glass-card reveal">
                 <div class="destaque-card-media">
-                    <img src="<?= $basePath ?>/assets/img/recursos/projecao-marcacao.png" alt="Telão mostrando uma marcação feita ao vivo pelo preletor sobre o versículo" loading="lazy">
-                    <img src="<?= $basePath ?>/assets/img/recursos/preletor-marcacao.png" alt="Preletor circulando o versículo no tablet" loading="lazy" class="destaque-card-media-float">
+                    <img src="<?= $basePath ?>/assets/img/telao.png" alt="Telão mostrando uma marcação feita ao vivo pelo preletor sobre o versículo, com o tablet do preletor ao lado" loading="lazy">
                 </div>
                 <div class="destaque-card-body">
                     <span class="destaque-badge"><i class="bi bi-broadcast"></i> Destaque</span>
