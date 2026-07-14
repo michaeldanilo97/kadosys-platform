@@ -21,12 +21,13 @@ use Igrejas\Models\User;
  * senao, cada membro continua sendo cadastrado manualmente pelo modulo
  * Membros do painel.
  *
- * O login criado ganha o papel 'usuario' mas SEM nenhum modulo
- * liberado por padrao (ver User::SEM_ACESSO_PADRAO) - diferente de um
- * usuario de equipe criado pelo admin (que por padrao acessa tudo que
- * o plano libera), um membro que se cadastrou sozinho pelo site nao
- * deveria ganhar acesso administrativo nenhum automaticamente. O admin
- * decide depois, em Permissoes, o que liberar pra ele.
+ * O login criado ganha o papel 'usuario' com o PERFIL PADRAO
+ * configurado pela igreja em Configuracoes > Permissoes padrao (ver
+ * User::aplicarPerfilPadrao/PermissaoPadrao) - por padrao de fabrica,
+ * um acesso "seguro" que nao inclui Financeiro/Projecao e afins, e
+ * deixa os modulos de uso geral (Agenda, Cultos, Ministerios etc.)
+ * como so-visualizar. O admin pode ajustar isso a qualquer momento em
+ * Permissoes, individualmente por usuario.
  */
 final class MembroPublicoController extends Controller
 {
@@ -81,7 +82,7 @@ final class MembroPublicoController extends Controller
             'password' => $senha,
             'role' => User::ROLE_USUARIO,
         ]);
-        User::definirModulosPermitidos($userId, [User::SEM_ACESSO_PADRAO]);
+        User::aplicarPerfilPadrao($userId);
 
         Session::flash('cadastro_membro_sucesso', true);
         $this->redirect('/cadastro');

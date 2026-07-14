@@ -270,3 +270,47 @@ $emTrial = $tenant !== null && $tenant->metodoPagamento === 'trial';
         </div>
     </form>
 </div>
+
+<div class="dash-panel">
+    <div class="dash-panel-head">
+        <h2><i class="bi bi-shield-lock"></i> Permissões padrão para novos acessos</h2>
+    </div>
+    <p class="dash-page-subtitle" style="margin-bottom: 1.4rem;">
+        Todo novo acesso de usuário (criado ao dar login para um membro, pelo autocadastro público, ou manualmente
+        em Usuários) já nasce com este perfil - depois é possível ajustar individualmente em Permissões. Módulo sem
+        nenhuma opção marcada fica de fora por padrão (ex.: Financeiro, Projeção).
+    </p>
+
+    <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/permissoes-padrao">
+        <?= $csrf ?>
+
+        <div class="plano-escolha" data-permissoes-grid>
+            <?php foreach ($modulosConfiguraveis as $slug => $modulo): ?>
+                <?php $nivelAtual = $permissoesPadrao[$slug] ?? ''; ?>
+                <div class="plano-escolha-card permissao-card" data-permissao-card>
+                    <span class="nome"><i class="bi <?= htmlspecialchars($modulo['icon'], ENT_QUOTES, 'UTF-8') ?>"></i> <?= htmlspecialchars($modulo['title'], ENT_QUOTES, 'UTF-8') ?></span>
+                    <div class="permissao-niveis">
+                        <label>
+                            <input type="radio" name="modulos[<?= htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') ?>]" value="" <?= $nivelAtual === '' ? 'checked' : '' ?>>
+                            Sem acesso
+                        </label>
+                        <label>
+                            <input type="radio" name="modulos[<?= htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') ?>]" value="visualizar" <?= $nivelAtual === 'visualizar' ? 'checked' : '' ?>>
+                            Só visualizar
+                        </label>
+                        <label>
+                            <input type="radio" name="modulos[<?= htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') ?>]" value="editar" <?= $nivelAtual === 'editar' ? 'checked' : '' ?>>
+                            Editar
+                        </label>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="crud-form-actions" style="justify-content: flex-start; margin-top: 1.2rem;">
+            <button type="submit" class="btn-k btn-k-grad"><i class="bi bi-check-lg"></i> Salvar perfil padrão</button>
+        </div>
+    </form>
+</div>
+
+<script src="<?= $basePath ?>/assets/js/permissoes-form.js?v=<?= \Igrejas\Core\View::assetVersion('assets/js/permissoes-form.js') ?>"></script>

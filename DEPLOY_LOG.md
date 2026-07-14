@@ -17,6 +17,36 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 92 - 2026-07-14
+
+**Permissões: nível "só visualizar" x "editar" por módulo, e perfil padrão pra novos acessos**
+
+- Cada módulo liberado pra um usuário em Permissões agora tem um
+  nível: "Sem acesso", "Só visualizar" (vê a tela, mas qualquer
+  tentativa de salvar/excluir algo é bloqueada) ou "Editar" (acesso
+  completo, como sempre foi). Antes era tudo ou nada - se o módulo
+  estivesse liberado, dava pra editar; agora dá pra deixar alguém ver
+  uma tela sem poder mexer nela.
+- Nova seção em Configurações > "Permissões padrão para novos
+  acessos": a igreja escolhe o nível de cada módulo que todo NOVO
+  acesso de usuário já nasce com - seja criado no cadastro combinado
+  de membro (Ajuste 88), pelo autocadastro público, ou manualmente em
+  Usuários. Antes, um acesso criado manualmente nascia sem nenhuma
+  restrição (via tudo que o plano libera) e o autocadastro público
+  nascia sem acesso nenhum (o admin tinha que liberar cada módulo na
+  mão) - agora os dois usam o mesmo perfil configurável.
+- Perfil padrão de fábrica (antes de qualquer personalização): Agenda,
+  Equipe, Cultos, Ministérios, Grupos, Membros e Playbacks liberados
+  como "só visualizar"; Financeiro, Projeção, Patrimônio, Comunicação
+  e Relatórios ficam de fora (sem acesso) até o admin liberar na mão -
+  um começo que não expõe informação sensível por acidente.
+- Migração 045 (rodar no banco de cada igreja): adiciona a coluna
+  `nivel` em `user_modulos` e cria a tabela `permissoes_padrao`, já
+  com o perfil de fábrica acima.
+- Contas existentes não mudam de comportamento: usuário sem nenhuma
+  restrição em Permissões continua acessando tudo que o plano libera,
+  com edição completa, como sempre foi.
+
 ## Ajuste 91 - 2026-07-14
 
 **Novo módulo Agenda: calendário com cultos, eventos e aniversariantes**

@@ -6,7 +6,7 @@ use Igrejas\Core\View;
  * @var array $config
  * @var \Igrejas\Models\User $usuarioEditado
  * @var array<string, array{title:string, icon:string}> $modulosDisponiveis
- * @var array<int, string> $modulosPermitidos
+ * @var array<string, string> $modulosPermitidos slug => nivel
  * @var string|null $success
  * @var string $csrf
  */
@@ -18,8 +18,9 @@ $semRestricao = $modulosPermitidos === [];
     <div>
         <h1 class="dash-page-title">Permissões de <?= htmlspecialchars($usuarioEditado->name, ENT_QUOTES, 'UTF-8') ?></h1>
         <p class="dash-page-subtitle">
-            Escolha quais módulos <?= htmlspecialchars($usuarioEditado->name, ENT_QUOTES, 'UTF-8') ?> pode acessar.
-            Sem nenhum módulo marcado, o acesso é o padrão: tudo que o plano contratado libera.
+            Escolha quais módulos <?= htmlspecialchars($usuarioEditado->name, ENT_QUOTES, 'UTF-8') ?> pode acessar,
+            e se é só pra visualizar ou também pra editar/salvar. Sem nenhum módulo marcado, o acesso é o padrão:
+            tudo que o plano contratado libera, com edição completa.
         </p>
     </div>
     <div class="dash-page-actions">
@@ -40,21 +41,30 @@ $semRestricao = $modulosPermitidos === [];
         <div class="crud-alert" style="background: rgba(59, 130, 246, 0.08); border-color: rgba(59, 130, 246, 0.3); color: var(--primary-soft);">
             <i class="bi bi-info-circle"></i>
             <?= $semRestricao
-                ? 'Nenhuma restrição aplicada agora - o usuário acessa tudo que o plano contratado libera.'
-                : 'Restrição ativa - o usuário só acessa os módulos marcados abaixo.' ?>
+                ? 'Nenhuma restrição aplicada agora - o usuário acessa tudo que o plano contratado libera, com edição completa.'
+                : 'Restrição ativa - o usuário só acessa os módulos marcados abaixo, no nível escolhido.' ?>
         </div>
 
         <div class="plano-escolha" data-permissoes-grid style="margin-top: 1rem;">
             <?php foreach ($modulosDisponiveis as $slug => $modulo): ?>
-                <label class="plano-escolha-card" data-permissao-card>
-                    <input
-                        type="checkbox"
-                        name="modulos[]"
-                        value="<?= htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') ?>"
-                        <?= in_array($slug, $modulosPermitidos, true) ? 'checked' : '' ?>
-                    >
+                <?php $nivelAtual = $modulosPermitidos[$slug] ?? ''; ?>
+                <div class="plano-escolha-card permissao-card" data-permissao-card>
                     <span class="nome"><i class="bi <?= htmlspecialchars($modulo['icon'], ENT_QUOTES, 'UTF-8') ?>"></i> <?= htmlspecialchars($modulo['title'], ENT_QUOTES, 'UTF-8') ?></span>
-                </label>
+                    <div class="permissao-niveis">
+                        <label>
+                            <input type="radio" name="modulos[<?= htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') ?>]" value="" <?= $nivelAtual === '' ? 'checked' : '' ?>>
+                            Sem acesso
+                        </label>
+                        <label>
+                            <input type="radio" name="modulos[<?= htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') ?>]" value="visualizar" <?= $nivelAtual === 'visualizar' ? 'checked' : '' ?>>
+                            Só visualizar
+                        </label>
+                        <label>
+                            <input type="radio" name="modulos[<?= htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') ?>]" value="editar" <?= $nivelAtual === 'editar' ? 'checked' : '' ?>>
+                            Editar
+                        </label>
+                    </div>
+                </div>
             <?php endforeach; ?>
         </div>
 

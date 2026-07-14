@@ -132,6 +132,43 @@ final class DashboardController extends Controller
         return $modules;
     }
 
+    /**
+     * Modulos que fazem sentido configurar por permissao individual
+     * (tela Permissoes) ou por perfil padrao da igreja (Configuracoes >
+     * Permissoes padrao): exclui os exclusivos de admin (nunca
+     * configuraveis, ver User::MODULOS_SOMENTE_ADMIN), Louvores (acesso
+     * todo-ou-nada via a flag "musico", nao uma liberacao manual) e o
+     * que o plano atual da igreja nem libera - respeitando o trial
+     * gratis, que libera tudo temporariamente (mesma regra usada em
+     * todo o resto do painel).
+     *
+     * @return array<string, array{title:string, icon:string}>
+     */
+    public static function modulosConfiguraveisParaPermissoes(): array
+    {
+        $planoAtual = ConfiguracaoIgreja::atual()->plano;
+        $emTrial = TenantResolver::atual()?->metodoPagamento === 'trial';
+        $modulos = [];
+
+        foreach (self::modules() as $slug => $modulo) {
+            if (in_array($slug, User::MODULOS_SOMENTE_ADMIN, true)) {
+                continue;
+            }
+
+            if (in_array($slug, User::MODULOS_SOMENTE_MUSICO, true)) {
+                continue;
+            }
+
+            if (!Plano::disponivel($planoAtual, $slug, $emTrial)) {
+                continue;
+            }
+
+            $modulos[$slug] = $modulo;
+        }
+
+        return $modulos;
+    }
+
     public function index(): void
     {
         $user = (new Auth($this->config))->user();

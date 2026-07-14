@@ -15,7 +15,9 @@ use Igrejas\Models\BibliaLivro;
 use Igrejas\Models\BibliaVersao;
 use Igrejas\Models\ConfiguracaoIgreja;
 use Igrejas\Models\FaturaPix;
+use Igrejas\Models\PermissaoPadrao;
 use Igrejas\Models\Plano;
+use Igrejas\Models\User;
 
 /**
  * Controller de Configuracoes gerais da igreja.
@@ -66,6 +68,8 @@ final class ConfiguracaoController extends Controller
             'tenant' => TenantResolver::atual(),
             'livros' => BibliaLivro::all(),
             'versoesBiblia' => BibliaVersao::todas(),
+            'modulosConfiguraveis' => DashboardController::modulosConfiguraveisParaPermissoes(),
+            'permissoesPadrao' => PermissaoPadrao::todas(),
             'success' => Session::flash('config_success'),
             'errors' => Session::flash('config_errors') ?? [],
             'csrf' => Csrf::field(),
@@ -372,6 +376,35 @@ final class ConfiguracaoController extends Controller
             );
 
             Session::flash('config_success', 'Mensagem da tela de Pix atualizada.');
+        }
+
+        $this->redirect('/dashboard/configuracoes');
+    }
+
+    /**
+     * Perfil padrao de permissoes (ver PermissaoPadrao): o que todo
+     * novo acesso de usuario ja ganha automaticamente, sem o admin
+     * precisar configurar Permissoes na mao pra cada pessoa - aplicado
+     * no cadastro combinado de membro+acesso, no autocadastro publico
+     * e no cadastro manual em Usuarios (ver User::aplicarPerfilPadrao).
+     */
+    public function atualizarPermissoesPadrao(): void
+    {
+        if (Csrf::verify($this->request->input('_csrf_token'))) {
+            $modulosValidos = array_keys(DashboardController::modulosConfiguraveisParaPermissoes());
+            $niveisEnviados = (array) $this->request->input('modulos', []);
+
+            $modulosComNivel = [];
+            foreach ($niveisEnviados as $slug => $nivel) {
+                if (!in_array($slug, $modulosValidos, true) || !in_array($nivel, [User::NIVEL_VISUALIZAR, User::NIVEL_EDITAR], true)) {
+                    continue;
+                }
+
+                $modulosComNivel[$slug] = $nivel;
+            }
+
+            PermissaoPadrao::definir($modulosComNivel);
+            Session::flash('config_success', 'Permissões padrão para novos acessos atualizadas.');
         }
 
         $this->redirect('/dashboard/configuracoes');

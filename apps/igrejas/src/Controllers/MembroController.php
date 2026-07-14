@@ -96,7 +96,7 @@ final class MembroController extends Controller
         Membro::create($data);
 
         if ($criarAcesso) {
-            User::create([
+            $userId = User::create([
                 'name' => trim((string) $data['nome']),
                 'email' => trim((string) $data['email']),
                 'password' => $senha,
@@ -105,6 +105,7 @@ final class MembroController extends Controller
                 'lider_louvor' => $liderLouvor,
                 'cargo' => $musico ? User::CARGO_MUSICO : User::CARGO_MEMBRO,
             ]);
+            User::aplicarPerfilPadrao($userId);
         }
 
         Session::flash('membro_success', 'Membro cadastrado com sucesso.' . ($criarAcesso ? ' Acesso ao sistema criado.' : ''));
