@@ -17,6 +17,38 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 95 - 2026-07-14
+
+**Site institucional: página dedicada por módulo, com screenshot real do sistema**
+
+- Cada módulo do sistema (Louvores/Modo Culto, Projeção/Telão, Agenda,
+  Financeiro, Membros, Equipe, Ministérios, Grupos, Playbacks,
+  Comunicação, Patrimônio e Relatórios) ganhou sua própria página
+  pública em `/recursos/{modulo}` - hero com o diferencial principal,
+  uma captura de tela real do sistema rodando, a lista de
+  diferenciais daquele módulo, e "conheça também" pro próximo módulo.
+  Antes só existia a home única com cards resumidos.
+- Destaque pro Modo Culto (transposição automática de tom ao vivo,
+  sincronizado com todo o time) e pra Projeção (telão sincronizado com
+  o tablet do preletor em tempo real, com uma imagem mostrando os
+  dois lado a lado) - os dois maiores diferenciais do sistema, que
+  antes não apareciam em lugar nenhum do site.
+- A seção "Capturas de tela" da home, que até então era só um
+  placeholder ("imagens reais serão adicionadas..."), agora mostra
+  3 screenshots reais (Louvores, Projeção, Agenda) linkando pras
+  páginas completas.
+- Cada card da seção "Recursos" da home ganhou um link "Saiba mais"
+  pra página dedicada do módulo correspondente, e a navbar ganhou um
+  menu suspenso "Recursos" listando todos os módulos (com equivalente
+  em lista simples no menu mobile).
+- O scroll-reveal que já existia na home (efeito de entrada conforme
+  desce a tela) foi reaproveitado em todas as páginas novas - mesma
+  animação, sem JS adicional.
+- Ajuste técnico: os links da navbar/rodapé da home usavam âncoras
+  relativas (`#recursos`) - funcionavam só na própria home. Agora
+  sempre apontam pra `/#recursos`, funcionando a partir de qualquer
+  página nova.
+
 ## Ajuste 94 - 2026-07-14
 
 **Permissões: card não pré-marca mais "Sem acesso" quando o usuário não tem restrição nenhuma**

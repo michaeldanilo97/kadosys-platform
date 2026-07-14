@@ -37,11 +37,22 @@ $basePath = $config['base_path'] ?? '';
         </a>
 
         <nav class="landing-nav-links" data-nav-links>
-            <a href="#sobre">Sobre</a>
-            <a href="#recursos">Recursos</a>
-            <a href="#funcionalidades">Funcionalidades</a>
-            <a href="#planos">Planos</a>
-            <a href="#faq">FAQ</a>
+            <a href="<?= $basePath ?>/#sobre">Sobre</a>
+            <div class="landing-nav-dropdown" data-nav-dropdown>
+                <button type="button" class="landing-nav-dropdown-btn" data-nav-dropdown-btn>
+                    Recursos <i class="bi bi-chevron-down"></i>
+                </button>
+                <div class="landing-nav-dropdown-panel">
+                    <?php foreach (\Igrejas\Controllers\RecursoController::MODULOS as $slug => $modulo): ?>
+                        <a href="<?= $basePath ?>/recursos/<?= $slug ?>">
+                            <i class="bi <?= htmlspecialchars($modulo['icon'], ENT_QUOTES, 'UTF-8') ?>"></i> <?= htmlspecialchars($modulo['title'], ENT_QUOTES, 'UTF-8') ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <a href="<?= $basePath ?>/#funcionalidades">Funcionalidades</a>
+            <a href="<?= $basePath ?>/#planos">Planos</a>
+            <a href="<?= $basePath ?>/#faq">FAQ</a>
         </nav>
 
         <div class="landing-nav-actions">
@@ -76,15 +87,23 @@ $basePath = $config['base_path'] ?? '';
             <div class="footer-col">
                 <h5>Produto</h5>
                 <ul>
-                    <li><a href="#sobre">Sobre o sistema</a></li>
-                    <li><a href="#recursos">Recursos</a></li>
-                    <li><a href="#planos">Planos</a></li>
+                    <li><a href="<?= $basePath ?>/#sobre">Sobre o sistema</a></li>
+                    <li><a href="<?= $basePath ?>/#recursos">Recursos</a></li>
+                    <li><a href="<?= $basePath ?>/#planos">Planos</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h5>Recursos</h5>
+                <ul>
+                    <?php foreach (array_slice(\Igrejas\Controllers\RecursoController::MODULOS, 0, 5, true) as $slug => $modulo): ?>
+                        <li><a href="<?= $basePath ?>/recursos/<?= $slug ?>"><?= htmlspecialchars($modulo['title'], ENT_QUOTES, 'UTF-8') ?></a></li>
+                    <?php endforeach; ?>
                 </ul>
             </div>
             <div class="footer-col">
                 <h5>Suporte</h5>
                 <ul>
-                    <li><a href="#faq">Perguntas frequentes</a></li>
+                    <li><a href="<?= $basePath ?>/#faq">Perguntas frequentes</a></li>
                     <li><a href="<?= $basePath ?>/login">Acessar o sistema</a></li>
                     <li><a href="<?= $basePath ?>/esqueci-senha">Recuperar senha</a></li>
                 </ul>

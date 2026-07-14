@@ -3,12 +3,37 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     initMobileMenu();
+    initNavDropdown();
     initFaqAccordion();
     initPlanCompare();
     initScrollHeader();
     initReveal();
     initCounters();
   });
+
+  // Menu "Recursos" da navbar: abre no hover em telas com mouse (via
+  // CSS), e no clique em touch/mobile - onde nao existe hover de
+  // verdade, o clique no botao alterna uma classe que a mesma regra de
+  // CSS tambem usa pra mostrar o painel.
+  function initNavDropdown() {
+    var dropdown = document.querySelector('[data-nav-dropdown]');
+    var botao = document.querySelector('[data-nav-dropdown-btn]');
+
+    if (!dropdown || !botao) {
+      return;
+    }
+
+    botao.addEventListener('click', function (event) {
+      event.stopPropagation();
+      dropdown.classList.toggle('is-open');
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!dropdown.contains(event.target)) {
+        dropdown.classList.remove('is-open');
+      }
+    });
+  }
 
   function initMobileMenu() {
     var toggle = document.querySelector('[data-nav-toggle]');

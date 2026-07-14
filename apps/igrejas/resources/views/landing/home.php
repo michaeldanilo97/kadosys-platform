@@ -131,41 +131,55 @@ $modulosComparacao = array_filter(
                 <div class="icon"><i class="bi bi-people"></i></div>
                 <h3>Gestão de membros</h3>
                 <p>Cadastro completo, histórico e acompanhamento de cada membro da congregação.</p>
+                <a href="<?= $basePath ?>/recursos/membros" class="feature-card-link">Saiba mais <i class="bi bi-arrow-right"></i></a>
             </div>
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-diagram-3"></i></div>
                 <h3>Ministérios e grupos</h3>
                 <p>Organização de ministérios, pequenos grupos e suas respectivas lideranças.</p>
+                <a href="<?= $basePath ?>/recursos/ministerios" class="feature-card-link">Saiba mais <i class="bi bi-arrow-right"></i></a>
             </div>
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-cash-coin"></i></div>
                 <h3>Financeiro</h3>
                 <p>Controle de dízimos, ofertas e despesas com relatórios claros.</p>
+                <a href="<?= $basePath ?>/recursos/financeiro" class="feature-card-link">Saiba mais <i class="bi bi-arrow-right"></i></a>
             </div>
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-calendar3"></i></div>
                 <h3>Agenda e cultos</h3>
                 <p>Programação de cultos, eventos e compromissos da igreja em um calendário único.</p>
+                <a href="<?= $basePath ?>/recursos/agenda" class="feature-card-link">Saiba mais <i class="bi bi-arrow-right"></i></a>
             </div>
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-building"></i></div>
                 <h3>Patrimônio</h3>
                 <p>Controle de bens, imóveis e equipamentos sob responsabilidade da igreja.</p>
+                <a href="<?= $basePath ?>/recursos/patrimonio" class="feature-card-link">Saiba mais <i class="bi bi-arrow-right"></i></a>
             </div>
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-megaphone"></i></div>
                 <h3>Comunicação</h3>
                 <p>Avisos e comunicados centralizados para membros e liderança.</p>
+                <a href="<?= $basePath ?>/recursos/comunicacao" class="feature-card-link">Saiba mais <i class="bi bi-arrow-right"></i></a>
             </div>
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-easel2"></i></div>
                 <h3>Projeção e Telão</h3>
                 <p>Bíblia, vídeos e letras projetados ao vivo no telão, com controle remoto para o preletor direto do celular ou tablet durante o culto.</p>
+                <a href="<?= $basePath ?>/recursos/projecao" class="feature-card-link">Saiba mais <i class="bi bi-arrow-right"></i></a>
+            </div>
+            <div class="feature-card glass-card reveal">
+                <div class="icon"><i class="bi bi-music-note-list"></i></div>
+                <h3>Louvores e Modo Culto</h3>
+                <p>Cifra e tom sincronizados ao vivo com todo o time - o líder muda o tom no celular e a cifra se ajusta sozinha pra todo mundo, na hora.</p>
+                <a href="<?= $basePath ?>/recursos/louvores" class="feature-card-link">Saiba mais <i class="bi bi-arrow-right"></i></a>
             </div>
             <div class="feature-card glass-card reveal">
                 <div class="icon"><i class="bi bi-music-note-beamed"></i></div>
                 <h3>Playbacks</h3>
                 <p>Biblioteca de playbacks para o ministério de louvor, liberada em todos os planos - sem custo extra.</p>
+                <a href="<?= $basePath ?>/recursos/playbacks" class="feature-card-link">Saiba mais <i class="bi bi-arrow-right"></i></a>
             </div>
         </div>
     </div>
@@ -255,22 +269,26 @@ $modulosComparacao = array_filter(
         <div class="section-header reveal">
             <span class="eyebrow">Capturas de tela</span>
             <h2 class="section-title">Conheça a interface do <span class="text-gradient">sistema</span></h2>
-            <p class="section-lead">Imagens reais serão adicionadas conforme os módulos forem publicados.</p>
+            <p class="section-lead">Telas reais do KADOSYS Igrejas rodando - cada módulo tem uma página própria, com mais detalhes.</p>
         </div>
 
         <div class="screens-grid">
-            <div class="screen-placeholder glass-card reveal">
-                <span class="glyph"><i class="bi bi-speedometer2"></i></span>
-                Dashboard administrativo
-            </div>
-            <div class="screen-placeholder glass-card reveal">
-                <span class="glyph"><i class="bi bi-people"></i></span>
-                Cadastro de membros
-            </div>
-            <div class="screen-placeholder glass-card reveal">
-                <span class="glyph"><i class="bi bi-cash-coin"></i></span>
-                Painel financeiro
-            </div>
+            <a href="<?= $basePath ?>/recursos/louvores" class="screen-thumb glass-card reveal">
+                <img src="<?= $basePath ?>/assets/img/recursos/louvores.png" alt="Modo Culto com cifra e tom ao vivo" loading="lazy">
+                <span class="screen-thumb-label"><i class="bi bi-music-note-list"></i> Louvores &middot; Modo Culto</span>
+            </a>
+            <a href="<?= $basePath ?>/recursos/projecao" class="screen-thumb glass-card reveal">
+                <img src="<?= $basePath ?>/assets/img/recursos/projecao.png" alt="Telão exibindo versículo bíblico" loading="lazy">
+                <span class="screen-thumb-label"><i class="bi bi-easel2"></i> Projeção &middot; Telão</span>
+            </a>
+            <a href="<?= $basePath ?>/recursos/agenda" class="screen-thumb glass-card reveal">
+                <img src="<?= $basePath ?>/assets/img/recursos/agenda.png" alt="Calendário da Agenda com cultos e eventos" loading="lazy">
+                <span class="screen-thumb-label"><i class="bi bi-calendar3"></i> Agenda</span>
+            </a>
+        </div>
+
+        <div class="section-footer-link reveal">
+            <a href="<?= $basePath ?>/recursos/membros">Ver todos os recursos em detalhe <i class="bi bi-arrow-right"></i></a>
         </div>
     </div>
 </section>
