@@ -17,6 +17,22 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 80 - 2026-07-14
+
+**Modo Culto: botao X do chat "Avisos rapidos" nao fechava o painel**
+
+- O painel de chat (`.mc-chat`) e os controles de tom do lider
+  (`.mc-tom-controles`) tinham `display: flex` fixo no CSS, sem
+  excecao pro atributo `hidden` - como uma regra de CSS do proprio site
+  sempre tem prioridade sobre o estilo padrao do navegador pro atributo
+  `hidden`, marcar o elemento como escondido no JavaScript (clicar no X)
+  nao tinha efeito nenhum visualmente, mesmo o codigo rodando certo por
+  baixo dos panos.
+- Corrigido adicionando `.mc-chat[hidden] { display: none; }` e
+  `.mc-tom-controles[hidden] { display: none; }` - agora o X do chat (e
+  o painel de "primeira vez", antes de escolher a musica) escondem de
+  verdade.
+
 ## Ajuste 79 - 2026-07-14
 
 **Modo Culto: mudar o tom ao vivo agora transpõe a letra/cifra de
