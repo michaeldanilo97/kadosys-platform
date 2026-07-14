@@ -107,6 +107,10 @@
   gap: 0.4rem;
 }
 
+.mc-tom-controles[hidden] {
+  display: none;
+}
+
 .mc-tom-btn {
   width: 2rem;
   height: 2rem;
@@ -219,6 +223,14 @@
   border-radius: var(--radius-md);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
   overflow: hidden;
+}
+
+/* O "display: flex" acima tem prioridade sobre o estilo padrao do
+   navegador pro atributo [hidden] (regra de autor sempre vence regra
+   de user-agent) - sem isso, chatPainel.hidden = true no JS nao
+   escondia o painel de verdade. */
+.mc-chat[hidden] {
+  display: none;
 }
 
 .mc-chat-head {
