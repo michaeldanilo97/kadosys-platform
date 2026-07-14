@@ -17,6 +17,32 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 97 - 2026-07-14
+
+**Site institucional: destaque pra Louvores/Modo Culto e Projeção, e endereço próprio da igreja**
+
+- Nova seção "Os maiores diferenciais" logo após o hero da home, com um
+  card grande pra Louvores/Modo Culto (cifra e tom ao vivo) e outro pra
+  Projeção/Telão - este último com uma composição real (telão + tablet
+  do preletor flutuando por cima) mostrando o preletor circulando um
+  versículo no tablet e a marcação aparecendo no telão na mesma hora.
+  As duas eram os maiores diferenciais do sistema e ficavam perdidas
+  no meio da grade de recursos, sem destaque nenhum.
+- Descoberto no processo que a marcação ao vivo (o preletor desenha -
+  círculo, sublinhado - sobre o versículo no tablet, e a marcação
+  sincroniza pro telão) já existe de verdade no sistema (ver
+  `ProjecaoEstadoController::definirMarcacao`), mas não estava descrita
+  em lugar nenhum do site - virou um novo diferencial na página
+  `/recursos/projecao`.
+- Menu "Recursos" da navbar ganhou um selo "Ao vivo" em Louvores e
+  Projeção, destacando os dois entre os demais módulos da lista.
+- Novo item na seção Benefícios explicando que cada igreja ganha um
+  endereço próprio no sistema (ex: suaigreja.kadosys.com.br), separado
+  de todas as outras - por onde os membros acessam o login, se
+  cadastram e fazem doações.
+
+---
+
 ## Ajuste 96 - 2026-07-14
 
 **Site institucional: correção de textos desatualizados na home e no FAQ**

@@ -97,7 +97,7 @@
 .landing-nav-dropdown-panel a {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: space-between;
   padding: 0.55rem 0.7rem;
   border-radius: var(--radius-sm);
   white-space: nowrap;
@@ -108,10 +108,28 @@
   background: var(--surface-strong);
 }
 
+.landing-nav-dropdown-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .landing-nav-dropdown-panel i {
   color: var(--primary-soft);
   width: 1.1rem;
   text-align: center;
+}
+
+.landing-nav-dropdown-badge {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  color: var(--success);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  background: rgba(52, 211, 153, 0.1);
+  white-space: nowrap;
 }
 
 .landing-nav-actions {
@@ -412,6 +430,97 @@
   font-weight: 600;
   color: var(--primary-soft);
   transition: var(--transition);
+}
+
+/* ---- Destaques (Louvores/Modo Culto + Projecao) ---------------------------- */
+
+.destaques-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.6rem;
+}
+
+.destaque-card {
+  overflow: hidden;
+  padding: 0;
+}
+
+.destaque-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(59, 130, 246, 0.55);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.destaque-card-media {
+  position: relative;
+  padding: 1.6rem 1.6rem 3.2rem;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.destaque-card-media img {
+  display: block;
+  width: 100%;
+  border-radius: var(--radius-sm);
+}
+
+.destaque-card-media-float {
+  position: absolute !important;
+  right: 1.1rem;
+  bottom: -1.4rem;
+  width: 46% !important;
+  border: 3px solid var(--bg-dark-2);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+}
+
+.destaque-card-body {
+  padding: 1.6rem 1.8rem 1.8rem;
+}
+
+.destaque-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  color: var(--success);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  background: rgba(52, 211, 153, 0.1);
+  margin-bottom: 0.9rem;
+}
+
+.destaque-card-body h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 0.6rem;
+}
+
+.destaque-card-body h3 i {
+  color: var(--primary-soft);
+}
+
+.destaque-card-body p {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .destaques-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .destaque-card-media-float {
+    display: none;
+  }
 }
 
 .feature-card-link:hover {
