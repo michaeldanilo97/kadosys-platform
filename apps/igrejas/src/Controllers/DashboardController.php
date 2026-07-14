@@ -46,7 +46,7 @@ final class DashboardController extends Controller
             'equipe' => [
                 'title' => 'Equipe',
                 'icon' => 'bi-grid-3x3-gap-fill',
-                'description' => 'Galeria com foto, cargo e instrumento de quem tem acesso ao sistema.',
+                'description' => 'Galeria com foto, cargo e instrumento de quem tem uma função na equipe (música, mídia ou equipamento).',
             ],
             'ministerios' => [
                 'title' => 'Ministérios',

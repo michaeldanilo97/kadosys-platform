@@ -14,7 +14,6 @@ use Igrejas\Models\User;
  * @var array $config
  * @var User $pessoa
  * @var bool $ehAdmin
- * @var string|null $logoIgreja
  * @var array<int, array{title:string, icon:string, nivel:string}> $acessoModulos
  */
 $basePath = $config['base_path'] ?? '';

@@ -6,7 +6,6 @@ use Igrejas\Models\User;
 /**
  * @var array $config
  * @var array<int, User> $membrosEquipe
- * @var string|null $logoIgreja
  */
 $basePath = $config['base_path'] ?? '';
 ?>
@@ -48,8 +47,6 @@ $basePath = $config['base_path'] ?? '';
                     <span class="equipe-card-badge" title="<?= htmlspecialchars($cargoInfo['label'], ENT_QUOTES, 'UTF-8') ?>">
                         <?php if ($pessoa->cargo === User::CARGO_MUSICO && $pessoa->instrumento !== null && isset(User::INSTRUMENTOS[$pessoa->instrumento])): ?>
                             <?= User::INSTRUMENTOS[$pessoa->instrumento]['emoji'] ?>
-                        <?php elseif ($pessoa->cargo === User::CARGO_MEMBRO && $logoIgreja !== null): ?>
-                            <img src="<?= $basePath ?>/<?= htmlspecialchars($logoIgreja, ENT_QUOTES, 'UTF-8') ?>" alt="">
                         <?php else: ?>
                             <i class="bi <?= htmlspecialchars($cargoInfo['icon'], ENT_QUOTES, 'UTF-8') ?>"></i>
                         <?php endif; ?>
