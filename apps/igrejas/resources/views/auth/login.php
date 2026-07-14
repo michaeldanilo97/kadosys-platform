@@ -1,15 +1,23 @@
 <?php
+
+use Igrejas\Models\ConfiguracaoIgreja;
+
 /**
  * @var array $config
  * @var string $csrf
  * @var string|null $error
  * @var array $old
+ * @var ConfiguracaoIgreja|null $configuracao
  */
 $basePath = $config['base_path'] ?? '';
+$logoUrl = $configuracao?->logoPath ? $basePath . '/' . $configuracao->logoPath : null;
 ?>
 <div class="auth-form-card">
+    <?php if ($logoUrl !== null): ?>
+        <img src="<?= htmlspecialchars($logoUrl, ENT_QUOTES, 'UTF-8') ?>" alt="Logo <?= htmlspecialchars($configuracao->nomeIgreja ?? '', ENT_QUOTES, 'UTF-8') ?>" class="auth-igreja-logo">
+    <?php endif; ?>
     <div class="eyebrow">Acesso restrito</div>
-    <h1>Entrar</h1>
+    <h1><?= $configuracao?->nomeIgreja ? htmlspecialchars($configuracao->nomeIgreja, ENT_QUOTES, 'UTF-8') : 'Entrar' ?></h1>
     <p class="subtitle">Acesse o painel administrativo da sua igreja.</p>
 
     <?php if (!empty($error)): ?>

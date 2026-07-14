@@ -17,6 +17,20 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 110 - 2026-07-14
+
+**Login de cada igreja exibe o logo, o nome e a URL própria**
+
+- A tela de login agora mostra o logo e o nome da igreja (os mesmos
+  cadastrados em Configurações), no lugar do título genérico
+  "Entrar" - só quando acessada pelo subdomínio da igreja.
+- O rodapé lateral, que sempre mostrou o texto fixo
+  "kadosys.com.br/apps/igrejas", agora mostra a URL de verdade da
+  igreja (ex.: suaigreja.kadosys.com.br). Nas páginas centrais (ex.:
+  cadastro de uma igreja nova), continua mostrando o texto genérico.
+
+---
+
 ## Ajuste 109 - 2026-07-14
 
 **Meu perfil ganha endereço e dados pessoais, vinculado ao cadastro em Membros**
