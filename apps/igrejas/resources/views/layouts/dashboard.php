@@ -11,6 +11,7 @@ use Igrejas\Models\Culto;
 use Igrejas\Models\FaturaPix;
 use Igrejas\Models\Plano;
 use Igrejas\Models\PlataformaAviso;
+use Igrejas\Models\ProjecaoSessao;
 use Igrejas\Models\User;
 
 /**
@@ -242,10 +243,17 @@ $avisosSidebar = ($comunicacaoDisponivel && $user !== null)
             <?php
             // Modulos usados AO VIVO durante o culto (telao pro operador
             // e cifras pro time de louvor) - destacados no topo do menu,
-            // separados dos demais, pra achar rapido em cima da hora.
+            // separados dos demais, pra achar rapido em cima da hora. O
+            // selo verde pulsando de "Ao vivo" so aparece quando existe
+            // mesmo uma sessao de projecao em andamento (ver
+            // ProjecaoSessao::ativa(), o mesmo "culto ao vivo" que o
+            // telao/tablet do preletor usam) - fora de culto, os modulos
+            // continuam destacados no topo do menu, so sem alegar que
+            // esta rolando algo ao vivo (vira "Destaque").
             $modulosAoVivo = ['projecao', 'louvores'];
+            $sessaoAoVivoAtiva = ProjecaoSessao::ativa() !== null;
             ?>
-            <div class="dash-nav-group-label">Ao vivo</div>
+            <div class="dash-nav-group-label"><?= $sessaoAoVivoAtiva ? 'Ao vivo' : 'Destaque' ?></div>
             <?php foreach ($modulosAoVivo as $slug): ?>
                 <?php if (!isset($modules[$slug])) continue; ?>
                 <?php
@@ -254,14 +262,14 @@ $avisosSidebar = ($comunicacaoDisponivel && $user !== null)
                 $bloqueadoPelaPermissao = !$bloqueadoPeloPlano && !User::podeAcessarModulo($user, $slug);
                 $bloqueado = $bloqueadoPeloPlano || $bloqueadoPelaPermissao;
                 ?>
-                <a href="<?= $basePath ?>/dashboard/<?= $slug ?>" class="dash-nav-link dash-nav-link-live <?= $activeMenu === $slug ? 'active' : '' ?><?= $bloqueado ? ' dash-nav-link-locked' : '' ?>">
+                <a href="<?= $basePath ?>/dashboard/<?= $slug ?>" class="dash-nav-link <?= $sessaoAoVivoAtiva ? 'dash-nav-link-live' : '' ?> <?= $activeMenu === $slug ? 'active' : '' ?><?= $bloqueado ? ' dash-nav-link-locked' : '' ?>">
                     <i class="bi <?= htmlspecialchars($module['icon'], ENT_QUOTES, 'UTF-8') ?>"></i>
                     <span class="dash-nav-link-label"><?= htmlspecialchars($module['title'], ENT_QUOTES, 'UTF-8') ?></span>
                     <?php if ($bloqueadoPeloPlano): ?>
                         <i class="bi bi-lock-fill dash-nav-lock-icon" title="Disponível no plano <?= htmlspecialchars(Plano::label($module['planoMinimo']), ENT_QUOTES, 'UTF-8') ?>"></i>
                     <?php elseif ($bloqueadoPelaPermissao): ?>
                         <i class="bi bi-shield-lock dash-nav-lock-icon" title="Sem permissão pra acessar este módulo"></i>
-                    <?php else: ?>
+                    <?php elseif ($sessaoAoVivoAtiva): ?>
                         <span class="dash-nav-live-dot" title="Módulo usado ao vivo durante o culto"></span>
                     <?php endif; ?>
                 </a>
