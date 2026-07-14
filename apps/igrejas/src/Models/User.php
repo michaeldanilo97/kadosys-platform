@@ -203,19 +203,23 @@ final class User
     }
 
     /**
-     * Usuarios ativos com login, ordenados por cargo (musico > midia >
-     * equipamento > membro) e depois por nome - pra montar a galeria da
-     * tela "Equipe" (ver EquipeController) num agrupamento visual
-     * natural, sem precisar de mais uma consulta por cargo.
+     * Usuarios ativos com login E com um cargo de verdade na equipe
+     * (musico, midia ou equipamento), ordenados por cargo e depois por
+     * nome - pra montar a galeria da tela "Equipe" (ver
+     * EquipeController). Quem esta com o cargo padrao "membro" (ou
+     * seja, sem funcao definida na equipe - normalmente um admin que so
+     * usa o sistema) fica de fora daqui: essa pessoa nao tem cargo pra
+     * mostrar na Equipe, e o card dela pertence e ao modulo Membros,
+     * nao a este.
      *
      * @return array<int, self>
      */
     public static function todosAtivosParaEquipe(): array
     {
         $stmt = Database::connection()->query(
-            'SELECT ' . self::SELECT_COLUNAS . ' FROM users
-             WHERE active = 1
-             ORDER BY FIELD(cargo, \'musico\', \'midia\', \'equipamento\', \'membro\'), name ASC'
+            "SELECT " . self::SELECT_COLUNAS . " FROM users
+             WHERE active = 1 AND cargo != 'membro'
+             ORDER BY FIELD(cargo, 'musico', 'midia', 'equipamento'), name ASC"
         );
 
         return array_map(self::fromRow(...), $stmt->fetchAll());

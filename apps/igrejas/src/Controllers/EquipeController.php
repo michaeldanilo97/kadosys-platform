@@ -6,13 +6,15 @@ namespace Igrejas\Controllers;
 
 use Igrejas\Core\Auth;
 use Igrejas\Core\Controller;
-use Igrejas\Models\ConfiguracaoIgreja;
 use Igrejas\Models\User;
 
 /**
  * Galeria da equipe (estilo rede social): nome, foto e cargo/instrumento
- * de cada usuario com acesso ao sistema - ver User::CARGOS/INSTRUMENTOS
- * e PerfilController (onde cada um edita o proprio cargo/foto).
+ * de cada usuario com acesso ao sistema E com um cargo de verdade na
+ * equipe (musico, midia ou equipamento) - ver
+ * User::todosAtivosParaEquipe(). Quem tem so o cargo padrao "membro"
+ * (sem funcao definida, ex.: um admin que so usa o sistema) nao entra
+ * aqui - o card dela pertence ao modulo Membros, nao a este.
  */
 final class EquipeController extends Controller
 {
@@ -25,7 +27,6 @@ final class EquipeController extends Controller
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
             'membrosEquipe' => User::todosAtivosParaEquipe(),
-            'logoIgreja' => ConfiguracaoIgreja::atual()->logoPath,
         ], 'dashboard');
     }
 
@@ -34,13 +35,15 @@ final class EquipeController extends Controller
      * galeria - somente leitura aqui (edicao de cargo/foto continua em
      * PerfilController quando e a propria pessoa, e edicao de
      * role/senha/permissoes continua em Usuarios/Permissoes, restritas
-     * a admin). So exibe pessoas ativas, mesmo escopo da galeria.
+     * a admin). So exibe pessoas ativas E com cargo de verdade na
+     * equipe, mesmo escopo de User::todosAtivosParaEquipe() - quem
+     * esta com o cargo padrao "membro" nao tem perfil aqui.
      */
     public function show(string $id): void
     {
         $pessoa = User::findById((int) $id);
 
-        if ($pessoa === null || !$pessoa->active) {
+        if ($pessoa === null || !$pessoa->active || $pessoa->cargo === User::CARGO_MEMBRO) {
             http_response_code(404);
 
             echo $this->view('errors.404', [
@@ -64,7 +67,6 @@ final class EquipeController extends Controller
             'modules' => DashboardController::modules(),
             'pessoa' => $pessoa,
             'ehAdmin' => $logado?->role === User::ROLE_ADMIN,
-            'logoIgreja' => ConfiguracaoIgreja::atual()->logoPath,
             'acessoModulos' => $this->resumoAcesso($pessoa),
         ], 'dashboard');
     }

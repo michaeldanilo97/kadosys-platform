@@ -17,6 +17,18 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 108 - 2026-07-14
+
+**Equipe: só entra na galeria quem tem um cargo de verdade**
+
+- Quem está com o cargo padrão "membro" (sem função definida na
+  equipe, normalmente um admin que só usa o sistema) deixa de
+  aparecer na galeria e no perfil de Equipe - essa pessoa não tem um
+  cargo pra mostrar ali; continua tendo acesso normal ao sistema,
+  só não entra mais nessa galeria específica.
+
+---
+
 ## Ajuste 107 - 2026-07-14
 
 **Agenda: compromisso pessoal liberado mesmo sem edição no módulo**
