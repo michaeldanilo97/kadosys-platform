@@ -10,7 +10,7 @@ use Igrejas\Controllers\RecursoController;
  * @var array{title:string, icon:string, tagline:string} $proximoModulo
  */
 $basePath = $config['base_path'] ?? '';
-$imgBase = $basePath . '/assets/img/recursos/';
+$imgBase = $basePath . '/assets/img/';
 ?>
 
 <!-- HERO DO RECURSO -->
