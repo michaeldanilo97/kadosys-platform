@@ -47,7 +47,16 @@ $semRestricao = $modulosPermitidos === [];
 
         <div class="plano-escolha" data-permissoes-grid style="margin-top: 1rem;">
             <?php foreach ($modulosDisponiveis as $slug => $modulo): ?>
-                <?php $nivelAtual = $modulosPermitidos[$slug] ?? ''; ?>
+                <?php
+                // Enquanto nao ha NENHUMA restricao pro usuario
+                // ($semRestricao), nao faz sentido pre-marcar "Sem
+                // acesso" em cada card - isso passaria a impressao
+                // visual (errada) de que ele nao acessa nada, quando o
+                // aviso acima ja diz o contrario (acesso total). Os 3
+                // radios ficam sem marcar ate o admin decidir restringir
+                // pelo menos um modulo.
+                $nivelAtual = $semRestricao ? null : ($modulosPermitidos[$slug] ?? '');
+                ?>
                 <div class="plano-escolha-card permissao-card" data-permissao-card>
                     <span class="nome"><i class="bi <?= htmlspecialchars($modulo['icon'], ENT_QUOTES, 'UTF-8') ?>"></i> <?= htmlspecialchars($modulo['title'], ENT_QUOTES, 'UTF-8') ?></span>
                     <div class="permissao-niveis">

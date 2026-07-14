@@ -17,6 +17,17 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 94 - 2026-07-14
+
+**Permissões: card não pré-marca mais "Sem acesso" quando o usuário não tem restrição nenhuma**
+
+- Quando um usuário não tem nenhuma linha em Permissões (acesso total
+  ao que o plano libera, como sempre foi o padrão de contas antigas),
+  a tela mostrava cada módulo com "Sem acesso" pré-marcado - dava a
+  entender visualmente o oposto do que o aviso azul acima já dizia
+  (que o acesso é total). Agora, nesse estado, nenhuma opção fica
+  marcada em nenhum card até o admin decidir restringir algum módulo.
+
 ## Ajuste 93 - 2026-07-14
 
 **Corrige cartões de Permissões quase ilegíveis no tema claro**
