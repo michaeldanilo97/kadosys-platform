@@ -229,8 +229,37 @@ $avisosSidebar = ($comunicacaoDisponivel && $user !== null)
                 <i class="bi bi-speedometer2"></i> <span class="dash-nav-link-label">Dashboard</span>
             </a>
 
+            <?php
+            // Modulos usados AO VIVO durante o culto (telao pro operador
+            // e cifras pro time de louvor) - destacados no topo do menu,
+            // separados dos demais, pra achar rapido em cima da hora.
+            $modulosAoVivo = ['projecao', 'louvores'];
+            ?>
+            <div class="dash-nav-group-label">Ao vivo</div>
+            <?php foreach ($modulosAoVivo as $slug): ?>
+                <?php if (!isset($modules[$slug])) continue; ?>
+                <?php
+                $module = $modules[$slug];
+                $bloqueadoPeloPlano = !Plano::disponivel($planoAtual, $slug, $emTrial);
+                $bloqueadoPelaPermissao = !$bloqueadoPeloPlano && !User::podeAcessarModulo($user, $slug);
+                $bloqueado = $bloqueadoPeloPlano || $bloqueadoPelaPermissao;
+                ?>
+                <a href="<?= $basePath ?>/dashboard/<?= $slug ?>" class="dash-nav-link dash-nav-link-live <?= $activeMenu === $slug ? 'active' : '' ?><?= $bloqueado ? ' dash-nav-link-locked' : '' ?>">
+                    <i class="bi <?= htmlspecialchars($module['icon'], ENT_QUOTES, 'UTF-8') ?>"></i>
+                    <span class="dash-nav-link-label"><?= htmlspecialchars($module['title'], ENT_QUOTES, 'UTF-8') ?></span>
+                    <?php if ($bloqueadoPeloPlano): ?>
+                        <i class="bi bi-lock-fill dash-nav-lock-icon" title="Disponível no plano <?= htmlspecialchars(Plano::label($module['planoMinimo']), ENT_QUOTES, 'UTF-8') ?>"></i>
+                    <?php elseif ($bloqueadoPelaPermissao): ?>
+                        <i class="bi bi-shield-lock dash-nav-lock-icon" title="Sem permissão pra acessar este módulo"></i>
+                    <?php else: ?>
+                        <span class="dash-nav-live-dot" title="Módulo usado ao vivo durante o culto"></span>
+                    <?php endif; ?>
+                </a>
+            <?php endforeach; ?>
+
             <div class="dash-nav-group-label">Módulos</div>
             <?php foreach ($modules as $slug => $module): ?>
+                <?php if (in_array($slug, $modulosAoVivo, true)) continue; ?>
                 <?php
                 $bloqueadoPeloPlano = !Plano::disponivel($planoAtual, $slug, $emTrial);
                 $bloqueadoPelaPermissao = !$bloqueadoPeloPlano && !User::podeAcessarModulo($user, $slug);
