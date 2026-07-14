@@ -63,7 +63,6 @@ final class Plano
         'comunicacao' => self::PREMIUM,
         'patrimonio' => self::ENTERPRISE,
         'relatorios' => self::ENTERPRISE,
-        'permissoes' => self::ENTERPRISE,
     ];
 
     public static function minimoParaModulo(string $slug): string

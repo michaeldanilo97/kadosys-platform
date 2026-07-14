@@ -13,8 +13,8 @@ use Igrejas\Models\User;
 /**
  * Controller do modulo Permissoes: restringe, por usuario (papel
  * 'usuario'), quais modulos do plano contratado ficam liberados - ver
- * User::podeAcessarModulo() pra regra completa. Exclusivo do plano
- * Premium (ver Plano::MODULO_MINIMO['permissoes']).
+ * User::podeAcessarModulo() pra regra completa. Disponivel em todos os
+ * planos (ver Plano::MODULO_MINIMO).
  */
 final class PermissaoController extends Controller
 {
