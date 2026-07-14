@@ -40,21 +40,42 @@ $hash = password_hash($password, PASSWORD_BCRYPT);
 
 $pdo = \Igrejas\Core\Database::connection();
 
+// Ja existe um usuario (e portanto um membro vinculado) com esse
+// e-mail? Reaproveita o membro_id em vez de criar um Membro duplicado
+// a cada execucao deste script.
+$existente = $pdo->prepare('SELECT membro_id FROM users WHERE email = :email LIMIT 1');
+$existente->execute(['email' => $email]);
+$membroIdExistente = $existente->fetchColumn();
+
+if ($membroIdExistente) {
+    $membroId = (int) $membroIdExistente;
+} else {
+    $membroStmt = $pdo->prepare(
+        'INSERT INTO membros (nome, email, status, data_membresia, created_at)
+         VALUES (:nome, :email, "ativo", CURDATE(), NOW())'
+    );
+    $membroStmt->execute(['nome' => $name, 'email' => $email]);
+    $membroId = (int) $pdo->lastInsertId();
+}
+
 $stmt = $pdo->prepare(
-    'INSERT INTO users (name, email, password, role, active)
-     VALUES (:name, :email, :password, "admin", 1)
+    'INSERT INTO users (name, email, password, role, active, membro_id)
+     VALUES (:name, :email, :password, "admin", 1, :membro_id)
      ON DUPLICATE KEY UPDATE
         name = :name_update,
         password = :password_update,
-        active = 1'
+        active = 1,
+        membro_id = :membro_id_update'
 );
 
 $stmt->execute([
     'name' => $name,
     'email' => $email,
     'password' => $hash,
+    'membro_id' => $membroId,
     'name_update' => $name,
     'password_update' => $hash,
+    'membro_id_update' => $membroId,
 ]);
 
 echo "Usuario administrador criado/atualizado com sucesso: {$email}\n";

@@ -9,15 +9,20 @@ use Igrejas\Core\Csrf;
 use Igrejas\Core\Controller;
 use Igrejas\Core\Session;
 use Igrejas\Core\TenantResolver;
+use Igrejas\Models\Membro;
 use Igrejas\Models\User;
 
 /**
- * Autoatendimento: o proprio usuario logado edita SEU PROPRIO perfil
- * (foto, cargo e instrumento) - usado pela tela Equipe (ver
+ * Autoatendimento: o proprio usuario logado edita SEU PROPRIO perfil -
+ * foto/cargo/instrumento (proprios do login, ver User) e dados
+ * pessoais/endereco (do Membro vinculado, ver User::membroId e
+ * Membro::vincularOuCriarParaUsuario) - usado pela tela Equipe (ver
  * EquipeController). Deliberadamente separado do UsuarioController
  * (que so admin acessa e mexe em role/active/senha de QUALQUER
- * usuario) - aqui so cargo/instrumento/foto do proprio usuario, sem
- * checagem de User::MODULOS_SOMENTE_ADMIN.
+ * usuario) e do modulo Membros (nome/e-mail/status/observacoes ficam
+ * de fora aqui, geridos pela secretaria) - aqui e so o que a propria
+ * pessoa deve poder manter atualizado, sem checagem de
+ * User::MODULOS_SOMENTE_ADMIN.
  */
 final class PerfilController extends Controller
 {
@@ -34,13 +39,14 @@ final class PerfilController extends Controller
 
     public function editar(): void
     {
-        $user = (new Auth($this->config))->user();
+        $user = $this->usuarioVinculado();
 
         echo $this->view('dashboard.perfil', [
             'pageTitle' => 'Meu perfil - KADOSYS Igrejas',
             'activeMenu' => 'perfil',
             'breadcrumb' => ['Dashboard', 'Meu perfil'],
             'user' => $user,
+            'membro' => Membro::find($user->membroId),
             'modules' => DashboardController::modules(),
             'success' => Session::flash('perfil_success'),
             'errors' => Session::flash('perfil_errors') ?? [],
@@ -66,6 +72,23 @@ final class PerfilController extends Controller
 
         $user->atualizarCargo($cargo, $instrumento);
 
+        $user = $this->usuarioVinculado($user);
+        $membro = Membro::find($user->membroId);
+
+        $dadosPessoais = $this->request->only([
+            'telefone', 'data_nascimento', 'genero', 'estado_civil', 'cpf', 'rg', 'naturalidade',
+            'cep', 'logradouro', 'numero', 'complemento', 'bairro', 'cidade', 'estado',
+        ]);
+
+        Membro::update($user->membroId, $dadosPessoais + [
+            'nome' => $membro->nome,
+            'email' => $membro->email,
+            'endereco' => $membro->endereco,
+            'data_membresia' => $membro->dataMembresia,
+            'status' => $membro->status,
+            'observacoes' => $membro->observacoes,
+        ]);
+
         $arquivo = $this->request->file('foto');
 
         if ($arquivo !== null && $arquivo['error'] !== UPLOAD_ERR_NO_FILE) {
@@ -79,6 +102,25 @@ final class PerfilController extends Controller
 
         Session::flash('perfil_success', 'Perfil atualizado com sucesso.');
         $this->redirect('/dashboard/perfil');
+    }
+
+    /**
+     * Garante que o usuario logado tenha um Membro vinculado, criando
+     * o vinculo na hora se essa conta foi criada antes de existir essa
+     * ligacao (ver migracao 048) - assim toda visita a "Meu perfil"
+     * autocorrige contas antigas, sem precisar de um backfill em lote.
+     */
+    private function usuarioVinculado(?User $user = null): User
+    {
+        $user ??= (new Auth($this->config))->user();
+
+        if ($user->membroId !== null) {
+            return $user;
+        }
+
+        Membro::vincularOuCriarParaUsuario($user, $user->name, $user->email);
+
+        return User::findById($user->id);
     }
 
     /**

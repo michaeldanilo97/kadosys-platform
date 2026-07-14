@@ -264,12 +264,22 @@ final class Provisionador
         ]);
 
         $pdo->prepare(
-            'INSERT INTO users (name, email, password, role, active)
-             VALUES (:name, :email, :password, "admin", 1)'
+            'INSERT INTO membros (nome, email, status, data_membresia, created_at)
+             VALUES (:nome, :email, "ativo", CURDATE(), NOW())'
+        )->execute([
+            'nome' => $provisionamento->adminNome,
+            'email' => $provisionamento->adminEmail,
+        ]);
+        $membroId = (int) $pdo->lastInsertId();
+
+        $pdo->prepare(
+            'INSERT INTO users (name, email, password, role, active, membro_id)
+             VALUES (:name, :email, :password, "admin", 1, :membro_id)'
         )->execute([
             'name' => $provisionamento->adminNome,
             'email' => $provisionamento->adminEmail,
             'password' => $provisionamento->adminSenhaHash,
+            'membro_id' => $membroId,
         ]);
     }
 
