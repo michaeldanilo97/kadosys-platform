@@ -1,5 +1,6 @@
 <?php
 
+use Igrejas\Core\TenantResolver;
 use Igrejas\Core\View;
 
 /**
@@ -8,6 +9,10 @@ use Igrejas\Core\View;
  * @var array $config
  */
 $basePath = $config['base_path'] ?? '';
+// Fora de um subdominio de igreja (paginas centrais, ex.: /cadastro de
+// uma igreja nova), nao ha um subdominio real pra mostrar - mantem o
+// texto generico da plataforma.
+$urlIgreja = TenantResolver::atual()?->subdominio;
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -43,7 +48,7 @@ $basePath = $config['base_path'] ?? '';
             </div>
         </div>
 
-        <div class="auth-aside-foot">kadosys.com.br/apps/igrejas</div>
+        <div class="auth-aside-foot"><?= htmlspecialchars($urlIgreja ?? 'kadosys.com.br', ENT_QUOTES, 'UTF-8') ?></div>
     </aside>
 
     <div class="auth-form-side">

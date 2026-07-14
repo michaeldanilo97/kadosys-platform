@@ -103,6 +103,16 @@
   box-shadow: 0 0 40px rgba(59, 130, 246, 0.1), 0 24px 60px rgba(0, 0, 0, 0.35);
 }
 
+.auth-igreja-logo {
+  display: block;
+  max-height: 56px;
+  max-width: 220px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 1.2rem;
+}
+
 .auth-form-card .eyebrow {
   margin-bottom: 1rem;
 }

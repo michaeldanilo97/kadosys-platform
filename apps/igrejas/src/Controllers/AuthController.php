@@ -9,6 +9,7 @@ use Igrejas\Core\Controller;
 use Igrejas\Core\Csrf;
 use Igrejas\Core\Session;
 use Igrejas\Core\TenantResolver;
+use Igrejas\Models\ConfiguracaoIgreja;
 use Igrejas\Models\Tenant;
 use Igrejas\Models\User;
 
@@ -25,11 +26,15 @@ final class AuthController extends Controller
 {
     public function showLogin(): void
     {
+        $tenant = TenantResolver::atual();
+        $configuracao = $tenant !== null ? ConfiguracaoIgreja::atual() : null;
+
         echo $this->view('auth.login', [
-            'pageTitle' => 'Entrar - KADOSYS Igrejas',
+            'pageTitle' => ($configuracao?->nomeIgreja ?? 'KADOSYS Igrejas') . ' - Entrar',
             'csrf' => Csrf::field(),
             'error' => Session::flash('login_error'),
             'old' => Session::flash('login_old') ?? [],
+            'configuracao' => $configuracao,
         ], 'auth');
     }
 
