@@ -1080,6 +1080,20 @@ textarea.crud-field-mono {
   background: var(--white);
 }
 
+/* --surface-strong/--glass-border-strong sao branco bem transparente
+   (pensados pra fundo escuro) - no tema claro, sobre um card branco,
+   isso deixava o switch desligado quase invisivel. Usa um cinza de
+   verdade aqui, no mesmo tom ja usado em outros controles do tema
+   claro (ex.: .crud-icon-btn). */
+[data-theme="light"] .toggle-switch {
+  background: rgba(30, 41, 59, 0.18);
+  border-color: rgba(30, 41, 59, 0.25);
+}
+
+[data-theme="light"] .toggle-switch::before {
+  background: #FFFFFF;
+}
+
 .toggle-switch-label {
   font-size: 0.9rem;
   font-weight: 600;
