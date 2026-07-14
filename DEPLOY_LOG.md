@@ -17,6 +17,19 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 82 - 2026-07-14
+
+**Sugestão automática de tom tinha o mesmo bug de detecção de acorde do
+Ajuste 81 (fix ficou incompleto)**
+
+- O Ajuste 81 corrigiu o detector de "linha de acordes" no transpositor
+  do cadastro e na mudança de tom ao vivo do Modo Culto, mas esqueceu de
+  uma terceira cópia da mesma lógica: a sugestão automática de tom ao
+  colar a cifra (`louvor-sugestao-tom.js`) - que ainda aceitava qualquer
+  letra depois da nota como qualidade de acorde válida.
+- Corrigido usando a mesma lista fechada de qualidades/extensões dos
+  outros dois lugares.
+
 ## Ajuste 81 - 2026-07-14
 
 **Corrigido bug serio: transpor tom as vezes corrompia palavras da
