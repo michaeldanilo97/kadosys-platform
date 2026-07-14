@@ -156,6 +156,36 @@ final class Grupo
         return array_map(Membro::fromRow(...), $stmt->fetchAll());
     }
 
+    /**
+     * Grupos em que o membro participa (como lider ou participante) -
+     * usado na aba "Ministérios" do perfil do membro, junto com os
+     * ministerios (inverso de participantes()).
+     *
+     * @return array<int, array{id: int, nome: string, tipo: string, papel: string}>
+     */
+    public static function doMembro(int $membroId): array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT g.id, g.nome, g.tipo,
+                    (g.lider_membro_id = :membro_id_lider) AS eh_lider
+             FROM grupos g
+             INNER JOIN grupo_membros gm ON gm.grupo_id = g.id
+             WHERE gm.membro_id = :membro_id
+             ORDER BY g.nome ASC'
+        );
+        $stmt->execute(['membro_id_lider' => $membroId, 'membro_id' => $membroId]);
+
+        return array_map(
+            static fn (array $row): array => [
+                'id' => (int) $row['id'],
+                'nome' => (string) $row['nome'],
+                'tipo' => (string) $row['tipo'],
+                'papel' => ((int) $row['eh_lider']) === 1 ? 'Líder' : 'Membro',
+            ],
+            $stmt->fetchAll()
+        );
+    }
+
     public static function addParticipante(int $grupoId, int $membroId): void
     {
         $stmt = Database::connection()->prepare(

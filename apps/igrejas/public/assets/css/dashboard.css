@@ -1723,3 +1723,490 @@ body.dashboard-body[data-theme="light"] {
     font-size: 1.4rem;
   }
 }
+
+/* ---- Perfil do membro (tela de detalhe, clicar no nome na listagem) ------ */
+
+.member-breadcrumb-back a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.member-breadcrumb-back a:hover {
+  color: var(--white);
+}
+
+.member-profile-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.4rem;
+  margin-bottom: 1.4rem;
+  flex-wrap: wrap;
+}
+
+.member-profile-avatar {
+  flex: 0 0 72px;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--gradient);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+
+.member-profile-heading {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+.member-profile-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.member-profile-name-row h1 {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--white);
+  margin: 0;
+}
+
+[data-theme="light"] .member-profile-name-row h1 {
+  color: #0F172A;
+}
+
+.member-profile-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.member-profile-meta i {
+  color: var(--primary-soft);
+  margin-right: 0.3rem;
+}
+
+.member-profile-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.member-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--surface-strong);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.member-badge-papel {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-dim);
+  background: var(--surface);
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+}
+
+.member-badge-papel.is-lider {
+  color: #F2B33D;
+  background: rgba(242, 179, 61, 0.14);
+}
+
+.member-profile-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 0 0 auto;
+}
+
+.member-profile-contact a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.86rem;
+  color: var(--text);
+  transition: var(--transition);
+}
+
+.member-profile-contact a:hover {
+  color: var(--primary-soft);
+}
+
+.member-profile-contact i {
+  color: var(--primary-soft);
+}
+
+/* ---- Abas ----------------------------------------------------------------- */
+
+.member-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  border-bottom: 1px solid var(--glass-border);
+  margin-bottom: 1.4rem;
+}
+
+.member-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.7rem 0.9rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.member-tab:hover {
+  color: var(--white);
+}
+
+.member-tab.is-active {
+  color: var(--primary-soft);
+  border-bottom-color: var(--primary-soft);
+}
+
+.member-tabs-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 1.4rem;
+  align-items: start;
+}
+
+.member-tab-panel {
+  display: none;
+}
+
+.member-tab-panel.is-active {
+  display: block;
+}
+
+.member-tabs-main .member-tab-panel {
+  margin-bottom: 1.4rem;
+}
+
+.member-tab-panel h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--white);
+  margin: 0 0 1.1rem;
+}
+
+[data-theme="light"] .member-tab-panel h3 {
+  color: #0F172A;
+}
+
+.member-tab-panel h3 i {
+  color: var(--primary-soft);
+}
+
+.member-tab-empty {
+  color: var(--text-dim);
+  font-size: 0.86rem;
+  margin: 0;
+}
+
+.member-tab-dim {
+  color: var(--text-dim);
+  font-size: 0.78rem;
+}
+
+/* ---- Listas (vinculos, participacoes, historico) --------------------------- */
+
+.member-vinculo-list,
+.member-participacao-list,
+.member-historico-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.member-vinculo-list li,
+.member-participacao-list li,
+.member-historico-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.member-vinculo-list li:last-child,
+.member-participacao-list li:last-child,
+.member-historico-list li:last-child {
+  border-bottom: none;
+}
+
+.member-vinculo-list li {
+  justify-content: space-between;
+}
+
+.member-participacao-list li i,
+.member-historico-list li i {
+  color: var(--success);
+  font-size: 1.1rem;
+}
+
+.member-participacao-list li div,
+.member-historico-list li div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+/* ---- Documentos ------------------------------------------------------------- */
+
+.member-documento-upload {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-bottom: 1.2rem;
+}
+
+.member-documento-upload input[type="text"] {
+  flex: 1 1 220px;
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid var(--glass-border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--white);
+  padding: 0.6rem 0.85rem;
+  font-size: 0.88rem;
+}
+
+.member-documento-upload input[type="file"] {
+  flex: 1 1 220px;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.member-documento-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.member-documento-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.member-documento-list li:last-child {
+  border-bottom: none;
+}
+
+.member-documento-list li a {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--text);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.member-documento-list li a:hover {
+  color: var(--primary-soft);
+}
+
+.member-documento-list li a i {
+  color: var(--primary-soft);
+}
+
+/* ---- CEP com status inline -------------------------------------------------- */
+
+.member-cep-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.member-cep-status {
+  font-size: 0.76rem;
+  color: var(--text-dim);
+}
+
+/* ---- Sidebar (Ministerios / Participacoes recentes) ------------------------- */
+
+.member-side-card {
+  margin-bottom: 1.4rem;
+  padding: 1.2rem 1.3rem;
+}
+
+.member-side-card:last-child {
+  margin-bottom: 0;
+}
+
+.member-side-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.9rem;
+}
+
+.member-side-card-head h4 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--white);
+  margin: 0;
+}
+
+[data-theme="light"] .member-side-card-head h4 {
+  color: #0F172A;
+}
+
+.member-side-card-head h4 i {
+  color: var(--primary-soft);
+}
+
+.member-side-link {
+  background: none;
+  border: none;
+  color: var(--primary-soft);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.member-side-link:hover {
+  text-decoration: underline;
+}
+
+.member-side-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.member-side-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--glass-border);
+  font-size: 0.84rem;
+  color: var(--text);
+}
+
+.member-side-list li:last-child {
+  border-bottom: none;
+}
+
+.member-side-list li i {
+  color: var(--success);
+}
+
+.member-side-list li div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+@media (max-width: 900px) {
+  .member-tabs-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Perfil do membro: ajustes de contraste no tema claro ------------------ */
+
+[data-theme="light"] .member-profile-name-row h1 {
+  color: #0F172A;
+}
+
+[data-theme="light"] .member-badge {
+  background: #F1F5F9;
+  border-color: rgba(15, 23, 42, 0.1);
+  color: #0F172A;
+}
+
+[data-theme="light"] .member-badge-papel {
+  background: rgba(15, 23, 42, 0.06);
+  color: #475569;
+}
+
+[data-theme="light"] .member-badge-papel.is-lider {
+  color: #92650B;
+  background: rgba(242, 179, 61, 0.18);
+}
+
+[data-theme="light"] .member-tab {
+  color: #64748B;
+}
+
+[data-theme="light"] .member-tab:hover {
+  color: #0F172A;
+}
+
+[data-theme="light"] .member-tabs {
+  border-bottom-color: rgba(15, 23, 42, 0.1);
+}
+
+[data-theme="light"] .member-tab-panel h3 {
+  color: #0F172A;
+}
+
+[data-theme="light"] .member-vinculo-list li,
+[data-theme="light"] .member-participacao-list li,
+[data-theme="light"] .member-historico-list li,
+[data-theme="light"] .member-documento-list li,
+[data-theme="light"] .member-side-list li {
+  border-bottom-color: rgba(15, 23, 42, 0.08);
+}
+
+[data-theme="light"] .member-side-list li {
+  color: #0F172A;
+}
+
+[data-theme="light"] .member-side-card-head h4 {
+  color: #0F172A;
+}
+
+[data-theme="light"] .member-documento-list li a {
+  color: #0F172A;
+}
+
+[data-theme="light"] .member-documento-upload input[type="text"] {
+  background: #FFFFFF;
+  border-color: rgba(15, 23, 42, 0.15);
+  color: #0F172A;
+}

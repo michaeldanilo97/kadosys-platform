@@ -113,7 +113,7 @@ foreach ($aniversariantes as $membro) {
 
                     <?php foreach ($aniversariantesPorDia[$dia] ?? [] as $membro): ?>
                         <a
-                            href="<?= $basePath ?>/dashboard/membros/<?= $membro->id ?>/editar"
+                            href="<?= $basePath ?>/dashboard/membros/<?= $membro->id ?>"
                             class="agenda-cal-item tipo-aniversario"
                             title="Aniversário: <?= htmlspecialchars($membro->nome, ENT_QUOTES, 'UTF-8') ?>"
                         ><i class="bi bi-gift-fill"></i> <?= htmlspecialchars($membro->nome, ENT_QUOTES, 'UTF-8') ?></a>

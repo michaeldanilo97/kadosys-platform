@@ -25,8 +25,15 @@ final class Membro
         public readonly ?string $dataNascimento,
         public readonly ?string $genero,
         public readonly ?string $estadoCivil,
+        public readonly ?string $cpf,
+        public readonly ?string $rg,
+        public readonly ?string $naturalidade,
         public readonly ?string $endereco,
         public readonly ?string $cep,
+        public readonly ?string $logradouro,
+        public readonly ?string $numero,
+        public readonly ?string $complemento,
+        public readonly ?string $bairro,
         public readonly ?string $cidade,
         public readonly ?string $estado,
         public readonly ?string $dataMembresia,
@@ -118,9 +125,13 @@ final class Membro
     {
         $stmt = Database::connection()->prepare(
             'INSERT INTO membros
-                (nome, email, telefone, data_nascimento, genero, estado_civil, endereco, cep, cidade, estado, data_membresia, status, observacoes, created_at)
+                (nome, email, telefone, data_nascimento, genero, estado_civil, cpf, rg, naturalidade,
+                 endereco, cep, logradouro, numero, complemento, bairro, cidade, estado,
+                 data_membresia, status, observacoes, created_at)
              VALUES
-                (:nome, :email, :telefone, :data_nascimento, :genero, :estado_civil, :endereco, :cep, :cidade, :estado, :data_membresia, :status, :observacoes, NOW())'
+                (:nome, :email, :telefone, :data_nascimento, :genero, :estado_civil, :cpf, :rg, :naturalidade,
+                 :endereco, :cep, :logradouro, :numero, :complemento, :bairro, :cidade, :estado,
+                 :data_membresia, :status, :observacoes, NOW())'
         );
         $stmt->execute(self::bindings($data));
 
@@ -135,7 +146,9 @@ final class Membro
         $stmt = Database::connection()->prepare(
             'UPDATE membros SET
                 nome = :nome, email = :email, telefone = :telefone, data_nascimento = :data_nascimento,
-                genero = :genero, estado_civil = :estado_civil, endereco = :endereco, cep = :cep, cidade = :cidade,
+                genero = :genero, estado_civil = :estado_civil, cpf = :cpf, rg = :rg, naturalidade = :naturalidade,
+                endereco = :endereco, cep = :cep, logradouro = :logradouro, numero = :numero,
+                complemento = :complemento, bairro = :bairro, cidade = :cidade,
                 estado = :estado, data_membresia = :data_membresia, status = :status, observacoes = :observacoes
              WHERE id = :id'
         );
@@ -235,8 +248,15 @@ final class Membro
             'data_nascimento' => self::nullable($data['data_nascimento'] ?? null),
             'genero' => self::nullable($data['genero'] ?? null),
             'estado_civil' => self::nullable($data['estado_civil'] ?? null),
+            'cpf' => self::nullable($data['cpf'] ?? null),
+            'rg' => self::nullable($data['rg'] ?? null),
+            'naturalidade' => self::nullable($data['naturalidade'] ?? null),
             'endereco' => self::nullable($data['endereco'] ?? null),
             'cep' => self::nullable($data['cep'] ?? null),
+            'logradouro' => self::nullable($data['logradouro'] ?? null),
+            'numero' => self::nullable($data['numero'] ?? null),
+            'complemento' => self::nullable($data['complemento'] ?? null),
+            'bairro' => self::nullable($data['bairro'] ?? null),
             'cidade' => self::nullable($data['cidade'] ?? null),
             'estado' => self::nullable($data['estado'] ?? null),
             'data_membresia' => self::nullable($data['data_membresia'] ?? null),
@@ -267,8 +287,15 @@ final class Membro
             dataNascimento: $row['data_nascimento'],
             genero: $row['genero'],
             estadoCivil: $row['estado_civil'],
+            cpf: $row['cpf'] ?? null,
+            rg: $row['rg'] ?? null,
+            naturalidade: $row['naturalidade'] ?? null,
             endereco: $row['endereco'],
             cep: $row['cep'],
+            logradouro: $row['logradouro'] ?? null,
+            numero: $row['numero'] ?? null,
+            complemento: $row['complemento'] ?? null,
+            bairro: $row['bairro'] ?? null,
             cidade: $row['cidade'],
             estado: $row['estado'],
             dataMembresia: $row['data_membresia'],

@@ -210,6 +210,15 @@
   color: #0F172A;
 }
 
+.crud-person-link {
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.crud-person-link:hover {
+  color: var(--primary-soft);
+}
+
 .crud-avatar {
   flex-shrink: 0;
   width: 34px;

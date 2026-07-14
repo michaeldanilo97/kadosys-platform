@@ -47,7 +47,7 @@ final class Plano
     public const VALOR_MENSAL = [
         self::ESSENCIAL => 49.90,
         self::PREMIUM => 99.90,
-        self::ENTERPRISE => 179.90,
+        self::ENTERPRISE => 139.90,
     ];
 
     /**

@@ -8,20 +8,43 @@ use Igrejas\Core\Auth;
 use Igrejas\Core\Controller;
 use Igrejas\Core\Csrf;
 use Igrejas\Core\Session;
+use Igrejas\Core\TenantResolver;
+use Igrejas\Models\Culto;
+use Igrejas\Models\Grupo;
 use Igrejas\Models\Membro;
+use Igrejas\Models\MembroDocumento;
+use Igrejas\Models\Ministerio;
 use Igrejas\Models\User;
 
 /**
  * Controller do modulo Membros: primeiro modulo de negocio da v2
- * (cadastro, listagem com busca/paginacao, edicao e remocao).
+ * (cadastro, listagem com busca/paginacao, edicao e remocao), com a
+ * tela de perfil individual (show) reunindo dados, ministerios/grupos,
+ * participacoes em cultos e documentos.
  */
 final class MembroController extends Controller
 {
     private const PER_PAGE = 15;
 
+    /** Diretorio base dos documentos anexados ao membro - mesmo motivo
+     * do UPLOAD_DIR de Playbacks (subpasta por tenant, docroot
+     * compartilhado entre subdominios). */
+    private const UPLOAD_DIR = 'uploads/membros';
+
+    /** @var array<string, string> */
+    private const MIME_PARA_EXTENSAO = [
+        'application/pdf' => 'pdf',
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+    ];
+
+    private const TAMANHO_MAXIMO_DOCUMENTO = 10 * 1024 * 1024;
+
     private const FIELDS = [
-        'nome', 'email', 'telefone', 'data_nascimento', 'genero',
-        'estado_civil', 'endereco', 'cep', 'cidade', 'estado', 'data_membresia',
+        'nome', 'email', 'telefone', 'data_nascimento', 'genero', 'estado_civil',
+        'cpf', 'rg', 'naturalidade', 'endereco', 'cep', 'logradouro', 'numero',
+        'complemento', 'bairro', 'cidade', 'estado', 'data_membresia',
         'status', 'observacoes',
     ];
 
@@ -48,6 +71,43 @@ final class MembroController extends Controller
         ], 'dashboard');
     }
 
+    /**
+     * Perfil do membro - aberto ao clicar no nome na listagem. Reune
+     * dados pessoais/endereco (editaveis nesta mesma tela, sem
+     * redirecionar pro form separado), ministerios/grupos, cultos que
+     * participou e documentos anexados.
+     */
+    public function show(string $id): void
+    {
+        $membro = Membro::find((int) $id);
+
+        if (!$membro) {
+            $this->renderNotFound();
+
+            return;
+        }
+
+        $ministerios = Ministerio::doMembro($membro->id);
+        $grupos = Grupo::doMembro($membro->id);
+        $participacoes = Culto::doMembro($membro->id);
+
+        echo $this->view('dashboard.membros.show', [
+            'pageTitle' => $membro->nome . ' - KADOSYS Igrejas',
+            'activeMenu' => 'membros',
+            'breadcrumb' => ['Dashboard', 'Membros', $membro->nome],
+            'user' => (new Auth($this->config))->user(),
+            'modules' => DashboardController::modules(),
+            'membro' => $membro,
+            'ministerios' => $ministerios,
+            'grupos' => $grupos,
+            'participacoes' => $participacoes,
+            'documentos' => MembroDocumento::doMembro($membro->id),
+            'success' => Session::flash('membro_success'),
+            'errors' => Session::flash('membro_errors') ?? [],
+            'csrfToken' => Csrf::token(),
+        ], 'dashboard');
+    }
+
     public function create(): void
     {
         echo $this->view('dashboard.membros.form', [
@@ -56,7 +116,6 @@ final class MembroController extends Controller
             'breadcrumb' => ['Dashboard', 'Membros', 'Novo'],
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
-            'membro' => null,
             'old' => Session::flash('membro_old') ?? [],
             'errors' => Session::flash('membro_errors') ?? [],
             'csrf' => Csrf::field(),
@@ -112,29 +171,6 @@ final class MembroController extends Controller
         $this->redirect('/dashboard/membros');
     }
 
-    public function edit(string $id): void
-    {
-        $membro = Membro::find((int) $id);
-
-        if (!$membro) {
-            $this->renderNotFound();
-
-            return;
-        }
-
-        echo $this->view('dashboard.membros.form', [
-            'pageTitle' => 'Editar ' . $membro->nome . ' - KADOSYS Igrejas',
-            'activeMenu' => 'membros',
-            'breadcrumb' => ['Dashboard', 'Membros', $membro->nome],
-            'user' => (new Auth($this->config))->user(),
-            'modules' => DashboardController::modules(),
-            'membro' => $membro,
-            'old' => Session::flash('membro_old') ?? [],
-            'errors' => Session::flash('membro_errors') ?? [],
-            'csrf' => Csrf::field(),
-        ], 'dashboard');
-    }
-
     public function update(string $id): void
     {
         if (!Membro::find((int) $id)) {
@@ -145,7 +181,7 @@ final class MembroController extends Controller
 
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
             Session::flash('membro_errors', ['Sessão expirada. Tente novamente.']);
-            $this->redirect("/dashboard/membros/{$id}/editar");
+            $this->redirect("/dashboard/membros/{$id}");
         }
 
         $data = $this->request->only(self::FIELDS);
@@ -153,14 +189,99 @@ final class MembroController extends Controller
 
         if ($errors !== []) {
             Session::flash('membro_errors', $errors);
-            Session::flash('membro_old', $data);
-            $this->redirect("/dashboard/membros/{$id}/editar");
+            $this->redirect("/dashboard/membros/{$id}");
         }
 
         Membro::update((int) $id, $data);
 
-        Session::flash('membro_success', 'Membro atualizado com sucesso.');
-        $this->redirect('/dashboard/membros');
+        Session::flash('membro_success', 'Dados atualizados com sucesso.');
+        $this->redirect("/dashboard/membros/{$id}");
+    }
+
+    /**
+     * Upload de um documento anexado ao membro (aba "Documentos").
+     */
+    public function documentoStore(string $id): void
+    {
+        $membro = Membro::find((int) $id);
+
+        if (!$membro) {
+            $this->renderNotFound();
+
+            return;
+        }
+
+        if (!Csrf::verify($this->request->input('_csrf_token'))) {
+            Session::flash('membro_errors', ['Sessão expirada. Tente novamente.']);
+            $this->redirect("/dashboard/membros/{$id}");
+        }
+
+        $arquivo = $this->request->file('documento');
+
+        if ($arquivo === null || $arquivo['error'] !== UPLOAD_ERR_OK) {
+            Session::flash('membro_errors', ['Selecione um arquivo para enviar.']);
+            $this->redirect("/dashboard/membros/{$id}");
+        }
+
+        if ($arquivo['size'] > self::TAMANHO_MAXIMO_DOCUMENTO) {
+            Session::flash('membro_errors', ['O arquivo deve ter no máximo 10MB.']);
+            $this->redirect("/dashboard/membros/{$id}");
+        }
+
+        $mime = mime_content_type($arquivo['tmp_name']) ?: '';
+        $extensao = self::MIME_PARA_EXTENSAO[$mime] ?? null;
+
+        if ($extensao === null) {
+            Session::flash('membro_errors', ['Formato inválido. Envie PDF, JPG, PNG ou WEBP.']);
+            $this->redirect("/dashboard/membros/{$id}");
+        }
+
+        $destinoDir = $this->diretorioTenant();
+
+        if (!is_dir($destinoDir) && !mkdir($destinoDir, 0755, true) && !is_dir($destinoDir)) {
+            Session::flash('membro_errors', ['Não foi possível salvar o arquivo no servidor.']);
+            $this->redirect("/dashboard/membros/{$id}");
+        }
+
+        $nomeArquivo = bin2hex(random_bytes(16)) . '.' . $extensao;
+
+        if (!move_uploaded_file($arquivo['tmp_name'], $destinoDir . '/' . $nomeArquivo)) {
+            Session::flash('membro_errors', ['Não foi possível salvar o arquivo no servidor.']);
+            $this->redirect("/dashboard/membros/{$id}");
+        }
+
+        $nomeOriginal = trim((string) $this->request->input('nome', ''));
+
+        MembroDocumento::create(
+            membroId: (int) $id,
+            nome: $nomeOriginal !== '' ? $nomeOriginal : (string) $arquivo['name'],
+            arquivoPath: self::UPLOAD_DIR . '/' . $this->tenantSlugOuCentral() . '/' . $nomeArquivo,
+            tamanhoBytes: $arquivo['size'],
+        );
+
+        Session::flash('membro_success', 'Documento enviado com sucesso.');
+        $this->redirect("/dashboard/membros/{$id}");
+    }
+
+    public function documentoDestroy(string $id, string $documentoId): void
+    {
+        if (Csrf::verify($this->request->input('_csrf_token'))) {
+            $documento = MembroDocumento::find((int) $documentoId);
+
+            if ($documento && $documento->membroId === (int) $id) {
+                $caminhoCompleto = dirname(__DIR__, 2) . '/public/' . $documento->arquivoPath;
+
+                if (is_file($caminhoCompleto)) {
+                    unlink($caminhoCompleto);
+                }
+
+                MembroDocumento::delete($documento->id);
+            }
+
+            Session::flash('membro_success', 'Documento removido com sucesso.');
+        }
+
+        $this->redirect("/dashboard/membros/{$id}");
     }
 
     public function destroy(string $id): void
@@ -239,5 +360,15 @@ final class MembroController extends Controller
             'user' => (new Auth($this->config))->user(),
             'modules' => DashboardController::modules(),
         ], 'dashboard');
+    }
+
+    private function tenantSlugOuCentral(): string
+    {
+        return TenantResolver::atual()?->slug ?? 'central';
+    }
+
+    private function diretorioTenant(): string
+    {
+        return dirname(__DIR__, 2) . '/public/' . self::UPLOAD_DIR . '/' . $this->tenantSlugOuCentral();
     }
 }

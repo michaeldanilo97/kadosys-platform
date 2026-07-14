@@ -13,7 +13,17 @@
     }
 
     var statusEl = document.querySelector('[data-cep-status]');
-    var enderecoInput = document.getElementById(cepInput.getAttribute('data-cep-endereco') || 'endereco');
+    // Duas formas de preencher o endereco: campo unico concatenado
+    // (data-cep-endereco, usado no autocadastro publico) ou campos
+    // separados de logradouro/bairro (data-cep-logradouro/data-cep-bairro,
+    // usado no perfil do membro no painel admin) - o que estiver presente
+    // no HTML e o que o script usa.
+    var enderecoAttr = cepInput.getAttribute('data-cep-endereco');
+    var enderecoInput = enderecoAttr ? document.getElementById(enderecoAttr) : null;
+    var logradouroAttr = cepInput.getAttribute('data-cep-logradouro');
+    var logradouroInput = logradouroAttr ? document.getElementById(logradouroAttr) : null;
+    var bairroAttr = cepInput.getAttribute('data-cep-bairro');
+    var bairroInput = bairroAttr ? document.getElementById(bairroAttr) : null;
     var cidadeInput = document.getElementById(cepInput.getAttribute('data-cep-cidade') || 'cidade');
     var estadoInput = document.getElementById(cepInput.getAttribute('data-cep-estado') || 'estado');
 
@@ -55,6 +65,14 @@
 
           if (enderecoInput && !enderecoInput.value) {
             enderecoInput.value = [dados.logradouro, dados.bairro].filter(Boolean).join(', ');
+          }
+
+          if (logradouroInput && !logradouroInput.value) {
+            logradouroInput.value = dados.logradouro || '';
+          }
+
+          if (bairroInput && !bairroInput.value) {
+            bairroInput.value = dados.bairro || '';
           }
 
           if (cidadeInput) {

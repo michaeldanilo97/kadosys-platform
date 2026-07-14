@@ -78,12 +78,12 @@ $basePath = $config['base_path'] ?? '';
                     <?php foreach ($membros as $membro): ?>
                         <tr>
                             <td>
-                                <div class="crud-person">
+                                <a href="<?= $basePath ?>/dashboard/membros/<?= $membro->id ?>" class="crud-person crud-person-link">
                                     <span class="crud-avatar">
                                         <?= htmlspecialchars(mb_strtoupper(mb_substr($membro->nome, 0, 1)), ENT_QUOTES, 'UTF-8') ?>
                                     </span>
                                     <span><?= htmlspecialchars($membro->nome, ENT_QUOTES, 'UTF-8') ?></span>
-                                </div>
+                                </a>
                             </td>
                             <td>
                                 <?php if ($membro->email): ?>
@@ -109,11 +109,11 @@ $basePath = $config['base_path'] ?? '';
                             </td>
                             <td class="actions-col">
                                 <a
-                                    href="<?= $basePath ?>/dashboard/membros/<?= $membro->id ?>/editar"
+                                    href="<?= $basePath ?>/dashboard/membros/<?= $membro->id ?>"
                                     class="crud-icon-btn"
-                                    aria-label="Editar <?= htmlspecialchars($membro->nome, ENT_QUOTES, 'UTF-8') ?>"
+                                    aria-label="Ver perfil de <?= htmlspecialchars($membro->nome, ENT_QUOTES, 'UTF-8') ?>"
                                 >
-                                    <i class="bi bi-pencil"></i>
+                                    <i class="bi bi-person-lines-fill"></i>
                                 </a>
                                 <form
                                     method="POST"

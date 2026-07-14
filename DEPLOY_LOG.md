@@ -17,6 +17,28 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 105 - 2026-07-14
+
+**Nova tela de perfil do membro (aberta ao clicar no nome na listagem)**
+
+- Ao clicar no nome de um membro na listagem, agora abre uma tela de
+  perfil completa (`/dashboard/membros/{id}`) no lugar da antiga tela
+  de edição simples - cabeçalho com avatar, status, "membro desde",
+  idade e contatos (e-mail e WhatsApp clicáveis); emblemas dos
+  ministérios/grupos que a pessoa participa; abas Dados, Contato,
+  Endereço, Ministérios, Participações, Histórico e Documentos.
+- Endereço ganhou busca automática por CEP (campos separados de
+  logradouro/bairro/cidade/estado) e novos campos CPF, RG e
+  naturalidade (migrações 046 e 047, aplicar em cada banco de igreja).
+- Nova aba de Documentos permite anexar e remover arquivos do membro
+  (PDF/JPG/PNG/WEBP, até 10MB), seguindo o mesmo padrão de upload já
+  usado no módulo de Louvores.
+- Ícone de "editar" na listagem foi substituído por "ver perfil"; a
+  antiga rota `/editar` foi removida.
+- Preço do plano Premium ajustado de R$ 179,90 para R$ 139,90/mês.
+
+---
+
 ## Ajuste 104 - 2026-07-14
 
 **Permissões liberado em todos os planos, e botão flutuante de suporte via WhatsApp**

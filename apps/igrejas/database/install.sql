@@ -87,8 +87,15 @@ CREATE TABLE IF NOT EXISTS membros (
     data_nascimento DATE NULL,
     genero ENUM('feminino', 'masculino', 'outro') NULL,
     estado_civil ENUM('solteiro', 'casado', 'divorciado', 'viuvo', 'outro') NULL,
+    cpf VARCHAR(14) NULL,
+    rg VARCHAR(20) NULL,
+    naturalidade VARCHAR(100) NULL,
     endereco VARCHAR(255) NULL,
     cep VARCHAR(9) NULL,
+    logradouro VARCHAR(150) NULL,
+    numero VARCHAR(20) NULL,
+    complemento VARCHAR(100) NULL,
+    bairro VARCHAR(100) NULL,
     cidade VARCHAR(100) NULL,
     estado CHAR(2) NULL,
     data_membresia DATE NULL,
@@ -98,6 +105,17 @@ CREATE TABLE IF NOT EXISTS membros (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     KEY membros_nome_index (nome),
     KEY membros_status_index (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS membro_documentos (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    membro_id INT UNSIGNED NOT NULL,
+    nome VARCHAR(150) NOT NULL,
+    arquivo_path VARCHAR(255) NOT NULL,
+    tamanho_bytes INT UNSIGNED NOT NULL,
+    enviado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT membro_documentos_membro_id_foreign
+        FOREIGN KEY (membro_id) REFERENCES membros (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
