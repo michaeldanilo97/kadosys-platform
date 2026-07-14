@@ -17,6 +17,23 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 88 - 2026-07-14
+
+**Cadastrar membro já com acesso ao sistema, num passo só**
+
+- Na tela de "Novo membro", nova seção "Acesso ao sistema" com um
+  toggle "Criar acesso ao sistema para este membro" - antes disso era
+  preciso cadastrar o membro, depois ir em Usuários e cadastrar de
+  novo (nome/e-mail repetidos) só pra criar o login.
+- Ligando o toggle aparecem os campos de senha e os toggles de
+  "Músico"/"Líder de louvor" - o e-mail e o nome usados são os mesmos
+  já preenchidos em cima, sem duplicar campo. Cargo na Equipe é
+  ajustado automaticamente (Músico se marcado, senão Membro).
+- Se o e-mail já estiver em uso por outro usuário, ou a senha não
+  conferir, nada é criado (nem o membro, nem o usuário) - o formulário
+  volta com os erros e mantém a seção aberta.
+- Só disponível no cadastro (não na edição de um membro já existente).
+
 ## Ajuste 87 - 2026-07-14
 
 **Toggle switch (Músico, Líder de louvor, etc.) em cima do texto em
