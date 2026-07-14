@@ -8,6 +8,7 @@ use Igrejas\Core\Auth;
 use Igrejas\Core\MiddlewareInterface;
 use Igrejas\Core\Request;
 use Igrejas\Core\TenantResolver;
+use Igrejas\Models\AgendaEvento;
 use Igrejas\Models\FaturaPix;
 use Igrejas\Models\User;
 
@@ -166,9 +167,46 @@ final class AuthMiddleware implements MiddlewareInterface
             return;
         }
 
+        // Excecao da Agenda: mesmo sem nivel "editar" no modulo, todo
+        // usuario pode criar/editar/excluir um evento PRIVADO (visivel
+        // so pra ele mesmo, ex.: um compromisso pessoal) que seja seu -
+        // so evento PUBLICO (visivel pra todo mundo) continua exigindo
+        // nivel "editar". Ver AgendaController::podeGerenciar(), que
+        // repete essa mesma checagem de dono no controller.
+        if ($slug === 'agenda' && $this->podeGerenciarEventoPrivado($request, $auth->user())) {
+            return;
+        }
+
         $base = $this->config['base_path'] ?? '';
         header('Location: ' . $base . '/dashboard/sem-permissao?modulo=' . urlencode($slug));
         exit;
+    }
+
+    private function podeGerenciarEventoPrivado(Request $request, ?User $user): bool
+    {
+        if ($user === null) {
+            return false;
+        }
+
+        $uri = $this->uriSemBase($request);
+
+        // Cadastrar evento novo: so libera se a propria pessoa esta
+        // marcando o evento como privado - AgendaController::store()
+        // sempre grava criado_por_user_id = usuario logado, entao um
+        // evento privado criado aqui e automaticamente so dela.
+        if ($uri === '/dashboard/agenda') {
+            return $request->input('visibilidade') === 'privado';
+        }
+
+        // Editar/excluir um evento existente: so libera se ele ja e
+        // privado e foi criado por essa mesma pessoa.
+        if (preg_match('#^/dashboard/agenda/(\d+)#', $uri, $matches) === 1) {
+            $evento = AgendaEvento::find((int) $matches[1]);
+
+            return $evento !== null && $evento->ehPrivado() && $evento->criadoPorUserId === $user->id;
+        }
+
+        return false;
     }
 
     private function moduloSlugDaUri(string $uri): ?string

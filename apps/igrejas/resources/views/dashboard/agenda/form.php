@@ -3,6 +3,7 @@
  * @var array $config
  * @var \Igrejas\Models\AgendaEvento|null $evento
  * @var array<int, \Igrejas\Models\Membro> $membrosAtivos
+ * @var bool $podeTornarPublico
  * @var array $old
  * @var array $errors
  * @var string $csrf
@@ -19,7 +20,7 @@ $local = $old['local'] ?? $evento->local ?? '';
 $responsavelMembroId = $old['responsavel_membro_id'] ?? $evento->responsavelMembroId ?? '';
 $descricao = $old['descricao'] ?? $evento->descricao ?? '';
 $status = $old['status'] ?? $evento->status ?? 'agendado';
-$visibilidade = $old['visibilidade'] ?? $evento->visibilidade ?? 'publico';
+$visibilidade = $old['visibilidade'] ?? $evento->visibilidade ?? ($podeTornarPublico ? 'publico' : 'privado');
 
 // Inputs type="time" esperam HH:MM; a coluna vem como HH:MM:SS do banco.
 if ($horaInicio !== '' && strlen($horaInicio) > 5) {
@@ -124,7 +125,7 @@ $actionUrl = $isEdit
                     <label>Quem pode ver este evento?</label>
                     <div style="display: flex; gap: 1.4rem; margin-top: 0.3rem;">
                         <label style="display: flex; align-items: center; gap: 0.4rem; font-weight: 400;">
-                            <input type="radio" name="visibilidade" value="publico" <?= $visibilidade === 'publico' ? 'checked' : '' ?>>
+                            <input type="radio" name="visibilidade" value="publico" <?= $visibilidade === 'publico' ? 'checked' : '' ?> <?= $podeTornarPublico ? '' : 'disabled' ?>>
                             Todo mundo (aparece no calendário de todos)
                         </label>
                         <label style="display: flex; align-items: center; gap: 0.4rem; font-weight: 400;">
@@ -132,6 +133,11 @@ $actionUrl = $isEdit
                             Só eu (compromisso pessoal)
                         </label>
                     </div>
+                    <?php if (!$podeTornarPublico): ?>
+                        <p class="crud-field-hint">
+                            Sem edição liberada no módulo Agenda, você só pode cadastrar compromissos pessoais (visíveis só pra você).
+                        </p>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

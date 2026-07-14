@@ -17,6 +17,24 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 107 - 2026-07-14
+
+**Agenda: compromisso pessoal liberado mesmo sem edição no módulo**
+
+- Quem só tem "visualizar" liberado no módulo Agenda (ver
+  Permissões) agora consegue cadastrar, editar e excluir um
+  compromisso marcado como "Só eu" (privado) - continua não podendo
+  criar/editar evento "Todo mundo" (público), que segue exigindo
+  nível "editar" como antes.
+- No formulário, quem não tem edição liberada já abre com "Só eu"
+  selecionado e a opção "Todo mundo" desabilitada, em vez de só
+  descobrir o bloqueio depois de tentar salvar.
+- Reforço de segurança: mesmo editando o próprio compromisso privado
+  por essa brecha, não dá pra promovê-lo pra público sem nível
+  "editar" de verdade - o backend força de volta pra privado.
+
+---
+
 ## Ajuste 106 - 2026-07-14
 
 **Perfil da Equipe (aberto ao clicar no nome/foto na galeria)**
