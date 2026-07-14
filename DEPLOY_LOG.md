@@ -17,6 +17,20 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 112 - 2026-07-14
+
+**"Ao vivo" no menu só quando tem sessão de projeção de verdade**
+
+- Projeção e Louvores ficavam sempre marcados como "Ao vivo" (selo
+  verde pulsando) no topo do menu, mesmo fora de culto. Agora esse
+  selo só aparece quando existe mesmo uma sessão de projeção em
+  andamento (a mesma usada pelo telão e pelo tablet do preletor) -
+  fora de culto, os dois módulos continuam destacados no topo do
+  menu pra achar rápido, só que sob o rótulo "Destaque", sem alegar
+  que tem algo ao vivo acontecendo.
+
+---
+
 ## Ajuste 111 - 2026-07-14
 
 **Membros vira uma grade de cards moderna, e corrige quem não aparecia**
