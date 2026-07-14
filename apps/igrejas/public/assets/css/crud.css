@@ -1025,6 +1025,13 @@ textarea.crud-field-mono {
 
 /* ---- Toggle switch (ex.: liga/desliga do auto-cadastro de membros) ------- */
 
+/* Especificidade extra (".crud-field .toggle-switch-field", nao so
+   ".toggle-switch-field") de proposito: quando esse label fica dentro
+   de um wrapper ".crud-field" (padrao em formularios de cadastro), a
+   regra ".crud-field label { display: block }" tem mais peso que uma
+   unica classe e ganhava desse "display: flex", fazendo o switch
+   encolher e ficar em cima do texto em vez de do lado. */
+.crud-field .toggle-switch-field,
 .toggle-switch-field {
   display: flex;
   align-items: flex-start;
