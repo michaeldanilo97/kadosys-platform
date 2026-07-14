@@ -17,6 +17,17 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 83 - 2026-07-14
+
+**Icone de Modo Culto na listagem de repertorios nao abria em nova
+janela**
+
+- O botao "Abrir Modo Culto" na tela do editor ja abre em nova aba
+  (`target="_blank"`), mas o icone equivalente na listagem de
+  repertorios ficou faltando esse atributo - clicar nele navegava na
+  MESMA aba, tirando o lider da tela de gerenciamento. Corrigido pra
+  abrir em nova janela/aba, igual ao resto do modulo.
+
 ## Ajuste 82 - 2026-07-14
 
 **Sugestão automática de tom tinha o mesmo bug de detecção de acorde do
