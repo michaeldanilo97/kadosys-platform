@@ -17,6 +17,22 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 104 - 2026-07-14
+
+**Permissões liberado em todos os planos, e botão flutuante de suporte via WhatsApp**
+
+- Módulo Permissões deixa de ser exclusivo do plano Premium e passa a
+  estar disponível desde o Essencial - removido de
+  `Plano::MODULO_MINIMO`. Cards de plano, tabela de comparação
+  (gerada automaticamente) e a pergunta do FAQ sobre níveis de
+  permissão foram corrigidos pra refletir isso.
+- Nova botão flutuante fixo no canto inferior direito de toda a área
+  logada (`layouts/dashboard.php`, usado por todos os módulos de
+  gestão), com link direto pro WhatsApp de suporte da KADOSYS
+  (+55 11 93325-2478).
+
+---
+
 ## Ajuste 103 - 2026-07-14
 
 **Nova seção "Como funciona" (linha do tempo) em cada página de recurso**

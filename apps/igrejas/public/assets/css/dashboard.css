@@ -1686,3 +1686,40 @@ body.dashboard-body[data-theme="light"] {
 [data-theme="light"] .plataforma-tab.active {
   color: var(--white);
 }
+
+/* ---- Botao flutuante de suporte via WhatsApp ---------------------------- */
+
+.dash-whatsapp-fab {
+  position: fixed;
+  right: 1.6rem;
+  bottom: 1.6rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #25D366;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  box-shadow: 0 10px 28px rgba(37, 211, 102, 0.45);
+  transition: var(--transition);
+  z-index: 60;
+}
+
+.dash-whatsapp-fab:hover,
+.dash-whatsapp-fab:focus-visible {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 14px 34px rgba(37, 211, 102, 0.55);
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+  .dash-whatsapp-fab {
+    right: 1.1rem;
+    bottom: 1.1rem;
+    width: 50px;
+    height: 50px;
+    font-size: 1.4rem;
+  }
+}

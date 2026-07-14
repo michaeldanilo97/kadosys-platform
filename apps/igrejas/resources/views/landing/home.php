@@ -376,6 +376,7 @@ $modulosComparacao = array_filter(
                     <li class="plan-feature"><i class="bi bi-check2"></i> Projeção/Telão com controle do preletor em tempo real</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Louvores e Modo Culto, com transposição de tom ao vivo</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Playbacks (biblioteca de áudio)</li>
+                    <li class="plan-feature"><i class="bi bi-check2"></i> Permissões por usuário: escolha quem só visualiza e quem edita cada módulo</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Backup automático e suporte por e-mail</li>
                 </ul>
                 <a href="<?= $basePath ?>/cadastro?plano=essencial" class="btn-k btn-k-outline">Começar agora</a>
@@ -407,7 +408,6 @@ $modulosComparacao = array_filter(
                     <li class="plan-feature"><i class="bi bi-check2"></i> Tudo do plano Plus</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Patrimônio (bens, imóveis e equipamentos)</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Relatórios consolidados</li>
-                    <li class="plan-feature"><i class="bi bi-check2"></i> Permissões por usuário: escolha quem só visualiza e quem edita cada módulo</li>
                     <li class="plan-feature"><i class="bi bi-check2"></i> Atendimento dedicado</li>
                 </ul>
                 <a href="<?= $basePath ?>/cadastro?plano=enterprise" class="btn-k btn-k-outline">Começar agora</a>
@@ -535,7 +535,7 @@ $modulosComparacao = array_filter(
                     <span class="plus">+</span>
                 </button>
                 <div class="faq-answer">
-                    <p>No plano Premium, cada usuário da equipe pode receber acesso configurado
+                    <p>Em qualquer plano, cada usuário da equipe pode receber acesso configurado
                         módulo a módulo: sem acesso, só visualizar ou visualizar e editar. Assim dá
                         pra convidar voluntários e líderes com o acesso certo pra função de cada um,
                         sem abrir mão de controle.</p>

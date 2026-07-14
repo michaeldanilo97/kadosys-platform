@@ -424,6 +424,17 @@ $avisosSidebar = ($comunicacaoDisponivel && $user !== null)
     </div>
 </div>
 
+<a
+    href="https://wa.me/5511933252478"
+    target="_blank"
+    rel="noopener"
+    class="dash-whatsapp-fab"
+    aria-label="Suporte KADOSYS pelo WhatsApp"
+    title="Suporte KADOSYS pelo WhatsApp"
+>
+    <i class="bi bi-whatsapp"></i>
+</a>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?= $basePath ?>/assets/js/kadosys-modal.js?v=<?= View::assetVersion('assets/js/kadosys-modal.js') ?>"></script>
 <script src="<?= $basePath ?>/assets/js/dashboard.js?v=<?= View::assetVersion('assets/js/dashboard.js') ?>"></script>
