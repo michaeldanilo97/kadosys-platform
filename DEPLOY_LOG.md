@@ -17,6 +17,33 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 114 - 2026-07-14
+
+**Novo módulo: KADOSYS Kids (Fase 1 - Turmas, Crianças e Check-in)**
+
+- Primeira fase do módulo KADOSYS Kids, focada no lado operacional da
+  equipe/professores do ministério infantil: cadastro de Turmas (por
+  faixa etária, com professor responsável), cadastro de Crianças
+  (foto, turma, responsável vinculado a um Membro ou nome/telefone
+  avulso, outras pessoas autorizadas a retirar, alergias e observações
+  médicas) e uma tela de Check-in/Check-out na porta da sala.
+- Cada check-in gera um código de segurança de 4 dígitos entregue ao
+  responsável na entrada - a saída só é liberada quando esse código é
+  informado corretamente, evitando que a criança seja retirada por
+  quem não tem o código.
+- Gamificação inicial: cada check-in concede XP e moedas à criança e
+  atualiza a sequência de presença, exibidos no perfil e na grade de
+  Crianças. As demais partes do módulo (histórias, jogos, avatares,
+  mapa bíblico, IA infantil, área dos pais etc., do escopo completo do
+  KADOSYS Kids) ficam para as próximas fases.
+- Módulo "Kids" adicionado ao menu lateral, com o mesmo plano mínimo
+  de Ministérios/Grupos/Comunicação (Plus). As tabelas novas
+  (`kids_turmas`, `kids_criancas`, `kids_checkins`) já fazem parte do
+  `install.sql`, então toda igreja nova criada a partir de agora já
+  nasce com o módulo pronto para uso - sem passo extra de provisionamento.
+
+---
+
 ## Ajuste 113 - 2026-07-14
 
 **Equipe e Membros ganham o mesmo padrão visual de card**

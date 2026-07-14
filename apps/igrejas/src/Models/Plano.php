@@ -61,6 +61,7 @@ final class Plano
         'grupos' => self::PREMIUM,
         'financeiro' => self::PREMIUM,
         'comunicacao' => self::PREMIUM,
+        'kids' => self::PREMIUM,
         'patrimonio' => self::ENTERPRISE,
         'relatorios' => self::ENTERPRISE,
     ];

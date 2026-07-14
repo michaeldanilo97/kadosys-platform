@@ -16,6 +16,10 @@ use Igrejas\Controllers\EquipeController;
 use Igrejas\Controllers\FaturaController;
 use Igrejas\Controllers\FinanceiroController;
 use Igrejas\Controllers\GrupoController;
+use Igrejas\Controllers\KidsCheckinController;
+use Igrejas\Controllers\KidsController;
+use Igrejas\Controllers\KidsCriancaController;
+use Igrejas\Controllers\KidsTurmaController;
 use Igrejas\Controllers\LandingController;
 use Igrejas\Controllers\RecursoController;
 use Igrejas\Controllers\LouvorController;
@@ -120,6 +124,35 @@ $router->post('/dashboard/grupos/{id}', [GrupoController::class, 'update'], [Aut
 $router->post('/dashboard/grupos/{id}/excluir', [GrupoController::class, 'destroy'], [AuthMiddleware::class, PlanoMiddleware::class]);
 $router->post('/dashboard/grupos/{id}/participantes', [GrupoController::class, 'addParticipante'], [AuthMiddleware::class, PlanoMiddleware::class]);
 $router->post('/dashboard/grupos/{id}/participantes/{membroId}/remover', [GrupoController::class, 'removeParticipante'], [AuthMiddleware::class, PlanoMiddleware::class]);
+
+// Modulo KADOSYS Kids (Fase 1 - operacional: Turmas, Crianças e
+// Check-in). Mesmo motivo: precisam vir antes do catch-all.
+// PlanoMiddleware: Kids exige plano Plus ou superior (ver
+// Igrejas\Models\Plano), mesmo nivel de Ministerios/Grupos/Comunicacao.
+$router->get('/dashboard/kids', [KidsController::class, 'index'], [AuthMiddleware::class, PlanoMiddleware::class]);
+
+$router->get('/dashboard/kids/turmas', [KidsTurmaController::class, 'index'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->get('/dashboard/kids/turmas/novo', [KidsTurmaController::class, 'create'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/kids/turmas', [KidsTurmaController::class, 'store'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->get('/dashboard/kids/turmas/{id}/editar', [KidsTurmaController::class, 'edit'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/kids/turmas/{id}', [KidsTurmaController::class, 'update'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/kids/turmas/{id}/excluir', [KidsTurmaController::class, 'destroy'], [AuthMiddleware::class, PlanoMiddleware::class]);
+
+// Check-in precisa vir antes de "/dashboard/kids/criancas/{id}" - mesmo
+// motivo de sempre, e um caminho fixo (nao um {id}).
+$router->get('/dashboard/kids/checkin', [KidsCheckinController::class, 'index'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/kids/checkin', [KidsCheckinController::class, 'registrar'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/kids/checkin/{id}/encerrar', [KidsCheckinController::class, 'encerrar'], [AuthMiddleware::class, PlanoMiddleware::class]);
+
+$router->get('/dashboard/kids/criancas', [KidsCriancaController::class, 'index'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->get('/dashboard/kids/criancas/novo', [KidsCriancaController::class, 'create'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/kids/criancas', [KidsCriancaController::class, 'store'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->get('/dashboard/kids/criancas/{id}/editar', [KidsCriancaController::class, 'edit'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/kids/criancas/{id}', [KidsCriancaController::class, 'update'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/kids/criancas/{id}/excluir', [KidsCriancaController::class, 'destroy'], [AuthMiddleware::class, PlanoMiddleware::class]);
+// Precisa vir por ultimo entre as rotas de criancas: e a mais generica
+// ({id} sozinho) e casaria com "novo" se viesse antes dela.
+$router->get('/dashboard/kids/criancas/{id}', [KidsCriancaController::class, 'show'], [AuthMiddleware::class, PlanoMiddleware::class]);
 
 // Modulo Cultos. Mesmo motivo: precisam vir antes do catch-all.
 $router->get('/dashboard/cultos', [CultoController::class, 'index'], [AuthMiddleware::class]);
