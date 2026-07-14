@@ -10,6 +10,7 @@ use Igrejas\Core\View;
  *
  * @var array $config
  * @var \Igrejas\Models\Membro $membro
+ * @var string|null $fotoAcesso
  * @var array<int, array{id:int, nome:string, papel:string}> $ministerios
  * @var array<int, array{id:int, nome:string, tipo:string, papel:string}> $grupos
  * @var array<int, \Igrejas\Models\Culto> $participacoes
@@ -53,7 +54,11 @@ $telefoneWhats = $membro->telefone ? preg_replace('/\D/', '', $membro->telefone)
 
 <div class="member-profile-header dash-panel">
     <div class="member-profile-avatar">
-        <?= htmlspecialchars(mb_strtoupper(mb_substr($membro->nome, 0, 1)), ENT_QUOTES, 'UTF-8') ?>
+        <?php if ($fotoAcesso !== null): ?>
+            <img src="<?= $basePath ?>/<?= htmlspecialchars($fotoAcesso, ENT_QUOTES, 'UTF-8') ?>" alt="">
+        <?php else: ?>
+            <?= htmlspecialchars(mb_strtoupper(mb_substr($membro->nome, 0, 1)), ENT_QUOTES, 'UTF-8') ?>
+        <?php endif; ?>
     </div>
     <div class="member-profile-heading">
         <div class="member-profile-name-row">

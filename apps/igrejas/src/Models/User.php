@@ -226,6 +226,49 @@ final class User
         return array_map(self::fromRow(...), $stmt->fetchAll());
     }
 
+    /**
+     * Dados de acesso ao sistema (cargo/instrumento/foto) de quem tem
+     * um usuario ativo vinculado a cada um desses membros - usado na
+     * listagem de Membros (ver MembroController::index()) pra mostrar
+     * a mesma foto de perfil de "Meu perfil"/Equipe, e o badge de
+     * cargo pra quem tem um cargo de verdade (view decide, comparando
+     * com CARGO_MEMBRO) - sem fazer uma consulta por linha da pagina.
+     *
+     * @param array<int, int> $membroIds
+     * @return array<int, array{cargo: string, instrumento: ?string, fotoPath: ?string}> chave = membro_id
+     */
+    public static function cargosPorMembroIds(array $membroIds): array
+    {
+        if ($membroIds === []) {
+            return [];
+        }
+
+        $placeholders = [];
+        $params = [];
+        foreach (array_values($membroIds) as $indice => $membroId) {
+            $chave = "membro_id_{$indice}";
+            $placeholders[] = ":{$chave}";
+            $params[$chave] = $membroId;
+        }
+
+        $stmt = Database::connection()->prepare(
+            'SELECT membro_id, cargo, instrumento, foto_path FROM users
+             WHERE active = 1 AND membro_id IN (' . implode(', ', $placeholders) . ')'
+        );
+        $stmt->execute($params);
+
+        $porMembroId = [];
+        foreach ($stmt->fetchAll() as $row) {
+            $porMembroId[(int) $row['membro_id']] = [
+                'cargo' => (string) $row['cargo'],
+                'instrumento' => $row['instrumento'] ?? null,
+                'fotoPath' => $row['foto_path'] ?? null,
+            ];
+        }
+
+        return $porMembroId;
+    }
+
     public static function emailEmUso(string $email, ?int $excetoId = null): bool
     {
         $sql = 'SELECT 1 FROM users WHERE email = :email';

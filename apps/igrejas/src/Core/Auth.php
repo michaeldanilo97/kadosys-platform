@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Igrejas\Core;
 
+use Igrejas\Models\Membro;
 use Igrejas\Models\User;
 
 /**
@@ -65,11 +66,31 @@ final class Auth
     {
         $userId = Session::get(self::SESSION_USER_ID);
 
-        if ($userId !== null) {
-            return User::findById((int) $userId);
+        $user = $userId !== null ? User::findById((int) $userId) : $this->attemptLoginFromRememberCookie();
+
+        return $this->comMembroVinculado($user);
+    }
+
+    /**
+     * Garante que o usuario logado tenha um Membro vinculado (ver
+     * Membro::vincularOuCriarParaUsuario) - chamado aqui, no unico
+     * ponto por onde toda requisicao autenticada passa, pra contas
+     * criadas antes dessa ligacao existir se autovincularem assim que
+     * a pessoa faz qualquer coisa no painel, sem depender dela abrir
+     * "Meu perfil" primeiro (ver PerfilController, que faz a mesma
+     * checagem por seguranca, mas essa aqui e a que garante o vinculo
+     * de verdade). So grava uma vez: nas proximas chamadas membroId ja
+     * vem preenchido do banco.
+     */
+    private function comMembroVinculado(?User $user): ?User
+    {
+        if ($user === null || $user->membroId !== null) {
+            return $user;
         }
 
-        return $this->attemptLoginFromRememberCookie();
+        Membro::vincularOuCriarParaUsuario($user, $user->name, $user->email);
+
+        return User::findById($user->id);
     }
 
     private function attemptLoginFromRememberCookie(): ?User

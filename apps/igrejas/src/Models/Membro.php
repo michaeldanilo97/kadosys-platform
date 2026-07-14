@@ -44,7 +44,11 @@ final class Membro
     }
 
     /**
-     * Lista paginada de membros, com busca opcional por nome ou e-mail.
+     * Lista paginada de membros, com busca opcional por nome, e-mail
+     * ou cargo (LEFT JOIN com o usuario de acesso vinculado, ver
+     * users.membro_id) - so entra no resultado uma vez mesmo pra quem
+     * tem cargo (DISTINCT), e quem nao tem usuario vinculado so casa
+     * pelo nome/e-mail mesmo (cargo fica NULL no join).
      *
      * @return array{items: array<int, self>, total: int, page: int, perPage: int, lastPage: int}
      */
@@ -53,6 +57,7 @@ final class Membro
         $page = max(1, $page);
         $offset = ($page - 1) * $perPage;
 
+        $join = 'LEFT JOIN users u ON u.membro_id = m.id AND u.active = 1';
         $where = '';
         $params = [];
 
@@ -62,17 +67,18 @@ final class Membro
             // (PDO::ATTR_EMULATE_PREPARES => false, ver Database.php) -
             // cada ocorrencia de LIKE precisa do seu proprio placeholder,
             // mesmo vinculado ao mesmo valor.
-            $where = 'WHERE nome LIKE :search_nome OR email LIKE :search_email';
+            $where = 'WHERE m.nome LIKE :search_nome OR m.email LIKE :search_email OR u.cargo LIKE :search_cargo';
             $params['search_nome'] = '%' . $search . '%';
             $params['search_email'] = '%' . $search . '%';
+            $params['search_cargo'] = '%' . $search . '%';
         }
 
-        $totalStmt = Database::connection()->prepare("SELECT COUNT(*) FROM membros {$where}");
+        $totalStmt = Database::connection()->prepare("SELECT COUNT(DISTINCT m.id) FROM membros m {$join} {$where}");
         $totalStmt->execute($params);
         $total = (int) $totalStmt->fetchColumn();
 
         $stmt = Database::connection()->prepare(
-            "SELECT * FROM membros {$where} ORDER BY nome ASC LIMIT :limit OFFSET :offset"
+            "SELECT DISTINCT m.* FROM membros m {$join} {$where} ORDER BY m.nome ASC LIMIT :limit OFFSET :offset"
         );
 
         foreach ($params as $key => $value) {
