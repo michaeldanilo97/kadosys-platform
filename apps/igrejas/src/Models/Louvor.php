@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Igrejas\Models;
 
 use Igrejas\Core\Database;
+use Igrejas\Core\Transpositor;
 use PDO;
 
 /**
@@ -178,11 +179,20 @@ final class Louvor
     }
 
     /**
-     * Muda so o tom atual (sem mexer em mais nada) e registra no
-     * historico - usado pelo lider durante o Modo Culto pra ajustar o
-     * tom em tempo real (ex.: baixar meio tom pro vocalista de hoje),
-     * sincronizado pra todos os musicos via o mesmo polling que ja
-     * acompanha a musica atual (ver RepertorioController::alterarTom()).
+     * Muda o tom atual e registra no historico - usado pelo lider
+     * durante o Modo Culto pra ajustar o tom em tempo real (ex.: baixar
+     * meio tom pro vocalista de hoje), sincronizado pra todos os
+     * musicos via o mesmo polling que ja acompanha a musica atual (ver
+     * RepertorioController::alterarTom()).
+     *
+     * Alem de so trocar o rotulo do tom, transpõe de verdade a
+     * letra/cifra salva (mesmo calculo usado no botao "Transpor" do
+     * cadastro, ver Igrejas\Core\Transpositor) - sem isso, o tom exibido
+     * mudaria mas os acordes escritos no texto continuariam no tom
+     * antigo. So funciona quando os dois tons (antigo e novo) sao
+     * reconhecidos (grafia canonica); se o tom antigo for uma grafia
+     * antiga fora das listas (ver Louvor::TONS_MAIORES/TONS_MENORES), so
+     * o rotulo muda - nao ha como calcular quantos semitons transpor.
      */
     public static function alterarTom(int $id, string $novoTom, ?int $alteradoPor): void
     {
@@ -198,8 +208,25 @@ final class Louvor
             return;
         }
 
-        $stmt = Database::connection()->prepare('UPDATE louvores SET tom_atual = :tom_atual WHERE id = :id');
-        $stmt->execute(['tom_atual' => $novoTom, 'id' => $id]);
+        $semitons = Transpositor::calcularSemitons($atual->tomAtual, $novoTom);
+
+        $novaLetra = $atual->letra;
+        $novaCifra = $atual->cifra;
+
+        if ($semitons !== null && $semitons !== 0) {
+            $novaLetra = $novaLetra !== null ? Transpositor::transporTexto($novaLetra, $semitons) : null;
+            $novaCifra = $novaCifra !== null ? Transpositor::transporTexto($novaCifra, $semitons) : null;
+        }
+
+        $stmt = Database::connection()->prepare(
+            'UPDATE louvores SET tom_atual = :tom_atual, letra = :letra, cifra = :cifra WHERE id = :id'
+        );
+        $stmt->execute([
+            'tom_atual' => $novoTom,
+            'letra' => $novaLetra,
+            'cifra' => $novaCifra,
+            'id' => $id,
+        ]);
 
         LouvorTomHistorico::registrar($id, $atual->tomAtual, $novoTom, 'Alterado ao vivo no Modo Culto', $alteradoPor);
     }
