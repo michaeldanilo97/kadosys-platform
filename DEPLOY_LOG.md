@@ -17,6 +17,22 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 106 - 2026-07-14
+
+**Perfil da Equipe (aberto ao clicar no nome/foto na galeria)**
+
+- Clicar em alguém na galeria de Equipe agora abre um perfil com
+  status, cargo/instrumento, data de entrada na equipe, e-mail e um
+  resumo de quais módulos essa pessoa acessa (e com qual nível -
+  Visualizar ou Editar), reunindo numa tela só uma informação que
+  hoje só aparecia espalhada em Permissões.
+- Administradores veem, além disso, atalhos para "Editar usuário" e
+  "Editar permissões" direto do perfil.
+- Model `User` passou a expor a data de criação da conta
+  (`created_at`), usada no "Na equipe desde".
+
+---
+
 ## Ajuste 105 - 2026-07-14
 
 **Nova tela de perfil do membro (aberta ao clicar no nome na listagem)**

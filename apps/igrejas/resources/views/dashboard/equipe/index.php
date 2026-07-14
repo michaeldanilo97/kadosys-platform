@@ -37,7 +37,7 @@ $basePath = $config['base_path'] ?? '';
     <div class="equipe-grade">
         <?php foreach ($membrosEquipe as $pessoa): ?>
             <?php $cargoInfo = User::CARGOS[$pessoa->cargo] ?? User::CARGOS[User::CARGO_MEMBRO]; ?>
-            <div class="equipe-card">
+            <a class="equipe-card" href="<?= $basePath ?>/dashboard/equipe/<?= $pessoa->id ?>">
                 <div class="equipe-card-foto">
                     <?php if ($pessoa->fotoPath !== null): ?>
                         <img src="<?= $basePath ?>/<?= htmlspecialchars($pessoa->fotoPath, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($pessoa->name, ENT_QUOTES, 'UTF-8') ?>">
@@ -62,7 +62,7 @@ $basePath = $config['base_path'] ?? '';
                         &middot; <?= htmlspecialchars(User::INSTRUMENTOS[$pessoa->instrumento]['label'], ENT_QUOTES, 'UTF-8') ?>
                     <?php endif; ?>
                 </div>
-            </div>
+            </a>
         <?php endforeach; ?>
     </div>
 <?php endif; ?>

@@ -90,7 +90,7 @@ final class User
         'outro' => ['label' => 'Outro', 'emoji' => '🎵'],
     ];
 
-    private const SELECT_COLUNAS = 'id, name, email, password, role, active, musico, lider_louvor, cargo, instrumento, foto_path';
+    private const SELECT_COLUNAS = 'id, name, email, password, role, active, musico, lider_louvor, cargo, instrumento, foto_path, created_at';
 
     public function __construct(
         public readonly int $id,
@@ -104,6 +104,7 @@ final class User
         public readonly string $cargo = self::CARGO_MEMBRO,
         public readonly ?string $instrumento = null,
         public readonly ?string $fotoPath = null,
+        public readonly ?string $createdAt = null,
     ) {
     }
 
@@ -153,7 +154,7 @@ final class User
     public static function findByValidRememberToken(string $tokenHash): ?self
     {
         $stmt = Database::connection()->prepare(
-            'SELECT u.id, u.name, u.email, u.password, u.role, u.active, u.musico, u.lider_louvor, u.cargo, u.instrumento, u.foto_path
+            'SELECT u.id, u.name, u.email, u.password, u.role, u.active, u.musico, u.lider_louvor, u.cargo, u.instrumento, u.foto_path, u.created_at
              FROM remember_tokens rt
              INNER JOIN users u ON u.id = rt.user_id
              WHERE rt.token_hash = :token_hash AND rt.expires_at > NOW()
@@ -470,6 +471,7 @@ final class User
             cargo: (string) ($row['cargo'] ?? self::CARGO_MEMBRO),
             instrumento: $row['instrumento'] ?? null,
             fotoPath: $row['foto_path'] ?? null,
+            createdAt: isset($row['created_at']) ? (string) $row['created_at'] : null,
         );
     }
 }

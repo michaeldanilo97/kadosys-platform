@@ -17,6 +17,14 @@
   align-items: center;
   text-align: center;
   gap: 0.4rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.equipe-card:hover {
+  border-color: var(--primary-soft);
+  transform: translateY(-2px);
 }
 
 .equipe-card-foto {
@@ -89,6 +97,18 @@
 .equipe-card-cargo {
   font-size: 0.78rem;
   color: var(--text-dim);
+}
+
+/* Botoes de gerenciamento no perfil de equipe (ver dashboard/equipe/show.php),
+   visiveis so pra quem esta logado como admin. */
+.equipe-perfil-acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.equipe-perfil-acoes .btn-k {
+  justify-content: flex-start;
 }
 
 /* Foto atual na tela "Meu perfil" (ver dashboard/perfil.php) */
