@@ -99,7 +99,7 @@ $modulosComparacao = array_filter(
                     <img src="<?= $basePath ?>/assets/img/recursos/louvores.png" alt="Modo Culto mostrando a cifra e o tom da música ao vivo" loading="lazy">
                 </div>
                 <div class="destaque-card-body">
-                    <span class="destaque-badge"><i class="bi bi-broadcast"></i> Ao vivo</span>
+                    <span class="destaque-badge"><i class="bi bi-broadcast"></i> Destaque</span>
                     <h3><i class="bi bi-music-note-list"></i> Louvores e Modo Culto</h3>
                     <p>O líder muda o tom da música no próprio celular, e a cifra inteira se reescreve
                         sozinha na hora, pra todo o time - ninguém mais fica perdido no meio da música.</p>
@@ -113,7 +113,7 @@ $modulosComparacao = array_filter(
                     <img src="<?= $basePath ?>/assets/img/recursos/preletor-marcacao.png" alt="Preletor circulando o versículo no tablet" loading="lazy" class="destaque-card-media-float">
                 </div>
                 <div class="destaque-card-body">
-                    <span class="destaque-badge"><i class="bi bi-broadcast"></i> Ao vivo</span>
+                    <span class="destaque-badge"><i class="bi bi-broadcast"></i> Destaque</span>
                     <h3><i class="bi bi-easel2"></i> Projeção e Telão</h3>
                     <p>O preletor circula, sublinha ou destaca o versículo direto no tablet - e a marcação
                         aparece no telão na mesma hora, pra igreja inteira ver, sem precisar de operador.</p>

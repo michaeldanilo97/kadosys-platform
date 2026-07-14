@@ -17,6 +17,23 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 98 - 2026-07-14
+
+**Corrige selo "Ao vivo" cortando/sobrepondo texto no menu Recursos e na home**
+
+- O selo ao lado de "Louvores e Modo Culto" e "Projeção e Telão" (menu
+  Recursos da navbar e cards de destaque da home) estava sobrepondo o
+  próprio texto do link, com a coluna do menu cortando o conteúdo -
+  bug de CSS: a largura reservada pro selo era menor que o selo
+  realmente ocupava. Corrigido reservando espaço suficiente e tirando
+  o selo do fluxo do texto (posicionado à parte, não mais competindo
+  por espaço com o rótulo).
+- Trocado o texto do selo de "Ao vivo" pra "Destaque" nos dois lugares
+  (menu Recursos e cards da home) - o rótulo anterior não fazia
+  sentido pro contexto.
+
+---
+
 ## Ajuste 97 - 2026-07-14
 
 **Site institucional: destaque pra Louvores/Modo Culto e Projeção, e endereço próprio da igreja**
