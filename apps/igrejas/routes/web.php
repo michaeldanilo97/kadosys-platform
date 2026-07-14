@@ -93,6 +93,7 @@ $router->get('/dashboard/membros/{id}', [MembroController::class, 'show'], [Auth
 // Equipe (galeria estilo rede social) e Meu Perfil (autoatendimento) -
 // mesmo motivo acima, precisam vir antes do catch-all de modulo.
 $router->get('/dashboard/equipe', [EquipeController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/equipe/{id}', [EquipeController::class, 'show'], [AuthMiddleware::class]);
 $router->get('/dashboard/perfil', [PerfilController::class, 'editar'], [AuthMiddleware::class]);
 $router->post('/dashboard/perfil', [PerfilController::class, 'atualizar'], [AuthMiddleware::class]);
 
