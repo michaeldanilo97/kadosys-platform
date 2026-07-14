@@ -57,6 +57,45 @@ final class User
      */
     public const MODULOS_SOMENTE_MUSICO = ['louvores'];
 
+    public const CARGO_MUSICO = 'musico';
+    public const CARGO_MIDIA = 'midia';
+    public const CARGO_EQUIPAMENTO = 'equipamento';
+    public const CARGO_MEMBRO = 'membro';
+
+    /**
+     * Rotulo e icone (Bootstrap Icons) de cada cargo, usados na tela
+     * "Equipe" (galeria estilo rede social, ver EquipeController) e no
+     * cadastro de usuario - "membro" (padrao) mostra o logo da igreja
+     * em vez de um icone fixo (ver dashboard/equipe/index.php).
+     *
+     * @var array<string, array{label: string, icon: string}>
+     */
+    public const CARGOS = [
+        self::CARGO_MUSICO => ['label' => 'Músico', 'icon' => 'bi-music-note-beamed'],
+        self::CARGO_MIDIA => ['label' => 'Mídia', 'icon' => 'bi-camera-reels-fill'],
+        self::CARGO_EQUIPAMENTO => ['label' => 'Equipamento', 'icon' => 'bi-sliders2'],
+        self::CARGO_MEMBRO => ['label' => 'Membro', 'icon' => 'bi-person-fill'],
+    ];
+
+    /**
+     * Instrumentos de uma lista fechada, cada um com seu proprio emoji
+     * (Bootstrap Icons nao tem icones de instrumento musical) - so faz
+     * sentido pra quem tem cargo = musico.
+     *
+     * @var array<string, array{label: string, emoji: string}>
+     */
+    public const INSTRUMENTOS = [
+        'bateria' => ['label' => 'Bateria', 'emoji' => '🥁'],
+        'guitarra' => ['label' => 'Guitarra', 'emoji' => '🎸'],
+        'baixo' => ['label' => 'Baixo', 'emoji' => '🎸'],
+        'violao' => ['label' => 'Violão', 'emoji' => '🎸'],
+        'teclado' => ['label' => 'Teclado', 'emoji' => '🎹'],
+        'vocal' => ['label' => 'Vocal', 'emoji' => '🎤'],
+        'outro' => ['label' => 'Outro', 'emoji' => '🎵'],
+    ];
+
+    private const SELECT_COLUNAS = 'id, name, email, password, role, active, musico, lider_louvor, cargo, instrumento, foto_path';
+
     public function __construct(
         public readonly int $id,
         public readonly string $name,
@@ -66,13 +105,16 @@ final class User
         public readonly bool $active,
         public readonly bool $musico = false,
         public readonly bool $liderLouvor = false,
+        public readonly string $cargo = self::CARGO_MEMBRO,
+        public readonly ?string $instrumento = null,
+        public readonly ?string $fotoPath = null,
     ) {
     }
 
     public static function findByEmail(string $email): ?self
     {
         $stmt = Database::connection()->prepare(
-            'SELECT id, name, email, password, role, active, musico, lider_louvor FROM users WHERE email = :email LIMIT 1'
+            'SELECT ' . self::SELECT_COLUNAS . ' FROM users WHERE email = :email LIMIT 1'
         );
         $stmt->execute(['email' => $email]);
         $row = $stmt->fetch();
@@ -83,7 +125,7 @@ final class User
     public static function findById(int $id): ?self
     {
         $stmt = Database::connection()->prepare(
-            'SELECT id, name, email, password, role, active, musico, lider_louvor FROM users WHERE id = :id LIMIT 1'
+            'SELECT ' . self::SELECT_COLUNAS . ' FROM users WHERE id = :id LIMIT 1'
         );
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch();
@@ -115,7 +157,7 @@ final class User
     public static function findByValidRememberToken(string $tokenHash): ?self
     {
         $stmt = Database::connection()->prepare(
-            'SELECT u.id, u.name, u.email, u.password, u.role, u.active, u.musico, u.lider_louvor
+            'SELECT u.id, u.name, u.email, u.password, u.role, u.active, u.musico, u.lider_louvor, u.cargo, u.instrumento, u.foto_path
              FROM remember_tokens rt
              INNER JOIN users u ON u.id = rt.user_id
              WHERE rt.token_hash = :token_hash AND rt.expires_at > NOW()
@@ -158,7 +200,26 @@ final class User
      */
     public static function all(): array
     {
-        $stmt = Database::connection()->query('SELECT id, name, email, password, role, active, musico, lider_louvor FROM users ORDER BY name ASC');
+        $stmt = Database::connection()->query('SELECT ' . self::SELECT_COLUNAS . ' FROM users ORDER BY name ASC');
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /**
+     * Usuarios ativos com login, ordenados por cargo (musico > midia >
+     * equipamento > membro) e depois por nome - pra montar a galeria da
+     * tela "Equipe" (ver EquipeController) num agrupamento visual
+     * natural, sem precisar de mais uma consulta por cargo.
+     *
+     * @return array<int, self>
+     */
+    public static function todosAtivosParaEquipe(): array
+    {
+        $stmt = Database::connection()->query(
+            'SELECT ' . self::SELECT_COLUNAS . ' FROM users
+             WHERE active = 1
+             ORDER BY FIELD(cargo, \'musico\', \'midia\', \'equipamento\', \'membro\'), name ASC'
+        );
 
         return array_map(self::fromRow(...), $stmt->fetchAll());
     }
@@ -195,8 +256,8 @@ final class User
     public static function create(array $data): int
     {
         $stmt = Database::connection()->prepare(
-            'INSERT INTO users (name, email, password, role, active, musico, lider_louvor, created_at)
-             VALUES (:name, :email, :password, :role, :active, :musico, :lider_louvor, NOW())'
+            'INSERT INTO users (name, email, password, role, active, musico, lider_louvor, cargo, instrumento, created_at)
+             VALUES (:name, :email, :password, :role, :active, :musico, :lider_louvor, :cargo, :instrumento, NOW())'
         );
         $stmt->execute([
             'name' => trim((string) $data['name']),
@@ -206,6 +267,8 @@ final class User
             'active' => 1,
             'musico' => !empty($data['musico']) ? 1 : 0,
             'lider_louvor' => !empty($data['lider_louvor']) ? 1 : 0,
+            'cargo' => self::cargoValido($data['cargo'] ?? null),
+            'instrumento' => self::instrumentoValido($data['cargo'] ?? null, $data['instrumento'] ?? null),
         ]);
 
         return (int) Database::connection()->lastInsertId();
@@ -216,7 +279,7 @@ final class User
      */
     public function update(array $data): void
     {
-        $sql = 'UPDATE users SET name = :name, email = :email, role = :role, active = :active, musico = :musico, lider_louvor = :lider_louvor';
+        $sql = 'UPDATE users SET name = :name, email = :email, role = :role, active = :active, musico = :musico, lider_louvor = :lider_louvor, cargo = :cargo, instrumento = :instrumento';
         $params = [
             'id' => $this->id,
             'name' => trim((string) $data['name']),
@@ -225,6 +288,8 @@ final class User
             'active' => !empty($data['active']) ? 1 : 0,
             'musico' => !empty($data['musico']) ? 1 : 0,
             'lider_louvor' => !empty($data['lider_louvor']) ? 1 : 0,
+            'cargo' => self::cargoValido($data['cargo'] ?? null),
+            'instrumento' => self::instrumentoValido($data['cargo'] ?? null, $data['instrumento'] ?? null),
         ];
 
         $novaSenha = (string) ($data['password'] ?? '');
@@ -235,6 +300,48 @@ final class User
 
         $stmt = Database::connection()->prepare($sql . ' WHERE id = :id');
         $stmt->execute($params);
+    }
+
+    /**
+     * Autoatendimento: o proprio usuario logado atualiza o cargo e o
+     * instrumento do seu perfil (ver PerfilController) - deliberadamente
+     * SEPARADO de update() (que so o admin usa), pra nunca dar pra essa
+     * rota mexer em role/active/senha por engano.
+     */
+    public function atualizarCargo(string $cargo, ?string $instrumento): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE users SET cargo = :cargo, instrumento = :instrumento WHERE id = :id'
+        );
+        $stmt->execute([
+            'id' => $this->id,
+            'cargo' => self::cargoValido($cargo),
+            'instrumento' => self::instrumentoValido($cargo, $instrumento),
+        ]);
+    }
+
+    public function atualizarFoto(?string $fotoPath): void
+    {
+        $stmt = Database::connection()->prepare('UPDATE users SET foto_path = :foto_path WHERE id = :id');
+        $stmt->execute(['id' => $this->id, 'foto_path' => $fotoPath]);
+    }
+
+    private static function cargoValido(mixed $cargo): string
+    {
+        $cargo = (string) $cargo;
+
+        return array_key_exists($cargo, self::CARGOS) ? $cargo : self::CARGO_MEMBRO;
+    }
+
+    private static function instrumentoValido(mixed $cargo, mixed $instrumento): ?string
+    {
+        if ((string) $cargo !== self::CARGO_MUSICO) {
+            return null;
+        }
+
+        $instrumento = (string) $instrumento;
+
+        return array_key_exists($instrumento, self::INSTRUMENTOS) ? $instrumento : null;
     }
 
     public static function delete(int $id): void
@@ -331,6 +438,9 @@ final class User
             active: (bool) $row['active'],
             musico: (bool) ($row['musico'] ?? false),
             liderLouvor: (bool) ($row['lider_louvor'] ?? false),
+            cargo: (string) ($row['cargo'] ?? self::CARGO_MEMBRO),
+            instrumento: $row['instrumento'] ?? null,
+            fotoPath: $row['foto_path'] ?? null,
         );
     }
 }

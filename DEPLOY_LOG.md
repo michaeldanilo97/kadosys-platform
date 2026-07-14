@@ -17,6 +17,34 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 85 - 2026-07-14
+
+**Novo módulo Equipe: galeria estilo rede social (foto + cargo +
+instrumento) e autoatendimento de perfil**
+
+- Novo módulo "Equipe" (`/dashboard/equipe`), aberto pra qualquer
+  usuário com login: uma galeria em cards com foto, nome e um badge de
+  cargo - Músico (com ícone do instrumento: bateria, guitarra, baixo,
+  violão, teclado, vocal), Mídia, Equipamento (mesa de som) ou Membro
+  (mostra o logo da igreja como ícone).
+- Cada pessoa edita o PRÓPRIO perfil (foto, cargo, instrumento) em
+  "Meu perfil" (`/dashboard/perfil`, atalho no topo do menu lateral,
+  com a própria foto) - separado da tela de Usuários (que continua só
+  pra admin gerenciar login/senha/papel/permissões). O admin também
+  pode definir cargo/instrumento de qualquer usuário direto no
+  cadastro dele.
+- Foto: PNG/JPG/WEBP até 5MB, mesmo padrão de upload já usado em
+  Playbacks/Configurações (pasta por igreja, nome de arquivo
+  aleatório, foto antiga apagada ao trocar).
+- Migração 042: `users` ganha `cargo`, `instrumento` e `foto_path` -
+  já incluída no `install.sql` (aprendemos com o Ajuste 75: sem isso,
+  igrejas novas ficariam sem o módulo até rodar a migração à mão).
+- Corrigido de brinde: `/dashboard/perfil` precisava ficar acessível
+  pra QUALQUER usuário mesmo com acesso restrito em Permissões (é
+  autoatendimento, não um módulo de verdade) - adicionado à lista de
+  exceções do `AuthMiddleware`, testado com um usuário restrito
+  confirmando acesso liberado ao perfil e bloqueado no restante.
+
 ## Ajuste 84 - 2026-07-14
 
 **Projeção e Louvores destacados no topo do menu ("Ao vivo")**
