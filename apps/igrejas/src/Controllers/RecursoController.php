@@ -53,13 +53,15 @@ final class RecursoController extends Controller
         'projecao' => [
             'title' => 'Projeção e Telão',
             'icon' => 'bi-easel2',
-            'tagline' => 'Um tablet no púlpito, um telão sincronizado - sem operador de datashow.',
-            'intro' => 'O preletor controla a própria apresentação pelo celular ou tablet: versículo '
+            'tagline' => 'Um tablet no púlpito, um computador na operação - do jeito que a sua igreja preferir.',
+            'intro' => 'O preletor pode controlar a própria apresentação pelo celular ou tablet: versículo '
                 . 'bíblico, vídeo do YouTube, tela de Pix ou uma imagem - tudo aparece no telão no '
-                . 'mesmo instante, sem precisar de alguém dedicado no computador só pra acompanhar.',
+                . 'mesmo instante. E a igreja que já tem um operador dedicado no computador continua '
+                . 'operando exatamente como sempre operou - as duas formas funcionam ao mesmo tempo, '
+                . 'cada uma na sua tela.',
             'diferenciais' => [
                 ['icon' => 'bi-pencil', 'titulo' => 'Marcação ao vivo no versículo', 'texto' => 'O preletor circula, sublinha ou destaca trechos do versículo na tela do próprio tablet - e a marcação aparece no telão na mesma hora, pra igreja inteira ver.'],
-                ['icon' => 'bi-tablet', 'titulo' => 'Controle pelo próprio tablet', 'texto' => 'O preletor navega pela Bíblia e troca de tela sozinho, do púlpito, sem depender de um operador.'],
+                ['icon' => 'bi-tablet', 'titulo' => 'Controle pelo tablet ou pelo computador', 'texto' => 'O preletor pode navegar pela Bíblia e trocar de tela direto do púlpito, e o operador continua controlando tudo pelo computador quando a igreja preferir manter esse papel na equipe.'],
                 ['icon' => 'bi-youtube', 'titulo' => 'Vídeos com controle remoto', 'texto' => 'Play, pausa e volume de vídeos do YouTube controlados a distância, direto pro telão.'],
                 ['icon' => 'bi-qr-code', 'titulo' => 'Tela de Pix no telão', 'texto' => 'QR code de dízimo/oferta aparece na hora certa, sem precisar trocar de slide manualmente.'],
                 ['icon' => 'bi-wifi', 'titulo' => 'Sincronização em tempo real', 'texto' => 'Funciona em qualquer tablet ou celular com navegador - sem instalar nada, sem cabo.'],
