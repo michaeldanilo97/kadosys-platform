@@ -46,7 +46,7 @@ final class RecursoController extends Controller
                 ['icon' => 'bi-clock-history', 'titulo' => 'Sugestão automática de tom', 'texto' => 'O sistema aprende com o histórico de execuções e já sugere o tom mais usado de cada música.'],
                 ['icon' => 'bi-chat-dots', 'titulo' => 'Anotações e avisos rápidos', 'texto' => 'Cada músico guarda anotações pessoais na música, e um chat rápido resolve combinados no meio do culto.'],
             ],
-            'imagem' => 'recursos/louvores.png',
+            'imagem' => 'modo_culto.png',
             'imagemSecundaria' => null,
             'imagemAlt' => 'Modo Culto mostrando a cifra ao vivo, com controle de tom',
         ],

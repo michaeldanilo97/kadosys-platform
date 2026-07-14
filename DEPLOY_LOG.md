@@ -17,6 +17,16 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 101 - 2026-07-14
+
+**Louvores/Modo Culto também passa a usar imagem própria fora da pasta recursos/**
+
+- Card de Louvores e Modo Culto na home (destaques e capturas de tela)
+  e a página `/recursos/louvores` passam a usar `assets/img/modo_culto.png`
+  em vez de `assets/img/recursos/louvores.png`, a pedido do usuário.
+
+---
+
 ## Ajuste 100 - 2026-07-14
 
 **Página /recursos/projecao também passa a usar assets/img/telao.png**
