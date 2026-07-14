@@ -40,10 +40,14 @@
     'B': 11, 'Cb': 11,
   };
 
-  // Mesmo formato usado no transpositor (ver louvor-transpositor.js) -
-  // reconhece um token de acorde valido (nota + qualidade/extensao
-  // opcional) pra decidir se uma linha inteira e "so acordes".
-  var FORMATO_ACORDE = /^[A-G](#|b)?([a-zA-Z0-9]*)(\([^)]*\))?(\/[A-G](#|b)?)?$/;
+  // Mesma lista fechada de qualidades/extensoes usada no transpositor
+  // (ver louvor-transpositor.js) - NAO pode ser "qualquer letra", senao
+  // palavras comuns em portugues que comecam com uma nota (ex.: "Em",
+  // que e uma preposicao muito comum, mas tambem e o nome de um acorde
+  // real!) fariam o sistema sugerir um tom errado a partir de uma
+  // palavra da LETRA, nao de um acorde de verdade.
+  var SUFIXO_ACORDE = '(?:dim7|dim|aug|sus2|sus4|sus|add2|add4|add6|add9|add11|add13|maj7|maj9|maj11|maj13|maj|min7|min9|min11|min13|min|m7b5|m7#5|m9b5|m6|m69|m7|m9|m11|m13|m2|m4|m|6|69|9|11|13|7M|9M|11M|13M|7|5|4|2)?';
+  var FORMATO_ACORDE = new RegExp('^[A-G](#|b)?' + SUFIXO_ACORDE + '(\\([^)]*\\))?(\\/[A-G](#|b)?)?$', 'i');
 
   function linhaEhDeAcordes(linha) {
     var tokens = linha.trim().split(/\s+/).filter(function (token) {
