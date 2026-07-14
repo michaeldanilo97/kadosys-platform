@@ -1,0 +1,112 @@
+/* Galeria da Equipe (estilo rede social) - cards com foto, nome e um
+   badge de cargo/instrumento, ver EquipeController/User::CARGOS. */
+
+.equipe-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.2rem;
+}
+
+.equipe-card {
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 1.2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.4rem;
+}
+
+.equipe-card-foto {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  margin-bottom: 0.4rem;
+}
+
+.equipe-card-foto img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.equipe-card-inicial {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--gradient);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.8rem;
+  box-shadow: 0 0 16px rgba(59, 130, 246, 0.3);
+}
+
+.equipe-card-badge {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-dark-2, #12172a);
+  border: 2px solid var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  overflow: hidden;
+}
+
+.equipe-card-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 4px;
+}
+
+.equipe-card-badge i {
+  color: var(--primary-soft);
+  font-size: 0.95rem;
+}
+
+.equipe-card-nome {
+  font-weight: 600;
+  color: var(--white);
+}
+
+[data-theme="light"] .equipe-card-nome {
+  color: #0F172A;
+}
+
+.equipe-card-cargo {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+/* Foto atual na tela "Meu perfil" (ver dashboard/perfil.php) */
+.perfil-foto-atual {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.perfil-foto-atual img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.perfil-foto-atual .equipe-card-inicial {
+  width: 80px;
+  height: 80px;
+  font-size: 1.6rem;
+}

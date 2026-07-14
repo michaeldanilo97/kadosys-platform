@@ -228,6 +228,16 @@ $avisosSidebar = ($comunicacaoDisponivel && $user !== null)
             <a href="<?= $basePath ?>/dashboard" class="dash-nav-link <?= $activeMenu === 'dashboard' ? 'active' : '' ?>">
                 <i class="bi bi-speedometer2"></i> <span class="dash-nav-link-label">Dashboard</span>
             </a>
+            <?php if ($user !== null): ?>
+                <a href="<?= $basePath ?>/dashboard/perfil" class="dash-nav-link <?= $activeMenu === 'perfil' ? 'active' : '' ?>">
+                    <?php if ($user->fotoPath !== null): ?>
+                        <img src="<?= $basePath ?>/<?= htmlspecialchars($user->fotoPath, ENT_QUOTES, 'UTF-8') ?>" alt="" class="dash-nav-avatar">
+                    <?php else: ?>
+                        <i class="bi bi-person-circle"></i>
+                    <?php endif; ?>
+                    <span class="dash-nav-link-label">Meu perfil</span>
+                </a>
+            <?php endif; ?>
 
             <?php
             // Modulos usados AO VIVO durante o culto (telao pro operador

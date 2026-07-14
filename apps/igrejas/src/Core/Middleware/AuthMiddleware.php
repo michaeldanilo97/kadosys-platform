@@ -149,8 +149,11 @@ final class AuthMiddleware implements MiddlewareInterface
 
         // Telas do proprio sistema (nao modulos de verdade) - sempre
         // acessiveis, senao um usuario restrito ficaria preso sem
-        // conseguir nem ver a propria tela de bloqueio.
-        if (in_array($slug, ['trial-expirado', 'fatura-vencida', 'plano-bloqueado', 'sem-permissao'], true)) {
+        // conseguir nem ver a propria tela de bloqueio. "perfil" entra
+        // aqui tambem: e autoatendimento (ver PerfilController), todo
+        // usuario precisa conseguir editar o PROPRIO perfil mesmo com
+        // acesso restrito em Permissoes a outros modulos.
+        if (in_array($slug, ['trial-expirado', 'fatura-vencida', 'plano-bloqueado', 'sem-permissao', 'perfil'], true)) {
             return;
         }
 

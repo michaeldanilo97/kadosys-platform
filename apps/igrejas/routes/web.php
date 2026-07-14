@@ -12,6 +12,7 @@ use Igrejas\Controllers\ConfiguracaoController;
 use Igrejas\Controllers\CultoController;
 use Igrejas\Controllers\DashboardController;
 use Igrejas\Controllers\DoacaoController;
+use Igrejas\Controllers\EquipeController;
 use Igrejas\Controllers\FaturaController;
 use Igrejas\Controllers\FinanceiroController;
 use Igrejas\Controllers\GrupoController;
@@ -20,6 +21,7 @@ use Igrejas\Controllers\LouvorController;
 use Igrejas\Controllers\MembroController;
 use Igrejas\Controllers\MinisterioController;
 use Igrejas\Controllers\PatrimonioController;
+use Igrejas\Controllers\PerfilController;
 use Igrejas\Controllers\PermissaoController;
 use Igrejas\Controllers\PlataformaController;
 use Igrejas\Controllers\PlaybackController;
@@ -78,6 +80,12 @@ $router->post('/dashboard/membros', [MembroController::class, 'store'], [AuthMid
 $router->get('/dashboard/membros/{id}/editar', [MembroController::class, 'edit'], [AuthMiddleware::class]);
 $router->post('/dashboard/membros/{id}', [MembroController::class, 'update'], [AuthMiddleware::class]);
 $router->post('/dashboard/membros/{id}/excluir', [MembroController::class, 'destroy'], [AuthMiddleware::class]);
+
+// Equipe (galeria estilo rede social) e Meu Perfil (autoatendimento) -
+// mesmo motivo acima, precisam vir antes do catch-all de modulo.
+$router->get('/dashboard/equipe', [EquipeController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/perfil', [PerfilController::class, 'editar'], [AuthMiddleware::class]);
+$router->post('/dashboard/perfil', [PerfilController::class, 'atualizar'], [AuthMiddleware::class]);
 
 // Modulo Ministerios. Mesmo motivo: precisam vir antes do catch-all.
 // PlanoMiddleware: Ministerios exige plano Premium ou superior (ver

@@ -1,5 +1,6 @@
 <?php
 
+use Igrejas\Core\View;
 use Igrejas\Models\User;
 
 /**
@@ -18,6 +19,8 @@ $role = $old['role'] ?? $usuarioEditado->role ?? User::ROLE_USUARIO;
 $active = array_key_exists('active', $old) ? !empty($old['active']) : ($usuarioEditado->active ?? true);
 $musico = array_key_exists('musico', $old) ? !empty($old['musico']) : ($usuarioEditado->musico ?? false);
 $liderLouvor = array_key_exists('lider_louvor', $old) ? !empty($old['lider_louvor']) : ($usuarioEditado->liderLouvor ?? false);
+$cargo = $old['cargo'] ?? $usuarioEditado->cargo ?? User::CARGO_MEMBRO;
+$instrumento = $old['instrumento'] ?? $usuarioEditado->instrumento ?? '';
 
 $actionUrl = $isEdit
     ? $basePath . '/dashboard/usuarios/' . $usuarioEditado->id
@@ -83,6 +86,24 @@ $actionUrl = $isEdit
                         </select>
                     </div>
                 <?php endif; ?>
+                <div class="crud-field">
+                    <label for="cargo">Cargo na equipe</label>
+                    <select id="cargo" name="cargo" data-cargo-select>
+                        <?php foreach (User::CARGOS as $cargoSlug => $cargoInfo): ?>
+                            <option value="<?= $cargoSlug ?>" <?= $cargo === $cargoSlug ? 'selected' : '' ?>><?= htmlspecialchars($cargoInfo['label'], ENT_QUOTES, 'UTF-8') ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <span class="auth-field-hint">Aparece como ícone na tela Equipe - não muda nenhuma permissão de acesso.</span>
+                </div>
+                <div class="crud-field" data-instrumento-field <?= $cargo !== User::CARGO_MUSICO ? 'hidden' : '' ?>>
+                    <label for="instrumento">Instrumento</label>
+                    <select id="instrumento" name="instrumento">
+                        <option value="">Nenhum</option>
+                        <?php foreach (User::INSTRUMENTOS as $instrumentoSlug => $instrumentoInfo): ?>
+                            <option value="<?= $instrumentoSlug ?>" <?= $instrumento === $instrumentoSlug ? 'selected' : '' ?>><?= $instrumentoInfo['emoji'] ?> <?= htmlspecialchars($instrumentoInfo['label'], ENT_QUOTES, 'UTF-8') ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
                 <div class="crud-field crud-field-full">
                     <label class="toggle-switch-field">
                         <input type="checkbox" name="musico" value="1" <?= $musico ? 'checked' : '' ?>>
@@ -122,6 +143,8 @@ $actionUrl = $isEdit
         </div>
     </form>
 </div>
+
+<script src="<?= $basePath ?>/assets/js/usuario-form.js?v=<?= View::assetVersion('assets/js/usuario-form.js') ?>"></script>
 
 <?php if ($isEdit && $usuarioEditado->role === User::ROLE_USUARIO): ?>
     <p class="crud-text-dim" style="margin-top: 1rem;">

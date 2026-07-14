@@ -43,6 +43,11 @@ final class DashboardController extends Controller
                 'icon' => 'bi-people',
                 'description' => 'Cadastro, histórico e acompanhamento dos membros da igreja.',
             ],
+            'equipe' => [
+                'title' => 'Equipe',
+                'icon' => 'bi-grid-3x3-gap-fill',
+                'description' => 'Galeria com foto, cargo e instrumento de quem tem acesso ao sistema.',
+            ],
             'ministerios' => [
                 'title' => 'Ministérios',
                 'icon' => 'bi-diagram-3',
