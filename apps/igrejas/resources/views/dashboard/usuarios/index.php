@@ -50,7 +50,11 @@ $roleLabels = [User::ROLE_ADMIN => 'Administrador', User::ROLE_USUARIO => 'Usuá
                         <td>
                             <div class="crud-person">
                                 <span class="crud-avatar">
-                                    <?= htmlspecialchars(mb_strtoupper(mb_substr($usuario->name, 0, 1)), ENT_QUOTES, 'UTF-8') ?>
+                                    <?php if ($usuario->fotoPath !== null): ?>
+                                        <img src="<?= $basePath ?>/<?= htmlspecialchars($usuario->fotoPath, ENT_QUOTES, 'UTF-8') ?>" alt="">
+                                    <?php else: ?>
+                                        <?= htmlspecialchars(mb_strtoupper(mb_substr($usuario->name, 0, 1)), ENT_QUOTES, 'UTF-8') ?>
+                                    <?php endif; ?>
                                 </span>
                                 <span>
                                     <?= htmlspecialchars($usuario->name, ENT_QUOTES, 'UTF-8') ?>

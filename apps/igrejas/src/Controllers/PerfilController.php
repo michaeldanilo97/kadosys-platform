@@ -39,7 +39,7 @@ final class PerfilController extends Controller
 
     public function editar(): void
     {
-        $user = $this->usuarioVinculado();
+        $user = (new Auth($this->config))->user();
 
         echo $this->view('dashboard.perfil', [
             'pageTitle' => 'Meu perfil - KADOSYS Igrejas',
@@ -72,7 +72,6 @@ final class PerfilController extends Controller
 
         $user->atualizarCargo($cargo, $instrumento);
 
-        $user = $this->usuarioVinculado($user);
         $membro = Membro::find($user->membroId);
 
         $dadosPessoais = $this->request->only([
@@ -102,25 +101,6 @@ final class PerfilController extends Controller
 
         Session::flash('perfil_success', 'Perfil atualizado com sucesso.');
         $this->redirect('/dashboard/perfil');
-    }
-
-    /**
-     * Garante que o usuario logado tenha um Membro vinculado, criando
-     * o vinculo na hora se essa conta foi criada antes de existir essa
-     * ligacao (ver migracao 048) - assim toda visita a "Meu perfil"
-     * autocorrige contas antigas, sem precisar de um backfill em lote.
-     */
-    private function usuarioVinculado(?User $user = null): User
-    {
-        $user ??= (new Auth($this->config))->user();
-
-        if ($user->membroId !== null) {
-            return $user;
-        }
-
-        Membro::vincularOuCriarParaUsuario($user, $user->name, $user->email);
-
-        return User::findById($user->id);
     }
 
     /**

@@ -17,6 +17,28 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 111 - 2026-07-14
+
+**Membros vira uma grade de cards moderna, e corrige quem não aparecia**
+
+- Corrigido: o vínculo automático entre login e Membros (Ajuste 109)
+  só acontecia quando a pessoa abria "Meu perfil" - agora acontece
+  assim que ela faz qualquer coisa logada no painel, então
+  administradores e qualquer conta antiga aparecem em Membros desde
+  o primeiro acesso, sem precisar visitar "Meu perfil" antes.
+- Tela de Membros trocou a tabela por uma grade de cards, no mesmo
+  estilo da tela Equipe: foto de perfil (a mesma de quem também tem
+  acesso ao sistema) ou inicial, emblema de cargo pra quem tem uma
+  função de verdade (músico, mídia, equipamento), status, contato,
+  data de entrada/idade e os botões de ver perfil/excluir.
+- Busca passa a encontrar também por cargo (ex.: "músico"), além de
+  nome e e-mail.
+- A foto enviada em "Meu perfil" agora aparece em todo lugar que
+  mostra a pessoa: cabeçalho do painel, Equipe, Membros, Usuários e
+  Permissões - antes só aparecia na galeria da Equipe.
+
+---
+
 ## Ajuste 110 - 2026-07-14
 
 **Login de cada igreja exibe o logo, o nome e a URL própria**

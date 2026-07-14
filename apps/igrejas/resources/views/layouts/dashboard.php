@@ -376,7 +376,13 @@ $avisosSidebar = ($comunicacaoDisponivel && $user !== null)
 
                 <div class="topbar-dropdown" data-topbar-dropdown>
                     <button class="topbar-user" type="button" aria-expanded="false" data-dropdown-toggle>
-                        <span class="avatar"><?= htmlspecialchars($userInitial, ENT_QUOTES, 'UTF-8') ?></span>
+                        <span class="avatar">
+                            <?php if ($user?->fotoPath !== null): ?>
+                                <img src="<?= $basePath ?>/<?= htmlspecialchars($user->fotoPath, ENT_QUOTES, 'UTF-8') ?>" alt="">
+                            <?php else: ?>
+                                <?= htmlspecialchars($userInitial, ENT_QUOTES, 'UTF-8') ?>
+                            <?php endif; ?>
+                        </span>
                         <span class="name"><?= htmlspecialchars($userName, ENT_QUOTES, 'UTF-8') ?></span>
                         <i class="bi bi-chevron-down"></i>
                     </button>
