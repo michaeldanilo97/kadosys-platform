@@ -1261,6 +1261,76 @@
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
 }
 
+/* ---- Timeline "Como funciona" do recurso ------------------------------- */
+
+.recurso-timeline {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 720px;
+  position: relative;
+}
+
+.recurso-timeline-item {
+  display: flex;
+  gap: 1.4rem;
+  padding-bottom: 2.2rem;
+  position: relative;
+}
+
+.recurso-timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.recurso-timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 22px;
+  top: 46px;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, rgba(59, 130, 246, 0.4), rgba(139, 92, 246, 0.15));
+}
+
+.recurso-timeline-item:last-child::before {
+  display: none;
+}
+
+.recurso-timeline-numero {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--gradient);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  box-shadow: 0 8px 22px rgba(59, 130, 246, 0.35);
+  z-index: 1;
+}
+
+.recurso-timeline-body {
+  padding-top: 0.5rem;
+}
+
+.recurso-timeline-body h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 0.4rem;
+}
+
+.recurso-timeline-body p {
+  color: var(--text-muted);
+  font-size: 0.94rem;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 56ch;
+}
+
 .recurso-proximo-section {
   padding-top: 0;
 }
