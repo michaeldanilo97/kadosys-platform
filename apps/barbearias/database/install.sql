@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS barbearias (
     documento_tipo ENUM('cpf', 'cnpj') NOT NULL DEFAULT 'cpf',
     documento VARCHAR(14) NOT NULL DEFAULT '',
     razao_social VARCHAR(190) NULL,
+    logo_path VARCHAR(255) NULL,
+    cor_primaria VARCHAR(7) NULL,
     plano ENUM('essencial', 'premium', 'enterprise') NOT NULL DEFAULT 'essencial',
     metodo_pagamento ENUM('cartao', 'pix', 'trial') NOT NULL DEFAULT 'trial',
     mp_preapproval_id VARCHAR(64) NULL,

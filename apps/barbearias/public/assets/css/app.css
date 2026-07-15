@@ -309,6 +309,13 @@ a {
     font-size: 1.1rem;
 }
 
+.dash-sidebar-logo {
+    max-height: 42px;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+}
+
 .dash-nav {
     display: flex;
     flex-direction: column;

@@ -53,6 +53,14 @@
 .site-brand {
     font-weight: 800;
     font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+}
+
+.site-brand-logo {
+    max-height: 36px;
+    max-width: 160px;
+    object-fit: contain;
 }
 
 .site-nav-links {

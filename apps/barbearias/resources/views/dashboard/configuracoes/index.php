@@ -58,7 +58,7 @@ $basePath = $config['base_path'] ?? '';
             </div>
         <?php endif; ?>
 
-        <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/perfil">
+        <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/perfil" enctype="multipart/form-data">
             <?= Csrf::field() ?>
             <div class="crud-form-grid">
                 <div class="form-field">
@@ -68,6 +68,19 @@ $basePath = $config['base_path'] ?? '';
                 <div class="form-field">
                     <label for="telefone">Telefone</label>
                     <input type="text" id="telefone" name="telefone" value="<?= htmlspecialchars($barbearia->telefone ?? '', ENT_QUOTES, 'UTF-8') ?>" placeholder="(11) 90000-0000">
+                </div>
+                <div class="form-field">
+                    <label for="cor_primaria">Cor de destaque</label>
+                    <input type="color" id="cor_primaria" name="cor_primaria" value="<?= htmlspecialchars($barbearia->corPrimaria ?? '#3B82F6', ENT_QUOTES, 'UTF-8') ?>" style="height: 2.7rem; padding: 0.25rem;">
+                    <span class="form-field-hint">Usada no painel e na página pública de agendamento.</span>
+                </div>
+                <div class="form-field">
+                    <label for="logo">Logo</label>
+                    <input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp">
+                    <span class="form-field-hint">PNG, JPG ou WEBP - até 5MB.</span>
+                    <?php if ($barbearia->logoPath): ?>
+                        <img src="<?= $basePath ?>/<?= htmlspecialchars($barbearia->logoPath, ENT_QUOTES, 'UTF-8') ?>" alt="Logo atual" class="foto-preview">
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="crud-form-actions">
