@@ -17,6 +17,30 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 122 - 2026-07-15
+
+**Site institucional: novos sistemas em desenvolvimento, remove streaming, WhatsApp real**
+
+- Site institucional (`index.php` na raiz do repositório - o site
+  "guarda-chuva" da marca KADOSYS, diferente do `apps/igrejas`) atualizado:
+  - **"Acessar Sistema"** (botão do menu) agora só oferece acesso de
+    verdade ao Kadosys™ Igrejas - os demais sistemas aparecem como
+    "Em desenvolvimento" ou "Em breve", sem link quebrado (`href="#"`)
+    fingindo ser clicável.
+  - **3 novos sistemas** adicionados como "em desenvolvimento": Kadosys™
+    Barbearias, Kadosys™ Creches e Kadosys™ Condomínios - cada um com
+    prévia das funcionalidades planejadas.
+  - **Kadosys™ Igrejas** ganhou uma prévia do que já tem de verdade hoje
+    (membros/ministérios, check-in infantil com PIN, projeção e Pix).
+  - **Removida** a seção inteira de "Streaming de Jogos" (card, seção
+    dedicada, item no formulário de contato e imagem
+    `assets/gaming-streaming.jpg`) - não é mais um produto da empresa.
+  - **WhatsApp real**: botão flutuante, ícone social e contato do
+    rodapé agora apontam para (11) 93325-2478, no lugar dos números
+    de exemplo.
+
+---
+
 ## Ajuste 121 - 2026-07-15
 
 **Seleção de igreja: inclui a instalação atual + mensagens de erro mais claras no login**
