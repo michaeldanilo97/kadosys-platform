@@ -21,6 +21,7 @@ use Barbearias\Controllers\ListaEsperaController;
 use Barbearias\Controllers\PortfolioController;
 use Barbearias\Controllers\ProdutoController;
 use Barbearias\Controllers\ProfissionalController;
+use Barbearias\Controllers\RelatorioController;
 use Barbearias\Controllers\ServicoController;
 use Barbearias\Controllers\UnidadeController;
 use Barbearias\Controllers\WebhookController;
@@ -149,6 +150,9 @@ $router->post('/dashboard/financeiro/lancamentos/{id}/excluir', [FinanceiroContr
 
 // Comissoes (fechamento por profissional, com base nos atendimentos concluidos).
 $router->get('/dashboard/comissoes', [ComissaoController::class, 'index'], [AuthMiddleware::class]);
+
+// Relatorios consolidados (faturamento, agendamentos, ticket medio, ocupacao).
+$router->get('/dashboard/relatorios', [RelatorioController::class, 'index'], [AuthMiddleware::class]);
 
 // Produtos (catalogo + estoque + venda avulsa).
 $router->get('/dashboard/produtos', [ProdutoController::class, 'index'], [AuthMiddleware::class]);
