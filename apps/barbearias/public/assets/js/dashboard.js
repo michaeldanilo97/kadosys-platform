@@ -70,4 +70,12 @@
             overlay.addEventListener('click', fechar);
         }
     }
+
+    // PWA: registra o service worker (so cacheia CSS/JS/icones, nunca
+    // paginas - ver public/sw.js) pra permitir instalar o painel como
+    // app e abrir mais rapido em conexao ruim.
+    if ('serviceWorker' in navigator) {
+        var basePath = document.body.getAttribute('data-base-path') || '';
+        navigator.serviceWorker.register(basePath + '/sw.js').catch(function () {});
+    }
 })();

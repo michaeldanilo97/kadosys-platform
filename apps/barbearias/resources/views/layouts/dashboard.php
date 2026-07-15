@@ -40,6 +40,9 @@ $itensMenu = [
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle ?? 'KADOSYS Barbearias', ENT_QUOTES, 'UTF-8') ?></title>
+    <link rel="manifest" href="<?= $basePath ?>/manifest.json">
+    <link rel="apple-touch-icon" href="<?= $basePath ?>/assets/icons/apple-touch-icon.png">
+    <meta name="theme-color" content="#0F172A">
     <link rel="stylesheet" href="<?= $basePath ?>/assets/css/app.css?v=<?= View::assetVersion('assets/css/app.css') ?>">
     <link rel="stylesheet" href="<?= $basePath ?>/assets/css/site.css?v=<?= View::assetVersion('assets/css/site.css') ?>">
     <script>
@@ -58,7 +61,7 @@ $itensMenu = [
         })();
     </script>
 </head>
-<body>
+<body data-base-path="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>">
 <div class="dash-shell">
     <div class="sidebar-overlay" data-sidebar-overlay></div>
     <aside class="dash-sidebar" data-sidebar>

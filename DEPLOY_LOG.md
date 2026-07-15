@@ -17,6 +17,46 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 140 - 2026-07-15
+
+**Barbearias: PWA (painel instalável, ícone na tela inicial)**
+
+- O **dashboard** (`/dashboard/*`) agora é um PWA instalável: manifesto
+  (`public/manifest.json`), ícone próprio (gerado em azul/roxo com um
+  "K" estilizado, nas variações 192px/512px/512px maskable/apple-touch-icon)
+  e `theme-color` combinando com o visual escuro do app - em
+  celular/tablet o navegador oferece "Adicionar à tela inicial", e o
+  painel abre em tela cheia como um app nativo, sem barra de
+  endereços.
+- Service worker (`public/sw.js`) registrado só no dashboard: cacheia
+  **apenas assets estáticos** (CSS/JS/ícones), nunca páginas HTML -
+  como o app é multi-tenant e cada página depende da sessão/barbearia
+  logada, cachear HTML serviria dados errados pra quem abrisse o app
+  offline depois trocando de conta. O ganho real é abrir mais rápido
+  em conexão ruim (o "esqueleto visual" já vem do cache) - os dados em
+  si sempre vêm da rede.
+- Escopo desta entrega: só o dashboard (uso interno da equipe). A
+  página pública de agendamento não virou PWA porque cada barbearia
+  teria que ter nome/ícone próprios num manifesto por tenant, o que é
+  um escopo bem maior - fica pra uma entrega futura se fizer sentido.
+
+**Sem migração pendente** - só arquivos estáticos novos + um `<link>`/
+registro de JS no layout do dashboard.
+
+**Testado localmente**: como o servidor embutido do PHP (`php -S`) não
+reproduz sozinho o comportamento do `.htaccess` do Apache (servir
+arquivo estático existente sem passar pelo roteador da aplicação), o
+teste usou um router script temporário só de desenvolvimento
+(descartado depois, não faz parte do commit) que replica exatamente a
+regra do `.htaccess` já em produção. Com isso confirmado: `manifest.json`
+retorna JSON válido com `Content-Type: application/json`; `sw.js`
+retorna `Content-Type: application/javascript`; os 4 ícones carregam
+como PNG válido; a página `/dashboard` inclui as tags `<link rel="manifest">`,
+`<link rel="apple-touch-icon">` e `<meta name="theme-color">`
+corretamente. Nenhum erro no log do PHP durante os testes.
+
+---
+
 ## Ajuste 139 - 2026-07-15
 
 **Barbearias: painel de recepção (tela cheia pra TV/tablet do salão)**
