@@ -160,6 +160,29 @@ final class KidsCrianca
     }
 
     /**
+     * Filhos vinculados a um responsavel (Membro) especifico - usado
+     * na area de autoatendimento "Meus filhos" (ver
+     * KidsResponsavelController), onde o proprio responsavel gerencia
+     * o PIN de acesso das criancas dele, sem depender da equipe.
+     *
+     * @return array<int, self>
+     */
+    public static function doResponsavel(int $membroId): array
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT c.*, t.nome AS turma_nome, me.nome AS responsavel_membro_nome
+             FROM kids_criancas c
+             LEFT JOIN kids_turmas t ON t.id = c.turma_id
+             LEFT JOIN membros me ON me.id = c.responsavel_membro_id
+             WHERE c.responsavel_membro_id = :membro_id AND c.status = 'ativo'
+             ORDER BY c.nome ASC"
+        );
+        $stmt->execute(['membro_id' => $membroId]);
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /**
      * @param array<string, mixed> $data
      */
     public static function create(array $data): int

@@ -142,7 +142,19 @@ final class AuthMiddleware implements MiddlewareInterface
 
     private function bloquearSePermissaoNegada(Request $request, Auth $auth): void
     {
-        $slug = $this->moduloSlugDaUri($this->uriSemBase($request));
+        $uri = $this->uriSemBase($request);
+
+        // "Meus filhos" (Kids > autoatendimento do responsavel) e igual
+        // "perfil" abaixo: mesmo sem permissao administrativa no modulo
+        // Kids, o proprio responsavel precisa conseguir gerenciar o PIN
+        // dos filhos dele. KidsResponsavelController confere a posse
+        // (responsavel_membro_id) por conta propria a cada acao, entao
+        // nao depende da permissao de modulo concedida pela equipe.
+        if (str_starts_with($uri, '/dashboard/kids/meus-filhos')) {
+            return;
+        }
+
+        $slug = $this->moduloSlugDaUri($uri);
 
         if ($slug === null) {
             return;

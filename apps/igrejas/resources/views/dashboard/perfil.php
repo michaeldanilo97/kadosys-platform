@@ -21,6 +21,9 @@ $basePath = $config['base_path'] ?? '';
         <p class="dash-page-subtitle">Foto, cargo, dados pessoais e endereço - o que aparece na tela Equipe e o que a secretaria vê no seu cadastro em Membros.</p>
     </div>
     <div class="dash-page-actions">
+        <a href="<?= $basePath ?>/dashboard/kids/meus-filhos" class="btn-k btn-k-ghost" title="Gerar/gerenciar o PIN de acesso dos seus filhos à Biblioteca Kids">
+            <i class="bi bi-emoji-smile"></i> Meus filhos (Kids)
+        </a>
         <a href="<?= $basePath ?>/dashboard/equipe" class="btn-k btn-k-ghost">
             <i class="bi bi-arrow-left"></i> Voltar
         </a>
