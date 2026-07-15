@@ -5,6 +5,7 @@ use Barbearias\Models\Agendamento;
 use Barbearias\Models\Cliente;
 use Barbearias\Models\Profissional;
 use Barbearias\Models\Servico;
+use Barbearias\Models\Unidade;
 
 /**
  * @var array $config
@@ -12,6 +13,7 @@ use Barbearias\Models\Servico;
  * @var array<int, Profissional> $profissionais
  * @var array<int, Servico> $servicos
  * @var array<int, Cliente> $clientes
+ * @var array<int, Unidade> $unidades
  * @var array $old
  * @var array<int, string> $errors
  */
@@ -24,6 +26,7 @@ $horaAtual = $old['hora'] ?? ($agendamento !== null ? (new DateTimeImmutable($ag
 $profissionalAtual = (int) ($old['profissional_id'] ?? $agendamento->profissionalId ?? 0);
 $servicoAtual = (int) ($old['servico_id'] ?? $agendamento->servicoId ?? 0);
 $clienteAtual = (int) ($old['cliente_id'] ?? $agendamento->clienteId ?? 0);
+$unidadeAtual = (int) ($old['unidade_id'] ?? $agendamento->unidadeId ?? 0);
 ?>
 <main class="dashboard-main">
     <div class="dash-page-head">
@@ -57,6 +60,17 @@ $clienteAtual = (int) ($old['cliente_id'] ?? $agendamento->clienteId ?? 0);
                 <?= Csrf::field() ?>
 
                 <div class="crud-form-grid">
+                    <?php if ($unidades !== []): ?>
+                        <div class="form-field crud-field-full">
+                            <label for="unidade_id">Unidade</label>
+                            <select id="unidade_id" name="unidade_id" required>
+                                <option value="">Selecione...</option>
+                                <?php foreach ($unidades as $unidade): ?>
+                                    <option value="<?= $unidade->id ?>" <?= $unidadeAtual === $unidade->id ? 'selected' : '' ?>><?= htmlspecialchars($unidade->nome, ENT_QUOTES, 'UTF-8') ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    <?php endif; ?>
                     <div class="form-field">
                         <label for="cliente_id">Cliente</label>
                         <select id="cliente_id" name="cliente_id" required>

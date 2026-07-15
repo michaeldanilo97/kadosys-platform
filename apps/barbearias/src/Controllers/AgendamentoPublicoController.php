@@ -12,6 +12,7 @@ use Barbearias\Models\Barbearia;
 use Barbearias\Models\Cliente;
 use Barbearias\Models\Profissional;
 use Barbearias\Models\Servico;
+use Barbearias\Models\Unidade;
 
 /**
  * Agendamento publico (sem login) - o cliente final da barbearia entra
@@ -36,11 +37,15 @@ final class AgendamentoPublicoController extends Controller
             return;
         }
 
+        $profissionais = Profissional::ativos($barbearia->id);
+
         echo $this->view('public.agendar', [
             'pageTitle' => 'Agendar horário - ' . $barbearia->nome,
             'barbearia' => $barbearia,
-            'profissionais' => Profissional::ativos($barbearia->id),
+            'profissionais' => $profissionais,
             'servicos' => Servico::ativos($barbearia->id),
+            'unidades' => Unidade::temMultiplasAtivas($barbearia->id) ? Unidade::ativas($barbearia->id) : [],
+            'mapaUnidades' => Profissional::mapaUnidades(array_map(static fn (Profissional $p) => $p->id, $profissionais)),
             'csrf' => Csrf::field(),
             'errors' => Session::flash('agendamento_publico_errors') ?? [],
             'old' => Session::flash('agendamento_publico_old') ?? [],
@@ -86,11 +91,20 @@ final class AgendamentoPublicoController extends Controller
             $this->redirect('/agendar/' . $slug);
         }
 
-        $dados = $this->request->only(['profissional_id', 'servico_id', 'data', 'hora', 'nome', 'telefone', 'email']);
+        $dados = $this->request->only(['unidade_id', 'profissional_id', 'servico_id', 'data', 'hora', 'nome', 'telefone', 'email']);
         $profissional = Profissional::find((int) ($dados['profissional_id'] ?? 0), $barbearia->id);
         $servico = Servico::find((int) ($dados['servico_id'] ?? 0), $barbearia->id);
+        $unidadeId = $this->resolverUnidade($barbearia->id, (int) ($dados['unidade_id'] ?? 0));
 
         $errors = $this->validar($dados, $profissional, $servico);
+
+        if ($errors === [] && Unidade::temMultiplasAtivas($barbearia->id)) {
+            if ($unidadeId === null) {
+                $errors[] = 'Escolha uma unidade válida.';
+            } elseif ($profissional !== null && !in_array($unidadeId, Profissional::unidadeIds($profissional->id), true)) {
+                $errors[] = 'Esse profissional não atende na unidade escolhida.';
+            }
+        }
 
         if ($errors === [] && $profissional !== null && $servico !== null) {
             // Sempre revalida a disponibilidade no servidor no momento
@@ -127,6 +141,7 @@ final class AgendamentoPublicoController extends Controller
             $clienteId,
             $dados['data'] . ' ' . $dados['hora'] . ':00',
             null,
+            $unidadeId,
         );
 
         Session::flash('agendamento_publico_confirmado', [
@@ -256,6 +271,22 @@ final class AgendamentoPublicoController extends Controller
         }
 
         return $errors;
+    }
+
+    /**
+     * Quando a barbearia tem so uma unidade, o agendamento e vinculado
+     * a ela automaticamente sem exigir nenhuma escolha do cliente - so
+     * pede pra escolher quando ha mais de uma unidade ativa.
+     */
+    private function resolverUnidade(int $barbeariaId, int $unidadeIdInformado): ?int
+    {
+        if (!Unidade::temMultiplasAtivas($barbeariaId)) {
+            return Unidade::principal($barbeariaId)?->id;
+        }
+
+        $idsAtivas = array_map(static fn (Unidade $u) => $u->id, Unidade::ativas($barbeariaId));
+
+        return $unidadeIdInformado > 0 && in_array($unidadeIdInformado, $idsAtivas, true) ? $unidadeIdInformado : null;
     }
 
     private function apenasDigitos(string $valor): string

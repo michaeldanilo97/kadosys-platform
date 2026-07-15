@@ -16,6 +16,7 @@ use Barbearias\Controllers\FinanceiroController;
 use Barbearias\Controllers\LandingController;
 use Barbearias\Controllers\ProfissionalController;
 use Barbearias\Controllers\ServicoController;
+use Barbearias\Controllers\UnidadeController;
 use Barbearias\Controllers\WebhookController;
 use Barbearias\Core\Middleware\AuthMiddleware;
 use Barbearias\Core\Middleware\GuestMiddleware;
@@ -65,6 +66,14 @@ $router->get('/dashboard/assinatura', [AssinaturaController::class, 'index'], [A
 $router->get('/dashboard/assinatura/status', [AssinaturaController::class, 'status'], [AuthMiddleware::class]);
 $router->post('/dashboard/assinatura/pix', [AssinaturaController::class, 'gerarPix'], [AuthMiddleware::class]);
 $router->post('/dashboard/assinatura/cartao', [AssinaturaController::class, 'assinarCartao'], [AuthMiddleware::class]);
+
+// Unidades (filiais).
+$router->get('/dashboard/unidades', [UnidadeController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/unidades/nova', [UnidadeController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/unidades', [UnidadeController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/unidades/{id}/editar', [UnidadeController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/dashboard/unidades/{id}', [UnidadeController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/unidades/{id}/excluir', [UnidadeController::class, 'destroy'], [AuthMiddleware::class]);
 
 // Profissionais.
 $router->get('/dashboard/profissionais', [ProfissionalController::class, 'index'], [AuthMiddleware::class]);

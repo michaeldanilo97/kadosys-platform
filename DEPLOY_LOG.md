@@ -17,6 +17,74 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 131 - 2026-07-15
+
+**Barbearias: multi-unidade (filiais)**
+
+- **Unidades**: nova tela `/dashboard/unidades` (CRUD) - nome, endereço,
+  cidade/UF, CEP, telefone, WhatsApp. Toda barbearia (nova ou já
+  existente) já nasce com uma "Unidade Principal" automática - quem
+  nunca cadastra uma segunda unidade **não vê nenhuma tela nova**: sem
+  seletor de unidade no cadastro de profissional, sem campo de unidade
+  no agendamento (painel ou público), sem filtro na listagem. Tudo isso
+  só aparece a partir do momento em que existe uma segunda unidade
+  ativa.
+- **Profissionais**: podem atender em uma ou mais unidades (vínculo
+  muitos-pra-muitos) - o formulário ganha os checkboxes de unidade
+  assim que a barbearia tem 2+ unidades ativas.
+- **Agendamento no painel**: ganha um campo de unidade (obrigatório
+  quando há 2+ unidades) e a listagem ganha filtro por unidade + coluna
+  correspondente.
+- **Agendamento público** (`/agendar/{slug}`): quando a barbearia tem
+  mais de uma unidade ativa, aparece um passo de escolha de unidade
+  ANTES da escolha de profissional, e a lista de profissionais é
+  filtrada (no navegador) pra mostrar só quem atende naquela unidade -
+  revalidado no servidor no envio (rejeita profissional que não
+  pertence à unidade escolhida, mesmo que o JS seja contornado).
+- Toda barbearia precisa ter sempre pelo menos uma unidade: excluir ou
+  desativar a última unidade ativa é bloqueado com uma mensagem clara.
+- Fora de escopo por ora: geolocalização, redes sociais e
+  logo/imagens por unidade, caixa/financeiro por unidade (o módulo
+  Financeiro shipado no Ajuste 130 continua consolidado por barbearia,
+  não por unidade), visão comparativa entre unidades no painel -
+  ficam pra uma próxima etapa.
+
+**Ação manual pendente no banco `kadosys1_barbearias`** (só se
+`install.sql` já rodou antes): rodar
+`apps/barbearias/database/migrations/005_multi_unidade.sql` uma única
+vez - cria as tabelas `unidades` e `profissional_unidades`, adiciona
+`agendamentos.unidade_id` (nullable) e faz o backfill automático: toda
+barbearia existente ganha uma "Unidade Principal" e todo profissional
+existente é vinculado a ela. Testado aplicando sobre uma cópia do
+schema anterior (com dados reais de barbearia/profissional/agendamento
+já cadastrados) - o resultado bate exatamente com o schema de uma
+instalação nova via `install.sql`.
+
+**Testado localmente** (MariaDB + servidor PHP embutido, via curl com
+sessão autenticada), nos dois cenários:
+- **1 unidade (caso comum)**: confirmado que nenhuma tela nova aparece
+  em lugar nenhum (profissional, agendamento do painel, agendamento
+  público) - um agendamento público completo foi feito e o
+  `unidade_id` foi preenchido automaticamente com a unidade principal,
+  sem o cliente perceber nada diferente.
+- **2 unidades**: criação da segunda unidade; profissional existente
+  aparece automaticamente marcado na unidade 1 (do backfill); novo
+  profissional vinculado só à unidade 2; formulário de agendamento do
+  painel exige a unidade; filtro por unidade na listagem confirmado
+  batendo exatamente com os agendamentos de cada unidade; agendamento
+  público mostra o passo de escolha de unidade e os profissionais
+  certos aparecem tagueados por unidade; tentativa de agendar com
+  profissional que não pertence à unidade escolhida bloqueada no
+  servidor (nenhuma linha criada); exclusão da unidade não-principal
+  funcionou (agendamento antigo vinculado a ela virou `unidade_id NULL`
+  via `ON DELETE SET NULL`, vínculo do profissional removido em
+  cascata); tentativa de excluir a última unidade restante bloqueada
+  com mensagem clara; voltando a 1 unidade, toda a UI condicional
+  desapareceu de novo. Nenhum warning/notice no log do PHP durante os
+  testes.
+
+---
+
 ## Ajuste 130 - 2026-07-15
 
 **Barbearias: módulo Financeiro (caixa diário + lançamentos + PDV rápido)**

@@ -19,20 +19,23 @@ final class Agendamento
     public const STATUS_CONCLUIDO = 'concluido';
     public const STATUS_CANCELADO = 'cancelado';
 
-    private const SELECT_COLUNAS = 'a.id, a.barbearia_id, a.profissional_id, a.servico_id, a.cliente_id,
+    private const SELECT_COLUNAS = 'a.id, a.barbearia_id, a.unidade_id, a.profissional_id, a.servico_id, a.cliente_id,
         a.data_hora, a.status, a.observacoes, a.created_at,
         p.nome AS profissional_nome,
         s.nome AS servico_nome, s.preco AS servico_preco, s.duracao_minutos AS servico_duracao,
-        c.nome AS cliente_nome, c.telefone AS cliente_telefone';
+        c.nome AS cliente_nome, c.telefone AS cliente_telefone,
+        u.nome AS unidade_nome';
 
     private const JOINS = 'FROM agendamentos a
         INNER JOIN profissionais p ON p.id = a.profissional_id
         INNER JOIN servicos s ON s.id = a.servico_id
-        INNER JOIN clientes c ON c.id = a.cliente_id';
+        INNER JOIN clientes c ON c.id = a.cliente_id
+        LEFT JOIN unidades u ON u.id = a.unidade_id';
 
     public function __construct(
         public readonly int $id,
         public readonly int $barbeariaId,
+        public readonly ?int $unidadeId,
         public readonly int $profissionalId,
         public readonly int $servicoId,
         public readonly int $clienteId,
@@ -45,6 +48,7 @@ final class Agendamento
         public readonly int $servicoDuracao,
         public readonly string $clienteNome,
         public readonly ?string $clienteTelefone,
+        public readonly ?string $unidadeNome,
         public readonly ?string $createdAt = null,
     ) {
     }
@@ -52,7 +56,7 @@ final class Agendamento
     /**
      * @return array{items: array<int, self>, total: int, page: int, perPage: int, lastPage: int}
      */
-    public static function paginate(int $barbeariaId, int $page, int $perPage, string $search = '', string $status = ''): array
+    public static function paginate(int $barbeariaId, int $page, int $perPage, string $search = '', string $status = '', int $unidadeId = 0): array
     {
         $where = 'WHERE a.barbearia_id = :barbearia_id';
         $params = ['barbearia_id' => $barbeariaId];
@@ -65,6 +69,11 @@ final class Agendamento
         if (in_array($status, [self::STATUS_AGENDADO, self::STATUS_CONCLUIDO, self::STATUS_CANCELADO], true)) {
             $where .= ' AND a.status = :status';
             $params['status'] = $status;
+        }
+
+        if ($unidadeId > 0) {
+            $where .= ' AND a.unidade_id = :unidade_id';
+            $params['unidade_id'] = $unidadeId;
         }
 
         $stmtTotal = Database::connection()->prepare('SELECT COUNT(*) ' . self::JOINS . ' ' . $where);
@@ -190,13 +199,15 @@ final class Agendamento
         int $clienteId,
         string $dataHora,
         ?string $observacoes,
+        ?int $unidadeId = null,
     ): int {
         $stmt = Database::connection()->prepare(
-            "INSERT INTO agendamentos (barbearia_id, profissional_id, servico_id, cliente_id, data_hora, status, observacoes, created_at)
-             VALUES (:barbearia_id, :profissional_id, :servico_id, :cliente_id, :data_hora, 'agendado', :observacoes, NOW())"
+            "INSERT INTO agendamentos (barbearia_id, unidade_id, profissional_id, servico_id, cliente_id, data_hora, status, observacoes, created_at)
+             VALUES (:barbearia_id, :unidade_id, :profissional_id, :servico_id, :cliente_id, :data_hora, 'agendado', :observacoes, NOW())"
         );
         $stmt->execute([
             'barbearia_id' => $barbeariaId,
+            'unidade_id' => $unidadeId,
             'profissional_id' => $profissionalId,
             'servico_id' => $servicoId,
             'cliente_id' => $clienteId,
@@ -216,10 +227,11 @@ final class Agendamento
         string $dataHora,
         string $status,
         ?string $observacoes,
+        ?int $unidadeId = null,
     ): void {
         $stmt = Database::connection()->prepare(
             'UPDATE agendamentos SET profissional_id = :profissional_id, servico_id = :servico_id, cliente_id = :cliente_id,
-                data_hora = :data_hora, status = :status, observacoes = :observacoes
+                data_hora = :data_hora, status = :status, observacoes = :observacoes, unidade_id = :unidade_id
              WHERE id = :id AND barbearia_id = :barbearia_id'
         );
         $stmt->execute([
@@ -229,6 +241,7 @@ final class Agendamento
             'data_hora' => $dataHora,
             'status' => $status,
             'observacoes' => self::nullable($observacoes),
+            'unidade_id' => $unidadeId,
             'id' => $id,
             'barbearia_id' => $barbeariaId,
         ]);
@@ -260,6 +273,7 @@ final class Agendamento
         return new self(
             id: (int) $row['id'],
             barbeariaId: (int) $row['barbearia_id'],
+            unidadeId: $row['unidade_id'] !== null ? (int) $row['unidade_id'] : null,
             profissionalId: (int) $row['profissional_id'],
             servicoId: (int) $row['servico_id'],
             clienteId: (int) $row['cliente_id'],
@@ -272,6 +286,7 @@ final class Agendamento
             servicoDuracao: (int) $row['servico_duracao'],
             clienteNome: (string) $row['cliente_nome'],
             clienteTelefone: $row['cliente_telefone'] ?? null,
+            unidadeNome: $row['unidade_nome'] ?? null,
             createdAt: isset($row['created_at']) ? (string) $row['created_at'] : null,
         );
     }

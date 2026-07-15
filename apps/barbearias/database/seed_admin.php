@@ -54,6 +54,12 @@ if ($barbeariaId) {
     );
     $criarBarbearia->execute(['nome' => $nomeBarbearia, 'slug' => $slug]);
     $barbeariaId = (int) $pdo->lastInsertId();
+
+    $criarUnidade = $pdo->prepare(
+        "INSERT INTO unidades (barbearia_id, nome, slug, principal, ativa, created_at)
+         VALUES (:barbearia_id, 'Unidade Principal', 'principal', 1, 1, NOW())"
+    );
+    $criarUnidade->execute(['barbearia_id' => $barbeariaId]);
 }
 
 $hash = password_hash($password, PASSWORD_BCRYPT);

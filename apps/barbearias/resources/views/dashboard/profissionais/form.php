@@ -2,10 +2,13 @@
 
 use Barbearias\Core\Csrf;
 use Barbearias\Models\Profissional;
+use Barbearias\Models\Unidade;
 
 /**
  * @var array $config
  * @var Profissional|null $profissional
+ * @var array<int, Unidade> $unidades
+ * @var array<int, int> $unidadesAtuais
  * @var array $old
  * @var array<int, string> $errors
  */
@@ -85,6 +88,22 @@ $horarioFimAtual = $old['horario_fim'] ?? ($profissional !== null ? substr((stri
                     <label for="horario_fim">Fim do expediente</label>
                     <input type="time" id="horario_fim" name="horario_fim" value="<?= htmlspecialchars($horarioFimAtual, ENT_QUOTES, 'UTF-8') ?>">
                 </div>
+
+                <?php if ($unidades !== []): ?>
+                    <?php $unidadesMarcadas = $old['unidades'] ?? $unidadesAtuais; ?>
+                    <div class="form-field crud-field-full">
+                        <label>Atende em</label>
+                        <div class="dias-semana-grid">
+                            <?php foreach ($unidades as $unidade): ?>
+                                <label class="dia-semana-chip">
+                                    <input type="checkbox" name="unidades[]" value="<?= $unidade->id ?>" <?= in_array($unidade->id, $unidadesMarcadas, true) || in_array((string) $unidade->id, $unidadesMarcadas, true) ? 'checked' : '' ?>>
+                                    <span><?= htmlspecialchars($unidade->nome, ENT_QUOTES, 'UTF-8') ?></span>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
+                        <span class="form-field-hint">Em quais unidades esse profissional atende - usado pra filtrar quem aparece no agendamento público.</span>
+                    </div>
+                <?php endif; ?>
 
                 <?php if ($isEdit): ?>
                     <div class="form-field crud-checkbox-field">

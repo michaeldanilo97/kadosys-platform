@@ -2,6 +2,7 @@
 
 use Barbearias\Core\Csrf;
 use Barbearias\Models\Agendamento;
+use Barbearias\Models\Unidade;
 
 /**
  * @var array $config
@@ -11,6 +12,8 @@ use Barbearias\Models\Agendamento;
  * @var int $lastPage
  * @var string $search
  * @var string $status
+ * @var array<int, Unidade> $unidades
+ * @var int $unidadeId
  * @var string|null $success
  */
 $basePath = $config['base_path'] ?? '';
@@ -46,6 +49,14 @@ $statusLabel = [
                     <option value="<?= $valor ?>" <?= $status === $valor ? 'selected' : '' ?>><?= $label ?></option>
                 <?php endforeach; ?>
             </select>
+            <?php if ($unidades !== []): ?>
+                <select name="unidade" onchange="this.form.submit()" style="padding:0.65rem 1rem; border-radius:10px; border:1px solid var(--glass-border); background:rgba(15,23,42,0.5); color:var(--text);">
+                    <option value="">Todas as unidades</option>
+                    <?php foreach ($unidades as $unidade): ?>
+                        <option value="<?= $unidade->id ?>" <?= $unidadeId === $unidade->id ? 'selected' : '' ?>><?= htmlspecialchars($unidade->nome, ENT_QUOTES, 'UTF-8') ?></option>
+                    <?php endforeach; ?>
+                </select>
+            <?php endif; ?>
             <button type="submit" class="btn-k btn-k-outline">Buscar</button>
         </form>
 
@@ -60,6 +71,7 @@ $statusLabel = [
                             <th>Cliente</th>
                             <th>Profissional</th>
                             <th>Serviço</th>
+                            <?php if ($unidades !== []): ?><th>Unidade</th><?php endif; ?>
                             <th>Status</th>
                             <th></th>
                         </tr>
@@ -72,6 +84,7 @@ $statusLabel = [
                                 <td><?= htmlspecialchars($agendamento->clienteNome, ENT_QUOTES, 'UTF-8') ?></td>
                                 <td class="text-dim"><?= htmlspecialchars($agendamento->profissionalNome, ENT_QUOTES, 'UTF-8') ?></td>
                                 <td class="text-dim"><?= htmlspecialchars($agendamento->servicoNome, ENT_QUOTES, 'UTF-8') ?></td>
+                                <?php if ($unidades !== []): ?><td class="text-dim"><?= $agendamento->unidadeNome ? htmlspecialchars($agendamento->unidadeNome, ENT_QUOTES, 'UTF-8') : '-' ?></td><?php endif; ?>
                                 <td><span class="status-badge <?= $badge ?>"><?= $label ?></span></td>
                                 <td class="actions-col">
                                     <?php if ($agendamento->status === Agendamento::STATUS_AGENDADO): ?>
@@ -100,7 +113,7 @@ $statusLabel = [
                         <?php if ($p === $page): ?>
                             <span class="atual"><?= $p ?></span>
                         <?php else: ?>
-                            <a href="<?= $basePath ?>/dashboard/agendamentos?pagina=<?= $p ?>&busca=<?= urlencode($search) ?>&status=<?= urlencode($status) ?>"><?= $p ?></a>
+                            <a href="<?= $basePath ?>/dashboard/agendamentos?pagina=<?= $p ?>&busca=<?= urlencode($search) ?>&status=<?= urlencode($status) ?>&unidade=<?= $unidadeId ?>"><?= $p ?></a>
                         <?php endif; ?>
                     <?php endfor; ?>
                 </div>

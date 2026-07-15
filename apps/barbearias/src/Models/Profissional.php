@@ -104,6 +104,99 @@ final class Profissional
         return (int) $stmt->fetchColumn();
     }
 
+    /**
+     * Profissionais ATIVOS vinculados a uma unidade especifica - usado
+     * pelo agendamento publico pra filtrar quem aparece quando a
+     * barbearia tem mais de uma unidade (ver
+     * Barbearias\Controllers\AgendamentoPublicoController).
+     *
+     * @return array<int, self>
+     */
+    public static function daUnidade(int $barbeariaId, int $unidadeId): array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT p.id, p.barbearia_id, p.nome, p.especialidade, p.email, p.telefone, p.foto_path,
+                p.dias_atendimento, p.horario_inicio, p.horario_fim, p.ativo, p.created_at
+             FROM profissionais p
+             INNER JOIN profissional_unidades pu ON pu.profissional_id = p.id
+             WHERE p.barbearia_id = :barbearia_id AND pu.unidade_id = :unidade_id AND p.ativo = 1
+             ORDER BY p.nome ASC'
+        );
+        $stmt->execute(['barbearia_id' => $barbeariaId, 'unidade_id' => $unidadeId]);
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /** @return array<int, int> */
+    public static function unidadeIds(int $profissionalId): array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT unidade_id FROM profissional_unidades WHERE profissional_id = :profissional_id'
+        );
+        $stmt->execute(['profissional_id' => $profissionalId]);
+
+        return array_map('intval', $stmt->fetchAll(\PDO::FETCH_COLUMN));
+    }
+
+    /**
+     * Mapa profissional_id => lista de unidade_id, numa unica consulta
+     * - usado pelo agendamento publico pra filtrar no navegador quais
+     * profissionais aparecem conforme a unidade escolhida, sem precisar
+     * de uma ida ao servidor a cada troca.
+     *
+     * @param array<int, int> $profissionalIds
+     * @return array<int, array<int, int>>
+     */
+    public static function mapaUnidades(array $profissionalIds): array
+    {
+        if ($profissionalIds === []) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($profissionalIds), '?'));
+        $stmt = Database::connection()->prepare(
+            "SELECT profissional_id, unidade_id FROM profissional_unidades WHERE profissional_id IN ({$placeholders})"
+        );
+        $stmt->execute(array_values($profissionalIds));
+
+        $mapa = [];
+
+        foreach ($stmt->fetchAll() as $row) {
+            $mapa[(int) $row['profissional_id']][] = (int) $row['unidade_id'];
+        }
+
+        return $mapa;
+    }
+
+    /**
+     * Sincroniza as unidades onde esse profissional atende (substitui
+     * o vinculo inteiro pela lista informada) - o controller e quem
+     * garante que cada id em $unidadeIds realmente pertence a essa
+     * barbearia antes de chamar isso.
+     *
+     * @param array<int, int> $unidadeIds
+     */
+    public static function definirUnidades(int $profissionalId, array $unidadeIds): void
+    {
+        $pdo = Database::connection();
+        $stmt = $pdo->prepare('DELETE FROM profissional_unidades WHERE profissional_id = :profissional_id');
+        $stmt->execute(['profissional_id' => $profissionalId]);
+
+        $unidadeIds = array_values(array_unique(array_map('intval', $unidadeIds)));
+
+        if ($unidadeIds === []) {
+            return;
+        }
+
+        $stmt = $pdo->prepare(
+            'INSERT INTO profissional_unidades (profissional_id, unidade_id) VALUES (:profissional_id, :unidade_id)'
+        );
+
+        foreach ($unidadeIds as $unidadeId) {
+            $stmt->execute(['profissional_id' => $profissionalId, 'unidade_id' => $unidadeId]);
+        }
+    }
+
     /** @param array<int, int> $diasAtendimento */
     public static function create(
         int $barbeariaId,
