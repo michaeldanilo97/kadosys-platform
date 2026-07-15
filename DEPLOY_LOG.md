@@ -17,6 +17,68 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 126 - 2026-07-15
+
+**Barbearias: site institucional, cadastro público com cobrança automática (Pix/cartão) e trial de 5 dias**
+
+- Site público de vendas (`/`) com planos e preços - Essencial R$29,90,
+  Plus R$49,90, Premium R$69,90 por mês, mesmos nomes de exibição do
+  Igrejas.
+- Cadastro público (`/cadastro`): barbearia + admin + escolha de plano
+  e forma de pagamento (cartão, Pix ou teste grátis de 5 dias). Como o
+  Barbearias usa um banco único (multi-tenant lógico), o fluxo é bem
+  mais simples que o do Igrejas - não existe "provisionar banco/
+  subdomínio", então a barbearia já nasce com `status = 'pendente'`
+  (Pix/cartão aguardando confirmação) ou `'ativo'` (trial, sem
+  cobrança), e o teste grátis loga direto no painel sem tela de espera.
+- Cobrança automática via Mercado Pago (mesma conta/credenciais já
+  configuradas pro Igrejas) - assinatura recorrente por cartão
+  (Checkout Pro/preapproval) ou cobrança Pix avulsa renovada todo mês.
+- Webhook (`POST /webhooks/mercadopago`) confirma pagamento e ativa a
+  barbearia automaticamente.
+- Bloqueio de acesso (`Barbearias\Core\Middleware\AuthMiddleware`):
+  redireciona pra `/dashboard/assinatura` quando o trial vence, a
+  fatura Pix vence sem pagamento, ou o primeiro pagamento (Pix/cartão)
+  ainda não foi confirmado - dessa tela dá pra pagar (gerar novo QR Pix
+  ou assinar por cartão) sem perder acesso aos dados já cadastrados.
+- Cron `apps/barbearias/cron/gerar_faturas_pix.php` gera a fatura Pix
+  do próximo ciclo automaticamente (mesmo padrão do Igrejas, sem
+  precisar conectar num banco por tenant já que é tudo a mesma tabela).
+- Novas tabelas/colunas: `barbearias.documento_tipo/documento/
+  razao_social/plano/metodo_pagamento/mp_preapproval_id/
+  trial_expira_em/proximo_vencimento/status`, e a tabela
+  `barbearia_faturas` (unifica primeiro pagamento e renovação numa
+  linha só - diferente do Igrejas, que separa isso em duas tabelas).
+- **Ação manual pendente no banco `kadosys1_barbearias`**: se o
+  `install.sql` original (Ajuste 124) ainda **não** foi rodado no
+  banco, só rodar o `install.sql` atual já resolve (já inclui tudo).
+  Se ele **já** foi rodado antes, rodar
+  `apps/barbearias/database/migrations/001_add_billing.sql` uma única
+  vez pra adicionar as colunas/tabela novas (testado localmente
+  aplicando em cima do schema antigo, chega no mesmo resultado do
+  install.sql atual). Também configurar as variáveis de ambiente
+  `MP_ACCESS_TOKEN`/`MP_PUBLIC_KEY`/`MP_WEBHOOK_SECRET`/`APP_URL` (mesma
+  conta do Igrejas) e cadastrar o webhook
+  `https://SEUDOMINIO/webhooks/mercadopago` no painel do Mercado Pago,
+  além do Cron Job diário do `apps/barbearias/cron/gerar_faturas_pix.php`
+  (mesmo padrão já usado no Igrejas).
+
+**Testado localmente** (MariaDB `barbearias_teste` + servidor PHP
+embutido): cadastro por teste grátis cria a barbearia (`status =
+'ativo'`, `trial_expira_em` 5 dias à frente) e o admin, loga
+automaticamente e chega no painel; cadastro por Pix/cartão cria a
+barbearia em `status = 'pendente'` e falha de forma controlada quando
+o Mercado Pago não está configurado (sem crash); trial vencido e
+pagamento pendente bloqueiam `/dashboard` e redirecionam pra
+`/dashboard/assinatura`, com `/logout` e a própria tela de assinatura
+liberados da regra pra não travar o usuário. As chamadas reais à API
+do Mercado Pago (criar assinatura/cobrança Pix) não são testáveis
+neste ambiente (proxy de sandbox bloqueia `api.mercadopago.com`) - só
+os caminhos que não dependem da API foram verificados de ponta a
+ponta.
+
+---
+
 ## Ajuste 125 - 2026-07-15
 
 **Barbearias: adiciona vendor/ e composer.lock (deploy por git pull)**
