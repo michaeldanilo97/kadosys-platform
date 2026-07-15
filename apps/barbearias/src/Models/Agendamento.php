@@ -111,6 +111,31 @@ final class Agendamento
         return $row ? self::fromRow($row) : null;
     }
 
+    /**
+     * Fila do dia (nao-cancelados) pra um dia especifico, com filtro
+     * opcional de unidade - usado pelo painel de recepcao (ver
+     * Barbearias\Controllers\RecepcaoController), uma tela em tela
+     * cheia com auto-atualizacao pra ficar numa TV do salao.
+     *
+     * @return array<int, self>
+     */
+    public static function doDia(int $barbeariaId, \DateTimeImmutable $dia, int $unidadeId = 0): array
+    {
+        $sql = 'SELECT ' . self::SELECT_COLUNAS . ' ' . self::JOINS . "
+             WHERE a.barbearia_id = :barbearia_id AND DATE(a.data_hora) = :dia AND a.status != 'cancelado'";
+        $params = ['barbearia_id' => $barbeariaId, 'dia' => $dia->format('Y-m-d')];
+
+        if ($unidadeId > 0) {
+            $sql .= ' AND a.unidade_id = :unidade_id';
+            $params['unidade_id'] = $unidadeId;
+        }
+
+        $stmt = Database::connection()->prepare($sql . ' ORDER BY a.data_hora ASC');
+        $stmt->execute($params);
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
     public static function contarDoDia(int $barbeariaId, \DateTimeImmutable $dia): int
     {
         $stmt = Database::connection()->prepare(

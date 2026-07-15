@@ -534,3 +534,124 @@
 .confirmacao-detalhes span:first-child {
     color: var(--gray-400);
 }
+
+/* ---- Painel de recepcao (TV) ------------------------------------------ */
+
+.recepcao-body {
+    background: var(--bg-dark);
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+.recepcao-shell {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem 4rem;
+}
+
+.recepcao-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.recepcao-eyebrow {
+    color: var(--gray-400);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 0.4rem;
+}
+
+.recepcao-header h1 {
+    margin: 0;
+    font-size: 2.4rem;
+    font-weight: 800;
+}
+
+.recepcao-relogio {
+    font-size: 3rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    color: var(--primary);
+}
+
+.recepcao-unidades {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.recepcao-unidades a {
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    border: 1px solid var(--glass-border);
+    color: var(--gray-400);
+    font-size: 0.9rem;
+}
+
+.recepcao-unidades a.ativo {
+    border-color: var(--primary);
+    color: var(--white);
+    background: rgba(59, 130, 246, 0.14);
+}
+
+.recepcao-vazio {
+    text-align: center;
+    color: var(--gray-400);
+    font-size: 1.3rem;
+    padding: 4rem 0;
+}
+
+.recepcao-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.recepcao-linha {
+    display: grid;
+    grid-template-columns: 110px 1fr 1.4fr auto;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.1rem 1.5rem;
+    border-radius: 14px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+}
+
+.recepcao-linha.proximo {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+.recepcao-hora {
+    font-size: 1.4rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+.recepcao-cliente {
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+.recepcao-detalhe {
+    color: var(--gray-400);
+    font-size: 0.95rem;
+}
+
+@media (max-width: 720px) {
+    .recepcao-header h1 { font-size: 1.7rem; }
+    .recepcao-relogio { font-size: 2rem; }
+    .recepcao-linha {
+        grid-template-columns: 1fr;
+        gap: 0.35rem;
+        text-align: left;
+    }
+}

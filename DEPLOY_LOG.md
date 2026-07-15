@@ -17,6 +17,40 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 139 - 2026-07-15
+
+**Barbearias: painel de recepção (tela cheia pra TV/tablet do salão)**
+
+- Nova tela **`/dashboard/recepcao`** (item "Recepção (TV)" no menu,
+  abre em nova aba): tela em **tela cheia**, sem a barra lateral do
+  dashboard, pensada pra ficar aberta continuamente numa TV/tablet na
+  recepção da barbearia.
+- Mostra a **fila de atendimentos do dia** (não-cancelados), ordenada
+  por horário, com status inferido a partir dos dados existentes (a
+  aplicação não tem um status de "em atendimento"):
+  - **Concluído** (verde) - atendimento já finalizado;
+  - **Atrasado** (vermelho) - ainda agendado, mas o horário já passou;
+  - **Aguardando** (neutro) - agendado pro futuro.
+  - O próximo atendimento aguardando ganha um destaque visual (borda
+    colorida).
+- Relógio no topo atualiza sozinho a cada segundo (só o texto, via
+  JS) e a página inteira recarrega sozinha a cada 60s (meta refresh
+  simples, sem JS de polling) pra manter a fila em dia.
+- Se a barbearia tiver mais de uma unidade ativa, aparecem abas pra
+  filtrar a fila por unidade.
+
+**Sem migração pendente** - reaproveita a tabela `agendamentos` já
+existente.
+
+**Testado localmente** (MariaDB + servidor PHP embutido, via curl com
+sessão autenticada): três agendamentos no dia (um concluído, um no
+passado ainda como "agendado", um no futuro) resultaram exatamente
+nos três status esperados (Concluído/Atrasado/Aguardando), na ordem
+certa por horário, com o atendimento futuro mais próximo destacado
+como "próximo". Nenhum warning/erro no log do PHP durante os testes.
+
+---
+
 ## Ajuste 138 - 2026-07-15
 
 **Barbearias: programa de fidelidade (pontos por atendimento + resgate de recompensas)**
