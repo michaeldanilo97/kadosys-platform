@@ -10,7 +10,9 @@ use Barbearias\Core\Csrf;
 use Barbearias\Core\Session;
 use Barbearias\Models\Agendamento;
 use Barbearias\Models\Barbearia;
+use Barbearias\Models\Caixa;
 use Barbearias\Models\Cliente;
+use Barbearias\Models\FinanceiroLancamento;
 use Barbearias\Models\Profissional;
 use Barbearias\Models\Servico;
 use Barbearias\Models\User;
@@ -164,6 +166,88 @@ final class AgendamentoController extends Controller
             Session::flash('agendamento_success', 'Agendamento removido.');
         }
 
+        $this->redirect('/dashboard/agendamentos');
+    }
+
+    /**
+     * Tela do "PDV rapido": ao concluir um agendamento, registra o
+     * pagamento (forma + valor) como um lancamento de receita no
+     * financeiro no mesmo passo, ja vinculado ao caixa aberto (se
+     * houver um).
+     */
+    public function pagamentoForm(string $id): void
+    {
+        $barbeariaId = $this->barbeariaId();
+        $agendamento = Agendamento::find((int) $id, $barbeariaId);
+
+        if ($agendamento === null || $agendamento->status !== Agendamento::STATUS_AGENDADO) {
+            $this->redirect('/dashboard/agendamentos');
+        }
+
+        echo $this->view('dashboard.agendamentos.pagamento', [
+            'pageTitle' => 'Registrar pagamento - KADOSYS Barbearias',
+            'activeMenu' => 'agendamentos',
+            'user' => $this->usuario(),
+            'barbearia' => Barbearia::find($barbeariaId),
+            'agendamento' => $agendamento,
+            'formasPagamento' => FinanceiroLancamento::FORMAS_PAGAMENTO,
+            'errors' => Session::flash('agendamento_pagamento_errors') ?? [],
+            'old' => Session::flash('agendamento_pagamento_old') ?? [],
+        ], 'dashboard');
+    }
+
+    public function pagamento(string $id): void
+    {
+        $barbeariaId = $this->barbeariaId();
+        $agendamento = Agendamento::find((int) $id, $barbeariaId);
+
+        if ($agendamento === null || $agendamento->status !== Agendamento::STATUS_AGENDADO) {
+            $this->redirect('/dashboard/agendamentos');
+        }
+
+        if (!Csrf::verify($this->request->input('_csrf_token'))) {
+            $this->redirect('/dashboard/agendamentos');
+        }
+
+        $formaPagamento = (string) $this->request->input('forma_pagamento', '');
+        $valorInformado = str_replace(',', '.', (string) $this->request->input('valor', ''));
+        $valor = is_numeric($valorInformado) ? (float) $valorInformado : -1;
+        $errors = [];
+
+        if (!in_array($formaPagamento, FinanceiroLancamento::FORMAS_PAGAMENTO, true)) {
+            $errors[] = 'Escolha uma forma de pagamento válida.';
+        }
+
+        if ($valor <= 0) {
+            $errors[] = 'Informe um valor válido.';
+        }
+
+        if ($errors !== []) {
+            Session::flash('agendamento_pagamento_errors', $errors);
+            Session::flash('agendamento_pagamento_old', ['forma_pagamento' => $formaPagamento, 'valor' => $this->request->input('valor', '')]);
+            $this->redirect('/dashboard/agendamentos/' . $id . '/pagamento');
+        }
+
+        Agendamento::atualizarStatus((int) $id, $barbeariaId, Agendamento::STATUS_CONCLUIDO);
+
+        if (!FinanceiroLancamento::existeParaAgendamento((int) $id, $barbeariaId)) {
+            $caixa = Caixa::aberto($barbeariaId);
+
+            FinanceiroLancamento::create(
+                $barbeariaId,
+                $caixa?->id,
+                (int) $id,
+                $this->usuario()?->id,
+                FinanceiroLancamento::TIPO_RECEITA,
+                'Serviço - ' . $agendamento->servicoNome,
+                $formaPagamento,
+                $valor,
+                'Pagamento de ' . $agendamento->clienteNome,
+                (new \DateTimeImmutable())->format('Y-m-d'),
+            );
+        }
+
+        Session::flash('agendamento_success', 'Agendamento concluído e pagamento registrado.');
         $this->redirect('/dashboard/agendamentos');
     }
 

@@ -12,6 +12,7 @@ use Barbearias\Controllers\ClienteController;
 use Barbearias\Controllers\ConfiguracaoController;
 use Barbearias\Controllers\DashboardController;
 use Barbearias\Controllers\FaturaController;
+use Barbearias\Controllers\FinanceiroController;
 use Barbearias\Controllers\LandingController;
 use Barbearias\Controllers\ProfissionalController;
 use Barbearias\Controllers\ServicoController;
@@ -96,10 +97,19 @@ $router->post('/dashboard/agendamentos', [AgendamentoController::class, 'store']
 $router->get('/dashboard/agendamentos/{id}/editar', [AgendamentoController::class, 'edit'], [AuthMiddleware::class]);
 $router->post('/dashboard/agendamentos/{id}', [AgendamentoController::class, 'update'], [AuthMiddleware::class]);
 $router->post('/dashboard/agendamentos/{id}/status', [AgendamentoController::class, 'status'], [AuthMiddleware::class]);
+$router->get('/dashboard/agendamentos/{id}/pagamento', [AgendamentoController::class, 'pagamentoForm'], [AuthMiddleware::class]);
+$router->post('/dashboard/agendamentos/{id}/pagamento', [AgendamentoController::class, 'pagamento'], [AuthMiddleware::class]);
 $router->post('/dashboard/agendamentos/{id}/excluir', [AgendamentoController::class, 'destroy'], [AuthMiddleware::class]);
 
 // Faturas (historico de cobranca - sempre acessivel, mesmo bloqueado).
 $router->get('/dashboard/faturas', [FaturaController::class, 'index'], [AuthMiddleware::class]);
+
+// Financeiro (caixa diario + lancamentos de receita/despesa).
+$router->get('/dashboard/financeiro', [FinanceiroController::class, 'index'], [AuthMiddleware::class]);
+$router->post('/dashboard/financeiro/caixa/abrir', [FinanceiroController::class, 'abrirCaixa'], [AuthMiddleware::class]);
+$router->post('/dashboard/financeiro/caixa/fechar', [FinanceiroController::class, 'fecharCaixa'], [AuthMiddleware::class]);
+$router->post('/dashboard/financeiro/lancamentos', [FinanceiroController::class, 'store'], [AuthMiddleware::class]);
+$router->post('/dashboard/financeiro/lancamentos/{id}/excluir', [FinanceiroController::class, 'destroy'], [AuthMiddleware::class]);
 
 // Configuracoes (dados da barbearia + equipe) - so admin.
 $router->get('/dashboard/configuracoes', [ConfiguracaoController::class, 'index'], [AuthMiddleware::class]);
