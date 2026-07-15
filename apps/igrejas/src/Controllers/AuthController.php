@@ -54,13 +54,19 @@ final class AuthController extends Controller
      * descobre em qual(is) igreja(s) ativa(s) essa pessoa tem conta (ver
      * Tenant::ativasComEmailCadastrado()), ja que nao existe uma tabela
      * central de usuarios - cada igreja tem seu proprio banco isolado.
+     * A propria instalacao atual (o banco fixo de config/database.php,
+     * que responde pelo dominio raiz) tambem entra na busca - nao e so
+     * um "roteador" vazio, pode ter usuarios de verdade cadastrados nela.
      *
-     * - 0 igrejas encontradas: nao revela isso (evita confirmar/negar se
-     *   um e-mail existe) - so volta pro /login com o e-mail preenchido,
-     *   pronto pra tentar a senha contra a instalacao atual normalmente.
-     * - 1 igreja encontrada: manda direto pro subdominio dela, sem
-     *   friccao extra.
-     * - 2+ igrejas encontradas: mostra a tela de selecao.
+     * - nenhuma conta encontrada: nao revela isso (evita confirmar/negar
+     *   se um e-mail existe) - so volta pro /login com o e-mail
+     *   preenchido, pronto pra tentar a senha contra a instalacao atual
+     *   normalmente.
+     * - uma conta encontrada (local OU uma unica igreja de subdominio):
+     *   manda direto pra ela, sem friccao extra.
+     * - duas ou mais contas encontradas (em qualquer combinacao entre a
+     *   instalacao atual e igrejas de subdominio): mostra a tela de
+     *   selecao.
      */
     public function localizarIgrejas(): void
     {
@@ -87,20 +93,44 @@ final class AuthController extends Controller
             $this->redirect('/login?email=' . urlencode($email));
         }
 
-        $encontradas = Tenant::ativasComEmailCadastrado($email);
+        $temContaLocal = User::findByEmail($email) !== null;
+        $tenantsEncontrados = Tenant::ativasComEmailCadastrado($email);
+        $total = ($temContaLocal ? 1 : 0) + count($tenantsEncontrados);
 
-        if (count($encontradas) === 1) {
-            $this->redirecionarParaFora('https://' . $encontradas[0]->subdominio . '/login?email=' . urlencode($email));
+        if ($total === 0) {
+            $this->redirect('/login?email=' . urlencode($email));
         }
 
-        if (count($encontradas) === 0) {
-            $this->redirect('/login?email=' . urlencode($email));
+        if ($total === 1) {
+            if ($temContaLocal) {
+                $this->redirect('/login?email=' . urlencode($email));
+            }
+
+            $this->redirecionarParaFora('https://' . $tenantsEncontrados[0]->subdominio . '/login?email=' . urlencode($email));
+        }
+
+        $opcoes = [];
+
+        if ($temContaLocal) {
+            $opcoes[] = [
+                'nome' => ConfiguracaoIgreja::atual()->nomeIgreja ?? 'KADOSYS Igrejas',
+                'subtitulo' => (string) ($this->request->server['HTTP_HOST'] ?? $rootDomain),
+                'url' => $this->url('/login?email=' . urlencode($email)),
+            ];
+        }
+
+        foreach ($tenantsEncontrados as $tenant) {
+            $opcoes[] = [
+                'nome' => $tenant->nomeIgreja,
+                'subtitulo' => $tenant->subdominio,
+                'url' => 'https://' . $tenant->subdominio . '/login?email=' . urlencode($email),
+            ];
         }
 
         echo $this->view('auth.selecionar-igreja', [
             'pageTitle' => 'Selecione sua igreja - KADOSYS Igrejas',
             'email' => $email,
-            'igrejas' => $encontradas,
+            'opcoes' => $opcoes,
         ], 'auth');
     }
 
@@ -137,7 +167,15 @@ final class AuthController extends Controller
         $auth = new Auth($this->config);
 
         if (!$auth->attempt($email, $password, $remember)) {
-            Session::flash('login_error', 'E-mail ou senha inválidos.');
+            $usuario = User::findByEmail($email);
+
+            $mensagem = match (true) {
+                $usuario === null => 'Esse e-mail não está cadastrado.',
+                !$usuario->active => 'Esse usuário está desativado. Fale com quem administra sua igreja.',
+                default => 'Senha incorreta.',
+            };
+
+            Session::flash('login_error', $mensagem);
             Session::flash('login_old', ['email' => $email]);
             $this->redirect('/login');
         }

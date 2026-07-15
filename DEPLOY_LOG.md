@@ -17,6 +17,26 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 121 - 2026-07-15
+
+**Seleção de igreja: inclui a instalação atual + mensagens de erro mais claras no login**
+
+- A tela "Qual igreja?" (Ajuste 119) só considerava igrejas de
+  subdomínio - se o e-mail também tivesse conta na própria instalação
+  atual (o domínio raiz, que também pode ter usuários de verdade),
+  essa opção ficava de fora da lista, ou pior: com só uma igreja de
+  subdomínio encontrada, mandava direto pra ela e ignorava que a
+  instalação atual também era uma opção válida. Agora a instalação
+  atual entra na busca e na lista de opções como qualquer outra
+  igreja.
+- Mensagem de erro do login ficou mais clara: em vez de sempre
+  "E-mail ou senha inválidos" (pensado pra não revelar se um e-mail
+  existe), agora diferencia **"Esse e-mail não está cadastrado."**,
+  **"Senha incorreta."** e **"Esse usuário está desativado."**,
+  conforme o caso.
+
+---
+
 ## Ajuste 120 - 2026-07-15
 
 **Correção: link da seleção de igreja duplicava o domínio**
