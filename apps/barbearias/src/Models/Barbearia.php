@@ -130,6 +130,18 @@ final class Barbearia
         return (int) Database::connection()->lastInsertId();
     }
 
+    public static function atualizarPerfil(int $id, string $nome, ?string $telefone): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE barbearias SET nome = :nome, telefone = :telefone WHERE id = :id'
+        );
+        $stmt->execute([
+            'nome' => trim($nome),
+            'telefone' => $telefone !== null && trim($telefone) !== '' ? trim($telefone) : null,
+            'id' => $id,
+        ]);
+    }
+
     public static function marcarAtiva(int $id): void
     {
         $stmt = Database::connection()->prepare(

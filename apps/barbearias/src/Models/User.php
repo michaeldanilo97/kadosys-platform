@@ -62,12 +62,69 @@ final class User
         return password_verify($plainPassword, $this->passwordHash);
     }
 
-    public static function emailEmUso(string $email): bool
+    public static function emailEmUso(string $email, ?int $exceptId = null): bool
     {
-        $stmt = Database::connection()->prepare('SELECT 1 FROM users WHERE email = :email LIMIT 1');
-        $stmt->execute(['email' => $email]);
+        $sql = 'SELECT 1 FROM users WHERE email = :email';
+        $params = ['email' => $email];
+
+        if ($exceptId !== null) {
+            $sql .= ' AND id != :except_id';
+            $params['except_id'] = $exceptId;
+        }
+
+        $stmt = Database::connection()->prepare($sql . ' LIMIT 1');
+        $stmt->execute($params);
 
         return $stmt->fetch() !== false;
+    }
+
+    /**
+     * Atualiza os dados de um usuario da EQUIPE - sempre filtrado por
+     * barbearia_id, senao um admin poderia editar usuario de outra
+     * barbearia so adivinhando o id na URL.
+     */
+    public static function update(int $id, int $barbeariaId, string $name, string $email, string $role, bool $active): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE users SET name = :name, email = :email, role = :role, active = :active
+             WHERE id = :id AND barbearia_id = :barbearia_id'
+        );
+        $stmt->execute([
+            'name' => trim($name),
+            'email' => trim($email),
+            'role' => in_array($role, [self::ROLE_ADMIN, self::ROLE_USUARIO], true) ? $role : self::ROLE_USUARIO,
+            'active' => $active ? 1 : 0,
+            'id' => $id,
+            'barbearia_id' => $barbeariaId,
+        ]);
+    }
+
+    public static function updatePassword(int $id, int $barbeariaId, string $password): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE users SET password = :password WHERE id = :id AND barbearia_id = :barbearia_id'
+        );
+        $stmt->execute([
+            'password' => password_hash($password, PASSWORD_BCRYPT),
+            'id' => $id,
+            'barbearia_id' => $barbeariaId,
+        ]);
+    }
+
+    public static function delete(int $id, int $barbeariaId): void
+    {
+        $stmt = Database::connection()->prepare('DELETE FROM users WHERE id = :id AND barbearia_id = :barbearia_id');
+        $stmt->execute(['id' => $id, 'barbearia_id' => $barbeariaId]);
+    }
+
+    public static function contarAdminsAtivos(int $barbeariaId): int
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT COUNT(*) FROM users WHERE barbearia_id = :barbearia_id AND role = 'admin' AND active = 1"
+        );
+        $stmt->execute(['barbearia_id' => $barbeariaId]);
+
+        return (int) $stmt->fetchColumn();
     }
 
     public static function create(int $barbeariaId, string $name, string $email, string $password, string $role = self::ROLE_ADMIN): int

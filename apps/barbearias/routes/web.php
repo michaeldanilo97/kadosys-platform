@@ -2,11 +2,17 @@
 
 declare(strict_types=1);
 
+use Barbearias\Controllers\AgendamentoController;
 use Barbearias\Controllers\AssinaturaController;
 use Barbearias\Controllers\AuthController;
 use Barbearias\Controllers\CadastroController;
+use Barbearias\Controllers\ClienteController;
+use Barbearias\Controllers\ConfiguracaoController;
 use Barbearias\Controllers\DashboardController;
+use Barbearias\Controllers\FaturaController;
 use Barbearias\Controllers\LandingController;
+use Barbearias\Controllers\ProfissionalController;
+use Barbearias\Controllers\ServicoController;
 use Barbearias\Controllers\WebhookController;
 use Barbearias\Core\Middleware\AuthMiddleware;
 use Barbearias\Core\Middleware\GuestMiddleware;
@@ -39,3 +45,47 @@ $router->get('/dashboard/assinatura', [AssinaturaController::class, 'index'], [A
 $router->get('/dashboard/assinatura/status', [AssinaturaController::class, 'status'], [AuthMiddleware::class]);
 $router->post('/dashboard/assinatura/pix', [AssinaturaController::class, 'gerarPix'], [AuthMiddleware::class]);
 $router->post('/dashboard/assinatura/cartao', [AssinaturaController::class, 'assinarCartao'], [AuthMiddleware::class]);
+
+// Profissionais.
+$router->get('/dashboard/profissionais', [ProfissionalController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/profissionais/novo', [ProfissionalController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/profissionais', [ProfissionalController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/profissionais/{id}/editar', [ProfissionalController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/dashboard/profissionais/{id}', [ProfissionalController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/profissionais/{id}/excluir', [ProfissionalController::class, 'destroy'], [AuthMiddleware::class]);
+
+// Servicos.
+$router->get('/dashboard/servicos', [ServicoController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/servicos/novo', [ServicoController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/servicos', [ServicoController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/servicos/{id}/editar', [ServicoController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/dashboard/servicos/{id}', [ServicoController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/servicos/{id}/excluir', [ServicoController::class, 'destroy'], [AuthMiddleware::class]);
+
+// Clientes.
+$router->get('/dashboard/clientes', [ClienteController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/clientes/novo', [ClienteController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/clientes', [ClienteController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/clientes/{id}/editar', [ClienteController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/dashboard/clientes/{id}', [ClienteController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/clientes/{id}/excluir', [ClienteController::class, 'destroy'], [AuthMiddleware::class]);
+
+// Agendamentos.
+$router->get('/dashboard/agendamentos', [AgendamentoController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/agendamentos/novo', [AgendamentoController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/agendamentos', [AgendamentoController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/agendamentos/{id}/editar', [AgendamentoController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/dashboard/agendamentos/{id}', [AgendamentoController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/agendamentos/{id}/status', [AgendamentoController::class, 'status'], [AuthMiddleware::class]);
+$router->post('/dashboard/agendamentos/{id}/excluir', [AgendamentoController::class, 'destroy'], [AuthMiddleware::class]);
+
+// Faturas (historico de cobranca - sempre acessivel, mesmo bloqueado).
+$router->get('/dashboard/faturas', [FaturaController::class, 'index'], [AuthMiddleware::class]);
+
+// Configuracoes (dados da barbearia + equipe) - so admin.
+$router->get('/dashboard/configuracoes', [ConfiguracaoController::class, 'index'], [AuthMiddleware::class]);
+$router->post('/dashboard/configuracoes/perfil', [ConfiguracaoController::class, 'atualizarPerfil'], [AuthMiddleware::class]);
+$router->post('/dashboard/configuracoes/equipe', [ConfiguracaoController::class, 'criarUsuario'], [AuthMiddleware::class]);
+$router->get('/dashboard/configuracoes/equipe/{id}/editar', [ConfiguracaoController::class, 'editarUsuario'], [AuthMiddleware::class]);
+$router->post('/dashboard/configuracoes/equipe/{id}', [ConfiguracaoController::class, 'atualizarUsuario'], [AuthMiddleware::class]);
+$router->post('/dashboard/configuracoes/equipe/{id}/excluir', [ConfiguracaoController::class, 'excluirUsuario'], [AuthMiddleware::class]);
