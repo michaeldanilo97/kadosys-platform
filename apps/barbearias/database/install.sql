@@ -127,12 +127,21 @@ CREATE TABLE IF NOT EXISTS servicos (
         FOREIGN KEY (barbearia_id) REFERENCES barbearias (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- "password" comeca NULL - um cliente criado pelo agendamento publico
+-- (Barbearias\Controllers\AgendamentoPublicoController) ou pelo
+-- proprio painel da barbearia (Barbearias\Controllers\ClienteController)
+-- ainda nao tem conta pra logar na area do cliente. So ganha senha
+-- quando ele mesmo se cadastra em /minha-conta/{slug}/cadastro (ver
+-- Barbearias\Controllers\ClienteAreaController) - se o telefone
+-- informado ja tiver um registro (de um agendamento anterior sem
+-- conta), a senha e adicionada a ele em vez de duplicar o cliente.
 CREATE TABLE IF NOT EXISTS clientes (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     barbearia_id INT UNSIGNED NOT NULL,
     nome VARCHAR(150) NOT NULL,
     telefone VARCHAR(20) NULL,
     email VARCHAR(150) NULL,
+    password VARCHAR(255) NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     KEY clientes_barbearia_id_index (barbearia_id),
@@ -161,4 +170,30 @@ CREATE TABLE IF NOT EXISTS agendamentos (
         FOREIGN KEY (servico_id) REFERENCES servicos (id) ON DELETE CASCADE,
     CONSTRAINT agendamentos_cliente_id_foreign
         FOREIGN KEY (cliente_id) REFERENCES clientes (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Avaliacao que o cliente deixa depois de um atendimento concluido -
+-- no maximo uma por agendamento (UNIQUE), pedida na propria area do
+-- cliente (ver Barbearias\Controllers\ClienteAreaController).
+CREATE TABLE IF NOT EXISTS avaliacoes (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    barbearia_id INT UNSIGNED NOT NULL,
+    agendamento_id INT UNSIGNED NOT NULL,
+    cliente_id INT UNSIGNED NOT NULL,
+    profissional_id INT UNSIGNED NOT NULL,
+    nota TINYINT UNSIGNED NOT NULL,
+    comentario TEXT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY avaliacoes_agendamento_id_unique (agendamento_id),
+    KEY avaliacoes_barbearia_id_index (barbearia_id),
+    KEY avaliacoes_profissional_id_index (profissional_id),
+    CONSTRAINT avaliacoes_barbearia_id_foreign
+        FOREIGN KEY (barbearia_id) REFERENCES barbearias (id) ON DELETE CASCADE,
+    CONSTRAINT avaliacoes_agendamento_id_foreign
+        FOREIGN KEY (agendamento_id) REFERENCES agendamentos (id) ON DELETE CASCADE,
+    CONSTRAINT avaliacoes_cliente_id_foreign
+        FOREIGN KEY (cliente_id) REFERENCES clientes (id) ON DELETE CASCADE,
+    CONSTRAINT avaliacoes_profissional_id_foreign
+        FOREIGN KEY (profissional_id) REFERENCES profissionais (id) ON DELETE CASCADE,
+    CONSTRAINT avaliacoes_nota_check CHECK (nota BETWEEN 1 AND 5)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

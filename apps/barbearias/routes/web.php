@@ -7,6 +7,7 @@ use Barbearias\Controllers\AgendamentoPublicoController;
 use Barbearias\Controllers\AssinaturaController;
 use Barbearias\Controllers\AuthController;
 use Barbearias\Controllers\CadastroController;
+use Barbearias\Controllers\ClienteAreaController;
 use Barbearias\Controllers\ClienteController;
 use Barbearias\Controllers\ConfiguracaoController;
 use Barbearias\Controllers\DashboardController;
@@ -36,6 +37,16 @@ $router->get('/agendar/{slug}', [AgendamentoPublicoController::class, 'form']);
 $router->get('/agendar/{slug}/horarios', [AgendamentoPublicoController::class, 'horarios']);
 $router->post('/agendar/{slug}', [AgendamentoPublicoController::class, 'enviar']);
 $router->get('/agendar/{slug}/confirmado', [AgendamentoPublicoController::class, 'confirmado']);
+
+// Area do cliente (/minha-conta/{slug}) - login proprio do cliente
+// final, separado da equipe.
+$router->get('/minha-conta/{slug}', [ClienteAreaController::class, 'painel']);
+$router->get('/minha-conta/{slug}/entrar', [ClienteAreaController::class, 'showEntrar']);
+$router->post('/minha-conta/{slug}/entrar', [ClienteAreaController::class, 'entrar']);
+$router->get('/minha-conta/{slug}/cadastro', [ClienteAreaController::class, 'showCadastro']);
+$router->post('/minha-conta/{slug}/cadastro', [ClienteAreaController::class, 'cadastro']);
+$router->post('/minha-conta/{slug}/sair', [ClienteAreaController::class, 'sair']);
+$router->post('/minha-conta/{slug}/avaliacoes/{agendamentoId}', [ClienteAreaController::class, 'avaliar']);
 
 // Notificacoes assincronas do Mercado Pago (confirmacao de pagamento).
 $router->post('/webhooks/mercadopago', [WebhookController::class, 'mercadoPago']);

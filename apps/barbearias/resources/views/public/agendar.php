@@ -19,7 +19,10 @@ $basePath = $config['base_path'] ?? '';
     <div class="glass-card cadastro-card">
         <div class="hero-eyebrow">Agendamento online</div>
         <h1><?= htmlspecialchars($barbearia->nome, ENT_QUOTES, 'UTF-8') ?></h1>
-        <p class="subtitle">Escolha o profissional, o serviço e o melhor horário pra você.</p>
+        <p class="subtitle">
+            Escolha o profissional, o serviço e o melhor horário pra você.
+            Já tem conta? <a href="<?= $basePath ?>/minha-conta/<?= htmlspecialchars($barbearia->slug, ENT_QUOTES, 'UTF-8') ?>/entrar">Entrar</a>
+        </p>
 
         <?php if ($errors !== []): ?>
             <div class="form-alert">

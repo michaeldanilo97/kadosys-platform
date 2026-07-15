@@ -24,5 +24,8 @@ $dataFormatada = (new DateTimeImmutable($confirmacao['data']))->format('d/m/Y');
         </div>
 
         <a href="<?= $basePath ?>/agendar/<?= htmlspecialchars($barbearia->slug, ENT_QUOTES, 'UTF-8') ?>" class="btn-k btn-k-outline">Agendar outro horário</a>
+        <p style="margin-top:1.5rem; font-size:0.85rem; color: var(--gray-400);">
+            Quer acompanhar seus agendamentos? <a href="<?= $basePath ?>/minha-conta/<?= htmlspecialchars($barbearia->slug, ENT_QUOTES, 'UTF-8') ?>/cadastro">Criar uma conta</a>
+        </p>
     </div>
 </div>

@@ -17,6 +17,49 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 129 - 2026-07-15
+
+**Barbearias: área do cliente (login próprio, agendamentos e avaliação de atendimento)**
+
+- **Login próprio do cliente final** (`/minha-conta/{slug}`), separado
+  do login da equipe - o cliente cria uma conta com telefone + senha;
+  se esse telefone já tinha um cadastro (de um agendamento anterior
+  sem conta), a senha é adicionada a ele em vez de duplicar - o
+  histórico de agendamentos anterior aparece automaticamente.
+- **Painel do cliente**: próximos agendamentos, histórico de
+  atendimentos e atalho pra agendar de novo (`/agendar/{slug}`).
+- **Avaliação de atendimento**: depois de um corte marcado como
+  concluído, o cliente pode dar uma nota de 1 a 5 estrelas com
+  comentário opcional, direto no próprio painel - no máximo uma
+  avaliação por agendamento.
+- Link "Já tem conta? Entrar" no agendamento público, e "Criar conta"
+  na tela de confirmação, pra quem acabou de agendar sem conta
+  descobrir a área do cliente.
+- Esta é a primeira fatia da "área do cliente" pedida (próximos
+  agendamentos, histórico, avaliação, agendamento rápido) - o restante
+  do que foi pedido (histórico de pagamentos, plano contratado,
+  fidelidade/cashback/carteira virtual, fotos dos cortes, produtos
+  favoritos) depende de módulos que ainda não existem (financeiro,
+  assinaturas de cliente, fidelidade, produtos/estoque) e ficam pra
+  próximas etapas, na ordem combinada no chat.
+
+**Ação manual pendente no banco `kadosys1_barbearias`** (só se
+`install.sql` já rodou antes): rodar
+`apps/barbearias/database/migrations/003_area_do_cliente.sql` uma
+única vez (testado localmente aplicando sobre uma cópia do schema
+anterior - chega ao mesmo resultado do `install.sql` atual).
+
+**Testado localmente** (MariaDB + servidor PHP embutido): cliente
+agenda sem conta (guest) → cria conta depois com o mesmo telefone →
+reivindica o cadastro existente sem duplicar → vê o agendamento no
+painel → agendamento marcado como concluído → avalia com nota e
+comentário → avaliação registrada e formulário substituído por "já
+avaliou" → segunda tentativa de avaliar o mesmo agendamento bloqueada.
+Isolamento entre barbearias testado (mesmo telefone com senha em uma
+barbearia não loga em outra). Senha errada rejeitada corretamente.
+
+---
+
 ## Ajuste 128 - 2026-07-15
 
 **Barbearias: modo claro (padrão do painel), perfil completo do profissional e agendamento público pro cliente final**
