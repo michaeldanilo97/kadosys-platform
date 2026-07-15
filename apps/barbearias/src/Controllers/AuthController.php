@@ -15,15 +15,6 @@ use Barbearias\Models\User;
  */
 final class AuthController extends Controller
 {
-    /**
-     * Nao ha landing page publica ainda - a raiz da aplicacao so
-     * redireciona pro login.
-     */
-    public function home(): void
-    {
-        $this->redirect('/login');
-    }
-
     public function showLogin(): void
     {
         echo $this->view('auth.login', [
