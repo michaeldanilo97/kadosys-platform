@@ -125,6 +125,44 @@ final class Agendamento
     }
 
     /**
+     * Proximos agendamentos de UM cliente especifico - usado pela area
+     * do cliente (Barbearias\Controllers\ClienteAreaController).
+     *
+     * @return array<int, self>
+     */
+    public static function proximosDoCliente(int $barbeariaId, int $clienteId): array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT ' . self::SELECT_COLUNAS . ' ' . self::JOINS . "
+             WHERE a.barbearia_id = :barbearia_id AND a.cliente_id = :cliente_id
+               AND a.status = 'agendado' AND a.data_hora >= NOW()
+             ORDER BY a.data_hora ASC"
+        );
+        $stmt->execute(['barbearia_id' => $barbeariaId, 'cliente_id' => $clienteId]);
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /**
+     * Historico (passado ou cancelado) de UM cliente especifico -
+     * usado pela area do cliente.
+     *
+     * @return array<int, self>
+     */
+    public static function historicoDoCliente(int $barbeariaId, int $clienteId): array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT ' . self::SELECT_COLUNAS . ' ' . self::JOINS . "
+             WHERE a.barbearia_id = :barbearia_id AND a.cliente_id = :cliente_id
+               AND (a.status != 'agendado' OR a.data_hora < NOW())
+             ORDER BY a.data_hora DESC"
+        );
+        $stmt->execute(['barbearia_id' => $barbeariaId, 'cliente_id' => $clienteId]);
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /**
      * Agendamentos ja marcados de um profissional num dia especifico
      * (nao-cancelados) - usado pra calcular quais horarios ainda estao
      * livres no agendamento publico (ver

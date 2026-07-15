@@ -10,10 +10,14 @@ use Barbearias\Core\Database;
  * Cliente da barbearia. Toda consulta PRECISA filtrar por
  * barbearia_id, senao vazaria a carteira de clientes de uma barbearia
  * pra outra.
+ *
+ * "password" comeca nulo - vira uma conta de verdade (login na area
+ * do cliente, ver Barbearias\Core\ClienteAuth) so quando o proprio
+ * cliente se cadastra em /minha-conta/{slug}/cadastro.
  */
 final class Cliente
 {
-    private const SELECT_COLUNAS = 'id, barbearia_id, nome, telefone, email, created_at';
+    private const SELECT_COLUNAS = 'id, barbearia_id, nome, telefone, email, password, created_at';
 
     public function __construct(
         public readonly int $id,
@@ -21,6 +25,7 @@ final class Cliente
         public readonly string $nome,
         public readonly ?string $telefone,
         public readonly ?string $email,
+        public readonly ?string $passwordHash,
         public readonly ?string $createdAt = null,
     ) {
     }
@@ -71,7 +76,7 @@ final class Cliente
     /**
      * Usado pelo agendamento publico pra reconhecer um cliente que ja
      * agendou antes (mesmo telefone) em vez de criar um cadastro
-     * duplicado a cada visita.
+     * duplicado a cada visita, e pelo login da area do cliente.
      */
     public static function buscarPorTelefone(int $barbeariaId, string $telefone): ?self
     {
@@ -140,6 +145,33 @@ final class Cliente
         $stmt->execute(['id' => $id, 'barbearia_id' => $barbeariaId]);
     }
 
+    /**
+     * Define a senha de acesso a area do cliente - usado tanto pra
+     * "reivindicar" um cadastro que ja existia (criado por um
+     * agendamento anterior sem conta) quanto pra trocar a senha depois.
+     */
+    public static function definirSenha(int $id, int $barbeariaId, string $senha): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE clientes SET password = :password WHERE id = :id AND barbearia_id = :barbearia_id'
+        );
+        $stmt->execute([
+            'password' => password_hash($senha, PASSWORD_BCRYPT),
+            'id' => $id,
+            'barbearia_id' => $barbeariaId,
+        ]);
+    }
+
+    public function temSenha(): bool
+    {
+        return $this->passwordHash !== null;
+    }
+
+    public function verifyPassword(string $senha): bool
+    {
+        return $this->passwordHash !== null && password_verify($senha, $this->passwordHash);
+    }
+
     private static function contarComFiltro(string $where, array $params): int
     {
         $stmt = Database::connection()->prepare("SELECT COUNT(*) FROM clientes {$where}");
@@ -163,6 +195,7 @@ final class Cliente
             nome: (string) $row['nome'],
             telefone: $row['telefone'] ?? null,
             email: $row['email'] ?? null,
+            passwordHash: $row['password'] ?? null,
             createdAt: isset($row['created_at']) ? (string) $row['created_at'] : null,
         );
     }
