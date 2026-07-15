@@ -75,11 +75,7 @@ $statusLabel = [
                                 <td><span class="status-badge <?= $badge ?>"><?= $label ?></span></td>
                                 <td class="actions-col">
                                     <?php if ($agendamento->status === Agendamento::STATUS_AGENDADO): ?>
-                                        <form method="POST" action="<?= $basePath ?>/dashboard/agendamentos/<?= $agendamento->id ?>/status">
-                                            <?= Csrf::field() ?>
-                                            <input type="hidden" name="novo_status" value="concluido">
-                                            <button type="submit" class="crud-icon-btn" title="Marcar como concluído">✅</button>
-                                        </form>
+                                        <a href="<?= $basePath ?>/dashboard/agendamentos/<?= $agendamento->id ?>/pagamento" class="crud-icon-btn" title="Concluir e registrar pagamento">✅</a>
                                         <form method="POST" action="<?= $basePath ?>/dashboard/agendamentos/<?= $agendamento->id ?>/status">
                                             <?= Csrf::field() ?>
                                             <input type="hidden" name="novo_status" value="cancelado">

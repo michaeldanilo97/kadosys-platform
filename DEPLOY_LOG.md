@@ -17,6 +17,57 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 130 - 2026-07-15
+
+**Barbearias: módulo Financeiro (caixa diário + lançamentos + PDV rápido)**
+
+- **Caixa diário**: abertura (com valor inicial e observações) e
+  fechamento (com valor contado e cálculo automático do valor
+  esperado = abertura + receitas − despesas do caixa). Só pode existir
+  um caixa aberto por vez por barbearia.
+- **Lançamentos manuais** de receita/despesa, com categoria (texto
+  livre com sugestões), forma de pagamento (dinheiro, Pix, cartão de
+  crédito/débito, outro), valor e data - listados com filtro por tipo
+  e paginação, e vinculados ao caixa aberto no momento (se houver).
+- **KPIs do dia e do mês**: receitas, despesas e saldo, no topo da
+  tela de Financeiro.
+- **PDV rápido integrado à agenda**: ao marcar um agendamento como
+  concluído (`/dashboard/agendamentos/{id}/pagamento`), a forma de
+  pagamento e o valor recebido (pré-preenchido com o preço do serviço,
+  editável) são registrados no mesmo passo como um lançamento de
+  receita vinculado ao agendamento e ao caixa aberto - no máximo um
+  lançamento por agendamento, e só é possível para agendamentos ainda
+  com status "agendado".
+- Editar/cancelar um agendamento pela tela de edição continua sem
+  gerar lançamento automático (só a tela de "concluir com pagamento" o
+  faz) - evita criar cobrança sem o usuário perceber.
+- Esta é a segunda etapa da sequência combinada no chat (área do
+  cliente → financeiro → multi-unidades). Ainda ficam de fora deste
+  módulo (fora de escopo por ora): contas a pagar/receber recorrentes,
+  fechamento com relatório em PDF, comissão por serviço/produto e
+  vínculo com o módulo de assinaturas de cliente - dependem de módulos
+  futuros ou de mais detalhamento.
+
+**Ação manual pendente no banco `kadosys1_barbearias`** (só se
+`install.sql` já rodou antes): rodar
+`apps/barbearias/database/migrations/004_financeiro.sql` uma única vez
+(testado localmente aplicando sobre uma cópia do schema anterior -
+chega ao mesmo resultado do `install.sql` atual).
+
+**Testado localmente** (MariaDB + servidor PHP embutido, via curl com
+sessão autenticada): abrir caixa → registrar despesa manual → concluir
+um agendamento registrando o pagamento (Pix) → lançamento de receita
+criado automaticamente com o valor do serviço e vinculado ao caixa →
+KPIs do dia/mês batendo com os lançamentos → valor esperado do caixa
+calculado corretamente (abertura + receitas − despesas) → fechar caixa
+→ tela volta a mostrar "Fechado" e oferece abrir um novo. Tentativa de
+registrar pagamento de novo num agendamento já concluído é bloqueada
+(redireciona sem duplicar lançamento, protegido também por índice
+único em `agendamento_id`). Exclusão de lançamento testada. Nenhum
+warning/notice no log do PHP durante os testes.
+
+---
+
 ## Ajuste 129 - 2026-07-15
 
 **Barbearias: área do cliente (login próprio, agendamentos e avaliação de atendimento)**
