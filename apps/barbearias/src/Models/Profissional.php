@@ -21,7 +21,7 @@ use Barbearias\Core\Database;
 final class Profissional
 {
     private const SELECT_COLUNAS = 'id, barbearia_id, nome, especialidade, email, telefone, foto_path,
-        dias_atendimento, horario_inicio, horario_fim, ativo, created_at';
+        dias_atendimento, horario_inicio, horario_fim, percentual_comissao, ativo, created_at';
 
     /** @param array<int, int> $diasAtendimento */
     public function __construct(
@@ -35,6 +35,7 @@ final class Profissional
         public readonly array $diasAtendimento,
         public readonly ?string $horarioInicio,
         public readonly ?string $horarioFim,
+        public readonly float $percentualComissao,
         public readonly bool $ativo,
         public readonly ?string $createdAt = null,
     ) {
@@ -116,7 +117,7 @@ final class Profissional
     {
         $stmt = Database::connection()->prepare(
             'SELECT p.id, p.barbearia_id, p.nome, p.especialidade, p.email, p.telefone, p.foto_path,
-                p.dias_atendimento, p.horario_inicio, p.horario_fim, p.ativo, p.created_at
+                p.dias_atendimento, p.horario_inicio, p.horario_fim, p.percentual_comissao, p.ativo, p.created_at
              FROM profissionais p
              INNER JOIN profissional_unidades pu ON pu.profissional_id = p.id
              WHERE p.barbearia_id = :barbearia_id AND pu.unidade_id = :unidade_id AND p.ativo = 1
@@ -207,12 +208,13 @@ final class Profissional
         array $diasAtendimento,
         ?string $horarioInicio,
         ?string $horarioFim,
+        float $percentualComissao = 0,
     ): int {
         $stmt = Database::connection()->prepare(
             'INSERT INTO profissionais
-                (barbearia_id, nome, especialidade, email, telefone, dias_atendimento, horario_inicio, horario_fim, ativo, created_at)
+                (barbearia_id, nome, especialidade, email, telefone, dias_atendimento, horario_inicio, horario_fim, percentual_comissao, ativo, created_at)
              VALUES
-                (:barbearia_id, :nome, :especialidade, :email, :telefone, :dias_atendimento, :horario_inicio, :horario_fim, 1, NOW())'
+                (:barbearia_id, :nome, :especialidade, :email, :telefone, :dias_atendimento, :horario_inicio, :horario_fim, :percentual_comissao, 1, NOW())'
         );
         $stmt->execute([
             'barbearia_id' => $barbeariaId,
@@ -223,6 +225,7 @@ final class Profissional
             'dias_atendimento' => self::diasParaCsv($diasAtendimento),
             'horario_inicio' => self::nullable($horarioInicio),
             'horario_fim' => self::nullable($horarioFim),
+            'percentual_comissao' => self::normalizarPercentual($percentualComissao),
         ]);
 
         return (int) Database::connection()->lastInsertId();
@@ -239,12 +242,14 @@ final class Profissional
         array $diasAtendimento,
         ?string $horarioInicio,
         ?string $horarioFim,
+        float $percentualComissao,
         bool $ativo,
     ): void {
         $stmt = Database::connection()->prepare(
             'UPDATE profissionais SET
                 nome = :nome, especialidade = :especialidade, email = :email, telefone = :telefone,
-                dias_atendimento = :dias_atendimento, horario_inicio = :horario_inicio, horario_fim = :horario_fim, ativo = :ativo
+                dias_atendimento = :dias_atendimento, horario_inicio = :horario_inicio, horario_fim = :horario_fim,
+                percentual_comissao = :percentual_comissao, ativo = :ativo
              WHERE id = :id AND barbearia_id = :barbearia_id'
         );
         $stmt->execute([
@@ -255,6 +260,7 @@ final class Profissional
             'dias_atendimento' => self::diasParaCsv($diasAtendimento),
             'horario_inicio' => self::nullable($horarioInicio),
             'horario_fim' => self::nullable($horarioFim),
+            'percentual_comissao' => self::normalizarPercentual($percentualComissao),
             'ativo' => $ativo ? 1 : 0,
             'id' => $id,
             'barbearia_id' => $barbeariaId,
@@ -290,6 +296,11 @@ final class Profissional
         return $valor === '' ? null : $valor;
     }
 
+    private static function normalizarPercentual(float $percentual): float
+    {
+        return max(0.0, min(100.0, $percentual));
+    }
+
     /** @param array<int, int> $dias */
     private static function diasParaCsv(array $dias): ?string
     {
@@ -315,6 +326,7 @@ final class Profissional
             diasAtendimento: $dias,
             horarioInicio: $row['horario_inicio'] ?? null,
             horarioFim: $row['horario_fim'] ?? null,
+            percentualComissao: (float) ($row['percentual_comissao'] ?? 0),
             ativo: (bool) $row['ativo'],
             createdAt: isset($row['created_at']) ? (string) $row['created_at'] : null,
         );

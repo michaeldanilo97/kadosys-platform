@@ -115,6 +115,36 @@ final class FinanceiroLancamento
         return array_map(self::fromRow(...), $stmt->fetchAll());
     }
 
+    /**
+     * Mapa agendamento_id => valor pago, numa unica consulta - usado
+     * pelo relatorio de comissao (ver
+     * Barbearias\Controllers\ComissaoController) pra mostrar o valor
+     * real de cada atendimento no detalhe por profissional.
+     *
+     * @param array<int, int> $agendamentoIds
+     * @return array<int, float>
+     */
+    public static function mapaPorAgendamentos(array $agendamentoIds): array
+    {
+        if ($agendamentoIds === []) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($agendamentoIds), '?'));
+        $stmt = Database::connection()->prepare(
+            "SELECT agendamento_id, valor FROM financeiro_lancamentos WHERE agendamento_id IN ({$placeholders})"
+        );
+        $stmt->execute(array_values($agendamentoIds));
+
+        $mapa = [];
+
+        foreach ($stmt->fetchAll() as $row) {
+            $mapa[(int) $row['agendamento_id']] = (float) $row['valor'];
+        }
+
+        return $mapa;
+    }
+
     public static function existeParaAgendamento(int $agendamentoId, int $barbeariaId): bool
     {
         $stmt = Database::connection()->prepare(

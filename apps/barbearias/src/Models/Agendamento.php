@@ -202,6 +202,78 @@ final class Agendamento
         return array_map(self::fromRow(...), $stmt->fetchAll());
     }
 
+    /**
+     * Fechamento de comissao por profissional num periodo: agrupa os
+     * atendimentos CONCLUIDOS, usando como base de calculo o valor
+     * efetivamente cobrado no PDV (financeiro_lancamentos.valor, pelo
+     * agendamento_id) e, quando o atendimento foi concluido sem
+     * registrar pagamento, cai pro preco atual do servico.
+     *
+     * @return array<int, array{profissionalId: int, profissionalNome: string, percentualComissao: float, quantidade: int, totalServicos: float, totalComissao: float}>
+     */
+    public static function comissoesPorProfissional(int $barbeariaId, string $dataInicio, string $dataFim, int $profissionalId = 0): array
+    {
+        $sql = "SELECT a.profissional_id, p.nome AS profissional_nome, p.percentual_comissao,
+                COUNT(a.id) AS quantidade,
+                COALESCE(SUM(COALESCE(fl.valor, s.preco)), 0) AS total_servicos
+             FROM agendamentos a
+             INNER JOIN profissionais p ON p.id = a.profissional_id
+             INNER JOIN servicos s ON s.id = a.servico_id
+             LEFT JOIN financeiro_lancamentos fl ON fl.agendamento_id = a.id AND fl.barbearia_id = a.barbearia_id
+             WHERE a.barbearia_id = :barbearia_id AND a.status = 'concluido'
+               AND a.data_hora BETWEEN :inicio AND :fim";
+        $params = ['barbearia_id' => $barbeariaId, 'inicio' => $dataInicio, 'fim' => $dataFim];
+
+        if ($profissionalId > 0) {
+            $sql .= ' AND a.profissional_id = :profissional_id';
+            $params['profissional_id'] = $profissionalId;
+        }
+
+        $sql .= ' GROUP BY a.profissional_id, p.nome, p.percentual_comissao ORDER BY p.nome ASC';
+
+        $stmt = Database::connection()->prepare($sql);
+        $stmt->execute($params);
+
+        return array_map(static function (array $row): array {
+            $percentual = (float) $row['percentual_comissao'];
+            $totalServicos = (float) $row['total_servicos'];
+
+            return [
+                'profissionalId' => (int) $row['profissional_id'],
+                'profissionalNome' => (string) $row['profissional_nome'],
+                'percentualComissao' => $percentual,
+                'quantidade' => (int) $row['quantidade'],
+                'totalServicos' => $totalServicos,
+                'totalComissao' => round($totalServicos * $percentual / 100, 2),
+            ];
+        }, $stmt->fetchAll());
+    }
+
+    /**
+     * Atendimentos concluidos de UM profissional num periodo, com o
+     * valor usado na base de calculo da comissao - usado no detalhe do
+     * relatorio de fechamento (ver Barbearias\Controllers\ComissaoController).
+     *
+     * @return array<int, self>
+     */
+    public static function concluidosPorProfissionalNoPeriodo(int $barbeariaId, int $profissionalId, string $dataInicio, string $dataFim): array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT ' . self::SELECT_COLUNAS . ' ' . self::JOINS . "
+             WHERE a.barbearia_id = :barbearia_id AND a.profissional_id = :profissional_id
+               AND a.status = 'concluido' AND a.data_hora BETWEEN :inicio AND :fim
+             ORDER BY a.data_hora ASC"
+        );
+        $stmt->execute([
+            'barbearia_id' => $barbeariaId,
+            'profissional_id' => $profissionalId,
+            'inicio' => $dataInicio,
+            'fim' => $dataFim,
+        ]);
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
     public static function create(
         int $barbeariaId,
         int $profissionalId,
