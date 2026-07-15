@@ -6,7 +6,6 @@ use Igrejas\Models\Tenant;
  * @var array $config
  * @var string $email
  * @var array<int, Tenant> $igrejas
- * @var string $rootDomain
  */
 $basePath = $config['base_path'] ?? '';
 ?>
@@ -21,13 +20,14 @@ $basePath = $config['base_path'] ?? '';
 
     <ul class="auth-igreja-lista">
         <?php foreach ($igrejas as $igreja): ?>
-            <?php $url = 'https://' . $igreja->subdominio . '.' . $rootDomain . '/login?email=' . urlencode($email); ?>
+            <?php // Tenant::subdominio ja guarda o host completo (ex.: "ijpm.kadosys.com.br"), nao so o slug - ver Provisionador::provisionar(). ?>
+            <?php $url = 'https://' . $igreja->subdominio . '/login?email=' . urlencode($email); ?>
             <li>
                 <a href="<?= htmlspecialchars($url, ENT_QUOTES, 'UTF-8') ?>" class="auth-igreja-item">
                     <span class="auth-igreja-item-icone"><i class="bi bi-building"></i></span>
                     <span class="auth-igreja-item-texto">
                         <span class="auth-igreja-item-nome"><?= htmlspecialchars($igreja->nomeIgreja, ENT_QUOTES, 'UTF-8') ?></span>
-                        <span class="auth-igreja-item-sub"><?= htmlspecialchars($igreja->subdominio, ENT_QUOTES, 'UTF-8') ?>.<?= htmlspecialchars($rootDomain, ENT_QUOTES, 'UTF-8') ?></span>
+                        <span class="auth-igreja-item-sub"><?= htmlspecialchars($igreja->subdominio, ENT_QUOTES, 'UTF-8') ?></span>
                     </span>
                     <i class="bi bi-arrow-right auth-igreja-item-seta"></i>
                 </a>
