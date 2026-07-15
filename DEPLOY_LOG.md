@@ -17,6 +17,50 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 141 - 2026-07-15
+
+**Barbearias: white-label (logo e cor de destaque por barbearia)**
+
+- Em **Configurações → Dados da barbearia**: novo campo de **logo**
+  (upload PNG/JPG/WEBP, até 5MB, mesmo padrão de validação usado pra
+  foto de profissional) e um seletor de **cor de destaque**
+  (`<input type="color">`).
+- Quando cadastrados, logo e cor substituem a marca genérica "KADOSYS
+  Barbearias" em três lugares:
+  - **Dashboard** (sidebar da equipe);
+  - **Página pública de agendamento** (`/agendar/{slug}`);
+  - **Área do cliente** (`/minha-conta/{slug}/*`).
+  - A cor é aplicada via `<style>:root{--primary:...}</style>`
+    injetado no `<head>`, reaproveitando o mesmo token de cor já usado
+    em todo o CSS (sem precisar duplicar nenhuma regra).
+- De brinde: como as páginas do cliente (login, cadastro, agendamento,
+  painel) agora mostram a marca da própria barbearia, os links de
+  marketing "Planos / Entrar / Testar grátis" (que eram voltados a
+  donos de barbearia interessados em assinar, e apareciam sem sentido
+  na tela de um cliente final) só aparecem mais na landing page
+  pública de vendas - nas páginas de uma barbearia específica, o menu
+  de marketing simplesmente não é mais renderizado.
+- Sem logo/cor cadastrados, tudo continua exatamente como antes
+  (marca genérica KADOSYS).
+
+**Ação manual pendente no banco `kadosys1_barbearias`** (só se
+`install.sql` já rodou antes): rodar
+`apps/barbearias/database/migrations/012_white_label.sql` uma única
+vez - adiciona `barbearias.logo_path` e `barbearias.cor_primaria`
+(ambos `NULL` por padrão), sem afetar dados existentes.
+
+**Testado localmente** (MariaDB + servidor PHP embutido, via curl com
+sessão autenticada): logo enviado e cor `#E11D48` salva - confirmado
+que `<style>:root{--primary:#E11D48}</style>` e a tag `<img>` do logo
+aparecem corretamente nas três telas (dashboard, agendamento público,
+login da área do cliente); a landing page pública (sem barbearia no
+contexto) continuou com a marca genérica e os links de marketing
+intactos; cor inválida (`nao-e-cor`) foi rejeitada com mensagem de
+erro e não alterou o valor salvo. Nenhum warning/erro no log do PHP
+durante os testes.
+
+---
+
 ## Ajuste 140 - 2026-07-15
 
 **Barbearias: PWA (painel instalável, ícone na tela inicial)**

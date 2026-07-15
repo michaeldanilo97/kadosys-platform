@@ -45,6 +45,9 @@ $itensMenu = [
     <meta name="theme-color" content="#0F172A">
     <link rel="stylesheet" href="<?= $basePath ?>/assets/css/app.css?v=<?= View::assetVersion('assets/css/app.css') ?>">
     <link rel="stylesheet" href="<?= $basePath ?>/assets/css/site.css?v=<?= View::assetVersion('assets/css/site.css') ?>">
+    <?php if ($barbearia?->corPrimaria !== null): ?>
+        <style>:root { --primary: <?= htmlspecialchars($barbearia->corPrimaria, ENT_QUOTES, 'UTF-8') ?>; }</style>
+    <?php endif; ?>
     <script>
         // Aplica o tema ANTES da primeira renderizacao, pra nao piscar
         // escuro por uma fracao de segundo quando o padrao e o claro.
@@ -65,7 +68,13 @@ $itensMenu = [
 <div class="dash-shell">
     <div class="sidebar-overlay" data-sidebar-overlay></div>
     <aside class="dash-sidebar" data-sidebar>
-        <div class="dash-sidebar-brand"><span class="text-gradient">KADOSYS</span> Barbearias</div>
+        <div class="dash-sidebar-brand">
+            <?php if ($barbearia?->logoPath): ?>
+                <img src="<?= $basePath . '/' . htmlspecialchars($barbearia->logoPath, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($barbearia->nome, ENT_QUOTES, 'UTF-8') ?>" class="dash-sidebar-logo">
+            <?php else: ?>
+                <span class="text-gradient">KADOSYS</span> Barbearias
+            <?php endif; ?>
+        </div>
         <nav class="dash-nav">
             <?php foreach ($itensMenu as $item): ?>
                 <a href="<?= $basePath . $item['href'] ?>" class="dash-nav-link<?= $menu === $item['slug'] ? ' active' : '' ?>" <?= isset($item['target']) ? 'target="' . $item['target'] . '"' : '' ?>>

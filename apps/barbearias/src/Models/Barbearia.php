@@ -26,6 +26,7 @@ final class Barbearia
     public const STATUS_SUSPENSA = 'suspenso';
 
     private const SELECT_COLUNAS = 'id, nome, slug, telefone, documento_tipo, documento, razao_social,
+        logo_path, cor_primaria,
         plano, metodo_pagamento, mp_preapproval_id, trial_expira_em, proximo_vencimento, plano_agendado,
         fidelidade_pontos_por_real, ultimo_acesso_em, status, created_at';
 
@@ -37,6 +38,8 @@ final class Barbearia
         public readonly string $documentoTipo,
         public readonly string $documento,
         public readonly ?string $razaoSocial,
+        public readonly ?string $logoPath,
+        public readonly ?string $corPrimaria,
         public readonly string $plano,
         public readonly string $metodoPagamento,
         public readonly ?string $mpPreapprovalId,
@@ -160,6 +163,23 @@ final class Barbearia
         ]);
     }
 
+    /** NULL usa a cor padrao do app (azul/roxo). */
+    public static function atualizarCorPrimaria(int $id, ?string $corPrimaria): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE barbearias SET cor_primaria = :cor_primaria WHERE id = :id'
+        );
+        $stmt->execute(['cor_primaria' => $corPrimaria, 'id' => $id]);
+    }
+
+    public static function atualizarLogo(int $id, ?string $logoPath): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE barbearias SET logo_path = :logo_path WHERE id = :id'
+        );
+        $stmt->execute(['logo_path' => $logoPath, 'id' => $id]);
+    }
+
     public static function marcarAtiva(int $id): void
     {
         $stmt = Database::connection()->prepare(
@@ -237,6 +257,8 @@ final class Barbearia
             documentoTipo: (string) $row['documento_tipo'],
             documento: (string) $row['documento'],
             razaoSocial: $row['razao_social'] ?? null,
+            logoPath: $row['logo_path'] ?? null,
+            corPrimaria: $row['cor_primaria'] ?? null,
             plano: (string) $row['plano'],
             metodoPagamento: (string) $row['metodo_pagamento'],
             mpPreapprovalId: $row['mp_preapproval_id'] ?? null,

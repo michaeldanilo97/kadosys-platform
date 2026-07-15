@@ -20,6 +20,16 @@ use Barbearias\Models\User;
  */
 final class ConfiguracaoController extends Controller
 {
+    private const UPLOAD_DIR = 'uploads/marca';
+    private const TAMANHO_MAXIMO_LOGO = 5 * 1024 * 1024;
+
+    /** @var array<string, string> */
+    private const MIME_PARA_EXTENSAO = [
+        'image/png' => 'png',
+        'image/jpeg' => 'jpg',
+        'image/webp' => 'webp',
+    ];
+
     public function index(): void
     {
         $usuario = $this->exigirAdmin();
@@ -43,6 +53,7 @@ final class ConfiguracaoController extends Controller
     public function atualizarPerfil(): void
     {
         $usuario = $this->exigirAdmin();
+        $barbeariaId = $usuario->barbeariaId;
 
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
             $this->redirect('/dashboard/configuracoes');
@@ -50,16 +61,82 @@ final class ConfiguracaoController extends Controller
 
         $nome = trim((string) $this->request->input('nome', ''));
         $telefone = trim((string) $this->request->input('telefone', ''));
+        $corPrimaria = trim((string) $this->request->input('cor_primaria', ''));
+        $errors = [];
 
         if ($nome === '' || mb_strlen($nome) < 3) {
-            Session::flash('config_perfil_errors', ['Informe o nome da barbearia (mínimo 3 caracteres).']);
+            $errors[] = 'Informe o nome da barbearia (mínimo 3 caracteres).';
+        }
+
+        if ($corPrimaria !== '' && !preg_match('/^#[0-9A-Fa-f]{6}$/', $corPrimaria)) {
+            $errors[] = 'Cor de destaque inválida.';
+        }
+
+        if ($errors !== []) {
+            Session::flash('config_perfil_errors', $errors);
             $this->redirect('/dashboard/configuracoes');
         }
 
-        Barbearia::atualizarPerfil($usuario->barbeariaId, $nome, $telefone !== '' ? $telefone : null);
+        Barbearia::atualizarPerfil($barbeariaId, $nome, $telefone !== '' ? $telefone : null);
+        Barbearia::atualizarCorPrimaria($barbeariaId, $corPrimaria !== '' ? strtoupper($corPrimaria) : null);
+        $this->processarUploadLogo($barbeariaId);
 
         Session::flash('config_perfil_success', 'Dados da barbearia atualizados.');
         $this->redirect('/dashboard/configuracoes');
+    }
+
+    /**
+     * Faz o upload do logo (campo opcional dentro do mesmo form de
+     * perfil) - se nao vier nenhum arquivo, nao mexe no logo atual.
+     * Erros de upload NAO bloqueiam o salvamento do resto do perfil,
+     * so viram um aviso.
+     */
+    private function processarUploadLogo(int $barbeariaId): void
+    {
+        $arquivo = $this->request->file('logo');
+
+        if ($arquivo === null || $arquivo['error'] !== UPLOAD_ERR_OK) {
+            return;
+        }
+
+        if ($arquivo['size'] > self::TAMANHO_MAXIMO_LOGO) {
+            Session::flash('config_perfil_success', 'Dados salvos, mas o logo excede 5MB e não foi enviado.');
+
+            return;
+        }
+
+        $mime = mime_content_type($arquivo['tmp_name']) ?: '';
+        $extensao = self::MIME_PARA_EXTENSAO[$mime] ?? null;
+
+        if ($extensao === null) {
+            Session::flash('config_perfil_success', 'Dados salvos, mas o formato do logo é inválido (use PNG, JPG ou WEBP).');
+
+            return;
+        }
+
+        $destinoDir = dirname(__DIR__, 2) . '/public/' . self::UPLOAD_DIR;
+
+        if (!is_dir($destinoDir) && !mkdir($destinoDir, 0755, true) && !is_dir($destinoDir)) {
+            return;
+        }
+
+        $antigo = Barbearia::find($barbeariaId);
+
+        if ($antigo?->logoPath !== null) {
+            $caminhoAntigo = dirname(__DIR__, 2) . '/public/' . $antigo->logoPath;
+
+            if (is_file($caminhoAntigo)) {
+                unlink($caminhoAntigo);
+            }
+        }
+
+        $nomeArquivo = 'logo_' . $barbeariaId . '_' . bin2hex(random_bytes(4)) . '.' . $extensao;
+
+        if (!move_uploaded_file($arquivo['tmp_name'], $destinoDir . '/' . $nomeArquivo)) {
+            return;
+        }
+
+        Barbearia::atualizarLogo($barbeariaId, self::UPLOAD_DIR . '/' . $nomeArquivo);
     }
 
     public function criarUsuario(): void
