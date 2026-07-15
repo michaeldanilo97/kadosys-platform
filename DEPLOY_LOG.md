@@ -17,6 +17,65 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 133 - 2026-07-15
+
+**Barbearias: lista de espera + cancelamento/reagendamento pelo cliente (fecha o módulo de agenda avançada)**
+
+- **Lista de espera**: quando não há nenhum horário livre no dia
+  escolhido, a página pública de agendamento oferece "Entrar na lista
+  de espera desse dia" (reaproveita nome/telefone/email já digitados).
+  Nova tela `/dashboard/lista-espera` mostra quem está esperando
+  (cliente, contato, profissional, serviço, data desejada), com ação
+  pra marcar "Atendido" ou remover - **sem notificação automática**: a
+  equipe confere a fila e entra em contato por fora (a aplicação não
+  tem nenhum canal de e-mail/WhatsApp configurado, ver observação
+  abaixo).
+- **Cancelamento pelo cliente**: na área do cliente, cada próximo
+  agendamento ganha um botão "Cancelar".
+- **Reagendamento pelo cliente**: também ganha "Reagendar", levando a
+  uma tela de escolha de nova data/horário (mesmo profissional e
+  serviço) - a disponibilidade é recalculada excluindo o próprio
+  agendamento do cálculo de conflito (senão ele apareceria como
+  ocupado consigo mesmo), e revalidada no servidor no momento de
+  confirmar.
+- Extraído `Barbearias\Core\Disponibilidade::horariosLivres()` -
+  centraliza o cálculo de horários livres (antes duplicado só no
+  agendamento público) e agora é compartilhado entre o agendamento
+  público e o reagendamento da área do cliente.
+- **Confirmação/lembrete automático não foi implementado nesta etapa**:
+  a aplicação não tem nenhuma infraestrutura de e-mail, SMS ou
+  WhatsApp configurada (nenhum SMTP, nenhuma API de mensageria) - isso
+  exige uma decisão de canal e credenciais antes de poder ser
+  construído de verdade, em vez de simular algo que não funciona.
+  Fica como próximo passo quando houver decisão sobre qual canal usar.
+- Isso fecha o módulo de "recursos avançados de agenda" (bloqueios do
+  Ajuste 132 + lista de espera/reagendamento/cancelamento aqui).
+
+**Ação manual pendente no banco `kadosys1_barbearias`** (só se
+`install.sql` já rodou antes): rodar
+`apps/barbearias/database/migrations/007_lista_espera.sql` uma única
+vez - cria só a tabela nova `lista_espera`, sem alterar nenhuma tabela
+existente.
+
+**Testado localmente** (MariaDB + servidor PHP embutido, via curl com
+sessão autenticada): bloqueio de dia inteiro criado → horários vazios
+confirmados → botão de lista de espera aparece na página pública com o
+`formaction` correto → entrada na lista de espera criada e cliente
+reaproveitado/criado por telefone → mensagem de sucesso exibida →
+entrada aparece no painel `/dashboard/lista-espera` com todos os dados
+→ marcar como atendido remove da lista → agendamento normal criado
+noutro dia aberto → cliente cria conta reivindicando o cadastro
+existente (mesmo telefone) → botões "Reagendar"/"Cancelar" aparecem no
+painel → endpoint de horários do reagendamento confirmado excluindo o
+próprio agendamento do conflito (mostrou o horário original como
+disponível) → reagendamento confirmado, `data_hora` atualizada mantendo
+profissional/serviço/status → cancelamento testado, status muda e some
+dos "próximos" → tentativa de reagendar/consultar horários de um
+agendamento já cancelado bloqueada (guarda de posse + status). Nenhum
+warning/notice no log do PHP durante os testes.
+
+---
+
 ## Ajuste 132 - 2026-07-15
 
 **Barbearias: bloqueios de agenda (férias, folgas e compromissos pontuais)**

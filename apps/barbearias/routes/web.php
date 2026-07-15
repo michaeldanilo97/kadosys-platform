@@ -15,6 +15,7 @@ use Barbearias\Controllers\DashboardController;
 use Barbearias\Controllers\FaturaController;
 use Barbearias\Controllers\FinanceiroController;
 use Barbearias\Controllers\LandingController;
+use Barbearias\Controllers\ListaEsperaController;
 use Barbearias\Controllers\ProfissionalController;
 use Barbearias\Controllers\ServicoController;
 use Barbearias\Controllers\UnidadeController;
@@ -39,6 +40,7 @@ $router->get('/cadastro/retorno', [CadastroController::class, 'retorno']);
 $router->get('/agendar/{slug}', [AgendamentoPublicoController::class, 'form']);
 $router->get('/agendar/{slug}/horarios', [AgendamentoPublicoController::class, 'horarios']);
 $router->post('/agendar/{slug}', [AgendamentoPublicoController::class, 'enviar']);
+$router->post('/agendar/{slug}/lista-espera', [AgendamentoPublicoController::class, 'listaEspera']);
 $router->get('/agendar/{slug}/confirmado', [AgendamentoPublicoController::class, 'confirmado']);
 
 // Area do cliente (/minha-conta/{slug}) - login proprio do cliente
@@ -50,6 +52,10 @@ $router->get('/minha-conta/{slug}/cadastro', [ClienteAreaController::class, 'sho
 $router->post('/minha-conta/{slug}/cadastro', [ClienteAreaController::class, 'cadastro']);
 $router->post('/minha-conta/{slug}/sair', [ClienteAreaController::class, 'sair']);
 $router->post('/minha-conta/{slug}/avaliacoes/{agendamentoId}', [ClienteAreaController::class, 'avaliar']);
+$router->post('/minha-conta/{slug}/agendamentos/{agendamentoId}/cancelar', [ClienteAreaController::class, 'cancelar']);
+$router->get('/minha-conta/{slug}/agendamentos/{agendamentoId}/reagendar', [ClienteAreaController::class, 'reagendarForm']);
+$router->get('/minha-conta/{slug}/agendamentos/{agendamentoId}/reagendar/horarios', [ClienteAreaController::class, 'horariosParaReagendar']);
+$router->post('/minha-conta/{slug}/agendamentos/{agendamentoId}/reagendar', [ClienteAreaController::class, 'reagendar']);
 
 // Notificacoes assincronas do Mercado Pago (confirmacao de pagamento).
 $router->post('/webhooks/mercadopago', [WebhookController::class, 'mercadoPago']);
@@ -116,6 +122,11 @@ $router->get('/dashboard/bloqueios', [BloqueioController::class, 'index'], [Auth
 $router->get('/dashboard/bloqueios/novo', [BloqueioController::class, 'create'], [AuthMiddleware::class]);
 $router->post('/dashboard/bloqueios', [BloqueioController::class, 'store'], [AuthMiddleware::class]);
 $router->post('/dashboard/bloqueios/{id}/excluir', [BloqueioController::class, 'destroy'], [AuthMiddleware::class]);
+
+// Lista de espera (quem tentou agendar sem achar horario livre).
+$router->get('/dashboard/lista-espera', [ListaEsperaController::class, 'index'], [AuthMiddleware::class]);
+$router->post('/dashboard/lista-espera/{id}/atender', [ListaEsperaController::class, 'atender'], [AuthMiddleware::class]);
+$router->post('/dashboard/lista-espera/{id}/cancelar', [ListaEsperaController::class, 'cancelar'], [AuthMiddleware::class]);
 
 // Faturas (historico de cobranca - sempre acessivel, mesmo bloqueado).
 $router->get('/dashboard/faturas', [FaturaController::class, 'index'], [AuthMiddleware::class]);

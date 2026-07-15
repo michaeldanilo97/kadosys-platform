@@ -177,17 +177,27 @@ final class Agendamento
      * livres no agendamento publico (ver
      * Barbearias\Controllers\AgendamentoPublicoController).
      *
+     * $excluirId serve pro reagendamento: o proprio agendamento que
+     * esta sendo movido ainda esta com status 'agendado' ate a troca
+     * ser confirmada, entao sem isso ele apareceria como conflito
+     * consigo mesmo.
+     *
      * @return array<int, self>
      */
-    public static function doDiaPorProfissional(int $barbeariaId, int $profissionalId, string $data): array
+    public static function doDiaPorProfissional(int $barbeariaId, int $profissionalId, string $data, int $excluirId = 0): array
     {
-        $stmt = Database::connection()->prepare(
-            'SELECT ' . self::SELECT_COLUNAS . ' ' . self::JOINS . "
+        $sql = 'SELECT ' . self::SELECT_COLUNAS . ' ' . self::JOINS . "
              WHERE a.barbearia_id = :barbearia_id AND a.profissional_id = :profissional_id
-               AND DATE(a.data_hora) = :data AND a.status != 'cancelado'
-             ORDER BY a.data_hora ASC"
-        );
-        $stmt->execute(['barbearia_id' => $barbeariaId, 'profissional_id' => $profissionalId, 'data' => $data]);
+               AND DATE(a.data_hora) = :data AND a.status != 'cancelado'";
+        $params = ['barbearia_id' => $barbeariaId, 'profissional_id' => $profissionalId, 'data' => $data];
+
+        if ($excluirId > 0) {
+            $sql .= ' AND a.id != :excluir_id';
+            $params['excluir_id'] = $excluirId;
+        }
+
+        $stmt = Database::connection()->prepare($sql . ' ORDER BY a.data_hora ASC');
+        $stmt->execute($params);
 
         return array_map(self::fromRow(...), $stmt->fetchAll());
     }
@@ -253,6 +263,19 @@ final class Agendamento
             'UPDATE agendamentos SET status = :status WHERE id = :id AND barbearia_id = :barbearia_id'
         );
         $stmt->execute(['status' => $status, 'id' => $id, 'barbearia_id' => $barbeariaId]);
+    }
+
+    /**
+     * Reagendamento: so muda a data/hora, mantendo profissional,
+     * servico e status como estao - usado pela area do cliente (ver
+     * Barbearias\Controllers\ClienteAreaController::reagendar).
+     */
+    public static function reagendar(int $id, int $barbeariaId, string $novaDataHora): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE agendamentos SET data_hora = :data_hora WHERE id = :id AND barbearia_id = :barbearia_id'
+        );
+        $stmt->execute(['data_hora' => $novaDataHora, 'id' => $id, 'barbearia_id' => $barbeariaId]);
     }
 
     public static function delete(int $id, int $barbeariaId): void

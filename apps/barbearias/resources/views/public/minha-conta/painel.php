@@ -60,10 +60,17 @@ $statusLabel = [
             <p class="crud-empty" style="padding: 1rem 0;">Nenhum agendamento futuro.</p>
         <?php else: ?>
             <?php foreach ($proximos as $agendamento): ?>
-                <div class="confirmacao-detalhes" style="margin: 0 0 1rem;">
+                <div class="confirmacao-detalhes" style="margin: 0 0 0.75rem;">
                     <div><span>Data</span><span><?= (new DateTimeImmutable($agendamento->dataHora))->format('d/m/Y H:i') ?></span></div>
                     <div><span>Profissional</span><span><?= htmlspecialchars($agendamento->profissionalNome, ENT_QUOTES, 'UTF-8') ?></span></div>
                     <div><span>Serviço</span><span><?= htmlspecialchars($agendamento->servicoNome, ENT_QUOTES, 'UTF-8') ?></span></div>
+                </div>
+                <div class="form-field-row" style="margin: 0 0 1.5rem; gap: 0.5rem;">
+                    <a href="<?= $basePath ?>/minha-conta/<?= $slug ?>/agendamentos/<?= $agendamento->id ?>/reagendar" class="btn-k btn-k-outline btn-k-sm">Reagendar</a>
+                    <form method="POST" action="<?= $basePath ?>/minha-conta/<?= $slug ?>/agendamentos/<?= $agendamento->id ?>/cancelar" onsubmit="return confirm('Cancelar este agendamento?');">
+                        <?= $csrf ?>
+                        <button type="submit" class="btn-k btn-k-outline btn-k-sm">Cancelar</button>
+                    </form>
                 </div>
             <?php endforeach; ?>
         <?php endif; ?>
