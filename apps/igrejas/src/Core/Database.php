@@ -88,7 +88,27 @@ final class Database
         return self::$central;
     }
 
-    private static function conectar(array $config, string $mensagemErro): PDO
+    /**
+     * Conexao avulsa com um banco especifico, independente da conexao
+     * "desta requisicao" (connection()) e sem entrar nos singletons desta
+     * classe - usada quando e preciso consultar VARIOS bancos de igrejas
+     * diferentes numa mesma requisicao (ver Tenant::ativasComEmailCadastrado(),
+     * tela de login do dominio raiz). Timeout curto de proposito: um
+     * banco de igreja fora do ar nao pode travar a busca inteira.
+     */
+    public static function conexaoAvulsa(string $dbName, string $dbUser, string $dbPassword): PDO
+    {
+        $config = require dirname(__DIR__, 2) . '/config/database.php';
+        $config = array_merge($config, [
+            'database' => $dbName,
+            'username' => $dbUser,
+            'password' => $dbPassword,
+        ]);
+
+        return self::conectar($config, 'Nao foi possivel conectar a esse banco.', timeoutSegundos: 3);
+    }
+
+    private static function conectar(array $config, string $mensagemErro, ?int $timeoutSegundos = null): PDO
     {
         $dsn = sprintf(
             '%s:host=%s;port=%s;dbname=%s;charset=%s',
@@ -99,12 +119,18 @@ final class Database
             $config['charset']
         );
 
+        $options = [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false,
+        ];
+
+        if ($timeoutSegundos !== null) {
+            $options[PDO::ATTR_TIMEOUT] = $timeoutSegundos;
+        }
+
         try {
-            return new PDO($dsn, $config['username'], $config['password'], [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES => false,
-            ]);
+            return new PDO($dsn, $config['username'], $config['password'], $options);
         } catch (PDOException $exception) {
             throw new \RuntimeException($mensagemErro, previous: $exception);
         }

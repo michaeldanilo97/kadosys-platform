@@ -501,6 +501,87 @@
   color: var(--accent-soft);
 }
 
+/* ---- Selecao de igreja (login no dominio raiz, e-mail em mais de uma) ----- */
+
+.auth-igreja-lista {
+  list-style: none;
+  margin: 1.6rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.auth-igreja-item {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--glass-border-strong);
+  border-radius: var(--radius-sm);
+  background: rgba(15, 23, 42, 0.4);
+  transition: var(--transition);
+}
+
+.auth-igreja-item:hover {
+  border-color: var(--primary);
+  background: rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.14);
+}
+
+.auth-igreja-item-icone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-sm);
+  background: rgba(59, 130, 246, 0.14);
+  color: var(--primary-soft);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.auth-igreja-item-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.auth-igreja-item-nome {
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-igreja-item-sub {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.auth-igreja-item-seta {
+  margin-left: auto;
+  color: var(--text-dim);
+  transition: var(--transition);
+}
+
+.auth-igreja-item:hover .auth-igreja-item-seta {
+  color: var(--primary-soft);
+  transform: translateX(3px);
+}
+
+[data-theme="light"] .auth-igreja-item {
+  background: #F1F5F9;
+  border-color: rgba(30, 41, 59, 0.15);
+}
+
+[data-theme="light"] .auth-igreja-item:hover {
+  background: rgba(59, 130, 246, 0.12);
+}
+
 .auth-back-link {
   display: inline-flex;
   align-items: center;

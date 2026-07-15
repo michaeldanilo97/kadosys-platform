@@ -257,6 +257,39 @@ final class Tenant
     }
 
     /**
+     * Entre as igrejas ativas, quais tem um usuario com esse e-mail
+     * cadastrado no banco isolado delas - usado pela tela de login do
+     * dominio raiz (fora de qualquer subdominio) pra descobrir em qual
+     * igreja a pessoa deve entrar, ja que nao existe uma tabela central
+     * de usuarios (cada `users` mora isolada no banco de cada igreja,
+     * ver AuthController::localizarIgrejas()). Uma falha ao conectar
+     * num banco especifico (ex.: igreja com banco fora do ar) so pula
+     * aquele tenant, sem derrubar a busca inteira.
+     *
+     * @return array<int, self>
+     */
+    public static function ativasComEmailCadastrado(string $email): array
+    {
+        $encontradas = [];
+
+        foreach (self::ativas() as $tenant) {
+            try {
+                $pdo = Database::conexaoAvulsa($tenant->dbName, $tenant->dbUser, $tenant->dbPassword);
+                $stmt = $pdo->prepare('SELECT 1 FROM users WHERE email = :email LIMIT 1');
+                $stmt->execute(['email' => $email]);
+
+                if ($stmt->fetch() !== false) {
+                    $encontradas[] = $tenant;
+                }
+            } catch (\Throwable) {
+                continue;
+            }
+        }
+
+        return $encontradas;
+    }
+
+    /**
      * Todas as igrejas provisionadas, mais recentes primeiro - usada
      * pelo painel administrativo da plataforma (ver PlataformaController).
      *

@@ -78,6 +78,7 @@ $router->get('/cadastro/pronto/{id}/status', [CadastroController::class, 'pronto
 // Autenticacao.
 $router->get('/login', [AuthController::class, 'showLogin'], [GuestMiddleware::class]);
 $router->post('/login', [AuthController::class, 'login'], [GuestMiddleware::class]);
+$router->post('/login/localizar', [AuthController::class, 'localizarIgrejas'], [GuestMiddleware::class]);
 $router->post('/logout', [AuthController::class, 'logout'], [AuthMiddleware::class]);
 
 $router->get('/esqueci-senha', [AuthController::class, 'showForgotPassword'], [GuestMiddleware::class]);
