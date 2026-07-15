@@ -17,6 +17,48 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 132 - 2026-07-15
+
+**Barbearias: bloqueios de agenda (férias, folgas e compromissos pontuais)**
+
+- Nova tela `/dashboard/bloqueios` - registra qualquer período em que um
+  profissional NÃO atende, além do expediente normal já configurado
+  (dias/horário de atendimento): bloqueio pontual (reunião, compromisso),
+  férias ou folga - com motivo opcional.
+- O bloqueio é sempre respeitado no cálculo de horários disponíveis do
+  agendamento público - um bloqueio de dia inteiro (férias/folga) some
+  com todos os horários daquele dia; um bloqueio de algumas horas só
+  fecha o intervalo correspondente (inclusive horários que
+  começariam antes do bloqueio mas invadiriam ele, do mesmo jeito que já
+  acontece com outro agendamento marcado).
+- Também é validado ao criar/editar um agendamento manualmente pelo
+  painel - a equipe não consegue marcar por cima de umas férias ou
+  bloqueio sem querer, com uma mensagem de erro clara.
+- Esta é a primeira fatia dos "recursos avançados de agenda" do prompt
+  original - o restante (lista de espera, reagendamento pelo cliente na
+  área do cliente, confirmação/lembrete automático) fica pra próximas
+  etapas.
+
+**Ação manual pendente no banco `kadosys1_barbearias`** (só se
+`install.sql` já rodou antes): rodar
+`apps/barbearias/database/migrations/006_bloqueios_agenda.sql` uma
+única vez - cria só a tabela nova `bloqueios_agenda`, sem alterar
+nenhuma tabela existente.
+
+**Testado localmente** (MariaDB + servidor PHP embutido, via curl com
+sessão autenticada): horários livres confirmados antes de qualquer
+bloqueio → bloqueio de dia inteiro (férias) criado → todos os horários
+daquele dia somem, dias vizinhos continuam livres → bloqueio pontual de
+1h criado num outro dia → só o intervalo correspondente (e os slots que
+invadiriam ele) somem, o resto do dia continua disponível → tentativa
+de marcar manualmente pelo painel em cima do bloqueio pontual bloqueada
+com a mensagem correta, nenhum agendamento criado → marcar num horário
+livre do mesmo dia funciona normalmente → exclusão do bloqueio pontual
+testada → horário volta a aparecer disponível imediatamente. Nenhum
+warning/notice no log do PHP durante os testes.
+
+---
+
 ## Ajuste 131 - 2026-07-15
 
 **Barbearias: multi-unidade (filiais)**

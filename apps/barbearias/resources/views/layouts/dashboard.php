@@ -17,6 +17,7 @@ $menu = $activeMenu ?? '';
 $itensMenu = [
     ['slug' => 'painel', 'href' => '/dashboard', 'icone' => '🏠', 'label' => 'Painel'],
     ['slug' => 'agendamentos', 'href' => '/dashboard/agendamentos', 'icone' => '📅', 'label' => 'Agendamentos'],
+    ['slug' => 'bloqueios', 'href' => '/dashboard/bloqueios', 'icone' => '🚫', 'label' => 'Bloqueios'],
     ['slug' => 'clientes', 'href' => '/dashboard/clientes', 'icone' => '📇', 'label' => 'Clientes'],
     ['slug' => 'profissionais', 'href' => '/dashboard/profissionais', 'icone' => '👤', 'label' => 'Profissionais'],
     ['slug' => 'servicos', 'href' => '/dashboard/servicos', 'icone' => '✂️', 'label' => 'Serviços'],

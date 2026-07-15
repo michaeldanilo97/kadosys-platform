@@ -6,6 +6,7 @@ use Barbearias\Controllers\AgendamentoController;
 use Barbearias\Controllers\AgendamentoPublicoController;
 use Barbearias\Controllers\AssinaturaController;
 use Barbearias\Controllers\AuthController;
+use Barbearias\Controllers\BloqueioController;
 use Barbearias\Controllers\CadastroController;
 use Barbearias\Controllers\ClienteAreaController;
 use Barbearias\Controllers\ClienteController;
@@ -109,6 +110,12 @@ $router->post('/dashboard/agendamentos/{id}/status', [AgendamentoController::cla
 $router->get('/dashboard/agendamentos/{id}/pagamento', [AgendamentoController::class, 'pagamentoForm'], [AuthMiddleware::class]);
 $router->post('/dashboard/agendamentos/{id}/pagamento', [AgendamentoController::class, 'pagamento'], [AuthMiddleware::class]);
 $router->post('/dashboard/agendamentos/{id}/excluir', [AgendamentoController::class, 'destroy'], [AuthMiddleware::class]);
+
+// Bloqueios de agenda (ferias, folgas, compromissos pontuais).
+$router->get('/dashboard/bloqueios', [BloqueioController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/bloqueios/novo', [BloqueioController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/bloqueios', [BloqueioController::class, 'store'], [AuthMiddleware::class]);
+$router->post('/dashboard/bloqueios/{id}/excluir', [BloqueioController::class, 'destroy'], [AuthMiddleware::class]);
 
 // Faturas (historico de cobranca - sempre acessivel, mesmo bloqueado).
 $router->get('/dashboard/faturas', [FaturaController::class, 'index'], [AuthMiddleware::class]);

@@ -9,6 +9,7 @@ use Barbearias\Core\Csrf;
 use Barbearias\Core\Session;
 use Barbearias\Models\Agendamento;
 use Barbearias\Models\Barbearia;
+use Barbearias\Models\BloqueioAgenda;
 use Barbearias\Models\Cliente;
 use Barbearias\Models\Profissional;
 use Barbearias\Models\Servico;
@@ -200,6 +201,11 @@ final class AgendamentoPublicoController extends Controller
         $agora = new \DateTimeImmutable();
 
         $ocupados = Agendamento::doDiaPorProfissional($barbearia->id, $profissional->id, $data);
+        $bloqueios = BloqueioAgenda::doProfissionalNoPeriodo(
+            $profissional->id,
+            $dia->format('Y-m-d 00:00:00'),
+            $dia->modify('+1 day')->format('Y-m-d 00:00:00'),
+        );
 
         $slots = [];
         $cursor = $inicioExpediente;
@@ -215,6 +221,17 @@ final class AgendamentoPublicoController extends Controller
                     $ocupadoFim = $ocupadoInicio->modify('+' . $ocupado->servicoDuracao . ' minutes');
 
                     if ($cursor < $ocupadoFim && $fimSlot > $ocupadoInicio) {
+                        $livre = false;
+
+                        break;
+                    }
+                }
+
+                foreach ($bloqueios as $bloqueio) {
+                    $bloqueioInicio = new \DateTimeImmutable($bloqueio->dataInicio);
+                    $bloqueioFim = new \DateTimeImmutable($bloqueio->dataFim);
+
+                    if ($cursor < $bloqueioFim && $fimSlot > $bloqueioInicio) {
                         $livre = false;
 
                         break;

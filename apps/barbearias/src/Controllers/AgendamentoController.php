@@ -10,6 +10,7 @@ use Barbearias\Core\Csrf;
 use Barbearias\Core\Session;
 use Barbearias\Models\Agendamento;
 use Barbearias\Models\Barbearia;
+use Barbearias\Models\BloqueioAgenda;
 use Barbearias\Models\Caixa;
 use Barbearias\Models\Cliente;
 use Barbearias\Models\FinanceiroLancamento;
@@ -303,8 +304,9 @@ final class AgendamentoController extends Controller
         }
 
         $servicoId = (int) ($dados['servico_id'] ?? 0);
+        $servico = $servicoId > 0 ? Servico::find($servicoId, $barbeariaId) : null;
 
-        if ($servicoId <= 0 || Servico::find($servicoId, $barbeariaId) === null) {
+        if ($servico === null) {
             $errors[] = 'Escolha um serviço válido.';
         }
 
@@ -322,6 +324,15 @@ final class AgendamentoController extends Controller
             $errors[] = 'Informe uma data e hora válidas.';
         } else {
             $dataHora = $data . ' ' . $hora . ':00';
+
+            if ($profissionalId > 0 && $servico !== null) {
+                $inicio = new \DateTimeImmutable($dataHora);
+                $fim = $inicio->modify('+' . $servico->duracaoMinutos . ' minutes');
+
+                if (BloqueioAgenda::doProfissionalNoPeriodo($profissionalId, $inicio->format('Y-m-d H:i:s'), $fim->format('Y-m-d H:i:s')) !== []) {
+                    $errors[] = 'Esse profissional está de férias/folga ou tem um bloqueio nesse horário.';
+                }
+            }
         }
 
         return [$errors, $dataHora];
