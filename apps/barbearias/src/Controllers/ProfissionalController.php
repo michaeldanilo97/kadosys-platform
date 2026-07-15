@@ -15,6 +15,15 @@ use Barbearias\Models\User;
 final class ProfissionalController extends Controller
 {
     private const POR_PAGINA = 15;
+    private const UPLOAD_DIR = 'uploads/profissionais';
+    private const TAMANHO_MAXIMO_FOTO = 5 * 1024 * 1024;
+
+    /** @var array<string, string> */
+    private const MIME_PARA_EXTENSAO = [
+        'image/png' => 'png',
+        'image/jpeg' => 'jpg',
+        'image/webp' => 'webp',
+    ];
 
     public function index(): void
     {
@@ -53,12 +62,14 @@ final class ProfissionalController extends Controller
 
     public function store(): void
     {
+        $barbeariaId = $this->barbeariaId();
+
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
             $this->redirect('/dashboard/profissionais');
         }
 
-        $dados = $this->request->only(['nome', 'especialidade', 'telefone']);
-        $errors = $this->validar($dados['nome'] ?? '');
+        $dados = $this->dadosDoFormulario();
+        $errors = $this->validar($dados);
 
         if ($errors !== []) {
             Session::flash('profissional_errors', $errors);
@@ -66,7 +77,18 @@ final class ProfissionalController extends Controller
             $this->redirect('/dashboard/profissionais/novo');
         }
 
-        Profissional::create($this->barbeariaId(), (string) $dados['nome'], $dados['especialidade'], $dados['telefone']);
+        $id = Profissional::create(
+            $barbeariaId,
+            (string) $dados['nome'],
+            $dados['especialidade'],
+            $dados['email'],
+            $dados['telefone'],
+            $dados['dias_atendimento'],
+            $dados['horario_inicio'],
+            $dados['horario_fim'],
+        );
+
+        $this->processarUploadFoto($id, $barbeariaId, $errors);
 
         Session::flash('profissional_success', 'Profissional cadastrado com sucesso.');
         $this->redirect('/dashboard/profissionais');
@@ -103,8 +125,8 @@ final class ProfissionalController extends Controller
             $this->redirect('/dashboard/profissionais');
         }
 
-        $dados = $this->request->only(['nome', 'especialidade', 'telefone']);
-        $errors = $this->validar($dados['nome'] ?? '');
+        $dados = $this->dadosDoFormulario();
+        $errors = $this->validar($dados);
 
         if ($errors !== []) {
             Session::flash('profissional_errors', $errors);
@@ -114,7 +136,20 @@ final class ProfissionalController extends Controller
 
         $ativo = $this->request->input('ativo') !== null;
 
-        Profissional::update((int) $id, $barbeariaId, (string) $dados['nome'], $dados['especialidade'], $dados['telefone'], $ativo);
+        Profissional::update(
+            (int) $id,
+            $barbeariaId,
+            (string) $dados['nome'],
+            $dados['especialidade'],
+            $dados['email'],
+            $dados['telefone'],
+            $dados['dias_atendimento'],
+            $dados['horario_inicio'],
+            $dados['horario_fim'],
+            $ativo,
+        );
+
+        $this->processarUploadFoto((int) $id, $barbeariaId, $errors);
 
         Session::flash('profissional_success', 'Profissional atualizado com sucesso.');
         $this->redirect('/dashboard/profissionais');
@@ -123,23 +158,135 @@ final class ProfissionalController extends Controller
     public function destroy(string $id): void
     {
         if (Csrf::verify($this->request->input('_csrf_token'))) {
-            Profissional::delete((int) $id, $this->barbeariaId());
+            $barbeariaId = $this->barbeariaId();
+            $profissional = Profissional::find((int) $id, $barbeariaId);
+
+            if ($profissional !== null) {
+                $this->removerArquivoFoto($profissional->fotoPath);
+            }
+
+            Profissional::delete((int) $id, $barbeariaId);
             Session::flash('profissional_success', 'Profissional removido.');
         }
 
         $this->redirect('/dashboard/profissionais');
     }
 
-    /** @return array<int, string> */
-    private function validar(string $nome): array
+    /** @return array{nome:string, especialidade:?string, email:?string, telefone:?string, dias_atendimento:array<int,int>, horario_inicio:?string, horario_fim:?string} */
+    private function dadosDoFormulario(): array
+    {
+        $diasInformados = $this->request->input('dias_atendimento', []);
+        $dias = is_array($diasInformados) ? array_map('intval', $diasInformados) : [];
+
+        return [
+            'nome' => trim((string) $this->request->input('nome', '')),
+            'especialidade' => $this->request->input('especialidade'),
+            'email' => $this->request->input('email'),
+            'telefone' => $this->request->input('telefone'),
+            'dias_atendimento' => $dias,
+            'horario_inicio' => $this->normalizarHora($this->request->input('horario_inicio')),
+            'horario_fim' => $this->normalizarHora($this->request->input('horario_fim')),
+        ];
+    }
+
+    private function normalizarHora(mixed $valor): ?string
+    {
+        $valor = trim((string) ($valor ?? ''));
+
+        return $valor === '' ? null : $valor . ':00';
+    }
+
+    /** @param array<string, mixed> $dados */
+    private function validar(array $dados): array
     {
         $errors = [];
 
-        if (trim($nome) === '' || mb_strlen(trim($nome)) < 2) {
+        if ($dados['nome'] === '' || mb_strlen($dados['nome']) < 2) {
             $errors[] = 'Informe o nome do profissional.';
         }
 
+        $email = trim((string) ($dados['email'] ?? ''));
+
+        if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = 'Informe um e-mail válido (ou deixe em branco).';
+        }
+
+        if ($dados['horario_inicio'] !== null && $dados['horario_fim'] !== null && $dados['horario_inicio'] >= $dados['horario_fim']) {
+            $errors[] = 'O horário de início precisa ser antes do horário de fim.';
+        }
+
         return $errors;
+    }
+
+    /**
+     * Faz o upload da foto (campo opcional) - se nao vier nenhum
+     * arquivo, nao mexe na foto atual. Erros de upload NAO bloqueiam o
+     * cadastro/edicao (o profissional ja foi salvo nesse momento) - so
+     * viram um aviso.
+     *
+     * @param array<int, string> $errors
+     */
+    private function processarUploadFoto(int $id, int $barbeariaId, array &$errors): void
+    {
+        $arquivo = $this->request->file('foto');
+
+        if ($arquivo === null) {
+            return;
+        }
+
+        if ($arquivo['error'] !== UPLOAD_ERR_OK) {
+            Session::flash('profissional_success', 'Profissional salvo, mas houve falha no envio da foto.');
+
+            return;
+        }
+
+        if ($arquivo['size'] > self::TAMANHO_MAXIMO_FOTO) {
+            Session::flash('profissional_success', 'Profissional salvo, mas a foto excede 5MB e não foi enviada.');
+
+            return;
+        }
+
+        $mime = mime_content_type($arquivo['tmp_name']) ?: '';
+        $extensao = self::MIME_PARA_EXTENSAO[$mime] ?? null;
+
+        if ($extensao === null) {
+            Session::flash('profissional_success', 'Profissional salvo, mas o formato da foto é inválido (use PNG, JPG ou WEBP).');
+
+            return;
+        }
+
+        $destinoDir = dirname(__DIR__, 2) . '/public/' . self::UPLOAD_DIR;
+
+        if (!is_dir($destinoDir) && !mkdir($destinoDir, 0755, true) && !is_dir($destinoDir)) {
+            return;
+        }
+
+        $antigo = Profissional::find($id, $barbeariaId);
+
+        if ($antigo !== null) {
+            $this->removerArquivoFoto($antigo->fotoPath);
+        }
+
+        $nomeArquivo = 'profissional_' . $id . '_' . bin2hex(random_bytes(4)) . '.' . $extensao;
+
+        if (!move_uploaded_file($arquivo['tmp_name'], $destinoDir . '/' . $nomeArquivo)) {
+            return;
+        }
+
+        Profissional::atualizarFoto($id, $barbeariaId, self::UPLOAD_DIR . '/' . $nomeArquivo);
+    }
+
+    private function removerArquivoFoto(?string $fotoPath): void
+    {
+        if ($fotoPath === null) {
+            return;
+        }
+
+        $caminho = dirname(__DIR__, 2) . '/public/' . $fotoPath;
+
+        if (is_file($caminho)) {
+            unlink($caminho);
+        }
     }
 
     private function usuario(): ?User

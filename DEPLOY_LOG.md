@@ -17,6 +17,56 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 128 - 2026-07-15
+
+**Barbearias: modo claro (padrão do painel), perfil completo do profissional e agendamento público pro cliente final**
+
+- **Modo claro/escuro**: o painel (dashboard) agora tem um botão "Tema"
+  na barra lateral pra alternar entre claro e escuro - o claro é o
+  padrão (mesma convenção já usada no KADOSYS Igrejas), com a escolha
+  salva no navegador. O site público/institucional continua sempre
+  escuro de propósito.
+- **Perfil completo do profissional**: além de nome/especialidade/
+  telefone, agora dá pra cadastrar e-mail, foto (upload PNG/JPG/WEBP,
+  até 5MB), dias da semana que atende e horário de expediente -
+  necessário pro agendamento público calcular horários livres.
+- **Agendamento público** (`/agendar/{slug-da-barbearia}`): link que a
+  barbearia compartilha com os próprios clientes (tela de
+  Configurações tem um botão "Copiar" pra esse link) - o cliente final
+  escolhe o profissional, o serviço e vê os horários realmente livres
+  daquele dia (calculado a partir do expediente do profissional menos
+  os agendamentos que já existem, com granularidade de 15 minutos e
+  checagem de sobreposição por duração do serviço), preenche nome e
+  telefone e confirma - sem precisar criar conta. Um cliente que já
+  agendou antes com o mesmo telefone é reconhecido automaticamente
+  (não duplica cadastro). A disponibilidade é sempre revalidada no
+  servidor no momento da confirmação, pra evitar dois clientes
+  reservando o mesmo horário ao mesmo tempo.
+- `config/database.php` agora aceita um arquivo
+  `config/database.local.php` (gitignored) como alternativa a variável
+  de ambiente, mesmo padrão já usado em `config/mercadopago.php` - útil
+  quando o painel de hospedagem não sustenta variável de ambiente
+  customizada entre deploys.
+
+**Ação manual pendente no banco `kadosys1_barbearias`** (só se
+`install.sql` já rodou antes): rodar
+`apps/barbearias/database/migrations/002_profissional_completo.sql`
+uma única vez (testado localmente aplicando sobre uma cópia do schema
+anterior - chega ao mesmo resultado do `install.sql` atual).
+
+**Testado localmente** (MariaDB + servidor PHP embutido): alternância
+de tema com persistência após reload, cadastro de profissional com
+dias/horário de expediente, geração de horários livres pra um dia da
+semana configurado (visualmente conferido: início/fim do expediente,
+granularidade de 15 min), reserva de um horário e confirmação de que
+ele - e os horários que se sobrepõem a ele por causa da duração do
+serviço - somem da lista de disponíveis, cliente reconhecido pelo
+telefone numa segunda visita, e as páginas de erro (barbearia
+inexistente, dia sem expediente, data no passado) devolvendo lista
+vazia/404 em vez de quebrar.
+
+---
+
 ## Ajuste 127 - 2026-07-15
 
 **Barbearias: módulos do sistema (Profissionais, Serviços, Clientes, Agendamentos, Faturas, Configurações)**

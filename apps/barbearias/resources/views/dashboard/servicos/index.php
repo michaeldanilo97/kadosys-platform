@@ -25,7 +25,7 @@ $basePath = $config['base_path'] ?? '';
     </div>
 
     <?php if ($success): ?>
-        <div class="form-alert" style="background: rgba(34, 197, 94, 0.12); color: #86EFAC; border-color: rgba(34, 197, 94, 0.25);">
+        <div class="form-alert form-alert-success">
             <div><?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8') ?></div>
         </div>
     <?php endif; ?>

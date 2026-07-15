@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Barbearias\Controllers\AgendamentoController;
+use Barbearias\Controllers\AgendamentoPublicoController;
 use Barbearias\Controllers\AssinaturaController;
 use Barbearias\Controllers\AuthController;
 use Barbearias\Controllers\CadastroController;
@@ -28,6 +29,13 @@ $router->post('/cadastro', [CadastroController::class, 'enviar'], [GuestMiddlewa
 $router->get('/cadastro/pix/{id}', [CadastroController::class, 'pix']);
 $router->get('/cadastro/pix/{id}/status', [CadastroController::class, 'pixStatus']);
 $router->get('/cadastro/retorno', [CadastroController::class, 'retorno']);
+
+// Agendamento publico (cliente final, sem login) - link compartilhavel
+// da barbearia (Instagram/WhatsApp).
+$router->get('/agendar/{slug}', [AgendamentoPublicoController::class, 'form']);
+$router->get('/agendar/{slug}/horarios', [AgendamentoPublicoController::class, 'horarios']);
+$router->post('/agendar/{slug}', [AgendamentoPublicoController::class, 'enviar']);
+$router->get('/agendar/{slug}/confirmado', [AgendamentoPublicoController::class, 'confirmado']);
 
 // Notificacoes assincronas do Mercado Pago (confirmacao de pagamento).
 $router->post('/webhooks/mercadopago', [WebhookController::class, 'mercadoPago']);

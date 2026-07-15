@@ -88,12 +88,23 @@ CREATE TABLE IF NOT EXISTS users (
         FOREIGN KEY (barbearia_id) REFERENCES barbearias (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- "dias_atendimento" e uma lista separada por virgula dos dias da
+-- semana que o profissional atende, no formato do PHP DateTime::format('w')
+-- (0 = domingo ... 6 = sabado), ex.: "1,2,3,4,5" pra segunda a sexta.
+-- "horario_inicio"/"horario_fim" delimitam o expediente - usados pra
+-- calcular os horarios disponiveis no agendamento publico (ver
+-- Barbearias\Controllers\AgendamentoPublicoController).
 CREATE TABLE IF NOT EXISTS profissionais (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     barbearia_id INT UNSIGNED NOT NULL,
     nome VARCHAR(150) NOT NULL,
     especialidade VARCHAR(150) NULL,
+    email VARCHAR(150) NULL,
     telefone VARCHAR(20) NULL,
+    foto_path VARCHAR(255) NULL,
+    dias_atendimento VARCHAR(20) NULL,
+    horario_inicio TIME NULL,
+    horario_fim TIME NULL,
     ativo TINYINT(1) NOT NULL DEFAULT 1,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

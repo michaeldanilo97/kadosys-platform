@@ -68,6 +68,22 @@ final class Cliente
         return $row ? self::fromRow($row) : null;
     }
 
+    /**
+     * Usado pelo agendamento publico pra reconhecer um cliente que ja
+     * agendou antes (mesmo telefone) em vez de criar um cadastro
+     * duplicado a cada visita.
+     */
+    public static function buscarPorTelefone(int $barbeariaId, string $telefone): ?self
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT ' . self::SELECT_COLUNAS . ' FROM clientes WHERE barbearia_id = :barbearia_id AND telefone = :telefone LIMIT 1'
+        );
+        $stmt->execute(['barbearia_id' => $barbeariaId, 'telefone' => $telefone]);
+        $row = $stmt->fetch();
+
+        return $row ? self::fromRow($row) : null;
+    }
+
     /** @return array<int, self> */
     public static function todos(int $barbeariaId): array
     {

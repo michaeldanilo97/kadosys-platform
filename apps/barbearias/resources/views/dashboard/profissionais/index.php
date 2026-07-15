@@ -25,7 +25,7 @@ $basePath = $config['base_path'] ?? '';
     </div>
 
     <?php if ($success): ?>
-        <div class="form-alert" style="background: rgba(34, 197, 94, 0.12); color: #86EFAC; border-color: rgba(34, 197, 94, 0.25);">
+        <div class="form-alert form-alert-success">
             <div><?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8') ?></div>
         </div>
     <?php endif; ?>
@@ -53,7 +53,16 @@ $basePath = $config['base_path'] ?? '';
                     <tbody>
                         <?php foreach ($profissionais as $profissional): ?>
                             <tr>
-                                <td><?= htmlspecialchars($profissional->nome, ENT_QUOTES, 'UTF-8') ?></td>
+                                <td>
+                                    <div class="crud-person">
+                                        <?php if ($profissional->fotoPath): ?>
+                                            <img src="<?= $basePath ?>/<?= htmlspecialchars($profissional->fotoPath, ENT_QUOTES, 'UTF-8') ?>" alt="" class="crud-avatar">
+                                        <?php else: ?>
+                                            <span class="crud-avatar crud-avatar-inicial"><?= htmlspecialchars(mb_substr($profissional->nome, 0, 1), ENT_QUOTES, 'UTF-8') ?></span>
+                                        <?php endif; ?>
+                                        <?= htmlspecialchars($profissional->nome, ENT_QUOTES, 'UTF-8') ?>
+                                    </div>
+                                </td>
                                 <td class="text-dim"><?= htmlspecialchars($profissional->especialidade ?? '-', ENT_QUOTES, 'UTF-8') ?></td>
                                 <td class="text-dim"><?= htmlspecialchars($profissional->telefone ?? '-', ENT_QUOTES, 'UTF-8') ?></td>
                                 <td>
