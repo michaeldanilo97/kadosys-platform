@@ -113,5 +113,13 @@ $basePath = $config['base_path'] ?? '';
             </div>
             <i class="bi bi-arrow-right-short arrow"></i>
         </a>
+        <a href="<?= $basePath ?>/dashboard/kids/meus-filhos" class="module-card">
+            <div class="icon"><i class="bi bi-person-heart"></i></div>
+            <div>
+                <div class="name">Meus filhos</div>
+                <div class="desc">Se você é responsável por uma criança cadastrada, gere o PIN de acesso dela por aqui.</div>
+            </div>
+            <i class="bi bi-arrow-right-short arrow"></i>
+        </a>
     </div>
 </div>

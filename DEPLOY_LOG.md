@@ -17,6 +17,32 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 117 - 2026-07-15
+
+**Responsável gera o próprio PIN + biblioteca oficial KADOSYS ampliada**
+
+- Nova área de autoatendimento **"Meus filhos"** (Kids > Meus filhos,
+  com atalho em "Meu perfil"): o próprio responsável, logado com o
+  usuário dele, agora consegue gerar/renovar/remover o PIN de acesso
+  dos filhos vinculados a ele, sem depender da equipe da igreja. Cada
+  ação confere que a criança realmente pertence ao responsável logado
+  antes de agir - ninguém consegue gerar PIN de uma criança que não é
+  sua, mesmo sabendo o ID dela.
+- Essa área fica acessível a qualquer usuário autenticado, mesmo sem
+  permissão administrativa no módulo Kids (mesmo tratamento que "Meu
+  perfil" já recebia) - afinal, gerenciar o acesso do próprio filho é
+  autoatendimento, não uma tarefa de equipe.
+- **Biblioteca oficial KADOSYS ampliada**: de 8 para 30 conteúdos,
+  agora cobrindo os 15 tipos da biblioteca (incluindo slides, HQ,
+  plano de leitura, PDF, atividades e jogos, que ainda não tinham
+  nenhum exemplo), com mais histórias, vídeos, devocionais, quiz,
+  desenhos para colorir e versículos ilustrados.
+- Os novos conteúdos já fazem parte do `install.sql`, então toda
+  igreja nova criada a partir de agora já nasce com a biblioteca
+  completa.
+
+---
+
 ## Ajuste 116 - 2026-07-15
 
 **Login próprio da criança na Biblioteca Kids, por PIN**

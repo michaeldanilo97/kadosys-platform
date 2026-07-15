@@ -23,6 +23,7 @@ use Igrejas\Controllers\KidsController;
 use Igrejas\Controllers\KidsConteudoController;
 use Igrejas\Controllers\KidsCriancaController;
 use Igrejas\Controllers\KidsLoginController;
+use Igrejas\Controllers\KidsResponsavelController;
 use Igrejas\Controllers\KidsTurmaController;
 use Igrejas\Controllers\LandingController;
 use Igrejas\Controllers\RecursoController;
@@ -171,6 +172,13 @@ $router->post('/dashboard/kids/conteudos', [KidsConteudoController::class, 'stor
 $router->get('/dashboard/kids/conteudos/{id}/editar', [KidsConteudoController::class, 'edit'], [AuthMiddleware::class, PlanoMiddleware::class]);
 $router->post('/dashboard/kids/conteudos/{id}', [KidsConteudoController::class, 'update'], [AuthMiddleware::class, PlanoMiddleware::class]);
 $router->post('/dashboard/kids/conteudos/{id}/excluir', [KidsConteudoController::class, 'destroy'], [AuthMiddleware::class, PlanoMiddleware::class]);
+
+// "Meus filhos" (Kids > autoatendimento do responsavel - ver
+// AuthMiddleware::bloquearSePermissaoNegada pra isencao da permissao
+// de modulo). Mesmo motivo de sempre: precisa vir antes do catch-all.
+$router->get('/dashboard/kids/meus-filhos', [KidsResponsavelController::class, 'index'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/kids/meus-filhos/{id}/pin', [KidsResponsavelController::class, 'gerarPin'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/kids/meus-filhos/{id}/pin/remover', [KidsResponsavelController::class, 'removerPin'], [AuthMiddleware::class, PlanoMiddleware::class]);
 
 // Biblioteca Kids no "modo criança" (tela colorida/cartoon - ver
 // KidsBibliotecaController). Mesmo motivo: precisa vir antes do
