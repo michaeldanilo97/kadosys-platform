@@ -23,6 +23,7 @@ $itensMenu = [
     ['slug' => 'crm', 'href' => '/dashboard/crm', 'icone' => '🎯', 'label' => 'CRM'],
     ['slug' => 'profissionais', 'href' => '/dashboard/profissionais', 'icone' => '👤', 'label' => 'Profissionais'],
     ['slug' => 'servicos', 'href' => '/dashboard/servicos', 'icone' => '✂️', 'label' => 'Serviços'],
+    ['slug' => 'produtos', 'href' => '/dashboard/produtos', 'icone' => '🧴', 'label' => 'Produtos'],
     ['slug' => 'unidades', 'href' => '/dashboard/unidades', 'icone' => '🏢', 'label' => 'Unidades'],
     ['slug' => 'financeiro', 'href' => '/dashboard/financeiro', 'icone' => '💰', 'label' => 'Financeiro'],
     ['slug' => 'comissoes', 'href' => '/dashboard/comissoes', 'icone' => '💸', 'label' => 'Comissões'],

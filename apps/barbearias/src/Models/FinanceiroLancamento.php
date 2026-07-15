@@ -21,7 +21,7 @@ final class FinanceiroLancamento
 
     public const FORMAS_PAGAMENTO = ['dinheiro', 'pix', 'cartao_credito', 'cartao_debito', 'outro'];
 
-    private const SELECT_COLUNAS = 'l.id, l.barbearia_id, l.caixa_id, l.agendamento_id, l.usuario_id, l.tipo,
+    private const SELECT_COLUNAS = 'l.id, l.barbearia_id, l.caixa_id, l.agendamento_id, l.produto_id, l.quantidade, l.usuario_id, l.tipo,
         l.categoria, l.forma_pagamento, l.valor, l.descricao, l.data_lancamento, l.created_at';
 
     public function __construct(
@@ -29,6 +29,8 @@ final class FinanceiroLancamento
         public readonly int $barbeariaId,
         public readonly ?int $caixaId,
         public readonly ?int $agendamentoId,
+        public readonly ?int $produtoId,
+        public readonly ?int $quantidade,
         public readonly ?int $usuarioId,
         public readonly string $tipo,
         public readonly string $categoria,
@@ -166,17 +168,21 @@ final class FinanceiroLancamento
         float $valor,
         ?string $descricao,
         string $dataLancamento,
+        ?int $produtoId = null,
+        ?int $quantidade = null,
     ): int {
         $stmt = Database::connection()->prepare(
             'INSERT INTO financeiro_lancamentos
-                (barbearia_id, caixa_id, agendamento_id, usuario_id, tipo, categoria, forma_pagamento, valor, descricao, data_lancamento, created_at)
+                (barbearia_id, caixa_id, agendamento_id, produto_id, quantidade, usuario_id, tipo, categoria, forma_pagamento, valor, descricao, data_lancamento, created_at)
              VALUES
-                (:barbearia_id, :caixa_id, :agendamento_id, :usuario_id, :tipo, :categoria, :forma_pagamento, :valor, :descricao, :data_lancamento, NOW())'
+                (:barbearia_id, :caixa_id, :agendamento_id, :produto_id, :quantidade, :usuario_id, :tipo, :categoria, :forma_pagamento, :valor, :descricao, :data_lancamento, NOW())'
         );
         $stmt->execute([
             'barbearia_id' => $barbeariaId,
             'caixa_id' => $caixaId,
             'agendamento_id' => $agendamentoId,
+            'produto_id' => $produtoId,
+            'quantidade' => $quantidade,
             'usuario_id' => $usuarioId,
             'tipo' => $tipo === self::TIPO_DESPESA ? self::TIPO_DESPESA : self::TIPO_RECEITA,
             'categoria' => trim($categoria),
@@ -209,6 +215,8 @@ final class FinanceiroLancamento
             barbeariaId: (int) $row['barbearia_id'],
             caixaId: $row['caixa_id'] !== null ? (int) $row['caixa_id'] : null,
             agendamentoId: $row['agendamento_id'] !== null ? (int) $row['agendamento_id'] : null,
+            produtoId: $row['produto_id'] !== null ? (int) $row['produto_id'] : null,
+            quantidade: $row['quantidade'] !== null ? (int) $row['quantidade'] : null,
             usuarioId: $row['usuario_id'] !== null ? (int) $row['usuario_id'] : null,
             tipo: (string) $row['tipo'],
             categoria: (string) $row['categoria'],
