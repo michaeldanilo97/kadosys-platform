@@ -13,6 +13,7 @@ use Barbearias\Core\Session;
 use Barbearias\Models\Barbearia;
 use Barbearias\Models\FaturaBarbearia;
 use Barbearias\Models\Plano;
+use Barbearias\Models\Unidade;
 use Barbearias\Models\User;
 
 /**
@@ -136,6 +137,7 @@ final class CadastroController extends Controller
             $telefone !== '' ? $telefone : null,
         );
 
+        Unidade::criarPrincipal($barbeariaId, $nome);
         User::create($barbeariaId, $adminNome, $adminEmail, $senha);
 
         if ($metodoPagamento === 'trial') {

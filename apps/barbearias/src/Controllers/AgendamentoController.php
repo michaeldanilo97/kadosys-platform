@@ -15,6 +15,7 @@ use Barbearias\Models\Cliente;
 use Barbearias\Models\FinanceiroLancamento;
 use Barbearias\Models\Profissional;
 use Barbearias\Models\Servico;
+use Barbearias\Models\Unidade;
 use Barbearias\Models\User;
 
 final class AgendamentoController extends Controller
@@ -27,8 +28,10 @@ final class AgendamentoController extends Controller
         $page = max(1, (int) $this->request->input('pagina', 1));
         $search = trim((string) $this->request->input('busca', ''));
         $status = (string) $this->request->input('status', '');
+        $unidadeId = (int) $this->request->input('unidade', 0);
+        $multiUnidade = Unidade::temMultiplasAtivas($barbeariaId);
 
-        $resultado = Agendamento::paginate($barbeariaId, $page, self::POR_PAGINA, $search, $status);
+        $resultado = Agendamento::paginate($barbeariaId, $page, self::POR_PAGINA, $search, $status, $multiUnidade ? $unidadeId : 0);
 
         echo $this->view('dashboard.agendamentos.index', [
             'pageTitle' => 'Agendamentos - KADOSYS Barbearias',
@@ -41,6 +44,8 @@ final class AgendamentoController extends Controller
             'lastPage' => $resultado['lastPage'],
             'search' => $search,
             'status' => $status,
+            'unidades' => $multiUnidade ? Unidade::ativas($barbeariaId) : [],
+            'unidadeId' => $unidadeId,
             'success' => Session::flash('agendamento_success'),
         ], 'dashboard');
     }
@@ -76,6 +81,7 @@ final class AgendamentoController extends Controller
             (int) $dados['cliente_id'],
             $dataHora,
             $dados['observacoes'],
+            $this->unidadeIdDoFormulario($barbeariaId),
         );
 
         Session::flash('agendamento_success', 'Agendamento criado com sucesso.');
@@ -128,6 +134,7 @@ final class AgendamentoController extends Controller
             $dataHora,
             $status,
             $dados['observacoes'],
+            $this->unidadeIdDoFormulario($barbeariaId),
         );
 
         Session::flash('agendamento_success', 'Agendamento atualizado com sucesso.');
@@ -262,9 +269,26 @@ final class AgendamentoController extends Controller
             'profissionais' => Profissional::ativos($barbeariaId),
             'servicos' => Servico::ativos($barbeariaId),
             'clientes' => Cliente::todos($barbeariaId),
+            'unidades' => Unidade::temMultiplasAtivas($barbeariaId) ? Unidade::ativas($barbeariaId) : [],
             'old' => $old,
             'errors' => $errors,
         ], 'dashboard');
+    }
+
+    /**
+     * Quando a barbearia tem so uma unidade, o agendamento e vinculado
+     * a ela automaticamente (sem nenhum campo no formulario) - so pede
+     * pra escolher quando ha mais de uma unidade ativa.
+     */
+    private function unidadeIdDoFormulario(int $barbeariaId): ?int
+    {
+        if (!Unidade::temMultiplasAtivas($barbeariaId)) {
+            return Unidade::principal($barbeariaId)?->id;
+        }
+
+        $informada = (int) $this->request->input('unidade_id', 0);
+
+        return $informada > 0 && Unidade::find($informada, $barbeariaId) !== null ? $informada : null;
     }
 
     /** @return array{0: array<int, string>, 1: string} */

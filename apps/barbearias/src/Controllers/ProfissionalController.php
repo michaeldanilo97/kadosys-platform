@@ -10,6 +10,7 @@ use Barbearias\Core\Csrf;
 use Barbearias\Core\Session;
 use Barbearias\Models\Barbearia;
 use Barbearias\Models\Profissional;
+use Barbearias\Models\Unidade;
 use Barbearias\Models\User;
 
 final class ProfissionalController extends Controller
@@ -49,12 +50,16 @@ final class ProfissionalController extends Controller
 
     public function create(): void
     {
+        $barbeariaId = $this->barbeariaId();
+
         echo $this->view('dashboard.profissionais.form', [
             'pageTitle' => 'Novo profissional - KADOSYS Barbearias',
             'activeMenu' => 'profissionais',
             'user' => $this->usuario(),
-            'barbearia' => Barbearia::find($this->barbeariaId()),
+            'barbearia' => Barbearia::find($barbeariaId),
             'profissional' => null,
+            'unidades' => Unidade::temMultiplasAtivas($barbeariaId) ? Unidade::ativas($barbeariaId) : [],
+            'unidadesAtuais' => [],
             'old' => Session::flash('profissional_old') ?? [],
             'errors' => Session::flash('profissional_errors') ?? [],
         ], 'dashboard');
@@ -88,6 +93,7 @@ final class ProfissionalController extends Controller
             $dados['horario_fim'],
         );
 
+        Profissional::definirUnidades($id, $this->unidadesDoFormulario($barbeariaId));
         $this->processarUploadFoto($id, $barbeariaId, $errors);
 
         Session::flash('profissional_success', 'Profissional cadastrado com sucesso.');
@@ -96,7 +102,8 @@ final class ProfissionalController extends Controller
 
     public function edit(string $id): void
     {
-        $profissional = Profissional::find((int) $id, $this->barbeariaId());
+        $barbeariaId = $this->barbeariaId();
+        $profissional = Profissional::find((int) $id, $barbeariaId);
 
         if ($profissional === null) {
             $this->redirect('/dashboard/profissionais');
@@ -106,8 +113,10 @@ final class ProfissionalController extends Controller
             'pageTitle' => 'Editar profissional - KADOSYS Barbearias',
             'activeMenu' => 'profissionais',
             'user' => $this->usuario(),
-            'barbearia' => Barbearia::find($this->barbeariaId()),
+            'barbearia' => Barbearia::find($barbeariaId),
             'profissional' => $profissional,
+            'unidades' => Unidade::temMultiplasAtivas($barbeariaId) ? Unidade::ativas($barbeariaId) : [],
+            'unidadesAtuais' => Profissional::unidadeIds($profissional->id),
             'old' => Session::flash('profissional_old') ?? [],
             'errors' => Session::flash('profissional_errors') ?? [],
         ], 'dashboard');
@@ -149,6 +158,7 @@ final class ProfissionalController extends Controller
             $ativo,
         );
 
+        Profissional::definirUnidades((int) $id, $this->unidadesDoFormulario($barbeariaId));
         $this->processarUploadFoto((int) $id, $barbeariaId, $errors);
 
         Session::flash('profissional_success', 'Profissional atualizado com sucesso.');
@@ -187,6 +197,29 @@ final class ProfissionalController extends Controller
             'horario_inicio' => $this->normalizarHora($this->request->input('horario_inicio')),
             'horario_fim' => $this->normalizarHora($this->request->input('horario_fim')),
         ];
+    }
+
+    /**
+     * Quando a barbearia tem so uma unidade, o profissional e vinculado
+     * a ela automaticamente (sem nenhum campo no formulario) - so pede
+     * pra escolher quando ha mais de uma unidade ativa, e so aceita ids
+     * que realmente pertencem a essa barbearia.
+     *
+     * @return array<int, int>
+     */
+    private function unidadesDoFormulario(int $barbeariaId): array
+    {
+        if (!Unidade::temMultiplasAtivas($barbeariaId)) {
+            $principal = Unidade::principal($barbeariaId);
+
+            return $principal !== null ? [$principal->id] : [];
+        }
+
+        $informadas = $this->request->input('unidades', []);
+        $informadas = is_array($informadas) ? array_map('intval', $informadas) : [];
+        $validas = array_map(static fn ($unidade) => $unidade->id, Unidade::ativas($barbeariaId));
+
+        return array_values(array_intersect($informadas, $validas));
     }
 
     private function normalizarHora(mixed $valor): ?string

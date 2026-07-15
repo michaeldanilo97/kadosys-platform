@@ -113,6 +113,45 @@ CREATE TABLE IF NOT EXISTS profissionais (
         FOREIGN KEY (barbearia_id) REFERENCES barbearias (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Unidade fisica (filial) de uma barbearia. Toda barbearia nasce com
+-- uma unidade "principal" automatica (ver Barbearias\Models\Unidade::criarPrincipal,
+-- chamado no cadastro publico) - quem nunca precisou de mais de um
+-- endereco nao ve tela nenhuma nova, so quem cria uma segunda unidade
+-- passa a ver os seletores de unidade espalhados pelo painel.
+CREATE TABLE IF NOT EXISTS unidades (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    barbearia_id INT UNSIGNED NOT NULL,
+    nome VARCHAR(150) NOT NULL,
+    slug VARCHAR(60) NOT NULL,
+    endereco VARCHAR(255) NULL,
+    cidade VARCHAR(100) NULL,
+    estado CHAR(2) NULL,
+    cep VARCHAR(9) NULL,
+    telefone VARCHAR(20) NULL,
+    whatsapp VARCHAR(20) NULL,
+    principal TINYINT(1) NOT NULL DEFAULT 0,
+    ativa TINYINT(1) NOT NULL DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY unidades_barbearia_id_slug_unique (barbearia_id, slug),
+    KEY unidades_barbearia_id_index (barbearia_id),
+    CONSTRAINT unidades_barbearia_id_foreign
+        FOREIGN KEY (barbearia_id) REFERENCES barbearias (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Pivot: um profissional pode atender em uma ou mais unidades.
+CREATE TABLE IF NOT EXISTS profissional_unidades (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    profissional_id INT UNSIGNED NOT NULL,
+    unidade_id INT UNSIGNED NOT NULL,
+    UNIQUE KEY profissional_unidades_unique (profissional_id, unidade_id),
+    KEY profissional_unidades_unidade_id_index (unidade_id),
+    CONSTRAINT profissional_unidades_profissional_id_foreign
+        FOREIGN KEY (profissional_id) REFERENCES profissionais (id) ON DELETE CASCADE,
+    CONSTRAINT profissional_unidades_unidade_id_foreign
+        FOREIGN KEY (unidade_id) REFERENCES unidades (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS servicos (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     barbearia_id INT UNSIGNED NOT NULL,
@@ -149,9 +188,13 @@ CREATE TABLE IF NOT EXISTS clientes (
         FOREIGN KEY (barbearia_id) REFERENCES barbearias (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- "unidade_id" fica NULL quando a barbearia so tem uma unidade (o
+-- caso comum) - o painel so pede pra escolher a unidade quando ha mais
+-- de uma ativa (ver Barbearias\Models\Unidade::temMultiplasAtivas).
 CREATE TABLE IF NOT EXISTS agendamentos (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     barbearia_id INT UNSIGNED NOT NULL,
+    unidade_id INT UNSIGNED NULL,
     profissional_id INT UNSIGNED NOT NULL,
     servico_id INT UNSIGNED NOT NULL,
     cliente_id INT UNSIGNED NOT NULL,
@@ -161,9 +204,12 @@ CREATE TABLE IF NOT EXISTS agendamentos (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     KEY agendamentos_barbearia_id_index (barbearia_id),
+    KEY agendamentos_unidade_id_index (unidade_id),
     KEY agendamentos_data_hora_index (data_hora),
     CONSTRAINT agendamentos_barbearia_id_foreign
         FOREIGN KEY (barbearia_id) REFERENCES barbearias (id) ON DELETE CASCADE,
+    CONSTRAINT agendamentos_unidade_id_foreign
+        FOREIGN KEY (unidade_id) REFERENCES unidades (id) ON DELETE SET NULL,
     CONSTRAINT agendamentos_profissional_id_foreign
         FOREIGN KEY (profissional_id) REFERENCES profissionais (id) ON DELETE CASCADE,
     CONSTRAINT agendamentos_servico_id_foreign

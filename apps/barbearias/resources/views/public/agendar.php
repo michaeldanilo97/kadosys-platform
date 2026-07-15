@@ -3,12 +3,15 @@
 use Barbearias\Models\Barbearia;
 use Barbearias\Models\Profissional;
 use Barbearias\Models\Servico;
+use Barbearias\Models\Unidade;
 
 /**
  * @var array $config
  * @var Barbearia $barbearia
  * @var array<int, Profissional> $profissionais
  * @var array<int, Servico> $servicos
+ * @var array<int, Unidade> $unidades
+ * @var array<int, array<int, int>> $mapaUnidades
  * @var string $csrf
  * @var array<int, string> $errors
  * @var array $old
@@ -38,11 +41,28 @@ $basePath = $config['base_path'] ?? '';
             <form method="POST" action="<?= $basePath ?>/agendar/<?= htmlspecialchars($barbearia->slug, ENT_QUOTES, 'UTF-8') ?>" data-agendar-form>
                 <?= $csrf ?>
 
-                <div class="form-field">
+                <?php if ($unidades !== []): ?>
+                    <div class="form-field">
+                        <label>Unidade</label>
+                        <div class="escolha-grid">
+                            <?php foreach ($unidades as $unidade): ?>
+                                <label class="escolha-card">
+                                    <input type="radio" name="unidade_id" value="<?= $unidade->id ?>" data-campo-unidade <?= (string) ($old['unidade_id'] ?? '') === (string) $unidade->id ? 'checked' : '' ?> required>
+                                    <span class="nome"><?= htmlspecialchars($unidade->nome, ENT_QUOTES, 'UTF-8') ?></span>
+                                    <?php if ($unidade->cidade): ?>
+                                        <span class="desc"><?= htmlspecialchars($unidade->cidade, ENT_QUOTES, 'UTF-8') ?><?= $unidade->estado ? '/' . htmlspecialchars($unidade->estado, ENT_QUOTES, 'UTF-8') : '' ?></span>
+                                    <?php endif; ?>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <div class="form-field" data-bloco-profissional<?= $unidades !== [] ? ' hidden' : '' ?>>
                     <label>Profissional</label>
                     <div class="escolha-grid">
                         <?php foreach ($profissionais as $profissional): ?>
-                            <label class="escolha-card">
+                            <label class="escolha-card" data-card-profissional data-unidades="<?= htmlspecialchars(implode(',', $mapaUnidades[$profissional->id] ?? []), ENT_QUOTES, 'UTF-8') ?>">
                                 <input type="radio" name="profissional_id" value="<?= $profissional->id ?>" data-campo-profissional <?= (string) ($old['profissional_id'] ?? '') === (string) $profissional->id ? 'checked' : '' ?> required>
                                 <span class="nome"><?= htmlspecialchars($profissional->nome, ENT_QUOTES, 'UTF-8') ?></span>
                                 <?php if ($profissional->especialidade): ?>
@@ -112,6 +132,7 @@ $basePath = $config['base_path'] ?? '';
         var slug = <?= json_encode($barbearia->slug) ?>;
         var campoData = form.querySelector('[data-campo-data]');
         var blocoHorarios = form.querySelector('[data-bloco-horarios]');
+        var blocoProfissional = form.querySelector('[data-bloco-profissional]');
         var listaHorarios = form.querySelector('[data-lista-horarios]');
         var statusHorarios = form.querySelector('[data-horarios-status]');
         var btnConfirmar = form.querySelector('[data-btn-confirmar]');
@@ -120,6 +141,44 @@ $basePath = $config['base_path'] ?? '';
 
         var hoje = new Date();
         campoData.min = hoje.toISOString().slice(0, 10);
+
+        function unidadeSelecionada() {
+            var input = form.querySelector('[data-campo-unidade]:checked');
+            return input ? input.value : '';
+        }
+
+        function filtrarProfissionaisPorUnidade() {
+            var unidadeId = unidadeSelecionada();
+
+            if (!unidadeId) {
+                return;
+            }
+
+            blocoProfissional.hidden = false;
+
+            form.querySelectorAll('[data-card-profissional]').forEach(function (card) {
+                var unidadesDoProfissional = (card.dataset.unidades || '').split(',');
+                var pertence = unidadesDoProfissional.indexOf(unidadeId) !== -1;
+                var input = card.querySelector('[data-campo-profissional]');
+
+                card.hidden = !pertence;
+                input.disabled = !pertence;
+
+                if (!pertence && input.checked) {
+                    input.checked = false;
+                }
+            });
+
+            buscarHorarios();
+        }
+
+        form.querySelectorAll('[data-campo-unidade]').forEach(function (input) {
+            input.addEventListener('change', filtrarProfissionaisPorUnidade);
+        });
+
+        if (unidadeSelecionada()) {
+            filtrarProfissionaisPorUnidade();
+        }
 
         function profissionalSelecionado() {
             var input = form.querySelector('[data-campo-profissional]:checked');
