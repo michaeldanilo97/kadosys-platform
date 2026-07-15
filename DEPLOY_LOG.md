@@ -17,6 +17,42 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 124 - 2026-07-15
+
+**Novo app: KADOSYS Barbearias (estrutura inicial + login)**
+
+- Primeira fatia do novo sistema de gestão para barbearias
+  (`apps/barbearias`), seguindo a mesma linha do KADOSYS Igrejas (PHP
+  puro, sem framework, MVC próprio), mas com uma arquitetura de dados
+  diferente: em vez de um banco isolado por cliente, o Barbearias usa
+  **um banco único e compartilhado** (`kadosys1_barbearias`), com uma
+  coluna `barbearia_id` em cada tabela isolando os dados de cada
+  barbearia - evita o limite de quantidade de bancos MySQL por conta
+  de hospedagem compartilhada, e simplifica bastante a operação (uma
+  migração só, uma conexão só).
+- Entregue nesta etapa: infraestrutura completa (roteador, sessão,
+  CSRF, views, middlewares), schema inicial (`barbearias`, `users`,
+  `profissionais`, `serviços`, `clientes`, `agendamentos`), e o fluxo
+  de login/logout funcionando de ponta a ponta - com mensagens de erro
+  específicas (e-mail não cadastrado / senha incorreta / usuário
+  desativado). O e-mail de login é único **globalmente** (não por
+  barbearia), então não precisa de uma etapa de "qual barbearia" como
+  o Igrejas tem hoje.
+- Painel inicial mostra os módulos que ainda serão construídos
+  (Profissionais, Serviços, Clientes, Agendamentos), todos marcados
+  "Em breve".
+- Testado com 2 barbearias de teste simultâneas, confirmando que uma
+  não vê nem um pouco dos dados da outra.
+- **Pendente antes do primeiro deploy real**: rodar
+  `apps/barbearias/database/install.sql` uma única vez no banco
+  `kadosys1_barbearias`, configurar as variáveis de ambiente
+  `DB_HOST`/`DB_DATABASE`/`DB_USERNAME`/`DB_PASSWORD` no servidor (a
+  senha NÃO fica no código, por segurança), rodar `composer install`
+  dentro de `apps/barbearias/`, e criar a primeira barbearia+admin com
+  `php database/seed_admin.php "Nome da Barbearia" "Nome do Admin" "email" "senha"`.
+
+---
+
 ## Ajuste 123 - 2026-07-15
 
 **Site institucional: adiciona Kadosys™ Sites (construtor de sites)**
