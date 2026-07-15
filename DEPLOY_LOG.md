@@ -17,6 +17,32 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 116 - 2026-07-15
+
+**Login próprio da criança na Biblioteca Kids, por PIN**
+
+- Cada criança pode ganhar um PIN de 4 dígitos, gerado pela equipe no
+  perfil dela (Kids > Crianças) - **só é possível se a criança já tiver
+  um responsável (Membro) vinculado**, o que funciona como o
+  consentimento mínimo antes de liberar esse acesso independente. O
+  PIN é mostrado uma única vez (a equipe entrega ao responsável) e
+  guardado sempre com hash, nunca em texto puro.
+- Nova tela pública `/kids/entrar`: a criança escolhe o próprio perfil
+  (foto/nome) e digita o PIN - sem e-mail, sem senha, sem precisar de
+  um adulto logado no sistema administrativo. Mesmo padrão de acesso
+  por PIN já usado no Preletor/Telão.
+- Depois de 5 tentativas erradas seguidas, o PIN fica bloqueado por 15
+  minutos - proteção contra tentativa por força bruta, já que 4 dígitos
+  é um espaço de busca pequeno.
+- A Biblioteca (`/kids`) passa a ser servida também nesse "modo
+  criança" de verdade: uma sessão própria da criança (independente do
+  login administrativo), num layout novo sem sidebar/topbar - só o
+  mundo colorido, pensado pra criança usar sozinha num tablet ou
+  celular. O acesso via painel (Kids > Biblioteca, com o seletor de
+  criança) continua existindo como uma prévia pra equipe.
+
+---
+
 ## Ajuste 115 - 2026-07-14
 
 **KADOSYS Kids (Fase 2): biblioteca de conteúdo + tela colorida "modo criança"**

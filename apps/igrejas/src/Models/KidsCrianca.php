@@ -18,6 +18,10 @@ use PDO;
  */
 final class KidsCrianca
 {
+    /** Tentativas de PIN erradas seguidas antes de bloquear temporariamente. */
+    private const MAX_TENTATIVAS_PIN = 5;
+    private const BLOQUEIO_PIN_MINUTOS = 15;
+
     public function __construct(
         public readonly int $id,
         public readonly string $nome,
@@ -38,6 +42,10 @@ final class KidsCrianca
         public readonly int $xp,
         public readonly int $moedas,
         public readonly int $sequenciaDias,
+        public readonly ?string $pinHash,
+        public readonly ?string $pinDefinidoEm,
+        public readonly int $pinTentativasInvalidas,
+        public readonly ?string $pinBloqueadoAte,
         public readonly string $createdAt,
     ) {
     }
@@ -131,6 +139,27 @@ final class KidsCrianca
     }
 
     /**
+     * Criancas ativas que ja tem PIN configurado - usado no seletor de
+     * perfil da tela publica de login infantil (ver KidsLoginController).
+     *
+     * @return array<int, self>
+     */
+    public static function ativasComPin(): array
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT c.*, t.nome AS turma_nome, me.nome AS responsavel_membro_nome
+             FROM kids_criancas c
+             LEFT JOIN kids_turmas t ON t.id = c.turma_id
+             LEFT JOIN membros me ON me.id = c.responsavel_membro_id
+             WHERE c.status = 'ativo' AND c.pin_hash IS NOT NULL
+             ORDER BY c.nome ASC"
+        );
+        $stmt->execute();
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /**
      * @param array<string, mixed> $data
      */
     public static function create(array $data): int
@@ -215,6 +244,106 @@ final class KidsCrianca
         $stmt->execute(['xp' => $xp, 'moedas' => $moedas, 'id' => $id]);
     }
 
+    /**
+     * Gera um PIN novo de 4 digitos pra crianca fazer login sozinha na
+     * Biblioteca (ver KidsLoginController) - so permitido se ja existir
+     * um responsavel vinculado (responsavel_membro_id), que funciona
+     * como o consentimento minimo antes de liberar esse acesso
+     * independente. Retorna o PIN em texto puro (pra equipe entregar
+     * ao responsavel uma unica vez) ou null se a crianca nao tiver
+     * responsavel vinculado.
+     */
+    public static function gerarESalvarPin(int $id): ?string
+    {
+        $crianca = self::find($id);
+
+        if ($crianca === null || $crianca->responsavelMembroId === null) {
+            return null;
+        }
+
+        $pin = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+
+        $stmt = Database::connection()->prepare(
+            'UPDATE kids_criancas
+             SET pin_hash = :pin_hash, pin_definido_em = NOW(), pin_tentativas_invalidas = 0, pin_bloqueado_ate = NULL
+             WHERE id = :id'
+        );
+        $stmt->execute(['pin_hash' => password_hash($pin, PASSWORD_DEFAULT), 'id' => $id]);
+
+        return $pin;
+    }
+
+    public static function removerPin(int $id): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE kids_criancas
+             SET pin_hash = NULL, pin_definido_em = NULL, pin_tentativas_invalidas = 0, pin_bloqueado_ate = NULL
+             WHERE id = :id'
+        );
+        $stmt->execute(['id' => $id]);
+    }
+
+    /**
+     * Confere o PIN informado no login infantil (ver
+     * KidsLoginController::autenticar()). Bloqueia temporariamente
+     * depois de MAX_TENTATIVAS_PIN erros seguidos, ja que um PIN de 4
+     * digitos e um espaco de busca pequeno pra tentativa por forca
+     * bruta.
+     */
+    public static function autenticarPorPin(int $criancaId, string $pin): ?self
+    {
+        $crianca = self::find($criancaId);
+
+        if ($crianca === null || $crianca->status !== 'ativo' || $crianca->pinHash === null) {
+            return null;
+        }
+
+        if ($crianca->pinBloqueadoAte !== null && new DateTimeImmutable($crianca->pinBloqueadoAte) > new DateTimeImmutable()) {
+            return null;
+        }
+
+        if (!password_verify($pin, $crianca->pinHash)) {
+            self::registrarTentativaInvalida($criancaId, $crianca->pinTentativasInvalidas + 1);
+
+            return null;
+        }
+
+        self::resetarTentativasPin($criancaId);
+
+        return $crianca;
+    }
+
+    private static function registrarTentativaInvalida(int $id, int $tentativas): void
+    {
+        $bloqueado = $tentativas >= self::MAX_TENTATIVAS_PIN;
+
+        $stmt = Database::connection()->prepare(
+            'UPDATE kids_criancas
+             SET pin_tentativas_invalidas = :tentativas,
+                 pin_bloqueado_ate = ' . ($bloqueado ? 'DATE_ADD(NOW(), INTERVAL ' . self::BLOQUEIO_PIN_MINUTOS . ' MINUTE)' : 'pin_bloqueado_ate') . '
+             WHERE id = :id'
+        );
+        $stmt->execute(['tentativas' => $tentativas, 'id' => $id]);
+    }
+
+    private static function resetarTentativasPin(int $id): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE kids_criancas SET pin_tentativas_invalidas = 0, pin_bloqueado_ate = NULL WHERE id = :id'
+        );
+        $stmt->execute(['id' => $id]);
+    }
+
+    public function temResponsavelVinculado(): bool
+    {
+        return $this->responsavelMembroId !== null;
+    }
+
+    public function temPin(): bool
+    {
+        return $this->pinHash !== null;
+    }
+
     public function idade(): ?int
     {
         if ($this->dataNascimento === null) {
@@ -284,6 +413,10 @@ final class KidsCrianca
             xp: (int) $row['xp'],
             moedas: (int) $row['moedas'],
             sequenciaDias: (int) $row['sequencia_dias'],
+            pinHash: $row['pin_hash'] ?? null,
+            pinDefinidoEm: $row['pin_definido_em'] ?? null,
+            pinTentativasInvalidas: (int) ($row['pin_tentativas_invalidas'] ?? 0),
+            pinBloqueadoAte: $row['pin_bloqueado_ate'] ?? null,
             createdAt: (string) $row['created_at'],
         );
     }

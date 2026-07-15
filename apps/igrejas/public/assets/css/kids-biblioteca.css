@@ -37,6 +37,33 @@
   }
 }
 
+/* Modo criança de verdade (layouts/kids-app.php): a pagina inteira E
+   o mundo colorido, sem o painel administrativo em volta - entao nao
+   faz sentido a margem negativa nem o raio de borda so embaixo. */
+body.kids-standalone {
+  margin: 0;
+  background: #F3F0FF;
+}
+
+body.kids-standalone .kids-mundo {
+  margin: 0;
+  min-height: 100vh;
+  border-radius: 0;
+}
+
+/* Tela de login (kids/entrar.php): centraliza verticalmente, ja que
+   costuma ter pouco conteudo (so o seletor de perfil ou o teclado de
+   PIN). As demais telas do modo crianca continuam alinhadas ao topo. */
+body.kids-standalone .kids-mundo:has(.kids-login) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
+  width: 100%;
+}
+
 .kids-mundo * {
   box-sizing: border-box;
 }
@@ -461,4 +488,172 @@
 
 .kids-premio-banner .emoji {
   font-size: 2.2rem;
+}
+
+/* Login por PIN (dashboard/../kids/entrar.php) - escolha do perfil +
+   teclado numerico, sem exigir email/senha da crianca. */
+.kids-login {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.kids-login-titulo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  margin: 0 0 0.4rem;
+}
+
+.kids-login-subtitulo {
+  color: var(--kids-texto-suave);
+  font-weight: 500;
+  margin: 0 0 2rem;
+}
+
+.kids-login-grade {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.kids-login-grade .kids-login-perfil {
+  width: 140px;
+}
+
+.kids-login-perfil {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  background: #FFFFFF;
+  border: 3px solid transparent;
+  border-radius: 24px;
+  padding: 1.2rem 0.8rem;
+  text-decoration: none;
+  color: var(--kids-texto);
+  font-weight: 700;
+  box-shadow: 0 6px 0 rgba(58, 46, 92, 0.08);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.kids-login-perfil:hover,
+.kids-login-perfil.selecionado {
+  transform: translateY(-3px);
+  border-color: var(--kids-roxo);
+}
+
+.kids-login-perfil-foto {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--kids-roxo);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-family: var(--font-display);
+}
+
+.kids-login-perfil-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kids-login-vazio {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 2.2rem 1.6rem;
+  color: var(--kids-texto-suave);
+  font-weight: 600;
+}
+
+.kids-login-pin-card {
+  background: #FFFFFF;
+  border-radius: 28px;
+  padding: 2rem;
+  max-width: 360px;
+  margin: 0 auto;
+  box-shadow: 0 8px 0 rgba(58, 46, 92, 0.08);
+}
+
+.kids-login-pin-input {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 2.4rem;
+  letter-spacing: 0.6rem;
+  text-align: center;
+  padding: 0.8rem;
+  border-radius: 16px;
+  border: 3px solid rgba(58, 46, 92, 0.14);
+  margin: 1rem 0;
+}
+
+.kids-login-pin-input:focus {
+  outline: none;
+  border-color: var(--kids-roxo);
+}
+
+.kids-login-erro {
+  background: rgba(255, 107, 107, 0.14);
+  color: #B3261E;
+  border-radius: 14px;
+  padding: 0.7rem 1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* Cabecalho fixo do modo crianca logado (nome + sair), ver kids/home,
+   kids/tipo e kids/show. */
+.kids-app-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.6rem;
+}
+
+.kids-app-perfil {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-weight: 700;
+}
+
+.kids-app-perfil .avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--kids-roxo);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+}
+
+.kids-app-perfil .avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kids-app-sair {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: none;
+  background: #FFFFFF;
+  color: var(--kids-texto);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.6rem 1.1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgba(58, 46, 92, 0.12);
 }

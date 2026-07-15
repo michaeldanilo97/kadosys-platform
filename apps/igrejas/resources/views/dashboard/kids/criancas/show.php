@@ -9,6 +9,7 @@ use Igrejas\Core\View;
  * @var array<int, \Igrejas\Models\KidsCheckin> $historicoCheckins
  * @var string|null $success
  * @var array $errors
+ * @var string|null $pinGerado
  * @var string $csrfToken
  */
 $basePath = $config['base_path'] ?? '';
@@ -109,6 +110,56 @@ $basePath = $config['base_path'] ?? '';
             <p class="crud-text-dim"><?= nl2br(htmlspecialchars($crianca->observacoes, ENT_QUOTES, 'UTF-8')) ?></p>
         <?php endif; ?>
     </div>
+</div>
+
+<div class="dash-panel" style="margin-top: 1.4rem;">
+    <div class="dash-panel-head">
+        <h2><i class="bi bi-shield-lock"></i> Acesso da criança (login por PIN)</h2>
+    </div>
+
+    <?php if ($pinGerado !== null): ?>
+        <div class="kids-codigo-banner" style="margin-bottom: 1rem;">
+            <div class="kids-codigo-banner-icone"><i class="bi bi-key-fill"></i></div>
+            <div>
+                <div class="kids-codigo-banner-titulo">PIN de <?= htmlspecialchars($crianca->nome, ENT_QUOTES, 'UTF-8') ?></div>
+                <div class="kids-codigo-banner-codigo"><?= htmlspecialchars($pinGerado, ENT_QUOTES, 'UTF-8') ?></div>
+                <p>Entregue este código ao responsável. Ele não será mostrado novamente - se esquecer, gere um novo.</p>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <?php if (!$crianca->temResponsavelVinculado()): ?>
+        <p class="crud-text-dim">
+            Vincule um responsável (Membro) nos dados da criança antes de gerar o PIN de acesso -
+            isso garante que alguém autorizado saiba e possa retirar esse código a qualquer momento.
+        </p>
+    <?php else: ?>
+        <p class="crud-text-dim">
+            Com o PIN, a criança entra sozinha na
+            <a href="<?= $basePath ?>/kids/entrar">Biblioteca Kids</a> (em qualquer tablet ou celular),
+            sem precisar de um adulto logado no sistema administrativo.
+        </p>
+        <div class="crud-form-actions" style="justify-content: flex-start;">
+            <form method="POST" action="<?= $basePath ?>/dashboard/kids/criancas/<?= $crianca->id ?>/pin">
+                <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+                <button type="submit" class="btn-k btn-k-grad">
+                    <i class="bi bi-key"></i> <?= $crianca->temPin() ? 'Gerar novo PIN' : 'Gerar PIN' ?>
+                </button>
+            </form>
+            <?php if ($crianca->temPin()): ?>
+                <form
+                    method="POST"
+                    action="<?= $basePath ?>/dashboard/kids/criancas/<?= $crianca->id ?>/pin/remover"
+                    data-confirm="Remover o PIN de <?= htmlspecialchars($crianca->nome, ENT_QUOTES, 'UTF-8') ?>? Ela não conseguirá mais entrar sozinha."
+                >
+                    <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+                    <button type="submit" class="btn-k btn-k-ghost">
+                        <i class="bi bi-key"></i> Remover PIN
+                    </button>
+                </form>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
 </div>
 
 <div class="dash-panel" style="margin-top: 1.4rem;">

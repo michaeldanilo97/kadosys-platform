@@ -16,11 +16,13 @@ use Igrejas\Controllers\EquipeController;
 use Igrejas\Controllers\FaturaController;
 use Igrejas\Controllers\FinanceiroController;
 use Igrejas\Controllers\GrupoController;
+use Igrejas\Controllers\KidsAppController;
 use Igrejas\Controllers\KidsBibliotecaController;
 use Igrejas\Controllers\KidsCheckinController;
 use Igrejas\Controllers\KidsController;
 use Igrejas\Controllers\KidsConteudoController;
 use Igrejas\Controllers\KidsCriancaController;
+use Igrejas\Controllers\KidsLoginController;
 use Igrejas\Controllers\KidsTurmaController;
 use Igrejas\Controllers\LandingController;
 use Igrejas\Controllers\RecursoController;
@@ -41,6 +43,7 @@ use Igrejas\Controllers\TelaoController;
 use Igrejas\Controllers\UsuarioController;
 use Igrejas\Core\Middleware\AuthMiddleware;
 use Igrejas\Core\Middleware\GuestMiddleware;
+use Igrejas\Core\Middleware\KidsSessaoMiddleware;
 use Igrejas\Core\Middleware\PlanoMiddleware;
 use Igrejas\Core\Middleware\PlataformaAuthMiddleware;
 
@@ -152,6 +155,8 @@ $router->post('/dashboard/kids/criancas', [KidsCriancaController::class, 'store'
 $router->get('/dashboard/kids/criancas/{id}/editar', [KidsCriancaController::class, 'edit'], [AuthMiddleware::class, PlanoMiddleware::class]);
 $router->post('/dashboard/kids/criancas/{id}', [KidsCriancaController::class, 'update'], [AuthMiddleware::class, PlanoMiddleware::class]);
 $router->post('/dashboard/kids/criancas/{id}/excluir', [KidsCriancaController::class, 'destroy'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/kids/criancas/{id}/pin', [KidsCriancaController::class, 'gerarPin'], [AuthMiddleware::class, PlanoMiddleware::class]);
+$router->post('/dashboard/kids/criancas/{id}/pin/remover', [KidsCriancaController::class, 'removerPin'], [AuthMiddleware::class, PlanoMiddleware::class]);
 // Precisa vir por ultimo entre as rotas de criancas: e a mais generica
 // ({id} sozinho) e casaria com "novo" se viesse antes dela.
 $router->get('/dashboard/kids/criancas/{id}', [KidsCriancaController::class, 'show'], [AuthMiddleware::class, PlanoMiddleware::class]);
@@ -406,6 +411,19 @@ $router->get('/preletor', [PreletorController::class, 'entrar']);
 $router->post('/preletor', [PreletorController::class, 'autenticar']);
 $router->get('/preletor/painel', [PreletorController::class, 'painel']);
 $router->post('/preletor/sair', [PreletorController::class, 'sair']);
+
+// "Modo criança" do KADOSYS Kids: login publico por PIN de 4 digitos
+// (sem exigir login administrativo - ver KidsLoginController) e a
+// Biblioteca servida atras dessa sessao propria da crianca (ver
+// KidsSessaoMiddleware). Mesmo padrao de acesso por PIN do
+// Preletor/Telao acima.
+$router->get('/kids/entrar', [KidsLoginController::class, 'entrar']);
+$router->post('/kids/entrar', [KidsLoginController::class, 'autenticar']);
+$router->post('/kids/sair', [KidsLoginController::class, 'sair']);
+$router->get('/kids', [KidsAppController::class, 'index'], [KidsSessaoMiddleware::class]);
+$router->get('/kids/tipo/{tipo}', [KidsAppController::class, 'porTipo'], [KidsSessaoMiddleware::class]);
+$router->get('/kids/conteudo/{id}', [KidsAppController::class, 'show'], [KidsSessaoMiddleware::class]);
+$router->post('/kids/conteudo/{id}/concluir', [KidsAppController::class, 'concluir'], [KidsSessaoMiddleware::class]);
 
 // Estado da projecao (JSON): leitura/escrita autorizadas pelo token da
 // sessao, usadas via polling pelas 3 telas (operador, telao, preletor).
