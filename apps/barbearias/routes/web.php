@@ -22,6 +22,7 @@ use Barbearias\Controllers\ListaEsperaController;
 use Barbearias\Controllers\PortfolioController;
 use Barbearias\Controllers\ProdutoController;
 use Barbearias\Controllers\ProfissionalController;
+use Barbearias\Controllers\RecepcaoController;
 use Barbearias\Controllers\RelatorioController;
 use Barbearias\Controllers\ServicoController;
 use Barbearias\Controllers\UnidadeController;
@@ -151,6 +152,9 @@ $router->post('/dashboard/financeiro/lancamentos/{id}/excluir', [FinanceiroContr
 
 // Comissoes (fechamento por profissional, com base nos atendimentos concluidos).
 $router->get('/dashboard/comissoes', [ComissaoController::class, 'index'], [AuthMiddleware::class]);
+
+// Painel de recepcao (tela cheia, pensada pra ficar numa TV do salao).
+$router->get('/dashboard/recepcao', [RecepcaoController::class, 'index'], [AuthMiddleware::class]);
 
 // Fidelidade (pontos por atendimento pago, resgatados por recompensas).
 $router->get('/dashboard/fidelidade', [FidelidadeController::class, 'index'], [AuthMiddleware::class]);

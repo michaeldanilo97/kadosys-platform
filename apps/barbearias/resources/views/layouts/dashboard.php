@@ -19,6 +19,7 @@ $itensMenu = [
     ['slug' => 'agendamentos', 'href' => '/dashboard/agendamentos', 'icone' => '📅', 'label' => 'Agendamentos'],
     ['slug' => 'bloqueios', 'href' => '/dashboard/bloqueios', 'icone' => '🚫', 'label' => 'Bloqueios'],
     ['slug' => 'lista-espera', 'href' => '/dashboard/lista-espera', 'icone' => '⏳', 'label' => 'Lista de espera'],
+    ['slug' => 'recepcao', 'href' => '/dashboard/recepcao', 'icone' => '📺', 'label' => 'Recepção (TV)', 'target' => '_blank'],
     ['slug' => 'clientes', 'href' => '/dashboard/clientes', 'icone' => '📇', 'label' => 'Clientes'],
     ['slug' => 'crm', 'href' => '/dashboard/crm', 'icone' => '🎯', 'label' => 'CRM'],
     ['slug' => 'fidelidade', 'href' => '/dashboard/fidelidade', 'icone' => '🏆', 'label' => 'Fidelidade'],
@@ -64,7 +65,7 @@ $itensMenu = [
         <div class="dash-sidebar-brand"><span class="text-gradient">KADOSYS</span> Barbearias</div>
         <nav class="dash-nav">
             <?php foreach ($itensMenu as $item): ?>
-                <a href="<?= $basePath . $item['href'] ?>" class="dash-nav-link<?= $menu === $item['slug'] ? ' active' : '' ?>">
+                <a href="<?= $basePath . $item['href'] ?>" class="dash-nav-link<?= $menu === $item['slug'] ? ' active' : '' ?>" <?= isset($item['target']) ? 'target="' . $item['target'] . '"' : '' ?>>
                     <span class="icone"><?= $item['icone'] ?></span>
                     <span><?= $item['label'] ?></span>
                 </a>

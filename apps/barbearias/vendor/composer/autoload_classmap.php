@@ -26,6 +26,7 @@ return array(
     'Barbearias\\Controllers\\PortfolioController' => $baseDir . '/src/Controllers/PortfolioController.php',
     'Barbearias\\Controllers\\ProdutoController' => $baseDir . '/src/Controllers/ProdutoController.php',
     'Barbearias\\Controllers\\ProfissionalController' => $baseDir . '/src/Controllers/ProfissionalController.php',
+    'Barbearias\\Controllers\\RecepcaoController' => $baseDir . '/src/Controllers/RecepcaoController.php',
     'Barbearias\\Controllers\\RelatorioController' => $baseDir . '/src/Controllers/RelatorioController.php',
     'Barbearias\\Controllers\\ServicoController' => $baseDir . '/src/Controllers/ServicoController.php',
     'Barbearias\\Controllers\\UnidadeController' => $baseDir . '/src/Controllers/UnidadeController.php',
