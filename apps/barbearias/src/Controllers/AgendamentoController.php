@@ -13,6 +13,7 @@ use Barbearias\Models\Barbearia;
 use Barbearias\Models\BloqueioAgenda;
 use Barbearias\Models\Caixa;
 use Barbearias\Models\Cliente;
+use Barbearias\Models\FidelidadeMovimento;
 use Barbearias\Models\FinanceiroLancamento;
 use Barbearias\Models\Profissional;
 use Barbearias\Models\Servico;
@@ -253,10 +254,45 @@ final class AgendamentoController extends Controller
                 'Pagamento de ' . $agendamento->clienteNome,
                 (new \DateTimeImmutable())->format('Y-m-d'),
             );
+
+            $this->concederPontosFidelidade($barbeariaId, $agendamento, $valor);
         }
 
         Session::flash('agendamento_success', 'Agendamento concluído e pagamento registrado.');
         $this->redirect('/dashboard/agendamentos');
+    }
+
+    /**
+     * Concede pontos de fidelidade ao cliente do atendimento, se a
+     * barbearia tiver o programa ativado
+     * (barbearias.fidelidade_pontos_por_real). Sem efeito nenhum
+     * quando o programa esta desligado.
+     */
+    private function concederPontosFidelidade(int $barbeariaId, Agendamento $agendamento, float $valor): void
+    {
+        $pontosPorReal = Barbearia::find($barbeariaId)?->fidelidadePontosPorReal;
+
+        if ($pontosPorReal === null || $pontosPorReal <= 0) {
+            return;
+        }
+
+        $pontos = (int) floor($valor * $pontosPorReal);
+
+        if ($pontos < 1) {
+            return;
+        }
+
+        Cliente::adicionarPontos($agendamento->clienteId, $barbeariaId, $pontos);
+
+        FidelidadeMovimento::create(
+            $barbeariaId,
+            $agendamento->clienteId,
+            FidelidadeMovimento::TIPO_GANHO,
+            $pontos,
+            $agendamento->id,
+            null,
+            'Atendimento: ' . $agendamento->servicoNome,
+        );
     }
 
     private function renderForm(?Agendamento $agendamento, int $barbeariaId, array $old, array $errors): void

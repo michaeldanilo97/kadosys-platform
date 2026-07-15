@@ -27,7 +27,7 @@ final class Barbearia
 
     private const SELECT_COLUNAS = 'id, nome, slug, telefone, documento_tipo, documento, razao_social,
         plano, metodo_pagamento, mp_preapproval_id, trial_expira_em, proximo_vencimento, plano_agendado,
-        ultimo_acesso_em, status, created_at';
+        fidelidade_pontos_por_real, ultimo_acesso_em, status, created_at';
 
     public function __construct(
         public readonly int $id,
@@ -43,6 +43,7 @@ final class Barbearia
         public readonly ?string $trialExpiraEm,
         public readonly ?string $proximoVencimento,
         public readonly ?string $planoAgendado,
+        public readonly ?float $fidelidadePontosPorReal,
         public readonly ?string $ultimoAcessoEm,
         public readonly string $status,
         public readonly ?string $createdAt = null,
@@ -183,6 +184,19 @@ final class Barbearia
         $stmt->execute(['data' => $data->format('Y-m-d'), 'id' => $id]);
     }
 
+    /**
+     * NULL desativa o programa de fidelidade (nenhum ponto e concedido
+     * nos pagamentos de atendimento - ver
+     * Barbearias\Controllers\AgendamentoController::pagamento).
+     */
+    public static function atualizarFidelidade(int $id, ?float $pontosPorReal): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE barbearias SET fidelidade_pontos_por_real = :pontos_por_real WHERE id = :id'
+        );
+        $stmt->execute(['pontos_por_real' => $pontosPorReal, 'id' => $id]);
+    }
+
     public static function atualizarUltimoAcesso(int $id): void
     {
         $stmt = Database::connection()->prepare(
@@ -229,6 +243,7 @@ final class Barbearia
             trialExpiraEm: $row['trial_expira_em'] ?? null,
             proximoVencimento: $row['proximo_vencimento'] ?? null,
             planoAgendado: $row['plano_agendado'] ?? null,
+            fidelidadePontosPorReal: $row['fidelidade_pontos_por_real'] !== null ? (float) $row['fidelidade_pontos_por_real'] : null,
             ultimoAcessoEm: $row['ultimo_acesso_em'] ?? null,
             status: (string) $row['status'],
             createdAt: isset($row['created_at']) ? (string) $row['created_at'] : null,

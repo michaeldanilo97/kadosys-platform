@@ -50,8 +50,9 @@ final class Profissional
         $params = ['barbearia_id' => $barbeariaId];
 
         if ($search !== '') {
-            $where .= ' AND (nome LIKE :busca OR especialidade LIKE :busca)';
+            $where .= ' AND (nome LIKE :busca OR especialidade LIKE :busca2)';
             $params['busca'] = '%' . $search . '%';
+            $params['busca2'] = '%' . $search . '%';
         }
 
         $total = (int) self::contarComFiltro($where, $params);

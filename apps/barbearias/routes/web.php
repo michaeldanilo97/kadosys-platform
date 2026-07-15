@@ -15,6 +15,7 @@ use Barbearias\Controllers\ConfiguracaoController;
 use Barbearias\Controllers\CrmController;
 use Barbearias\Controllers\DashboardController;
 use Barbearias\Controllers\FaturaController;
+use Barbearias\Controllers\FidelidadeController;
 use Barbearias\Controllers\FinanceiroController;
 use Barbearias\Controllers\LandingController;
 use Barbearias\Controllers\ListaEsperaController;
@@ -150,6 +151,13 @@ $router->post('/dashboard/financeiro/lancamentos/{id}/excluir', [FinanceiroContr
 
 // Comissoes (fechamento por profissional, com base nos atendimentos concluidos).
 $router->get('/dashboard/comissoes', [ComissaoController::class, 'index'], [AuthMiddleware::class]);
+
+// Fidelidade (pontos por atendimento pago, resgatados por recompensas).
+$router->get('/dashboard/fidelidade', [FidelidadeController::class, 'index'], [AuthMiddleware::class]);
+$router->post('/dashboard/fidelidade/configurar', [FidelidadeController::class, 'configurar'], [AuthMiddleware::class]);
+$router->post('/dashboard/fidelidade/recompensas', [FidelidadeController::class, 'recompensaStore'], [AuthMiddleware::class]);
+$router->post('/dashboard/fidelidade/recompensas/{id}/excluir', [FidelidadeController::class, 'recompensaDestroy'], [AuthMiddleware::class]);
+$router->post('/dashboard/fidelidade/resgatar', [FidelidadeController::class, 'resgatar'], [AuthMiddleware::class]);
 
 // Relatorios consolidados (faturamento, agendamentos, ticket medio, ocupacao).
 $router->get('/dashboard/relatorios', [RelatorioController::class, 'index'], [AuthMiddleware::class]);

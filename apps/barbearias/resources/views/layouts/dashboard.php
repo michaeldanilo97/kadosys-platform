@@ -21,6 +21,7 @@ $itensMenu = [
     ['slug' => 'lista-espera', 'href' => '/dashboard/lista-espera', 'icone' => '⏳', 'label' => 'Lista de espera'],
     ['slug' => 'clientes', 'href' => '/dashboard/clientes', 'icone' => '📇', 'label' => 'Clientes'],
     ['slug' => 'crm', 'href' => '/dashboard/crm', 'icone' => '🎯', 'label' => 'CRM'],
+    ['slug' => 'fidelidade', 'href' => '/dashboard/fidelidade', 'icone' => '🏆', 'label' => 'Fidelidade'],
     ['slug' => 'profissionais', 'href' => '/dashboard/profissionais', 'icone' => '👤', 'label' => 'Profissionais'],
     ['slug' => 'servicos', 'href' => '/dashboard/servicos', 'icone' => '✂️', 'label' => 'Serviços'],
     ['slug' => 'produtos', 'href' => '/dashboard/produtos', 'icone' => '🧴', 'label' => 'Produtos'],

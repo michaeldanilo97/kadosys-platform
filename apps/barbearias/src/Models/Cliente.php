@@ -17,7 +17,7 @@ use Barbearias\Core\Database;
  */
 final class Cliente
 {
-    private const SELECT_COLUNAS = 'id, barbearia_id, nome, telefone, email, data_nascimento, password, created_at';
+    private const SELECT_COLUNAS = 'id, barbearia_id, nome, telefone, email, data_nascimento, pontos_fidelidade, password, created_at';
 
     public function __construct(
         public readonly int $id,
@@ -26,6 +26,7 @@ final class Cliente
         public readonly ?string $telefone,
         public readonly ?string $email,
         public readonly ?string $dataNascimento,
+        public readonly int $pontosFidelidade,
         public readonly ?string $passwordHash,
         public readonly ?string $createdAt = null,
     ) {
@@ -40,8 +41,10 @@ final class Cliente
         $params = ['barbearia_id' => $barbeariaId];
 
         if ($search !== '') {
-            $where .= ' AND (nome LIKE :busca OR telefone LIKE :busca OR email LIKE :busca)';
+            $where .= ' AND (nome LIKE :busca OR telefone LIKE :busca2 OR email LIKE :busca3)';
             $params['busca'] = '%' . $search . '%';
+            $params['busca2'] = '%' . $search . '%';
+            $params['busca3'] = '%' . $search . '%';
         }
 
         $total = (int) self::contarComFiltro($where, $params);
@@ -122,7 +125,7 @@ final class Cliente
     public static function inativos(int $barbeariaId, int $dias): array
     {
         $stmt = Database::connection()->prepare(
-            "SELECT c.id, c.barbearia_id, c.nome, c.telefone, c.email, c.data_nascimento, c.password, c.created_at,
+            "SELECT c.id, c.barbearia_id, c.nome, c.telefone, c.email, c.data_nascimento, c.pontos_fidelidade, c.password, c.created_at,
                 MAX(a.data_hora) AS ultima_visita
              FROM clientes c
              INNER JOIN agendamentos a ON a.cliente_id = c.id AND a.status != 'cancelado'
@@ -193,6 +196,51 @@ final class Cliente
         ]);
     }
 
+    /**
+     * Busca clientes por nome ou telefone - usado na tela de fidelidade
+     * pra localizar quem vai resgatar uma recompensa (ver
+     * Barbearias\Controllers\FidelidadeController).
+     *
+     * @return array<int, self>
+     */
+    public static function buscarParaFidelidade(int $barbeariaId, string $termo, int $limite = 10): array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT ' . self::SELECT_COLUNAS . " FROM clientes
+             WHERE barbearia_id = :barbearia_id AND (nome LIKE :busca OR telefone LIKE :busca2)
+             ORDER BY nome ASC LIMIT {$limite}"
+        );
+        $stmt->execute(['barbearia_id' => $barbeariaId, 'busca' => '%' . $termo . '%', 'busca2' => '%' . $termo . '%']);
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    public static function adicionarPontos(int $id, int $barbeariaId, int $pontos): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE clientes SET pontos_fidelidade = pontos_fidelidade + :pontos WHERE id = :id AND barbearia_id = :barbearia_id'
+        );
+        $stmt->execute(['pontos' => $pontos, 'id' => $id, 'barbearia_id' => $barbeariaId]);
+    }
+
+    /**
+     * Debito atomico de pontos: a condicao "pontos_fidelidade >= pontos"
+     * dentro do proprio UPDATE evita saldo negativo mesmo com dois
+     * resgates simultaneos do mesmo cliente - se nao sobrar linha
+     * afetada, e porque nao havia saldo suficiente no momento exato do
+     * UPDATE (mesmo padrao de Barbearias\Models\Produto::baixarEstoque).
+     */
+    public static function debitarPontos(int $id, int $barbeariaId, int $pontos): bool
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE clientes SET pontos_fidelidade = pontos_fidelidade - :pontos
+             WHERE id = :id AND barbearia_id = :barbearia_id AND pontos_fidelidade >= :pontos_check'
+        );
+        $stmt->execute(['pontos' => $pontos, 'pontos_check' => $pontos, 'id' => $id, 'barbearia_id' => $barbeariaId]);
+
+        return $stmt->rowCount() > 0;
+    }
+
     public static function delete(int $id, int $barbeariaId): void
     {
         $stmt = Database::connection()->prepare('DELETE FROM clientes WHERE id = :id AND barbearia_id = :barbearia_id');
@@ -250,6 +298,7 @@ final class Cliente
             telefone: $row['telefone'] ?? null,
             email: $row['email'] ?? null,
             dataNascimento: $row['data_nascimento'] ?? null,
+            pontosFidelidade: (int) ($row['pontos_fidelidade'] ?? 0),
             passwordHash: $row['password'] ?? null,
             createdAt: isset($row['created_at']) ? (string) $row['created_at'] : null,
         );
