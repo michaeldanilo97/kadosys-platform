@@ -1,0 +1,19 @@
+{
+    "name": "kadosys/barbearias",
+    "description": "KADOSYS Barbearias - Plataforma de gestao para barbearias",
+    "type": "project",
+    "require": {
+        "php": ">=8.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Barbearias\\Core\\": "src/Core/",
+            "Barbearias\\Controllers\\": "src/Controllers/",
+            "Barbearias\\Models\\": "src/Models/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}

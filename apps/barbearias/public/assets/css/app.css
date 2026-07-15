@@ -1,0 +1,231 @@
+/*
+    KADOSYS Barbearias - estilos base
+    Segue a mesma identidade visual (dark, gradiente azul/roxo, glass
+    cards) do site institucional e do KADOSYS Igrejas, num arquivo bem
+    mais enxuto - este app ainda esta em fase inicial.
+*/
+
+:root {
+    --bg-dark: #0F172A;
+    --bg-dark-2: #111827;
+    --primary: #3B82F6;
+    --accent: #8B5CF6;
+    --white: #FFFFFF;
+    --gray-400: #9CA3AF;
+    --gray-500: #6B7280;
+    --text: #E5E7EB;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --radius: 16px;
+    --transition: all 0.2s ease;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text);
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+}
+
+.btn-k {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 999px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-k-grad {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: var(--white);
+}
+
+.btn-k-grad:hover {
+    filter: brightness(1.1);
+    color: var(--white);
+}
+
+/* ---- Auth (login) ------------------------------------------------- */
+
+.auth-shell {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 400px;
+    padding: 2.5rem;
+}
+
+.auth-brand {
+    font-weight: 800;
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.auth-subtitle {
+    color: var(--gray-400);
+    margin: 0 0 1.75rem;
+    font-size: 0.9rem;
+}
+
+.form-field {
+    margin-bottom: 1.1rem;
+}
+
+.form-field label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--gray-400);
+    margin-bottom: 0.4rem;
+}
+
+.form-field input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--glass-border);
+    background: rgba(15, 23, 42, 0.5);
+    color: var(--text);
+    font-size: 0.95rem;
+}
+
+.form-field input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.auth-alert {
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    margin-bottom: 1.25rem;
+}
+
+.auth-alert.error {
+    background: rgba(239, 68, 68, 0.12);
+    color: #FCA5A5;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+/* ---- Dashboard ------------------------------------------------------ */
+
+.dashboard-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.dashboard-topbar .brand {
+    font-weight: 800;
+}
+
+.dashboard-main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.dashboard-eyebrow {
+    color: var(--gray-400);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 0.3rem;
+}
+
+.dashboard-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0 0 2rem;
+}
+
+.modulo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.modulo-card {
+    padding: 1.5rem;
+    position: relative;
+}
+
+.modulo-card .icone {
+    font-size: 1.6rem;
+    margin-bottom: 0.75rem;
+}
+
+.modulo-card h3 {
+    font-size: 1.05rem;
+    margin: 0 0 0.35rem;
+}
+
+.modulo-card p {
+    color: var(--gray-400);
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.modulo-card .badge-em-breve {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--gray-400);
+    background: rgba(156, 163, 175, 0.12);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+}
+
+.btn-logout {
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: var(--gray-400);
+    border-radius: 999px;
+    padding: 0.5rem 1.1rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.btn-logout:hover {
+    color: var(--white);
+    border-color: var(--primary);
+}
