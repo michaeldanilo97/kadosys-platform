@@ -10,17 +10,31 @@ use Barbearias\Core\Database;
  * Membro da equipe que atende clientes (barbeiro/cabeleireiro). Toda
  * consulta PRECISA filtrar por barbearia_id, senao vazaria a equipe de
  * uma barbearia pra outra.
+ *
+ * "diasAtendimento" guarda os dias da semana que o profissional
+ * atende, no formato de DateTimeImmutable::format('w') (0 = domingo
+ * ... 6 = sabado) - "horarioInicio"/"horarioFim" delimitam o
+ * expediente. Os dois juntos alimentam o calculo de horarios
+ * disponiveis do agendamento publico (ver
+ * Barbearias\Controllers\AgendamentoPublicoController).
  */
 final class Profissional
 {
-    private const SELECT_COLUNAS = 'id, barbearia_id, nome, especialidade, telefone, ativo, created_at';
+    private const SELECT_COLUNAS = 'id, barbearia_id, nome, especialidade, email, telefone, foto_path,
+        dias_atendimento, horario_inicio, horario_fim, ativo, created_at';
 
+    /** @param array<int, int> $diasAtendimento */
     public function __construct(
         public readonly int $id,
         public readonly int $barbeariaId,
         public readonly string $nome,
         public readonly ?string $especialidade,
+        public readonly ?string $email,
         public readonly ?string $telefone,
+        public readonly ?string $fotoPath,
+        public readonly array $diasAtendimento,
+        public readonly ?string $horarioInicio,
+        public readonly ?string $horarioFim,
         public readonly bool $ativo,
         public readonly ?string $createdAt = null,
     ) {
@@ -90,36 +104,76 @@ final class Profissional
         return (int) $stmt->fetchColumn();
     }
 
-    public static function create(int $barbeariaId, string $nome, ?string $especialidade, ?string $telefone): int
-    {
+    /** @param array<int, int> $diasAtendimento */
+    public static function create(
+        int $barbeariaId,
+        string $nome,
+        ?string $especialidade,
+        ?string $email,
+        ?string $telefone,
+        array $diasAtendimento,
+        ?string $horarioInicio,
+        ?string $horarioFim,
+    ): int {
         $stmt = Database::connection()->prepare(
-            'INSERT INTO profissionais (barbearia_id, nome, especialidade, telefone, ativo, created_at)
-             VALUES (:barbearia_id, :nome, :especialidade, :telefone, 1, NOW())'
+            'INSERT INTO profissionais
+                (barbearia_id, nome, especialidade, email, telefone, dias_atendimento, horario_inicio, horario_fim, ativo, created_at)
+             VALUES
+                (:barbearia_id, :nome, :especialidade, :email, :telefone, :dias_atendimento, :horario_inicio, :horario_fim, 1, NOW())'
         );
         $stmt->execute([
             'barbearia_id' => $barbeariaId,
             'nome' => trim($nome),
             'especialidade' => self::nullable($especialidade),
+            'email' => self::nullable($email),
             'telefone' => self::nullable($telefone),
+            'dias_atendimento' => self::diasParaCsv($diasAtendimento),
+            'horario_inicio' => self::nullable($horarioInicio),
+            'horario_fim' => self::nullable($horarioFim),
         ]);
 
         return (int) Database::connection()->lastInsertId();
     }
 
-    public static function update(int $id, int $barbeariaId, string $nome, ?string $especialidade, ?string $telefone, bool $ativo): void
-    {
+    /** @param array<int, int> $diasAtendimento */
+    public static function update(
+        int $id,
+        int $barbeariaId,
+        string $nome,
+        ?string $especialidade,
+        ?string $email,
+        ?string $telefone,
+        array $diasAtendimento,
+        ?string $horarioInicio,
+        ?string $horarioFim,
+        bool $ativo,
+    ): void {
         $stmt = Database::connection()->prepare(
-            'UPDATE profissionais SET nome = :nome, especialidade = :especialidade, telefone = :telefone, ativo = :ativo
+            'UPDATE profissionais SET
+                nome = :nome, especialidade = :especialidade, email = :email, telefone = :telefone,
+                dias_atendimento = :dias_atendimento, horario_inicio = :horario_inicio, horario_fim = :horario_fim, ativo = :ativo
              WHERE id = :id AND barbearia_id = :barbearia_id'
         );
         $stmt->execute([
             'nome' => trim($nome),
             'especialidade' => self::nullable($especialidade),
+            'email' => self::nullable($email),
             'telefone' => self::nullable($telefone),
+            'dias_atendimento' => self::diasParaCsv($diasAtendimento),
+            'horario_inicio' => self::nullable($horarioInicio),
+            'horario_fim' => self::nullable($horarioFim),
             'ativo' => $ativo ? 1 : 0,
             'id' => $id,
             'barbearia_id' => $barbeariaId,
         ]);
+    }
+
+    public static function atualizarFoto(int $id, int $barbeariaId, ?string $fotoPath): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE profissionais SET foto_path = :foto_path WHERE id = :id AND barbearia_id = :barbearia_id'
+        );
+        $stmt->execute(['foto_path' => $fotoPath, 'id' => $id, 'barbearia_id' => $barbeariaId]);
     }
 
     public static function delete(int $id, int $barbeariaId): void
@@ -143,14 +197,31 @@ final class Profissional
         return $valor === '' ? null : $valor;
     }
 
+    /** @param array<int, int> $dias */
+    private static function diasParaCsv(array $dias): ?string
+    {
+        $dias = array_values(array_unique(array_filter($dias, static fn ($dia) => $dia >= 0 && $dia <= 6)));
+        sort($dias);
+
+        return $dias === [] ? null : implode(',', $dias);
+    }
+
     private static function fromRow(array $row): self
     {
+        $diasCsv = (string) ($row['dias_atendimento'] ?? '');
+        $dias = $diasCsv === '' ? [] : array_map('intval', explode(',', $diasCsv));
+
         return new self(
             id: (int) $row['id'],
             barbeariaId: (int) $row['barbearia_id'],
             nome: (string) $row['nome'],
             especialidade: $row['especialidade'] ?? null,
+            email: $row['email'] ?? null,
             telefone: $row['telefone'] ?? null,
+            fotoPath: $row['foto_path'] ?? null,
+            diasAtendimento: $dias,
+            horarioInicio: $row['horario_inicio'] ?? null,
+            horarioFim: $row['horario_fim'] ?? null,
             ativo: (bool) $row['ativo'],
             createdAt: isset($row['created_at']) ? (string) $row['created_at'] : null,
         );

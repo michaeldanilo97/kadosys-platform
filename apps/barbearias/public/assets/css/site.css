@@ -456,3 +456,67 @@
     font-size: 0.85rem;
     color: var(--gray-400);
 }
+
+/* ---- Agendamento publico ---------------------------------------------- */
+
+.horarios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.horario-chip {
+    padding: 0.55rem 0.5rem;
+    border-radius: 10px;
+    border: 1px solid var(--glass-border);
+    background: rgba(15, 23, 42, 0.4);
+    color: var(--text);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.horario-chip:hover {
+    border-color: rgba(59, 130, 246, 0.5);
+}
+
+.horario-chip.selecionado {
+    border-color: var(--primary);
+    background: rgba(59, 130, 246, 0.16);
+    color: var(--white);
+    font-weight: 700;
+}
+
+.confirmacao-card {
+    text-align: center;
+}
+
+.confirmacao-icone {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.confirmacao-detalhes {
+    text-align: left;
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+}
+
+.confirmacao-detalhes div {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    font-size: 0.9rem;
+}
+
+.confirmacao-detalhes div + div {
+    border-top: 1px solid var(--glass-border);
+}
+
+.confirmacao-detalhes span:first-child {
+    color: var(--gray-400);
+}

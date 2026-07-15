@@ -32,6 +32,21 @@ $itensMenu = [
     <title><?= htmlspecialchars($pageTitle ?? 'KADOSYS Barbearias', ENT_QUOTES, 'UTF-8') ?></title>
     <link rel="stylesheet" href="<?= $basePath ?>/assets/css/app.css?v=<?= View::assetVersion('assets/css/app.css') ?>">
     <link rel="stylesheet" href="<?= $basePath ?>/assets/css/site.css?v=<?= View::assetVersion('assets/css/site.css') ?>">
+    <script>
+        // Aplica o tema ANTES da primeira renderizacao, pra nao piscar
+        // escuro por uma fracao de segundo quando o padrao e o claro.
+        // O tema padrao do painel e o claro - so troca se a pessoa ja
+        // escolheu "escuro" antes (ver assets/js/dashboard.js).
+        (function () {
+            try {
+                if (window.localStorage.getItem('kadosys_barbearias_theme') !== 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+            } catch (error) {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
 </head>
 <body>
 <div class="dash-shell">
@@ -49,10 +64,15 @@ $itensMenu = [
         <div class="dash-sidebar-footer">
             <p class="barbearia-nome"><?= htmlspecialchars($barbearia->nome ?? '', ENT_QUOTES, 'UTF-8') ?></p>
             <p class="usuario-nome"><?= htmlspecialchars($user->name ?? '', ENT_QUOTES, 'UTF-8') ?></p>
-            <form method="POST" action="<?= $basePath ?>/logout">
-                <?= Csrf::field() ?>
-                <button type="submit" class="btn-logout" style="width:100%;">Sair</button>
-            </form>
+            <div class="dash-sidebar-footer-actions">
+                <button type="button" class="btn-theme-toggle" data-theme-toggle aria-label="Alternar tema claro/escuro">
+                    <span data-theme-icon>🌙</span> Tema
+                </button>
+                <form method="POST" action="<?= $basePath ?>/logout">
+                    <?= Csrf::field() ?>
+                    <button type="submit" class="btn-logout">Sair</button>
+                </form>
+            </div>
         </div>
     </aside>
 
@@ -66,28 +86,6 @@ $itensMenu = [
     </div>
 </div>
 
-<script>
-    (function () {
-        var sidebar = document.querySelector('[data-sidebar]');
-        var overlay = document.querySelector('[data-sidebar-overlay]');
-        var toggleBtn = document.querySelector('[data-sidebar-toggle]');
-
-        function fechar() {
-            sidebar.classList.remove('aberta');
-            overlay.classList.remove('aberta');
-        }
-
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', function () {
-                sidebar.classList.toggle('aberta');
-                overlay.classList.toggle('aberta');
-            });
-        }
-
-        if (overlay) {
-            overlay.addEventListener('click', fechar);
-        }
-    })();
-</script>
+<script src="<?= $basePath ?>/assets/js/dashboard.js?v=<?= View::assetVersion('assets/js/dashboard.js') ?>"></script>
 </body>
 </html>

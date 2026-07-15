@@ -45,7 +45,7 @@ $basePath = $config['base_path'] ?? '';
         </div>
 
         <?php if ($perfilSuccess): ?>
-            <div class="form-alert" style="background: rgba(34, 197, 94, 0.12); color: #86EFAC; border-color: rgba(34, 197, 94, 0.25);">
+            <div class="form-alert form-alert-success">
                 <div><?= htmlspecialchars($perfilSuccess, ENT_QUOTES, 'UTF-8') ?></div>
             </div>
         <?php endif; ?>
@@ -78,12 +78,23 @@ $basePath = $config['base_path'] ?? '';
 
     <div class="glass-card dash-panel">
         <div class="dash-panel-head">
+            <h2>Agendamento online</h2>
+            <p>Compartilhe esse link com seus clientes - eles escolhem o profissional, o serviço e o horário sozinhos.</p>
+        </div>
+        <div class="pix-copiacola" data-link-agendamento data-caminho="<?= $basePath ?>/agendar/<?= htmlspecialchars($barbearia->slug, ENT_QUOTES, 'UTF-8') ?>">
+            <input type="text" readonly data-link-agendamento-input>
+            <button type="button" class="btn-k btn-k-grad btn-k-sm" data-link-agendamento-copiar>Copiar</button>
+        </div>
+    </div>
+
+    <div class="glass-card dash-panel">
+        <div class="dash-panel-head">
             <h2>Equipe</h2>
             <p>Quem tem acesso ao painel da barbearia.</p>
         </div>
 
         <?php if ($equipeSuccess): ?>
-            <div class="form-alert" style="background: rgba(34, 197, 94, 0.12); color: #86EFAC; border-color: rgba(34, 197, 94, 0.25);">
+            <div class="form-alert form-alert-success">
                 <div><?= htmlspecialchars($equipeSuccess, ENT_QUOTES, 'UTF-8') ?></div>
             </div>
         <?php endif; ?>
@@ -159,3 +170,26 @@ $basePath = $config['base_path'] ?? '';
         </form>
     </div>
 </main>
+
+<script>
+    (function () {
+        var bloco = document.querySelector('[data-link-agendamento]');
+        if (!bloco) {
+            return;
+        }
+
+        var input = bloco.querySelector('[data-link-agendamento-input]');
+        var botao = bloco.querySelector('[data-link-agendamento-copiar]');
+        var link = window.location.origin + bloco.getAttribute('data-caminho');
+
+        input.value = link;
+
+        botao.addEventListener('click', function () {
+            input.select();
+            navigator.clipboard.writeText(link).then(function () {
+                botao.textContent = 'Copiado!';
+                setTimeout(function () { botao.textContent = 'Copiar'; }, 2000);
+            });
+        });
+    })();
+</script>

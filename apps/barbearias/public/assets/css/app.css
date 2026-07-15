@@ -16,8 +16,31 @@
     --text: #E5E7EB;
     --glass-bg: rgba(255, 255, 255, 0.03);
     --glass-border: rgba(255, 255, 255, 0.08);
+    --input-bg: rgba(15, 23, 42, 0.5);
     --radius: 16px;
     --transition: all 0.2s ease;
+}
+
+/*
+    Modo claro do painel (dashboard) - o site publico/institucional
+    (layouts/site.php) continua sempre escuro de proposito, entao esses
+    overrides so entram em vigor quando Barbearias\Core\Middleware
+    aplica data-theme="light" no <html> (ver assets/js/dashboard.js:
+    o tema padrao do PAINEL e o claro, salvo em localStorage).
+*/
+:root[data-theme="light"] {
+    --bg-dark: #F8FAFC;
+    --bg-dark-2: #FFFFFF;
+    --gray-400: #64748B;
+    --gray-500: #94A3B8;
+    --text: #1E293B;
+    --glass-bg: #FFFFFF;
+    --glass-border: rgba(15, 23, 42, 0.09);
+    --input-bg: rgba(15, 23, 42, 0.04);
+}
+
+:root[data-theme="light"] .glass-card {
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
 }
 
 * {
@@ -117,7 +140,7 @@ a {
     padding: 0.75rem 1rem;
     border-radius: 10px;
     border: 1px solid var(--glass-border);
-    background: rgba(15, 23, 42, 0.5);
+    background: var(--input-bg);
     color: var(--text);
     font-size: 0.95rem;
 }
@@ -216,6 +239,7 @@ a {
 }
 
 .btn-logout {
+    width: 100%;
     background: transparent;
     border: 1px solid var(--glass-border);
     color: var(--gray-400);
@@ -227,6 +251,33 @@ a {
 
 .btn-logout:hover {
     color: var(--white);
+    border-color: var(--primary);
+}
+
+.dash-sidebar-footer-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.btn-theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: var(--gray-400);
+    border-radius: 999px;
+    padding: 0.5rem 1.1rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: var(--transition);
+}
+
+.btn-theme-toggle:hover {
+    color: var(--text);
     border-color: var(--primary);
 }
 
@@ -453,7 +504,7 @@ a {
     padding: 0.65rem 1rem;
     border-radius: 10px;
     border: 1px solid var(--glass-border);
-    background: rgba(15, 23, 42, 0.5);
+    background: var(--input-bg);
     color: var(--text);
     font-size: 0.9rem;
 }
@@ -499,6 +550,30 @@ a {
 
 .crud-table .text-dim {
     color: var(--gray-500);
+}
+
+.crud-person {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.crud-avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.crud-avatar-inicial {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: var(--white);
+    font-weight: 700;
+    font-size: 0.85rem;
 }
 
 .actions-col {
@@ -617,7 +692,7 @@ a {
     padding: 0.75rem 1rem;
     border-radius: 10px;
     border: 1px solid var(--glass-border);
-    background: rgba(15, 23, 42, 0.5);
+    background: var(--input-bg);
     color: var(--text);
     font-size: 0.95rem;
     font-family: inherit;
@@ -697,4 +772,119 @@ a {
 
 .toggle-switch input:checked + .slider::before {
     transform: translateX(20px);
+}
+
+.form-alert-success {
+    background: rgba(34, 197, 94, 0.12);
+    color: #86EFAC;
+    border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.dias-semana-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.dia-semana-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid var(--glass-border);
+    background: var(--input-bg);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.dia-semana-chip input {
+    accent-color: var(--primary);
+}
+
+.dia-semana-chip:has(input:checked) {
+    border-color: var(--primary);
+    background: rgba(59, 130, 246, 0.12);
+    color: var(--primary);
+}
+
+.foto-preview {
+    display: block;
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-top: 0.6rem;
+    border: 1px solid var(--glass-border);
+}
+
+/* ---- Modo claro: ajustes de contraste ---------------------------------
+   A maioria dos componentes ja se adapta sozinha por reusar as
+   variaveis (--bg-dark/--text/--glass-bg/--glass-border/--input-bg)
+   redefinidas em :root[data-theme="light"] la em cima. Aqui ficam so
+   os pontos que usam cor fixa (nao variavel) pensada pro fundo escuro
+   - textos claros/pasteis que ficam ilegiveis num fundo branco.
+------------------------------------------------------------------------ */
+
+:root[data-theme="light"] .dash-nav-link:hover {
+    background: rgba(15, 23, 42, 0.045);
+}
+
+:root[data-theme="light"] .dash-nav-link.active {
+    color: var(--primary);
+}
+
+:root[data-theme="light"] .btn-logout:hover {
+    color: var(--primary);
+}
+
+:root[data-theme="light"] .crud-icon-btn:hover {
+    color: var(--primary);
+}
+
+:root[data-theme="light"] .form-alert {
+    background: rgba(239, 68, 68, 0.08);
+    color: #B91C1C;
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+:root[data-theme="light"] .form-alert-success {
+    background: rgba(34, 197, 94, 0.1);
+    color: #15803D;
+    border-color: rgba(34, 197, 94, 0.25);
+}
+
+:root[data-theme="light"] .status-badge.ok {
+    background: rgba(34, 197, 94, 0.12);
+    color: #15803D;
+}
+
+:root[data-theme="light"] .status-badge.warn {
+    background: rgba(245, 158, 11, 0.14);
+    color: #B45309;
+}
+
+:root[data-theme="light"] .status-badge.danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: #B91C1C;
+}
+
+:root[data-theme="light"] .status-badge.info {
+    background: rgba(59, 130, 246, 0.1);
+    color: #1D4ED8;
+}
+
+:root[data-theme="light"] .badge-em-breve {
+    background: rgba(100, 116, 139, 0.12);
+}
+
+:root[data-theme="light"] .btn-k-outline:hover {
+    color: var(--primary);
+}
+
+:root[data-theme="light"] .hero-eyebrow {
+    background: rgba(59, 130, 246, 0.1);
+    color: #1D4ED8;
 }

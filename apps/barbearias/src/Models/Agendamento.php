@@ -124,6 +124,27 @@ final class Agendamento
         return array_map(self::fromRow(...), $stmt->fetchAll());
     }
 
+    /**
+     * Agendamentos ja marcados de um profissional num dia especifico
+     * (nao-cancelados) - usado pra calcular quais horarios ainda estao
+     * livres no agendamento publico (ver
+     * Barbearias\Controllers\AgendamentoPublicoController).
+     *
+     * @return array<int, self>
+     */
+    public static function doDiaPorProfissional(int $barbeariaId, int $profissionalId, string $data): array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT ' . self::SELECT_COLUNAS . ' ' . self::JOINS . "
+             WHERE a.barbearia_id = :barbearia_id AND a.profissional_id = :profissional_id
+               AND DATE(a.data_hora) = :data AND a.status != 'cancelado'
+             ORDER BY a.data_hora ASC"
+        );
+        $stmt->execute(['barbearia_id' => $barbeariaId, 'profissional_id' => $profissionalId, 'data' => $data]);
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
     public static function create(
         int $barbeariaId,
         int $profissionalId,

@@ -60,6 +60,23 @@ final class Barbearia
         return $row ? self::fromRow($row) : null;
     }
 
+    /**
+     * So retorna barbearias ATIVAS - usado pela pagina publica de
+     * agendamento (Barbearias\Controllers\AgendamentoPublicoController),
+     * que nao pode expor o link de uma barbearia suspensa/com
+     * pagamento pendente.
+     */
+    public static function findBySlugAtiva(string $slug): ?self
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT ' . self::SELECT_COLUNAS . " FROM barbearias WHERE slug = :slug AND status = 'ativo' LIMIT 1"
+        );
+        $stmt->execute(['slug' => $slug]);
+        $row = $stmt->fetch();
+
+        return $row ? self::fromRow($row) : null;
+    }
+
     public static function buscarPorMpPreapprovalId(string $preapprovalId): ?self
     {
         $stmt = Database::connection()->prepare(
