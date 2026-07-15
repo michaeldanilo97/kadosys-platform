@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'Barbearias\\Controllers\\AgendamentoController' => $baseDir . '/src/Controllers/AgendamentoController.php',
     'Barbearias\\Controllers\\AgendamentoPublicoController' => $baseDir . '/src/Controllers/AgendamentoPublicoController.php',
+    'Barbearias\\Controllers\\AssinaturaClienteController' => $baseDir . '/src/Controllers/AssinaturaClienteController.php',
     'Barbearias\\Controllers\\AssinaturaController' => $baseDir . '/src/Controllers/AssinaturaController.php',
     'Barbearias\\Controllers\\AuthController' => $baseDir . '/src/Controllers/AuthController.php',
     'Barbearias\\Controllers\\BloqueioController' => $baseDir . '/src/Controllers/BloqueioController.php',
@@ -47,6 +48,9 @@ return array(
     'Barbearias\\Core\\Session' => $baseDir . '/src/Core/Session.php',
     'Barbearias\\Core\\View' => $baseDir . '/src/Core/View.php',
     'Barbearias\\Models\\Agendamento' => $baseDir . '/src/Models/Agendamento.php',
+    'Barbearias\\Models\\AssinaturaCliente' => $baseDir . '/src/Models/AssinaturaCliente.php',
+    'Barbearias\\Models\\AssinaturaConsumo' => $baseDir . '/src/Models/AssinaturaConsumo.php',
+    'Barbearias\\Models\\AssinaturaPlano' => $baseDir . '/src/Models/AssinaturaPlano.php',
     'Barbearias\\Models\\Avaliacao' => $baseDir . '/src/Models/Avaliacao.php',
     'Barbearias\\Models\\Barbearia' => $baseDir . '/src/Models/Barbearia.php',
     'Barbearias\\Models\\BloqueioAgenda' => $baseDir . '/src/Models/BloqueioAgenda.php',

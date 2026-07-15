@@ -33,6 +33,7 @@ class ComposerStaticInit52ccd6c8a3d3688b6572e8e675f2f624
     public static $classMap = array (
         'Barbearias\\Controllers\\AgendamentoController' => __DIR__ . '/../..' . '/src/Controllers/AgendamentoController.php',
         'Barbearias\\Controllers\\AgendamentoPublicoController' => __DIR__ . '/../..' . '/src/Controllers/AgendamentoPublicoController.php',
+        'Barbearias\\Controllers\\AssinaturaClienteController' => __DIR__ . '/../..' . '/src/Controllers/AssinaturaClienteController.php',
         'Barbearias\\Controllers\\AssinaturaController' => __DIR__ . '/../..' . '/src/Controllers/AssinaturaController.php',
         'Barbearias\\Controllers\\AuthController' => __DIR__ . '/../..' . '/src/Controllers/AuthController.php',
         'Barbearias\\Controllers\\BloqueioController' => __DIR__ . '/../..' . '/src/Controllers/BloqueioController.php',
@@ -72,6 +73,9 @@ class ComposerStaticInit52ccd6c8a3d3688b6572e8e675f2f624
         'Barbearias\\Core\\Session' => __DIR__ . '/../..' . '/src/Core/Session.php',
         'Barbearias\\Core\\View' => __DIR__ . '/../..' . '/src/Core/View.php',
         'Barbearias\\Models\\Agendamento' => __DIR__ . '/../..' . '/src/Models/Agendamento.php',
+        'Barbearias\\Models\\AssinaturaCliente' => __DIR__ . '/../..' . '/src/Models/AssinaturaCliente.php',
+        'Barbearias\\Models\\AssinaturaConsumo' => __DIR__ . '/../..' . '/src/Models/AssinaturaConsumo.php',
+        'Barbearias\\Models\\AssinaturaPlano' => __DIR__ . '/../..' . '/src/Models/AssinaturaPlano.php',
         'Barbearias\\Models\\Avaliacao' => __DIR__ . '/../..' . '/src/Models/Avaliacao.php',
         'Barbearias\\Models\\Barbearia' => __DIR__ . '/../..' . '/src/Models/Barbearia.php',
         'Barbearias\\Models\\BloqueioAgenda' => __DIR__ . '/../..' . '/src/Models/BloqueioAgenda.php',

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Barbearias\Controllers\AgendamentoController;
 use Barbearias\Controllers\AgendamentoPublicoController;
+use Barbearias\Controllers\AssinaturaClienteController;
 use Barbearias\Controllers\AssinaturaController;
 use Barbearias\Controllers\AuthController;
 use Barbearias\Controllers\BloqueioController;
@@ -124,6 +125,7 @@ $router->post('/dashboard/agendamentos/{id}', [AgendamentoController::class, 'up
 $router->post('/dashboard/agendamentos/{id}/status', [AgendamentoController::class, 'status'], [AuthMiddleware::class]);
 $router->get('/dashboard/agendamentos/{id}/pagamento', [AgendamentoController::class, 'pagamentoForm'], [AuthMiddleware::class]);
 $router->post('/dashboard/agendamentos/{id}/pagamento', [AgendamentoController::class, 'pagamento'], [AuthMiddleware::class]);
+$router->post('/dashboard/agendamentos/{id}/usar-assinatura', [AgendamentoController::class, 'usarAssinatura'], [AuthMiddleware::class]);
 $router->post('/dashboard/agendamentos/{id}/excluir', [AgendamentoController::class, 'destroy'], [AuthMiddleware::class]);
 
 // Bloqueios de agenda (ferias, folgas, compromissos pontuais).
@@ -155,6 +157,13 @@ $router->get('/dashboard/comissoes', [ComissaoController::class, 'index'], [Auth
 
 // Painel de recepcao (tela cheia, pensada pra ficar numa TV do salao).
 $router->get('/dashboard/recepcao', [RecepcaoController::class, 'index'], [AuthMiddleware::class]);
+
+// Assinaturas de cliente (pacotes pre-pagos de N atendimentos por mes).
+$router->get('/dashboard/assinaturas-clientes', [AssinaturaClienteController::class, 'index'], [AuthMiddleware::class]);
+$router->post('/dashboard/assinaturas-clientes/planos', [AssinaturaClienteController::class, 'planoStore'], [AuthMiddleware::class]);
+$router->post('/dashboard/assinaturas-clientes/planos/{id}/excluir', [AssinaturaClienteController::class, 'planoDestroy'], [AuthMiddleware::class]);
+$router->post('/dashboard/assinaturas-clientes/assinar', [AssinaturaClienteController::class, 'assinar'], [AuthMiddleware::class]);
+$router->post('/dashboard/assinaturas-clientes/{id}/cancelar', [AssinaturaClienteController::class, 'cancelar'], [AuthMiddleware::class]);
 
 // Fidelidade (pontos por atendimento pago, resgatados por recompensas).
 $router->get('/dashboard/fidelidade', [FidelidadeController::class, 'index'], [AuthMiddleware::class]);
