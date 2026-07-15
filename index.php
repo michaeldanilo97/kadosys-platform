@@ -143,65 +143,98 @@
                     <p class="text-gray-400 max-w-600 mx-auto">Soluções prontas e robustas para diversos segmentos do mercado.</p>
                 </div>
                 <div class="row g-4">
-                    <!-- Sistema 1 -->
+                    <!-- Sistema 1: Igrejas (disponivel) -->
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="0">
                         <div class="glass-card h-100 p-4 card-hover">
-                            <div class="icon-box mb-4">
-                                <i class="fas fa-church fs-2 text-primary"></i>
+                            <div class="d-flex justify-content-between align-items-start mb-4">
+                                <div class="icon-box">
+                                    <i class="fas fa-church fs-2 text-primary"></i>
+                                </div>
+                                <span class="system-status status-live"><i class="fas fa-circle"></i> Disponível</span>
                             </div>
-                            <h3 class="h4 fw-bold mb-3">Kadosys<sup class="brand-tm">TM</sup> Igrejas</h3>
-                            <p class="text-gray-400 mb-4">Gestão completa para igrejas, projeção, membros e ministérios.</p>
-                            <a href="apps/igrejas" class="btn btn-link text-primary p-0 text-decoration-none fw-semibold">Conhecer <i class="fas fa-arrow-right ms-2"></i></a>
+                            <h3 class="h4 fw-bold mb-2">Kadosys<sup class="brand-tm">TM</sup> Igrejas</h3>
+                            <p class="text-gray-400 mb-3">Gestão completa para igrejas: membros, ministérios, projeção e finanças.</p>
+                            <ul class="system-preview">
+                                <li><i class="fas fa-check"></i> Membros, ministérios e escalas</li>
+                                <li><i class="fas fa-check"></i> Check-in infantil com PIN de acesso</li>
+                                <li><i class="fas fa-check"></i> Projeção de letras, versículos e avisos</li>
+                                <li><i class="fas fa-check"></i> Doações e controle financeiro via Pix</li>
+                            </ul>
+                            <a href="apps/igrejas" class="btn btn-link text-primary p-0 text-decoration-none fw-semibold mt-3">Acessar <i class="fas fa-arrow-right ms-2"></i></a>
                         </div>
                     </div>
-                    <!-- Sistema 2 -->
+                    <!-- Sistema 2: Barbearias (em desenvolvimento) -->
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
                         <div class="glass-card h-100 p-4 card-hover">
-                            <div class="icon-box mb-4">
-                                <i class="fas fa-headset fs-2 text-primary"></i>
+                            <div class="d-flex justify-content-between align-items-start mb-4">
+                                <div class="icon-box">
+                                    <i class="fas fa-scissors fs-2 text-primary"></i>
+                                </div>
+                                <span class="system-status status-soon"><i class="fas fa-circle"></i> Em desenvolvimento</span>
                             </div>
-                            <h3 class="h4 fw-bold mb-3">Kadosys<sup class="brand-tm">TM</sup> Stream</h3>
-                            <p class="text-gray-400 mb-4">Plataforma de streaming de jogos com ultra baixa latência e alta performance.</p>
-                            <a href="#" class="btn btn-link text-primary p-0 text-decoration-none fw-semibold">Saiba Mais <i class="fas fa-arrow-right ms-2"></i></a>
+                            <h3 class="h4 fw-bold mb-2">Kadosys<sup class="brand-tm">TM</sup> Barbearias</h3>
+                            <p class="text-gray-400 mb-3">Gestão completa para barbearias, do agendamento à comissão do profissional.</p>
+                            <ul class="system-preview">
+                                <li><i class="fas fa-check"></i> Agendamento online de horários</li>
+                                <li><i class="fas fa-check"></i> Cadastro de profissionais e serviços</li>
+                                <li><i class="fas fa-check"></i> Lembretes automáticos por WhatsApp</li>
+                                <li><i class="fas fa-check"></i> Comissões e faturamento por profissional</li>
+                            </ul>
+                            <span class="system-cta-soon mt-3">Em desenvolvimento <i class="fas fa-clock ms-2"></i></span>
                         </div>
                     </div>
-                    <!-- Sistema 3 -->
+                    <!-- Sistema 3: Creches (em desenvolvimento) -->
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
                         <div class="glass-card h-100 p-4 card-hover">
-                            <div class="icon-box mb-4">
-                                <i class="fas fa-users-cog fs-2 text-primary"></i>
+                            <div class="d-flex justify-content-between align-items-start mb-4">
+                                <div class="icon-box">
+                                    <i class="fas fa-baby fs-2 text-primary"></i>
+                                </div>
+                                <span class="system-status status-soon"><i class="fas fa-circle"></i> Em desenvolvimento</span>
                             </div>
-                            <h3 class="h4 fw-bold mb-3">Kadosys<sup class="brand-tm">TM</sup> CRM</h3>
-                            <p class="text-gray-400 mb-4">Controle comercial avançado e relacionamento inteligente com clientes.</p>
-                            <a href="#" class="btn btn-link text-primary p-0 text-decoration-none fw-semibold">Saiba Mais <i class="fas fa-arrow-right ms-2"></i></a>
+                            <h3 class="h4 fw-bold mb-2">Kadosys<sup class="brand-tm">TM</sup> Creches</h3>
+                            <p class="text-gray-400 mb-3">Gestão para creches e educação infantil, conectando escola e família.</p>
+                            <ul class="system-preview">
+                                <li><i class="fas fa-check"></i> Cadastro de crianças e responsáveis</li>
+                                <li><i class="fas fa-check"></i> Diário digital (rotina, refeições, soninho)</li>
+                                <li><i class="fas fa-check"></i> Comunicados e avisos para as famílias</li>
+                                <li><i class="fas fa-check"></i> Controle de mensalidades</li>
+                            </ul>
+                            <span class="system-cta-soon mt-3">Em desenvolvimento <i class="fas fa-clock ms-2"></i></span>
                         </div>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Streaming Section -->
-        <section class="py-100 bg-dark-2 overflow-hidden">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right">
-                        <h2 class="display-5 fw-bold mb-4">Infraestrutura para <span class="text-gradient">Streaming de Jogos</span></h2>
-                        <p class="text-gray-400 mb-4">Desenvolvemos soluções de ponta para streamers e empresas de gaming. Tecnologia de ultra baixa latência para uma experiência imersiva.</p>
-                        <ul class="list-unstyled mb-5 row g-3">
-                            <li class="col-6"><i class="fas fa-check-circle text-primary me-2"></i> Latência Zero</li>
-                            <li class="col-6"><i class="fas fa-check-circle text-primary me-2"></i> Qualidade 4K/60fps</li>
-                            <li class="col-6"><i class="fas fa-check-circle text-primary me-2"></i> Integração Social</li>
-                            <li class="col-6"><i class="fas fa-check-circle text-primary me-2"></i> Dashboards em Tempo Real</li>
-                            <li class="col-6"><i class="fas fa-check-circle text-primary me-2"></i> Servidores Globais</li>
-                            <li class="col-6"><i class="fas fa-check-circle text-primary me-2"></i> Suporte 24/7</li>
-                        </ul>
-                        <a href="#solicitar" class="btn btn-primary-gradient btn-lg rounded-pill px-5">Solicitar Orçamento</a>
-                    </div>
-                    <div class="col-lg-6" data-aos="fade-left">
-                        <div class="hero-image-wrapper">
-                            <div class="glass-card p-2">
-                                <img src="assets/gaming-streaming.jpg" alt="Gaming Streaming" class="img-fluid rounded-4 shadow-glow">
+                    <!-- Sistema 4: Condominios (em desenvolvimento) -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                        <div class="glass-card h-100 p-4 card-hover">
+                            <div class="d-flex justify-content-between align-items-start mb-4">
+                                <div class="icon-box">
+                                    <i class="fas fa-city fs-2 text-primary"></i>
+                                </div>
+                                <span class="system-status status-soon"><i class="fas fa-circle"></i> Em desenvolvimento</span>
                             </div>
+                            <h3 class="h4 fw-bold mb-2">Kadosys<sup class="brand-tm">TM</sup> Condomínios</h3>
+                            <p class="text-gray-400 mb-3">Gestão condominial completa, de reservas a prestação de contas.</p>
+                            <ul class="system-preview">
+                                <li><i class="fas fa-check"></i> Reserva de áreas comuns</li>
+                                <li><i class="fas fa-check"></i> Comunicados e enquetes para moradores</li>
+                                <li><i class="fas fa-check"></i> Controle financeiro e boletos</li>
+                                <li><i class="fas fa-check"></i> Registro de ocorrências e portaria</li>
+                            </ul>
+                            <span class="system-cta-soon mt-3">Em desenvolvimento <i class="fas fa-clock ms-2"></i></span>
+                        </div>
+                    </div>
+                    <!-- Sistema 5: CRM (em breve) -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                        <div class="glass-card h-100 p-4 card-hover">
+                            <div class="d-flex justify-content-between align-items-start mb-4">
+                                <div class="icon-box">
+                                    <i class="fas fa-users-cog fs-2 text-primary"></i>
+                                </div>
+                                <span class="system-status status-soon"><i class="fas fa-circle"></i> Em breve</span>
+                            </div>
+                            <h3 class="h4 fw-bold mb-2">Kadosys<sup class="brand-tm">TM</sup> CRM</h3>
+                            <p class="text-gray-400 mb-3">Controle comercial avançado e relacionamento inteligente com clientes.</p>
+                            <span class="system-cta-soon mt-3">Em breve <i class="fas fa-clock ms-2"></i></span>
                         </div>
                     </div>
                 </div>
@@ -359,7 +392,6 @@
                                                 <option value="saas">Sistema SaaS Pronto</option>
                                                 <option value="sob-demanda">Desenvolvimento Sob Demanda</option>
                                                 <option value="ia">Integração de IA</option>
-                                                <option value="gaming-streaming">Gaming & Streaming</option>
                                                 <option value="outros">Outros</option>
                                             </select>
                                         </div>
@@ -438,22 +470,36 @@
                                 <i class="fas fa-church text-primary me-3"></i>
                                 <span>Kadosys<sup class="brand-tm">TM</sup> Igrejas</span>
                             </div>
-                            <small class="text-gray-500">igrejas.kadosys.com.br</small>
+                            <small class="text-green fw-semibold">Acessar</small>
                         </a>
-                        <a href="#" class="list-group-item list-group-item-action bg-transparent text-white border-secondary border-opacity-25 py-3 d-flex justify-content-between align-items-center">
+                        <div class="list-group-item bg-transparent text-white border-secondary border-opacity-25 py-3 d-flex justify-content-between align-items-center system-item-soon">
+                            <div>
+                                <i class="fas fa-scissors text-primary me-3"></i>
+                                <span>Kadosys<sup class="brand-tm">TM</sup> Barbearias</span>
+                            </div>
+                            <small class="text-gray-500">Em desenvolvimento</small>
+                        </div>
+                        <div class="list-group-item bg-transparent text-white border-secondary border-opacity-25 py-3 d-flex justify-content-between align-items-center system-item-soon">
+                            <div>
+                                <i class="fas fa-baby text-primary me-3"></i>
+                                <span>Kadosys<sup class="brand-tm">TM</sup> Creches</span>
+                            </div>
+                            <small class="text-gray-500">Em desenvolvimento</small>
+                        </div>
+                        <div class="list-group-item bg-transparent text-white border-secondary border-opacity-25 py-3 d-flex justify-content-between align-items-center system-item-soon">
+                            <div>
+                                <i class="fas fa-city text-primary me-3"></i>
+                                <span>Kadosys<sup class="brand-tm">TM</sup> Condomínios</span>
+                            </div>
+                            <small class="text-gray-500">Em desenvolvimento</small>
+                        </div>
+                        <div class="list-group-item bg-transparent text-white border-0 py-3 d-flex justify-content-between align-items-center system-item-soon">
                             <div>
                                 <i class="fas fa-users-cog text-primary me-3"></i>
                                 <span>Kadosys<sup class="brand-tm">TM</sup> CRM</span>
                             </div>
-                            <small class="text-gray-500">crm.kadosys.com.br</small>
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 d-flex justify-content-between align-items-center">
-                            <div>
-                                <i class="fas fa-headset text-primary me-3"></i>
-                                <span>Kadosys<sup class="brand-tm">TM</sup> Stream</span>
-                            </div>
-                            <small class="text-primary">Acessar</small>
-                        </a>
+                            <small class="text-gray-500">Em breve</small>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -473,7 +519,7 @@
                         <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
                         <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
                         <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://wa.me/5511933252478" class="social-icon" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
                     </div>
                 </div>
                 <div class="col-lg-2 col-md-4">
@@ -489,16 +535,17 @@
                     <h5 class="fw-bold mb-4">Nossos Sistemas</h5>
                     <ul class="list-unstyled footer-links">
                         <li><a href="apps/igrejas">Kadosys<sup class="brand-tm">TM</sup> Igrejas</a></li>
-                        <li><a href="#">Kadosys<sup class="brand-tm">TM</sup> CRM</a></li>
-                        <li><a href="#">Kadosys<sup class="brand-tm">TM</sup> Financeiro</a></li>
-                        <li><a href="#">Kadosys<sup class="brand-tm">TM</sup> Frota</a></li>
+                        <li><a href="#sistemas">Kadosys<sup class="brand-tm">TM</sup> Barbearias</a></li>
+                        <li><a href="#sistemas">Kadosys<sup class="brand-tm">TM</sup> Creches</a></li>
+                        <li><a href="#sistemas">Kadosys<sup class="brand-tm">TM</sup> Condomínios</a></li>
+                        <li><a href="#sistemas">Kadosys<sup class="brand-tm">TM</sup> CRM</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-3 col-md-4">
                     <h5 class="fw-bold mb-4">Contato</h5>
                     <ul class="list-unstyled footer-contact">
                         <li><i class="fas fa-envelope text-primary me-2"></i> contato@kadosys.com.br</li>
-                        <li><i class="fab fa-whatsapp text-primary me-2"></i> (11) 99999-9999</li>
+                        <li><i class="fab fa-whatsapp text-primary me-2"></i> (11) 93325-2478</li>
                         <li><i class="fas fa-map-marker-alt text-primary me-2"></i> São Paulo, SP</li>
                     </ul>
                 </div>
@@ -513,7 +560,7 @@
     </footer>
 
     <!-- Floating WhatsApp Button -->
-    <a href="https://wa.me/5511999999999" class="whatsapp-float" target="_blank">
+    <a href="https://wa.me/5511933252478" class="whatsapp-float" target="_blank" rel="noopener">
         <i class="fab fa-whatsapp"></i>
     </a>
 
