@@ -223,8 +223,28 @@
                             <span class="system-cta-soon mt-3">Em desenvolvimento <i class="fas fa-clock ms-2"></i></span>
                         </div>
                     </div>
-                    <!-- Sistema 5: CRM (em breve) -->
+                    <!-- Sistema 5: Sites (em desenvolvimento) -->
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                        <div class="glass-card h-100 p-4 card-hover">
+                            <div class="d-flex justify-content-between align-items-start mb-4">
+                                <div class="icon-box">
+                                    <i class="fas fa-paintbrush fs-2 text-primary"></i>
+                                </div>
+                                <span class="system-status status-soon"><i class="fas fa-circle"></i> Em desenvolvimento</span>
+                            </div>
+                            <h3 class="h4 fw-bold mb-2">Kadosys<sup class="brand-tm">TM</sup> Sites</h3>
+                            <p class="text-gray-400 mb-3">Construtor de sites arrasta e solta, com domínio e hospedagem inclusos.</p>
+                            <ul class="system-preview">
+                                <li><i class="fas fa-check"></i> Editor visual arrasta e solta</li>
+                                <li><i class="fas fa-check"></i> Modelos prontos por segmento</li>
+                                <li><i class="fas fa-check"></i> Domínio próprio e hospedagem inclusos</li>
+                                <li><i class="fas fa-check"></i> Publicação em poucos cliques</li>
+                            </ul>
+                            <span class="system-cta-soon mt-3">Em desenvolvimento <i class="fas fa-clock ms-2"></i></span>
+                        </div>
+                    </div>
+                    <!-- Sistema 6: CRM (em breve) -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
                         <div class="glass-card h-100 p-4 card-hover">
                             <div class="d-flex justify-content-between align-items-start mb-4">
                                 <div class="icon-box">
@@ -493,6 +513,13 @@
                             </div>
                             <small class="text-gray-500">Em desenvolvimento</small>
                         </div>
+                        <div class="list-group-item bg-transparent text-white border-secondary border-opacity-25 py-3 d-flex justify-content-between align-items-center system-item-soon">
+                            <div>
+                                <i class="fas fa-paintbrush text-primary me-3"></i>
+                                <span>Kadosys<sup class="brand-tm">TM</sup> Sites</span>
+                            </div>
+                            <small class="text-gray-500">Em desenvolvimento</small>
+                        </div>
                         <div class="list-group-item bg-transparent text-white border-0 py-3 d-flex justify-content-between align-items-center system-item-soon">
                             <div>
                                 <i class="fas fa-users-cog text-primary me-3"></i>
@@ -538,6 +565,7 @@
                         <li><a href="#sistemas">Kadosys<sup class="brand-tm">TM</sup> Barbearias</a></li>
                         <li><a href="#sistemas">Kadosys<sup class="brand-tm">TM</sup> Creches</a></li>
                         <li><a href="#sistemas">Kadosys<sup class="brand-tm">TM</sup> Condomínios</a></li>
+                        <li><a href="#sistemas">Kadosys<sup class="brand-tm">TM</sup> Sites</a></li>
                         <li><a href="#sistemas">Kadosys<sup class="brand-tm">TM</sup> CRM</a></li>
                     </ul>
                 </div>
