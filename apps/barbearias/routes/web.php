@@ -11,11 +11,13 @@ use Barbearias\Controllers\CadastroController;
 use Barbearias\Controllers\ClienteAreaController;
 use Barbearias\Controllers\ClienteController;
 use Barbearias\Controllers\ConfiguracaoController;
+use Barbearias\Controllers\CrmController;
 use Barbearias\Controllers\DashboardController;
 use Barbearias\Controllers\FaturaController;
 use Barbearias\Controllers\FinanceiroController;
 use Barbearias\Controllers\LandingController;
 use Barbearias\Controllers\ListaEsperaController;
+use Barbearias\Controllers\PortfolioController;
 use Barbearias\Controllers\ProfissionalController;
 use Barbearias\Controllers\ServicoController;
 use Barbearias\Controllers\UnidadeController;
@@ -89,6 +91,8 @@ $router->post('/dashboard/profissionais', [ProfissionalController::class, 'store
 $router->get('/dashboard/profissionais/{id}/editar', [ProfissionalController::class, 'edit'], [AuthMiddleware::class]);
 $router->post('/dashboard/profissionais/{id}', [ProfissionalController::class, 'update'], [AuthMiddleware::class]);
 $router->post('/dashboard/profissionais/{id}/excluir', [ProfissionalController::class, 'destroy'], [AuthMiddleware::class]);
+$router->post('/dashboard/profissionais/{id}/portfolio', [PortfolioController::class, 'upload'], [AuthMiddleware::class]);
+$router->post('/dashboard/portfolio/{id}/excluir', [PortfolioController::class, 'destroy'], [AuthMiddleware::class]);
 
 // Servicos.
 $router->get('/dashboard/servicos', [ServicoController::class, 'index'], [AuthMiddleware::class]);
@@ -122,6 +126,9 @@ $router->get('/dashboard/bloqueios', [BloqueioController::class, 'index'], [Auth
 $router->get('/dashboard/bloqueios/novo', [BloqueioController::class, 'create'], [AuthMiddleware::class]);
 $router->post('/dashboard/bloqueios', [BloqueioController::class, 'store'], [AuthMiddleware::class]);
 $router->post('/dashboard/bloqueios/{id}/excluir', [BloqueioController::class, 'destroy'], [AuthMiddleware::class]);
+
+// CRM (aniversariantes do mes + clientes inativos).
+$router->get('/dashboard/crm', [CrmController::class, 'index'], [AuthMiddleware::class]);
 
 // Lista de espera (quem tentou agendar sem achar horario livre).
 $router->get('/dashboard/lista-espera', [ListaEsperaController::class, 'index'], [AuthMiddleware::class]);

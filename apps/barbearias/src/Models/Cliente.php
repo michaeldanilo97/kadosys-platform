@@ -17,7 +17,7 @@ use Barbearias\Core\Database;
  */
 final class Cliente
 {
-    private const SELECT_COLUNAS = 'id, barbearia_id, nome, telefone, email, password, created_at';
+    private const SELECT_COLUNAS = 'id, barbearia_id, nome, telefone, email, data_nascimento, password, created_at';
 
     public function __construct(
         public readonly int $id,
@@ -25,6 +25,7 @@ final class Cliente
         public readonly string $nome,
         public readonly ?string $telefone,
         public readonly ?string $email,
+        public readonly ?string $dataNascimento,
         public readonly ?string $passwordHash,
         public readonly ?string $createdAt = null,
     ) {
@@ -108,32 +109,85 @@ final class Cliente
         return (int) $stmt->fetchColumn();
     }
 
-    public static function create(int $barbeariaId, string $nome, ?string $telefone, ?string $email): int
+    /**
+     * Clientes que ja tiveram pelo menos um agendamento (nao-cancelado)
+     * mas cujo agendamento mais recente foi ha mais de $dias dias -
+     * quem tem um agendamento futuro marcado NAO aparece aqui (o mais
+     * recente seria uma data futura, maior que o limite). Usado pelo
+     * CRM ("clientes inativos") pra dar uma lista de quem a barbearia
+     * pode tentar reativar.
+     *
+     * @return array<int, array{cliente: self, ultimaVisita: string}>
+     */
+    public static function inativos(int $barbeariaId, int $dias): array
     {
         $stmt = Database::connection()->prepare(
-            'INSERT INTO clientes (barbearia_id, nome, telefone, email, created_at)
-             VALUES (:barbearia_id, :nome, :telefone, :email, NOW())'
+            "SELECT c.id, c.barbearia_id, c.nome, c.telefone, c.email, c.data_nascimento, c.password, c.created_at,
+                MAX(a.data_hora) AS ultima_visita
+             FROM clientes c
+             INNER JOIN agendamentos a ON a.cliente_id = c.id AND a.status != 'cancelado'
+             WHERE c.barbearia_id = :barbearia_id
+             GROUP BY c.id
+             HAVING MAX(a.data_hora) < :limite
+             ORDER BY ultima_visita ASC"
+        );
+        $stmt->execute([
+            'barbearia_id' => $barbeariaId,
+            'limite' => (new \DateTimeImmutable('-' . $dias . ' days'))->format('Y-m-d H:i:s'),
+        ]);
+
+        return array_map(
+            static fn (array $row) => ['cliente' => self::fromRow($row), 'ultimaVisita' => (string) $row['ultima_visita']],
+            $stmt->fetchAll(),
+        );
+    }
+
+    /**
+     * Clientes com aniversario num mes especifico (1-12), ordenados
+     * pelo dia - usado pelo CRM ("aniversariantes do mes").
+     *
+     * @return array<int, self>
+     */
+    public static function aniversariantesDoMes(int $barbeariaId, int $mes): array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT ' . self::SELECT_COLUNAS . ' FROM clientes
+             WHERE barbearia_id = :barbearia_id AND data_nascimento IS NOT NULL AND MONTH(data_nascimento) = :mes
+             ORDER BY DAY(data_nascimento) ASC'
+        );
+        $stmt->execute(['barbearia_id' => $barbeariaId, 'mes' => $mes]);
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    public static function create(int $barbeariaId, string $nome, ?string $telefone, ?string $email, ?string $dataNascimento = null): int
+    {
+        $stmt = Database::connection()->prepare(
+            'INSERT INTO clientes (barbearia_id, nome, telefone, email, data_nascimento, created_at)
+             VALUES (:barbearia_id, :nome, :telefone, :email, :data_nascimento, NOW())'
         );
         $stmt->execute([
             'barbearia_id' => $barbeariaId,
             'nome' => trim($nome),
             'telefone' => self::nullable($telefone),
             'email' => self::nullable($email),
+            'data_nascimento' => self::nullable($dataNascimento),
         ]);
 
         return (int) Database::connection()->lastInsertId();
     }
 
-    public static function update(int $id, int $barbeariaId, string $nome, ?string $telefone, ?string $email): void
+    public static function update(int $id, int $barbeariaId, string $nome, ?string $telefone, ?string $email, ?string $dataNascimento): void
     {
         $stmt = Database::connection()->prepare(
-            'UPDATE clientes SET nome = :nome, telefone = :telefone, email = :email
+            'UPDATE clientes SET nome = :nome, telefone = :telefone, email = :email, data_nascimento = :data_nascimento
              WHERE id = :id AND barbearia_id = :barbearia_id'
         );
         $stmt->execute([
             'nome' => trim($nome),
             'telefone' => self::nullable($telefone),
             'email' => self::nullable($email),
+            'data_nascimento' => self::nullable($dataNascimento),
             'id' => $id,
             'barbearia_id' => $barbeariaId,
         ]);
@@ -195,6 +249,7 @@ final class Cliente
             nome: (string) $row['nome'],
             telefone: $row['telefone'] ?? null,
             email: $row['email'] ?? null,
+            dataNascimento: $row['data_nascimento'] ?? null,
             passwordHash: $row['password'] ?? null,
             createdAt: isset($row['created_at']) ? (string) $row['created_at'] : null,
         );

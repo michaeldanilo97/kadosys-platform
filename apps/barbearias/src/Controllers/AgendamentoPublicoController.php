@@ -12,6 +12,7 @@ use Barbearias\Models\Agendamento;
 use Barbearias\Models\Barbearia;
 use Barbearias\Models\Cliente;
 use Barbearias\Models\ListaEspera;
+use Barbearias\Models\PortfolioFoto;
 use Barbearias\Models\Profissional;
 use Barbearias\Models\Servico;
 use Barbearias\Models\Unidade;
@@ -37,6 +38,7 @@ final class AgendamentoPublicoController extends Controller
         }
 
         $profissionais = Profissional::ativos($barbearia->id);
+        $profissionalIds = array_map(static fn (Profissional $p) => $p->id, $profissionais);
 
         echo $this->view('public.agendar', [
             'pageTitle' => 'Agendar horário - ' . $barbearia->nome,
@@ -44,7 +46,8 @@ final class AgendamentoPublicoController extends Controller
             'profissionais' => $profissionais,
             'servicos' => Servico::ativos($barbearia->id),
             'unidades' => Unidade::temMultiplasAtivas($barbearia->id) ? Unidade::ativas($barbearia->id) : [],
-            'mapaUnidades' => Profissional::mapaUnidades(array_map(static fn (Profissional $p) => $p->id, $profissionais)),
+            'mapaUnidades' => Profissional::mapaUnidades($profissionalIds),
+            'mapaPortfolio' => PortfolioFoto::mapaDosProfissionais($profissionalIds),
             'csrf' => Csrf::field(),
             'errors' => Session::flash('agendamento_publico_errors') ?? [],
             'old' => Session::flash('agendamento_publico_old') ?? [],
@@ -131,7 +134,7 @@ final class AgendamentoPublicoController extends Controller
             $clienteId = Cliente::create($barbearia->id, (string) $dados['nome'], $telefone, $dados['email']);
         } else {
             $clienteId = $cliente->id;
-            Cliente::update($clienteId, $barbearia->id, (string) $dados['nome'], $telefone, $dados['email'] ?? $cliente->email);
+            Cliente::update($clienteId, $barbearia->id, (string) $dados['nome'], $telefone, $dados['email'] ?? $cliente->email, $cliente->dataNascimento);
         }
 
         Agendamento::create(
@@ -194,7 +197,7 @@ final class AgendamentoPublicoController extends Controller
             $clienteId = Cliente::create($barbearia->id, (string) $dados['nome'], $telefone, $dados['email']);
         } else {
             $clienteId = $cliente->id;
-            Cliente::update($clienteId, $barbearia->id, (string) $dados['nome'], $telefone, $dados['email'] ?? $cliente->email);
+            Cliente::update($clienteId, $barbearia->id, (string) $dados['nome'], $telefone, $dados['email'] ?? $cliente->email, $cliente->dataNascimento);
         }
 
         ListaEspera::create(

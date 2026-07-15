@@ -167,7 +167,7 @@ final class ClienteAreaController extends Controller
             // Ja tinha agendado antes sem conta - so "reivindica" o
             // cadastro que ja existe (mantem o historico de
             // agendamentos ligado a ele) em vez de duplicar.
-            Cliente::update($existente->id, $barbearia->id, $nome, $telefone, $email ?? $existente->email);
+            Cliente::update($existente->id, $barbearia->id, $nome, $telefone, $email ?? $existente->email, $existente->dataNascimento);
             Cliente::definirSenha($existente->id, $barbearia->id, (string) $dados['senha']);
             $clienteId = $existente->id;
         } else {

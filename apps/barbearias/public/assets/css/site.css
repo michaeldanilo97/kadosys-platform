@@ -408,6 +408,20 @@
     font-size: 0.7rem;
 }
 
+.portfolio-thumbs {
+    display: flex;
+    gap: 0.35rem;
+    margin-top: 0.5rem;
+}
+
+.portfolio-thumbs img {
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid var(--glass-border);
+}
+
 .form-alert {
     padding: 0.9rem 1rem;
     border-radius: 10px;
