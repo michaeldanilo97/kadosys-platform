@@ -86,6 +86,7 @@ final class KidsCriancaController extends Controller
             'historicoCheckins' => KidsCheckin::doCrianca($crianca->id),
             'success' => Session::flash('kids_crianca_success'),
             'errors' => Session::flash('kids_crianca_errors') ?? [],
+            'pinGerado' => Session::flash('kids_crianca_pin_gerado'),
             'csrfToken' => Csrf::token(),
         ], 'dashboard');
     }
@@ -200,6 +201,41 @@ final class KidsCriancaController extends Controller
         }
 
         $this->redirect('/dashboard/kids/criancas');
+    }
+
+    /**
+     * Gera (ou renova) o PIN de login da criança na Biblioteca - só
+     * funciona se já houver um responsável vinculado (ver
+     * KidsCrianca::gerarESalvarPin()), que serve como o consentimento
+     * mínimo antes de liberar esse acesso independente.
+     */
+    public function gerarPin(string $id): void
+    {
+        if (!Csrf::verify($this->request->input('_csrf_token'))) {
+            Session::flash('kids_crianca_errors', ['Sessão expirada. Tente novamente.']);
+            $this->redirect("/dashboard/kids/criancas/{$id}");
+        }
+
+        $pin = KidsCrianca::gerarESalvarPin((int) $id);
+
+        if ($pin === null) {
+            Session::flash('kids_crianca_errors', ['Vincule um responsável (Membro) antes de gerar o PIN da criança.']);
+        } else {
+            Session::flash('kids_crianca_pin_gerado', $pin);
+            Session::flash('kids_crianca_success', 'PIN gerado com sucesso. Entregue este código ao responsável.');
+        }
+
+        $this->redirect("/dashboard/kids/criancas/{$id}");
+    }
+
+    public function removerPin(string $id): void
+    {
+        if (Csrf::verify($this->request->input('_csrf_token'))) {
+            KidsCrianca::removerPin((int) $id);
+            Session::flash('kids_crianca_success', 'PIN removido. A criança não conseguirá mais entrar sozinha até um novo PIN ser gerado.');
+        }
+
+        $this->redirect("/dashboard/kids/criancas/{$id}");
     }
 
     private function tratarUploadFoto(int $criancaId): ?string
