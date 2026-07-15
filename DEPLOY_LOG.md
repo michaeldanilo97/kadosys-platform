@@ -17,6 +17,42 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 127 - 2026-07-15
+
+**Barbearias: módulos do sistema (Profissionais, Serviços, Clientes, Agendamentos, Faturas, Configurações)**
+
+- Shell do painel com barra lateral (sidebar) navegável entre todos os
+  módulos, com versão colapsável/gaveta pra celular - substitui a
+  topbar simples de "em breve" da fase inicial.
+- **Profissionais**, **Serviços** e **Clientes**: cadastro completo
+  (listar com busca e paginação, criar, editar, excluir), sempre
+  isolado por `barbearia_id`.
+- **Agendamentos**: cria um horário ligando cliente + profissional +
+  serviço + data/hora, com atalho pra marcar como concluído/cancelado
+  direto na listagem, além de editar/excluir. O painel inicial passa a
+  mostrar números reais (agendamentos hoje, profissionais/serviços
+  ativos, clientes) e os próximos agendamentos.
+- **Faturas**: histórico de cobrança (Pix - vem do banco; cartão -
+  buscado ao vivo na API do Mercado Pago, já que a cobrança recorrente
+  é debitada automaticamente sem passar pelo nosso webhook de novo).
+  Fica acessível mesmo com trial vencido/pagamento pendente, pra quem
+  está bloqueado conseguir ver a própria fatura pendente e pagar.
+- **Configurações**: dados da barbearia (nome/telefone) e gestão de
+  equipe (adicionar acesso, editar nome/e-mail/papel/senha, ativar ou
+  desativar, remover) - só administradores acessam, e nunca deixa a
+  barbearia sem nenhum admin ativo.
+
+**Testado localmente** (MariaDB + servidor PHP embutido, 2 barbearias
+simultâneas): criação/edição/exclusão nos 4 módulos de cadastro,
+agendamento citando profissional/serviço/cliente reais, atalho de
+concluir/cancelar, isolamento completo entre barbearias (uma não
+enxerga nem consegue acessar por URL direta os dados da outra), bloqueio
+de "usuario" (equipe) nas Configurações, regra de "sempre precisa
+sobrar 1 admin ativo", e a barra lateral testada em desktop e mobile
+(inclusive o menu gaveta) via screenshot.
+
+---
+
 ## Ajuste 126 - 2026-07-15
 
 **Barbearias: site institucional, cadastro público com cobrança automática (Pix/cartão) e trial de 5 dias**

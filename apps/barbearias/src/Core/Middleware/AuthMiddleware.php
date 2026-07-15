@@ -44,9 +44,11 @@ final class AuthMiddleware implements MiddlewareInterface
     {
         $uri = $this->uriSemBase($request);
 
-        // Sem essa excecao o proprio usuario ficaria preso sem conseguir
-        // ver a tela de assinatura pra pagar, ou sem conseguir sair da conta.
-        if (str_starts_with($uri, '/dashboard/assinatura') || $uri === '/logout') {
+        // Sem essas excecoes o proprio usuario ficaria preso sem conseguir
+        // ver a tela de assinatura pra pagar, sem conseguir ver o
+        // historico/status das proprias faturas, ou sem conseguir sair
+        // da conta.
+        if (str_starts_with($uri, '/dashboard/assinatura') || str_starts_with($uri, '/dashboard/faturas') || $uri === '/logout') {
             return;
         }
 

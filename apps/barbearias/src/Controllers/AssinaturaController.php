@@ -44,7 +44,9 @@ final class AssinaturaController extends Controller
 
         echo $this->view('dashboard.assinatura', [
             'pageTitle' => 'Assinatura - KADOSYS Barbearias',
+            'activeMenu' => 'assinatura',
             'errors' => Session::flash('assinatura_errors') ?? [],
+            'user' => $usuario,
             'barbearia' => $barbearia,
             'fatura' => ($fatura !== null && $fatura->status === FaturaBarbearia::STATUS_PENDENTE) ? $fatura : null,
         ], 'dashboard');
