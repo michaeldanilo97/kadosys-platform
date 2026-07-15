@@ -90,6 +90,11 @@ $horarioFimAtual = $old['horario_fim'] ?? ($profissional !== null ? substr((stri
                     <label for="horario_fim">Fim do expediente</label>
                     <input type="time" id="horario_fim" name="horario_fim" value="<?= htmlspecialchars($horarioFimAtual, ENT_QUOTES, 'UTF-8') ?>">
                 </div>
+                <div class="form-field">
+                    <label for="percentual_comissao">Comissão (%)</label>
+                    <input type="number" id="percentual_comissao" name="percentual_comissao" min="0" max="100" step="0.01" value="<?= htmlspecialchars((string) ($old['percentual_comissao'] ?? $profissional->percentualComissao ?? '0'), ENT_QUOTES, 'UTF-8') ?>">
+                    <span class="form-field-hint">Percentual sobre o valor dos serviços que esse profissional realiza.</span>
+                </div>
 
                 <?php if ($unidades !== []): ?>
                     <?php $unidadesMarcadas = $old['unidades'] ?? $unidadesAtuais; ?>

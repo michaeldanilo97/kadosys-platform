@@ -17,6 +17,47 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 135 - 2026-07-15
+
+**Barbearias: comissão de profissionais (fechamento por período)**
+
+- Cada profissional agora tem um **percentual de comissão** (0-100%,
+  novo campo no cadastro de profissional).
+- Nova tela `/dashboard/comissoes`: fechamento por período (padrão o
+  mês atual, com filtro de data e de profissional), mostrando por
+  profissional a quantidade de atendimentos concluídos, o valor
+  faturado e o valor de comissão a receber (faturado × percentual).
+  Clicar em um profissional abre o detalhe com a lista de atendimentos
+  que entraram na conta.
+- **Base de cálculo do valor faturado**: usa o valor realmente cobrado
+  no PDV (`financeiro_lancamentos.valor`, ligado ao agendamento) quando
+  existe; se o atendimento foi concluído sem registrar pagamento, usa o
+  preço atual do serviço como aproximação.
+- Sem geração automática de pagamento/repasse - é só o relatório de
+  fechamento, o pagamento em si continua fora do sistema (mesma lógica
+  de escopo das outras telas manuais deste módulo).
+
+**Ação manual pendente no banco `kadosys1_barbearias`** (só se
+`install.sql` já rodou antes): rodar
+`apps/barbearias/database/migrations/009_comissoes.sql` uma única vez
+- adiciona `profissionais.percentual_comissao` (`DECIMAL(5,2)`, padrão
+`0`), sem afetar dados existentes.
+
+**Testado localmente** (MariaDB + servidor PHP embutido, via curl com
+sessão autenticada): cadastrado profissional com 40% de comissão, dois
+agendamentos concluídos no período (um com pagamento manual de R$55
+registrado no PDV, divergente do preço de tabela de R$50; outro sem
+pagamento registrado, caindo pro preço de tabela de R$30) - relatório
+mostrou faturado R$85,00 e comissão R$34,00 (40% de 85), batendo com o
+cálculo esperado; detalhe por profissional listou os dois atendimentos
+com os valores corretos (R$55 e R$30); edição do percentual de
+comissão salvou corretamente (40% → 45,5%); validação de percentual
+fora da faixa (150%) bloqueou o cadastro sem gravar nada no banco;
+cadastro de novo profissional com percentual válido (25%) funcionou
+normalmente. Nenhum warning/erro no log do PHP durante os testes.
+
+---
+
 ## Ajuste 134 - 2026-07-15
 
 **Barbearias: CRM básico (aniversariantes/inativos) + portfólio de fotos dos profissionais**

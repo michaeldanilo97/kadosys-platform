@@ -10,6 +10,7 @@ use Barbearias\Controllers\BloqueioController;
 use Barbearias\Controllers\CadastroController;
 use Barbearias\Controllers\ClienteAreaController;
 use Barbearias\Controllers\ClienteController;
+use Barbearias\Controllers\ComissaoController;
 use Barbearias\Controllers\ConfiguracaoController;
 use Barbearias\Controllers\CrmController;
 use Barbearias\Controllers\DashboardController;
@@ -144,6 +145,9 @@ $router->post('/dashboard/financeiro/caixa/abrir', [FinanceiroController::class,
 $router->post('/dashboard/financeiro/caixa/fechar', [FinanceiroController::class, 'fecharCaixa'], [AuthMiddleware::class]);
 $router->post('/dashboard/financeiro/lancamentos', [FinanceiroController::class, 'store'], [AuthMiddleware::class]);
 $router->post('/dashboard/financeiro/lancamentos/{id}/excluir', [FinanceiroController::class, 'destroy'], [AuthMiddleware::class]);
+
+// Comissoes (fechamento por profissional, com base nos atendimentos concluidos).
+$router->get('/dashboard/comissoes', [ComissaoController::class, 'index'], [AuthMiddleware::class]);
 
 // Configuracoes (dados da barbearia + equipe) - so admin.
 $router->get('/dashboard/configuracoes', [ConfiguracaoController::class, 'index'], [AuthMiddleware::class]);

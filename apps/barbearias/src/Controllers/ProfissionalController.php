@@ -93,6 +93,7 @@ final class ProfissionalController extends Controller
             $dados['dias_atendimento'],
             $dados['horario_inicio'],
             $dados['horario_fim'],
+            $dados['percentual_comissao'],
         );
 
         Profissional::definirUnidades($id, $this->unidadesDoFormulario($barbeariaId));
@@ -158,6 +159,7 @@ final class ProfissionalController extends Controller
             $dados['dias_atendimento'],
             $dados['horario_inicio'],
             $dados['horario_fim'],
+            $dados['percentual_comissao'],
             $ativo,
         );
 
@@ -185,7 +187,7 @@ final class ProfissionalController extends Controller
         $this->redirect('/dashboard/profissionais');
     }
 
-    /** @return array{nome:string, especialidade:?string, email:?string, telefone:?string, dias_atendimento:array<int,int>, horario_inicio:?string, horario_fim:?string} */
+    /** @return array{nome:string, especialidade:?string, email:?string, telefone:?string, dias_atendimento:array<int,int>, horario_inicio:?string, horario_fim:?string, percentual_comissao:float} */
     private function dadosDoFormulario(): array
     {
         $diasInformados = $this->request->input('dias_atendimento', []);
@@ -199,6 +201,7 @@ final class ProfissionalController extends Controller
             'dias_atendimento' => $dias,
             'horario_inicio' => $this->normalizarHora($this->request->input('horario_inicio')),
             'horario_fim' => $this->normalizarHora($this->request->input('horario_fim')),
+            'percentual_comissao' => (float) str_replace(',', '.', (string) $this->request->input('percentual_comissao', '0')),
         ];
     }
 
@@ -249,6 +252,10 @@ final class ProfissionalController extends Controller
 
         if ($dados['horario_inicio'] !== null && $dados['horario_fim'] !== null && $dados['horario_inicio'] >= $dados['horario_fim']) {
             $errors[] = 'O horário de início precisa ser antes do horário de fim.';
+        }
+
+        if ($dados['percentual_comissao'] < 0 || $dados['percentual_comissao'] > 100) {
+            $errors[] = 'O percentual de comissão precisa estar entre 0 e 100.';
         }
 
         return $errors;
