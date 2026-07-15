@@ -1,6 +1,7 @@
 <?php
 
 use Barbearias\Core\Csrf;
+use Barbearias\Models\PortfolioFoto;
 use Barbearias\Models\Profissional;
 use Barbearias\Models\Unidade;
 
@@ -9,6 +10,7 @@ use Barbearias\Models\Unidade;
  * @var Profissional|null $profissional
  * @var array<int, Unidade> $unidades
  * @var array<int, int> $unidadesAtuais
+ * @var array<int, PortfolioFoto> $portfolio
  * @var array $old
  * @var array<int, string> $errors
  */
@@ -119,4 +121,48 @@ $horarioFimAtual = $old['horario_fim'] ?? ($profissional !== null ? substr((stri
             </div>
         </form>
     </div>
+
+    <?php if ($isEdit): ?>
+        <div class="glass-card dash-panel">
+            <div class="dash-panel-head">
+                <h2>Portfólio</h2>
+            </div>
+            <p class="form-field-hint" style="margin: -0.5rem 0 1rem;">Fotos de trabalhos desse profissional, mostradas na página pública de agendamento.</p>
+
+            <?php if ($portfolio !== []): ?>
+                <div class="escolha-grid" style="margin-bottom: 1.5rem;">
+                    <?php foreach ($portfolio as $foto): ?>
+                        <div class="crud-person" style="flex-direction: column; align-items: stretch;">
+                            <img src="<?= $basePath ?>/<?= htmlspecialchars($foto->fotoPath, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($foto->legenda ?? 'Foto do portfólio', ENT_QUOTES, 'UTF-8') ?>" class="foto-preview" style="width:100%; height:140px; object-fit:cover;">
+                            <?php if ($foto->legenda): ?>
+                                <p class="form-field-hint" style="margin: 0.4rem 0 0;"><?= htmlspecialchars($foto->legenda, ENT_QUOTES, 'UTF-8') ?></p>
+                            <?php endif; ?>
+                            <form method="POST" action="<?= $basePath ?>/dashboard/portfolio/<?= $foto->id ?>/excluir" onsubmit="return confirm('Remover esta foto do portfólio?');" style="margin-top: 0.5rem;">
+                                <?= Csrf::field() ?>
+                                <button type="submit" class="btn-k btn-k-outline btn-k-sm" style="width:100%;">Remover</button>
+                            </form>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
+            <form method="POST" action="<?= $basePath ?>/dashboard/profissionais/<?= $profissional->id ?>/portfolio" enctype="multipart/form-data">
+                <?= Csrf::field() ?>
+                <div class="crud-form-grid">
+                    <div class="form-field">
+                        <label for="portfolio_foto">Adicionar foto</label>
+                        <input type="file" id="portfolio_foto" name="foto" accept="image/png,image/jpeg,image/webp" required>
+                        <span class="form-field-hint">PNG, JPG ou WEBP - até 5MB.</span>
+                    </div>
+                    <div class="form-field">
+                        <label for="legenda">Legenda (opcional)</label>
+                        <input type="text" id="legenda" name="legenda" placeholder="Ex.: Degradê + barba">
+                    </div>
+                </div>
+                <div class="crud-form-actions">
+                    <button type="submit" class="btn-k btn-k-outline">Adicionar ao portfólio</button>
+                </div>
+            </form>
+        </div>
+    <?php endif; ?>
 </main>

@@ -17,6 +17,53 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 134 - 2026-07-15
+
+**Barbearias: CRM básico (aniversariantes/inativos) + portfólio de fotos dos profissionais**
+
+- **CRM** (`/dashboard/crm`): duas listas pra saber com quem vale a
+  pena entrar em contato -
+  - **Aniversariantes do mês** (precisa cadastrar a data de nascimento
+    do cliente - novo campo opcional no cadastro de cliente);
+  - **Clientes inativos**: quem já teve pelo menos um atendimento mas
+    não aparece há X dias (30/60/90/180, configurável na própria
+    tela) - um cliente com um agendamento **futuro** marcado nunca
+    aparece aqui.
+  - **Sem nenhum envio automático** - a aplicação não tem canal de
+    e-mail/WhatsApp configurado (mesma observação do Ajuste 133): é
+    só uma lista com nome/telefone/e-mail pra equipe entrar em
+    contato por fora.
+- **Portfólio de profissionais**: cada profissional ganha uma galeria
+  de fotos de trabalhos (upload/legenda/exclusão na tela de edição do
+  profissional), mostrada como miniaturas clicáveis no card de cada
+  profissional na página pública de agendamento.
+
+**Ação manual pendente no banco `kadosys1_barbearias`** (só se
+`install.sql` já rodou antes): rodar
+`apps/barbearias/database/migrations/008_crm_e_portfolio.sql` uma
+única vez - adiciona `clientes.data_nascimento` (nullable) e cria a
+tabela `portfolio_fotos`, sem afetar dados existentes.
+
+**Testado localmente** (MariaDB + servidor PHP embutido, via curl com
+sessão autenticada): cliente cadastrado com aniversário em julho
+aparece no CRM, cliente com aniversário em dezembro não aparece;
+agendamento antigo (simulado via SQL) faz o cliente aparecer como
+inativo com filtro de 60 dias; um agendamento futuro tira o cliente da
+lista de inativos; upload de foto de portfólio - encontrado e
+corrigido um bug real no meio do teste (o método do controller usava
+o nome de parâmetro errado pro placeholder de rota `{id}`, causando
+erro 500 - o roteador da aplicação passa os parâmetros de rota como
+argumentos nomeados do PHP, então o nome do parâmetro do método
+precisa bater exatamente com o nome usado na rota); depois do ajuste,
+upload/exclusão testados de ponta a ponta (aparece no dashboard e na
+página pública, some dos dois ao excluir, arquivo realmente removido
+do disco); confirmado que editar um cliente sem tocar no campo de
+nascimento preserva o valor, inclusive quando o mesmo telefone agenda
+de novo pela página pública. Nenhum warning/notice remanescente no log
+do PHP após a correção.
+
+---
+
 ## Ajuste 133 - 2026-07-15
 
 **Barbearias: lista de espera + cancelamento/reagendamento pelo cliente (fecha o módulo de agenda avançada)**

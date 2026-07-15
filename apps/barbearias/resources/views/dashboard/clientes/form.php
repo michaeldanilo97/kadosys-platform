@@ -47,6 +47,10 @@ $actionUrl = $isEdit ? $basePath . '/dashboard/clientes/' . $cliente->id : $base
                     <label for="email">E-mail</label>
                     <input type="email" id="email" name="email" value="<?= htmlspecialchars($old['email'] ?? $cliente->email ?? '', ENT_QUOTES, 'UTF-8') ?>" placeholder="cliente@email.com">
                 </div>
+                <div class="form-field">
+                    <label for="data_nascimento">Data de nascimento</label>
+                    <input type="date" id="data_nascimento" name="data_nascimento" value="<?= htmlspecialchars($old['data_nascimento'] ?? $cliente->dataNascimento ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                </div>
             </div>
 
             <div class="crud-form-actions">

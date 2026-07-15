@@ -177,6 +177,23 @@ CREATE TABLE IF NOT EXISTS bloqueios_agenda (
     CONSTRAINT bloqueios_agenda_periodo_check CHECK (data_fim > data_inicio)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Fotos do trabalho de um profissional (antes/depois, cortes feitos)
+-- mostradas na pagina publica de agendamento.
+CREATE TABLE IF NOT EXISTS portfolio_fotos (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    barbearia_id INT UNSIGNED NOT NULL,
+    profissional_id INT UNSIGNED NOT NULL,
+    foto_path VARCHAR(255) NOT NULL,
+    legenda VARCHAR(150) NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY portfolio_fotos_barbearia_id_index (barbearia_id),
+    KEY portfolio_fotos_profissional_id_index (profissional_id),
+    CONSTRAINT portfolio_fotos_barbearia_id_foreign
+        FOREIGN KEY (barbearia_id) REFERENCES barbearias (id) ON DELETE CASCADE,
+    CONSTRAINT portfolio_fotos_profissional_id_foreign
+        FOREIGN KEY (profissional_id) REFERENCES profissionais (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS servicos (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     barbearia_id INT UNSIGNED NOT NULL,
@@ -205,6 +222,7 @@ CREATE TABLE IF NOT EXISTS clientes (
     nome VARCHAR(150) NOT NULL,
     telefone VARCHAR(20) NULL,
     email VARCHAR(150) NULL,
+    data_nascimento DATE NULL,
     password VARCHAR(255) NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

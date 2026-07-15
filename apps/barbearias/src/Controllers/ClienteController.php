@@ -57,7 +57,7 @@ final class ClienteController extends Controller
             $this->redirect('/dashboard/clientes');
         }
 
-        $dados = $this->request->only(['nome', 'telefone', 'email']);
+        $dados = $this->request->only(['nome', 'telefone', 'email', 'data_nascimento']);
         $errors = $this->validar($dados);
 
         if ($errors !== []) {
@@ -66,7 +66,7 @@ final class ClienteController extends Controller
             $this->redirect('/dashboard/clientes/novo');
         }
 
-        Cliente::create($this->barbeariaId(), (string) $dados['nome'], $dados['telefone'], $dados['email']);
+        Cliente::create($this->barbeariaId(), (string) $dados['nome'], $dados['telefone'], $dados['email'], $dados['data_nascimento']);
 
         Session::flash('cliente_success', 'Cliente cadastrado com sucesso.');
         $this->redirect('/dashboard/clientes');
@@ -103,7 +103,7 @@ final class ClienteController extends Controller
             $this->redirect('/dashboard/clientes');
         }
 
-        $dados = $this->request->only(['nome', 'telefone', 'email']);
+        $dados = $this->request->only(['nome', 'telefone', 'email', 'data_nascimento']);
         $errors = $this->validar($dados);
 
         if ($errors !== []) {
@@ -112,7 +112,7 @@ final class ClienteController extends Controller
             $this->redirect('/dashboard/clientes/' . $id . '/editar');
         }
 
-        Cliente::update((int) $id, $barbeariaId, (string) $dados['nome'], $dados['telefone'], $dados['email']);
+        Cliente::update((int) $id, $barbeariaId, (string) $dados['nome'], $dados['telefone'], $dados['email'], $dados['data_nascimento']);
 
         Session::flash('cliente_success', 'Cliente atualizado com sucesso.');
         $this->redirect('/dashboard/clientes');
@@ -142,6 +142,12 @@ final class ClienteController extends Controller
 
         if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors[] = 'Informe um e-mail válido (ou deixe em branco).';
+        }
+
+        $dataNascimento = trim((string) ($dados['data_nascimento'] ?? ''));
+
+        if ($dataNascimento !== '' && (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataNascimento) || $dataNascimento > (new \DateTimeImmutable())->format('Y-m-d'))) {
+            $errors[] = 'Informe uma data de nascimento válida (ou deixe em branco).';
         }
 
         return $errors;

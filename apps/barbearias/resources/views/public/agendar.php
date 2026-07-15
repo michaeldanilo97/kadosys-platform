@@ -1,6 +1,7 @@
 <?php
 
 use Barbearias\Models\Barbearia;
+use Barbearias\Models\PortfolioFoto;
 use Barbearias\Models\Profissional;
 use Barbearias\Models\Servico;
 use Barbearias\Models\Unidade;
@@ -12,6 +13,7 @@ use Barbearias\Models\Unidade;
  * @var array<int, Servico> $servicos
  * @var array<int, Unidade> $unidades
  * @var array<int, array<int, int>> $mapaUnidades
+ * @var array<int, array<int, PortfolioFoto>> $mapaPortfolio
  * @var string $csrf
  * @var array<int, string> $errors
  * @var array $old
@@ -74,6 +76,15 @@ $basePath = $config['base_path'] ?? '';
                                 <span class="nome"><?= htmlspecialchars($profissional->nome, ENT_QUOTES, 'UTF-8') ?></span>
                                 <?php if ($profissional->especialidade): ?>
                                     <span class="desc"><?= htmlspecialchars($profissional->especialidade, ENT_QUOTES, 'UTF-8') ?></span>
+                                <?php endif; ?>
+                                <?php if (($mapaPortfolio[$profissional->id] ?? []) !== []): ?>
+                                    <span class="portfolio-thumbs">
+                                        <?php foreach (array_slice($mapaPortfolio[$profissional->id], 0, 4) as $foto): ?>
+                                            <a href="<?= $basePath ?>/<?= htmlspecialchars($foto->fotoPath, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener">
+                                                <img src="<?= $basePath ?>/<?= htmlspecialchars($foto->fotoPath, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($foto->legenda ?? ('Trabalho de ' . $profissional->nome), ENT_QUOTES, 'UTF-8') ?>" loading="lazy">
+                                            </a>
+                                        <?php endforeach; ?>
+                                    </span>
                                 <?php endif; ?>
                             </label>
                         <?php endforeach; ?>

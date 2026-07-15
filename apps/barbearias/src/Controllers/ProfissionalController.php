@@ -9,6 +9,7 @@ use Barbearias\Core\Controller;
 use Barbearias\Core\Csrf;
 use Barbearias\Core\Session;
 use Barbearias\Models\Barbearia;
+use Barbearias\Models\PortfolioFoto;
 use Barbearias\Models\Profissional;
 use Barbearias\Models\Unidade;
 use Barbearias\Models\User;
@@ -60,6 +61,7 @@ final class ProfissionalController extends Controller
             'profissional' => null,
             'unidades' => Unidade::temMultiplasAtivas($barbeariaId) ? Unidade::ativas($barbeariaId) : [],
             'unidadesAtuais' => [],
+            'portfolio' => [],
             'old' => Session::flash('profissional_old') ?? [],
             'errors' => Session::flash('profissional_errors') ?? [],
         ], 'dashboard');
@@ -117,6 +119,7 @@ final class ProfissionalController extends Controller
             'profissional' => $profissional,
             'unidades' => Unidade::temMultiplasAtivas($barbeariaId) ? Unidade::ativas($barbeariaId) : [],
             'unidadesAtuais' => Profissional::unidadeIds($profissional->id),
+            'portfolio' => PortfolioFoto::doProfissional($profissional->id, $barbeariaId),
             'old' => Session::flash('profissional_old') ?? [],
             'errors' => Session::flash('profissional_errors') ?? [],
         ], 'dashboard');
