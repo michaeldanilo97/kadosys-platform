@@ -19,6 +19,7 @@ use Barbearias\Controllers\FinanceiroController;
 use Barbearias\Controllers\LandingController;
 use Barbearias\Controllers\ListaEsperaController;
 use Barbearias\Controllers\PortfolioController;
+use Barbearias\Controllers\ProdutoController;
 use Barbearias\Controllers\ProfissionalController;
 use Barbearias\Controllers\ServicoController;
 use Barbearias\Controllers\UnidadeController;
@@ -148,6 +149,15 @@ $router->post('/dashboard/financeiro/lancamentos/{id}/excluir', [FinanceiroContr
 
 // Comissoes (fechamento por profissional, com base nos atendimentos concluidos).
 $router->get('/dashboard/comissoes', [ComissaoController::class, 'index'], [AuthMiddleware::class]);
+
+// Produtos (catalogo + estoque + venda avulsa).
+$router->get('/dashboard/produtos', [ProdutoController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/produtos/novo', [ProdutoController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/produtos', [ProdutoController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/produtos/{id}/editar', [ProdutoController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/dashboard/produtos/{id}', [ProdutoController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/produtos/{id}/excluir', [ProdutoController::class, 'destroy'], [AuthMiddleware::class]);
+$router->post('/dashboard/produtos/{id}/vender', [ProdutoController::class, 'vender'], [AuthMiddleware::class]);
 
 // Configuracoes (dados da barbearia + equipe) - so admin.
 $router->get('/dashboard/configuracoes', [ConfiguracaoController::class, 'index'], [AuthMiddleware::class]);

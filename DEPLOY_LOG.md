@@ -17,6 +17,44 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 136 - 2026-07-15
+
+**Barbearias: produtos e estoque (venda avulsa + baixa automática)**
+
+- Nova tela **`/dashboard/produtos`**: cadastro de produtos (nome,
+  preço, estoque atual, estoque mínimo), com alerta de **estoque
+  baixo** no topo da tela (produtos com estoque no ou abaixo do
+  mínimo cadastrado).
+- **Venda avulsa** direto na listagem: escolhe quantidade e forma de
+  pagamento, sem precisar de agendamento - a baixa no estoque é
+  **atômica** (o próprio `UPDATE` já checa se ainda há estoque
+  suficiente, evitando estoque negativo mesmo em duas vendas
+  simultâneas do mesmo produto) e, se a baixa funcionar, gera
+  automaticamente um lançamento de receita no financeiro (dentro do
+  caixa aberto, se houver um) - aparece normalmente na tela
+  `/dashboard/financeiro` como qualquer outro lançamento.
+- `financeiro_lancamentos` ganhou `produto_id`/`quantidade` (mesmo
+  padrão já usado com `agendamento_id` pro pagamento de atendimento),
+  permitindo rastrear qual venda de produto gerou qual lançamento.
+
+**Ação manual pendente no banco `kadosys1_barbearias`** (só se
+`install.sql` já rodou antes): rodar
+`apps/barbearias/database/migrations/010_produtos.sql` uma única vez
+- cria a tabela `produtos` e adiciona `financeiro_lancamentos.produto_id`/`quantidade`,
+sem afetar dados existentes.
+
+**Testado localmente** (MariaDB + servidor PHP embutido, via curl com
+sessão autenticada): produto cadastrado (estoque 5, mínimo 3, ainda
+não aparece no alerta); venda de 2 unidades - estoque caiu pra 3,
+lançamento de receita criado com valor R$90,00 (2x R$45,00), produto
+passou a aparecer no alerta de estoque baixo (3 = mínimo); tentativa de
+vender 100 unidades (mais do que o estoque disponível) foi bloqueada
+com mensagem de erro e **não alterou o estoque**; edição de
+nome/preço/estoque salvou corretamente. Nenhum warning/erro no log do
+PHP durante os testes.
+
+---
+
 ## Ajuste 135 - 2026-07-15
 
 **Barbearias: comissão de profissionais (fechamento por período)**
