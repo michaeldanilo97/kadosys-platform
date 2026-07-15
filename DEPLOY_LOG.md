@@ -17,6 +17,39 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 119 - 2026-07-15
+
+**Login no domínio raiz: seleciona a igreja quando o e-mail está em mais de uma**
+
+- Até agora, a tela de login do domínio raiz da plataforma
+  (`kadosys.com.br`, fora de qualquer subdomínio de igreja) pedia
+  e-mail e senha juntos, igual a qualquer tela de login de igreja
+  específica - mas não existe uma tabela central de usuários (cada
+  igreja tem seu próprio banco isolado), então não tinha como saber
+  antes pra qual banco mandar a senha.
+- Agora essa tela pede só o e-mail primeiro. Ao continuar, o sistema
+  procura em todas as igrejas ativas quais têm um usuário com esse
+  e-mail cadastrado:
+  - **nenhuma encontrada** - segue pro formulário normal (e-mail +
+    senha) na própria instalação atual, sem revelar se o e-mail existe
+    ou não em outro lugar;
+  - **uma encontrada** - manda direto pro subdomínio daquela igreja,
+    sem fricção extra;
+  - **duas ou mais encontradas** - mostra a nova tela **"Qual
+    igreja?"**, com um cartão por igreja (nome + subdomínio) pra
+    escolher pra onde ir digitar a senha.
+- Dentro do subdomínio de uma igreja específica, o login continua
+  exatamente como sempre foi (e-mail + senha juntos, sem esse passo
+  extra) - a mudança só existe no domínio raiz, onde a ambiguidade de
+  fato existe.
+- Nova consulta `Tenant::ativasComEmailCadastrado()` conecta,
+  temporariamente, no banco de cada igreja ativa (via
+  `Database::conexaoAvulsa()`, com timeout curto pra não travar a
+  busca se alguma estiver fora do ar) só pra checar se o e-mail existe
+  ali - sem nunca conferir a senha nessa etapa.
+
+---
+
 ## Ajuste 118 - 2026-07-15
 
 **Segundo lote grande da biblioteca oficial KADOSYS (historias, quiz, jogos e mais)**
