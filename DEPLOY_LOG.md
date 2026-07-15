@@ -17,6 +17,52 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 142 - 2026-07-15
+
+**Barbearias: assinaturas de cliente (pacotes pré-pagos de atendimentos por mês)**
+
+- Nova tela **`/dashboard/assinaturas-clientes`**:
+  - **Planos**: cadastro simples (nome, preço mensal, quantos
+    atendimentos por mês o pacote inclui) e exclusão.
+  - **Assinar cliente**: busca por nome/telefone e assina num plano -
+    cada cliente só pode ter **uma assinatura ativa por vez**.
+  - **Assinantes ativos**: lista com o uso do ciclo atual (ex.: "1/4")
+    e botão de cancelar.
+- **Sem cron nenhum**: o ciclo mensal é ancorado na data em que o
+  cliente assinou (não no dia 1), e o "início do ciclo atual" é
+  sempre recalculado na hora com base na data de hoje - não existe
+  job nenhum "resetando" saldo no fim do mês.
+- **Consumo integrado ao fluxo de pagamento existente**: na tela de
+  concluir atendimento (`/dashboard/agendamentos/{id}/pagamento`), se
+  o cliente tiver assinatura ativa com saldo no ciclo, aparece um
+  aviso com o saldo e um botão **"Concluir usando a assinatura (sem
+  cobrar)"** como alternativa ao pagamento avulso de sempre - esse
+  caminho conclui o atendimento e registra o consumo, mas **não gera
+  lançamento financeiro** (a mensalidade já foi cobrada fora do
+  sistema, mesma lógica manual do resto do financeiro/fidelidade).
+- Sem saldo suficiente no ciclo, a opção simplesmente não aparece (o
+  cliente segue pagando avulso normalmente).
+
+**Ação manual pendente no banco `kadosys1_barbearias`** (só se
+`install.sql` já rodou antes): rodar
+`apps/barbearias/database/migrations/013_assinaturas_clientes.sql`
+uma única vez - cria as tabelas `assinatura_planos`,
+`assinaturas_clientes` e `assinatura_consumos`, sem afetar dados
+existentes.
+
+**Testado localmente** (MariaDB + servidor PHP embutido, via curl com
+sessão autenticada): plano "4 atendimentos por R$120" cadastrado;
+cliente assinado (bloqueado corretamente ao tentar assinar de novo
+enquanto já tinha assinatura ativa); novo agendamento do cliente
+mostrou "4 de 4 restantes" na tela de pagamento; ao concluir usando a
+assinatura, o agendamento foi marcado concluído, um consumo foi
+registrado e **nenhum** lançamento financeiro foi criado (confirmado
+via consulta direta); listagem de assinantes ativos passou a mostrar
+"1/4"; cancelamento de assinatura funcionou e mudou o status pra
+"cancelada". Nenhum warning/erro no log do PHP durante os testes.
+
+---
+
 ## Ajuste 141 - 2026-07-15
 
 **Barbearias: white-label (logo e cor de destaque por barbearia)**

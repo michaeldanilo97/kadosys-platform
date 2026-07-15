@@ -9,6 +9,8 @@ use Barbearias\Core\Controller;
 use Barbearias\Core\Csrf;
 use Barbearias\Core\Session;
 use Barbearias\Models\Agendamento;
+use Barbearias\Models\AssinaturaCliente;
+use Barbearias\Models\AssinaturaConsumo;
 use Barbearias\Models\Barbearia;
 use Barbearias\Models\BloqueioAgenda;
 use Barbearias\Models\Caixa;
@@ -193,6 +195,14 @@ final class AgendamentoController extends Controller
             $this->redirect('/dashboard/agendamentos');
         }
 
+        $assinatura = AssinaturaCliente::ativaDoCliente($agendamento->clienteId, $barbeariaId);
+        $saldoAssinatura = null;
+
+        if ($assinatura !== null) {
+            $usados = AssinaturaConsumo::contarNoCiclo($assinatura->id, $assinatura->inicioCicloAtual(new \DateTimeImmutable('today')));
+            $saldoAssinatura = ['assinatura' => $assinatura, 'usados' => $usados, 'restantes' => max(0, $assinatura->planoAtendimentosPorMes - $usados)];
+        }
+
         echo $this->view('dashboard.agendamentos.pagamento', [
             'pageTitle' => 'Registrar pagamento - KADOSYS Barbearias',
             'activeMenu' => 'agendamentos',
@@ -200,9 +210,52 @@ final class AgendamentoController extends Controller
             'barbearia' => Barbearia::find($barbeariaId),
             'agendamento' => $agendamento,
             'formasPagamento' => FinanceiroLancamento::FORMAS_PAGAMENTO,
+            'saldoAssinatura' => $saldoAssinatura,
             'errors' => Session::flash('agendamento_pagamento_errors') ?? [],
             'old' => Session::flash('agendamento_pagamento_old') ?? [],
         ], 'dashboard');
+    }
+
+    /**
+     * Conclui o atendimento consumindo uma vaga da assinatura ativa do
+     * cliente, em vez de registrar um pagamento avulso - a mensalidade
+     * ja cobre isso (cobrada fora do sistema), entao NAO gera
+     * lancamento financeiro.
+     */
+    public function usarAssinatura(string $id): void
+    {
+        $barbeariaId = $this->barbeariaId();
+        $agendamento = Agendamento::find((int) $id, $barbeariaId);
+
+        if ($agendamento === null || $agendamento->status !== Agendamento::STATUS_AGENDADO) {
+            $this->redirect('/dashboard/agendamentos');
+        }
+
+        if (!Csrf::verify($this->request->input('_csrf_token'))) {
+            $this->redirect('/dashboard/agendamentos');
+        }
+
+        $assinatura = AssinaturaCliente::ativaDoCliente($agendamento->clienteId, $barbeariaId);
+
+        if ($assinatura === null) {
+            $this->redirect('/dashboard/agendamentos/' . $id . '/pagamento');
+        }
+
+        $usados = AssinaturaConsumo::contarNoCiclo($assinatura->id, $assinatura->inicioCicloAtual(new \DateTimeImmutable('today')));
+
+        if ($usados >= $assinatura->planoAtendimentosPorMes) {
+            Session::flash('agendamento_pagamento_errors', ['Essa assinatura já usou todos os atendimentos do ciclo atual.']);
+            $this->redirect('/dashboard/agendamentos/' . $id . '/pagamento');
+        }
+
+        Agendamento::atualizarStatus((int) $id, $barbeariaId, Agendamento::STATUS_CONCLUIDO);
+
+        if (!AssinaturaConsumo::existeParaAgendamento((int) $id)) {
+            AssinaturaConsumo::create($assinatura->id, (int) $id);
+        }
+
+        Session::flash('agendamento_success', 'Agendamento concluído usando a assinatura.');
+        $this->redirect('/dashboard/agendamentos');
     }
 
     public function pagamento(string $id): void

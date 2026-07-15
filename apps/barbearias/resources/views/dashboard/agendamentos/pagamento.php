@@ -2,11 +2,13 @@
 
 use Barbearias\Core\Csrf;
 use Barbearias\Models\Agendamento;
+use Barbearias\Models\AssinaturaCliente;
 
 /**
  * @var array $config
  * @var Agendamento $agendamento
  * @var array<int, string> $formasPagamento
+ * @var array{assinatura: AssinaturaCliente, usados: int, restantes: int}|null $saldoAssinatura
  * @var array<int, string> $errors
  * @var array $old
  */
@@ -46,6 +48,22 @@ $valorSugerido = $old['valor'] ?? number_format($agendamento->servicoPreco, 2, '
             <div><span>Serviço</span><span><?= htmlspecialchars($agendamento->servicoNome, ENT_QUOTES, 'UTF-8') ?></span></div>
             <div><span>Data</span><span><?= (new DateTimeImmutable($agendamento->dataHora))->format('d/m/Y H:i') ?></span></div>
         </div>
+
+        <?php if ($saldoAssinatura !== null): ?>
+            <div class="form-alert <?= $saldoAssinatura['restantes'] > 0 ? 'form-alert-success' : '' ?>" style="margin-bottom: 1.5rem;">
+                <div>
+                    Cliente assinante do plano <strong><?= htmlspecialchars($saldoAssinatura['assinatura']->planoNome, ENT_QUOTES, 'UTF-8') ?></strong> -
+                    <?= $saldoAssinatura['restantes'] ?> de <?= $saldoAssinatura['assinatura']->planoAtendimentosPorMes ?> atendimentos restantes esse ciclo.
+                </div>
+            </div>
+            <?php if ($saldoAssinatura['restantes'] > 0): ?>
+                <form method="POST" action="<?= $basePath ?>/dashboard/agendamentos/<?= $agendamento->id ?>/usar-assinatura" style="margin-bottom: 1.5rem;">
+                    <?= Csrf::field() ?>
+                    <button type="submit" class="btn-k btn-k-grad">Concluir usando a assinatura (sem cobrar)</button>
+                </form>
+                <p class="form-field-hint" style="margin: -1rem 0 1.5rem;">Ou registre um pagamento avulso abaixo, se preferir.</p>
+            <?php endif; ?>
+        <?php endif; ?>
 
         <form method="POST" action="<?= $basePath ?>/dashboard/agendamentos/<?= $agendamento->id ?>/pagamento">
             <?= Csrf::field() ?>
