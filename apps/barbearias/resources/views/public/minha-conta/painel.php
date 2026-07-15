@@ -50,6 +50,13 @@ $statusLabel = [
         </div>
     <?php endif; ?>
 
+    <?php if ($barbearia->fidelidadePontosPorReal !== null): ?>
+        <div class="glass-card cadastro-card" style="text-align:center;">
+            <p class="form-field-hint" style="margin: 0 0 0.35rem;">Seus pontos de fidelidade</p>
+            <p style="margin:0; font-size:1.8rem; font-weight:800;"><?= $cliente->pontosFidelidade ?></p>
+        </div>
+    <?php endif; ?>
+
     <div class="glass-card cadastro-card">
         <div class="dash-panel-head" style="margin-bottom: 1rem;">
             <h2 style="margin:0; font-size:1.1rem;">Próximos agendamentos</h2>

@@ -17,6 +17,65 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 138 - 2026-07-15
+
+**Barbearias: programa de fidelidade (pontos por atendimento + resgate de recompensas)**
+
+- Nova tela **`/dashboard/fidelidade`**:
+  - **Configuração**: liga/desliga o programa e define quantos pontos
+    o cliente ganha por real gasto (desativado por padrão -
+    `fidelidade_pontos_por_real = NULL`).
+  - **Recompensas**: cadastro simples (nome + pontos necessários) e
+    exclusão.
+  - **Resgate**: busca o cliente por nome/telefone, mostra o saldo de
+    pontos e as recompensas que ele já pode trocar - o débito de
+    pontos é **atômico** (mesmo padrão do estoque de produtos: o
+    próprio `UPDATE` já checa se ainda há saldo suficiente, evitando
+    saldo negativo em resgates simultâneos) e fica registrado no
+    **histórico** (extrato de ganhos/resgates) logo abaixo.
+- **Pontos concedidos automaticamente**: ao registrar o pagamento de
+  um atendimento (`AgendamentoController::pagamento`), se o programa
+  estiver ativo, o cliente ganha `floor(valor_pago × pontos_por_real)`
+  pontos, com um lançamento correspondente no extrato.
+- **Área do cliente** (`/minha-conta/{slug}`): mostra o saldo de
+  pontos no topo do painel, quando o programa está ativo.
+
+**Bug real encontrado e corrigido durante o teste** (pré-existente,
+não introduzido por este ajuste, mas descoberto ao reaproveitar o
+mesmo padrão de busca): o banco roda com `PDO::ATTR_EMULATE_PREPARES
+= false` (prepares nativos do MySQL), e nesse modo **reutilizar o
+mesmo parâmetro nomeado mais de uma vez na mesma query
+(`:busca` repetido em `OR`) quebra com
+`SQLSTATE[HY093]: Invalid parameter number`**. Isso já afetava em
+produção qualquer busca por texto nas telas de **Clientes**,
+**Profissionais** e **Agendamentos** (a busca sempre dava erro 500
+assim que alguém digitava um termo) - corrigido nos três lugares
+(`Cliente::paginate`, `Profissional::paginate`, `Agendamento::paginate`)
+trocando pra um placeholder nomeado distinto por ocorrência
+(`:busca`, `:busca2`, `:busca3`), todos apontando pro mesmo valor.
+
+**Ação manual pendente no banco `kadosys1_barbearias`** (só se
+`install.sql` já rodou antes): rodar
+`apps/barbearias/database/migrations/011_fidelidade.sql` uma única
+vez - adiciona `barbearias.fidelidade_pontos_por_real` e
+`clientes.pontos_fidelidade`, e cria as tabelas
+`fidelidade_recompensas` e `fidelidade_movimentos`, sem afetar dados
+existentes.
+
+**Testado localmente** (MariaDB + servidor PHP embutido, via curl com
+sessão autenticada): ativado o programa (1 ponto por real), pagamento
+de R$87,00 concedeu 87 pontos ao cliente; recompensa de 50 pontos
+cadastrada e resgatada com sucesso (saldo caiu pra 37, extrato
+registrou ganho e resgate corretamente); nova tentativa de resgate da
+mesma recompensa (37 < 50) foi bloqueada tanto na interface (botão
+desabilitado) quanto no servidor (requisição direta não debitou
+nada); saldo de pontos apareceu corretamente na área do cliente após
+login. Busca nas telas de Clientes, Profissionais e Agendamentos
+retestada depois da correção do bug de parâmetro duplicado - as três
+voltaram a status 200. Nenhum warning/erro remanescente no log do PHP.
+
+---
+
 ## Ajuste 137 - 2026-07-15
 
 **Barbearias: relatórios consolidados (faturamento, agendamentos, ticket médio, ocupação)**

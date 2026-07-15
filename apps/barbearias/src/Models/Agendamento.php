@@ -62,8 +62,10 @@ final class Agendamento
         $params = ['barbearia_id' => $barbeariaId];
 
         if ($search !== '') {
-            $where .= ' AND (c.nome LIKE :busca OR p.nome LIKE :busca OR s.nome LIKE :busca)';
+            $where .= ' AND (c.nome LIKE :busca OR p.nome LIKE :busca2 OR s.nome LIKE :busca3)';
             $params['busca'] = '%' . $search . '%';
+            $params['busca2'] = '%' . $search . '%';
+            $params['busca3'] = '%' . $search . '%';
         }
 
         if (in_array($status, [self::STATUS_AGENDADO, self::STATUS_CONCLUIDO, self::STATUS_CANCELADO], true)) {
