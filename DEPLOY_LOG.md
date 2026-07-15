@@ -17,6 +17,17 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 123 - 2026-07-15
+
+**Site institucional: adiciona Kadosys™ Sites (construtor de sites)**
+
+- Novo sistema "em desenvolvimento" no site institucional: Kadosys™
+  Sites, um construtor de sites arrasta e solta com domínio e
+  hospedagem inclusos (editor visual, modelos prontos por segmento,
+  domínio próprio, publicação em poucos cliques).
+
+---
+
 ## Ajuste 122 - 2026-07-15
 
 **Site institucional: novos sistemas em desenvolvimento, remove streaming, WhatsApp real**
