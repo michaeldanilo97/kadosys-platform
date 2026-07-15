@@ -17,6 +17,21 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 125 - 2026-07-15
+
+**Barbearias: adiciona vendor/ e composer.lock (deploy por git pull)**
+
+- Como o deploy da hospedagem faz "pull" automático da raiz do
+  `public_html`, o `apps/barbearias/vendor/` (autoload gerado pelo
+  Composer) precisa estar versionado no Git - sem isso, o app quebraria
+  assim que o pull acontecesse, já que não há passo manual de
+  `composer install` no servidor (mesmo padrão já usado em
+  `apps/igrejas/vendor/`). Sem dependências de terceiros (o
+  `composer.json` do Barbearias não declara nenhuma), então é só o
+  autoloader mesmo.
+
+---
+
 ## Ajuste 124 - 2026-07-15
 
 **Novo app: KADOSYS Barbearias (estrutura inicial + login)**
