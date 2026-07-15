@@ -17,6 +17,31 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 118 - 2026-07-15
+
+**Segundo lote grande da biblioteca oficial KADOSYS (historias, quiz, jogos e mais)**
+
+- Biblioteca oficial ampliada de 30 para **93 conteúdos**, com foco em
+  histórias, quiz e jogos (como pedido), além de reforçar todos os
+  outros tipos: 18 histórias, 11 quiz (cada um com 4 perguntas de
+  múltipla escolha), 7 jogos, 9 versículos ilustrados, 7 devocionais,
+  7 desenhos para colorir, 5 estudos, 5 desafios, 5 vídeos, 4
+  atividades, 3 áudios, 3 slides, 3 HQs, 3 planos de leitura e 3 PDFs.
+- Histórias novas cobrindo do Gênesis a Atos (Criação, Torre de Babel,
+  Abraão, Rute, Ester, Sansão, Gideão, multiplicação dos pães, Zaqueu,
+  tempestade acalmada, Lázaro, ressurreição, conversão de Paulo).
+- Quiz novos sobre heróis do Velho Testamento, parábolas, os 12
+  discípulos, criação, fruto do Espírito, igreja primitiva, Provérbios
+  e Natal/Páscoa.
+- Jogos novos jogáveis direto no texto (verdadeiro ou falso relâmpago,
+  adivinhe o personagem, caça ao tesouro em casa) e outros com
+  instruções para imprimir em família (bingo, corrida da fé, memória).
+- Os novos conteúdos já fazem parte do `install.sql`, então toda
+  igreja nova criada a partir de agora já nasce com a biblioteca
+  completa.
+
+---
+
 ## Ajuste 117 - 2026-07-15
 
 **Responsável gera o próprio PIN + biblioteca oficial KADOSYS ampliada**
