@@ -7,11 +7,14 @@ namespace Barbearias\Controllers;
 use Barbearias\Core\ClienteAuth;
 use Barbearias\Core\Controller;
 use Barbearias\Core\Csrf;
+use Barbearias\Core\Disponibilidade;
 use Barbearias\Core\Session;
 use Barbearias\Models\Agendamento;
 use Barbearias\Models\Avaliacao;
 use Barbearias\Models\Barbearia;
 use Barbearias\Models\Cliente;
+use Barbearias\Models\Profissional;
+use Barbearias\Models\Servico;
 
 /**
  * Area do cliente (/minha-conta/{slug}) - login proprio do cliente
@@ -232,6 +235,183 @@ final class ClienteAreaController extends Controller
 
         Session::flash('cliente_area_success', 'Obrigado pela avaliação!');
         $this->redirect('/minha-conta/' . $slug);
+    }
+
+    public function cancelar(string $slug, string $agendamentoId): void
+    {
+        $barbearia = Barbearia::findBySlugAtiva($slug);
+
+        if ($barbearia === null) {
+            $this->renderNotFound();
+
+            return;
+        }
+
+        $cliente = (new ClienteAuth($this->config))->user($barbearia->id);
+
+        if ($cliente === null) {
+            $this->redirect('/minha-conta/' . $slug . '/entrar');
+        }
+
+        if (!Csrf::verify($this->request->input('_csrf_token'))) {
+            $this->redirect('/minha-conta/' . $slug);
+        }
+
+        $agendamento = $this->agendamentoDoCliente($barbearia->id, $cliente->id, $agendamentoId);
+
+        if ($agendamento === null) {
+            $this->redirect('/minha-conta/' . $slug);
+        }
+
+        Agendamento::atualizarStatus($agendamento->id, $barbearia->id, Agendamento::STATUS_CANCELADO);
+
+        Session::flash('cliente_area_success', 'Agendamento cancelado.');
+        $this->redirect('/minha-conta/' . $slug);
+    }
+
+    public function reagendarForm(string $slug, string $agendamentoId): void
+    {
+        $barbearia = Barbearia::findBySlugAtiva($slug);
+
+        if ($barbearia === null) {
+            $this->renderNotFound();
+
+            return;
+        }
+
+        $cliente = (new ClienteAuth($this->config))->user($barbearia->id);
+
+        if ($cliente === null) {
+            $this->redirect('/minha-conta/' . $slug . '/entrar');
+        }
+
+        $agendamento = $this->agendamentoDoCliente($barbearia->id, $cliente->id, $agendamentoId);
+
+        if ($agendamento === null) {
+            $this->redirect('/minha-conta/' . $slug);
+        }
+
+        echo $this->view('public.minha-conta.reagendar', [
+            'pageTitle' => 'Reagendar - ' . $barbearia->nome,
+            'barbearia' => $barbearia,
+            'agendamento' => $agendamento,
+            'csrf' => Csrf::field(),
+            'errors' => Session::flash('cliente_reagendar_errors') ?? [],
+            'old' => Session::flash('cliente_reagendar_old') ?? [],
+        ], 'site');
+    }
+
+    /**
+     * Endpoint JSON (fetch pelo JS da tela de reagendamento) - so
+     * autenticado e so do proprio dono do agendamento, ao contrario do
+     * endpoint publico de horarios (que qualquer um pode chamar) -
+     * exclui o proprio agendamento do calculo de conflito, ja que ele
+     * ainda esta 'agendado' ate a troca ser confirmada.
+     */
+    public function horariosParaReagendar(string $slug, string $agendamentoId): void
+    {
+        $barbearia = Barbearia::findBySlugAtiva($slug);
+
+        if ($barbearia === null) {
+            $this->jsonResponse(['horarios' => []], 404);
+        }
+
+        $cliente = (new ClienteAuth($this->config))->user($barbearia->id);
+
+        if ($cliente === null) {
+            $this->jsonResponse(['horarios' => []], 401);
+        }
+
+        $agendamento = $this->agendamentoDoCliente($barbearia->id, $cliente->id, $agendamentoId);
+        $data = (string) $this->request->input('data', '');
+
+        if ($agendamento === null || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $data)) {
+            $this->jsonResponse(['horarios' => []]);
+        }
+
+        $profissional = Profissional::find($agendamento->profissionalId, $barbearia->id);
+        $servico = Servico::find($agendamento->servicoId, $barbearia->id);
+
+        if ($profissional === null || $servico === null) {
+            $this->jsonResponse(['horarios' => []]);
+        }
+
+        $this->jsonResponse([
+            'horarios' => Disponibilidade::horariosLivres($barbearia->id, $profissional, $servico, $data, $agendamento->id),
+        ]);
+    }
+
+    public function reagendar(string $slug, string $agendamentoId): void
+    {
+        $barbearia = Barbearia::findBySlugAtiva($slug);
+
+        if ($barbearia === null) {
+            $this->renderNotFound();
+
+            return;
+        }
+
+        $cliente = (new ClienteAuth($this->config))->user($barbearia->id);
+
+        if ($cliente === null) {
+            $this->redirect('/minha-conta/' . $slug . '/entrar');
+        }
+
+        if (!Csrf::verify($this->request->input('_csrf_token'))) {
+            $this->redirect('/minha-conta/' . $slug);
+        }
+
+        $agendamento = $this->agendamentoDoCliente($barbearia->id, $cliente->id, $agendamentoId);
+
+        if ($agendamento === null) {
+            $this->redirect('/minha-conta/' . $slug);
+        }
+
+        $dados = $this->request->only(['data', 'hora']);
+        $data = (string) ($dados['data'] ?? '');
+        $hora = (string) ($dados['hora'] ?? '');
+
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $data) || !preg_match('/^\d{2}:\d{2}$/', $hora)) {
+            Session::flash('cliente_reagendar_errors', ['Escolha uma data e horário válidos.']);
+            $this->redirect('/minha-conta/' . $slug . '/agendamentos/' . $agendamentoId . '/reagendar');
+        }
+
+        $profissional = Profissional::find($agendamento->profissionalId, $barbearia->id);
+        $servico = Servico::find($agendamento->servicoId, $barbearia->id);
+
+        if ($profissional === null || $servico === null) {
+            $this->redirect('/minha-conta/' . $slug);
+        }
+
+        // Sempre revalida a disponibilidade no servidor no momento de
+        // confirmar - mesmo motivo do agendamento publico.
+        $disponiveis = Disponibilidade::horariosLivres($barbearia->id, $profissional, $servico, $data, $agendamento->id);
+
+        if (!in_array($hora, $disponiveis, true)) {
+            Session::flash('cliente_reagendar_errors', ['Esse horário acabou de ficar indisponível. Escolha outro.']);
+            $this->redirect('/minha-conta/' . $slug . '/agendamentos/' . $agendamentoId . '/reagendar');
+        }
+
+        Agendamento::reagendar($agendamento->id, $barbearia->id, $data . ' ' . $hora . ':00');
+
+        Session::flash('cliente_area_success', 'Agendamento reagendado com sucesso.');
+        $this->redirect('/minha-conta/' . $slug);
+    }
+
+    /**
+     * So retorna o agendamento se ele pertencer mesmo a esse cliente e
+     * ainda estiver com status 'agendado' - cancelar/reagendar um
+     * atendimento ja concluido ou cancelado nao faz sentido.
+     */
+    private function agendamentoDoCliente(int $barbeariaId, int $clienteId, string $agendamentoId): ?Agendamento
+    {
+        $agendamento = Agendamento::find((int) $agendamentoId, $barbeariaId);
+
+        if ($agendamento === null || $agendamento->clienteId !== $clienteId || $agendamento->status !== Agendamento::STATUS_AGENDADO) {
+            return null;
+        }
+
+        return $agendamento;
     }
 
     /** @return array<int, string> */

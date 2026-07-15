@@ -6,11 +6,12 @@ namespace Barbearias\Controllers;
 
 use Barbearias\Core\Controller;
 use Barbearias\Core\Csrf;
+use Barbearias\Core\Disponibilidade;
 use Barbearias\Core\Session;
 use Barbearias\Models\Agendamento;
 use Barbearias\Models\Barbearia;
-use Barbearias\Models\BloqueioAgenda;
 use Barbearias\Models\Cliente;
+use Barbearias\Models\ListaEspera;
 use Barbearias\Models\Profissional;
 use Barbearias\Models\Servico;
 use Barbearias\Models\Unidade;
@@ -25,9 +26,6 @@ use Barbearias\Models\Unidade;
  */
 final class AgendamentoPublicoController extends Controller
 {
-    /** Intervalo entre os horarios sugeridos, em minutos. */
-    private const GRANULARIDADE_MINUTOS = 15;
-
     public function form(string $slug): void
     {
         $barbearia = Barbearia::findBySlugAtiva($slug);
@@ -50,6 +48,7 @@ final class AgendamentoPublicoController extends Controller
             'csrf' => Csrf::field(),
             'errors' => Session::flash('agendamento_publico_errors') ?? [],
             'old' => Session::flash('agendamento_publico_old') ?? [],
+            'success' => Session::flash('agendamento_publico_success'),
         ], 'site');
     }
 
@@ -74,7 +73,7 @@ final class AgendamentoPublicoController extends Controller
             $this->jsonResponse(['horarios' => []]);
         }
 
-        $this->jsonResponse(['horarios' => $this->calcularHorariosDisponiveis($barbearia, $profissional, $servico, $data)]);
+        $this->jsonResponse(['horarios' => Disponibilidade::horariosLivres($barbearia->id, $profissional, $servico, $data)]);
     }
 
     public function enviar(string $slug): void
@@ -112,7 +111,7 @@ final class AgendamentoPublicoController extends Controller
             // de confirmar - o horario pode ter sido preenchido numa
             // aba aberta ha um tempo, ou ocupado por outra pessoa
             // enquanto essa pessoa preenchia nome/telefone.
-            $disponiveis = $this->calcularHorariosDisponiveis($barbearia, $profissional, $servico, (string) $dados['data']);
+            $disponiveis = Disponibilidade::horariosLivres($barbearia->id, $profissional, $servico, (string) $dados['data']);
 
             if (!in_array((string) $dados['hora'], $disponiveis, true)) {
                 $errors[] = 'Esse horário acabou de ficar indisponível. Escolha outro.';
@@ -154,6 +153,63 @@ final class AgendamentoPublicoController extends Controller
         $this->redirect('/agendar/' . $slug . '/confirmado');
     }
 
+    /**
+     * Quando nao ha nenhum horario livre no dia escolhido, o cliente
+     * pode entrar na lista de espera em vez de agendar - reaproveita os
+     * mesmos campos (nome/telefone/email/profissional/servico/data) do
+     * formulario principal, so que sem exigir um horario.
+     */
+    public function listaEspera(string $slug): void
+    {
+        $barbearia = Barbearia::findBySlugAtiva($slug);
+
+        if ($barbearia === null) {
+            $this->renderNotFound();
+
+            return;
+        }
+
+        if (!Csrf::verify($this->request->input('_csrf_token'))) {
+            Session::flash('agendamento_publico_errors', ['Sessão expirada. Preencha o formulário novamente.']);
+            $this->redirect('/agendar/' . $slug);
+        }
+
+        $dados = $this->request->only(['profissional_id', 'servico_id', 'data', 'nome', 'telefone', 'email']);
+        $profissionalId = (int) ($dados['profissional_id'] ?? 0);
+        $profissional = $profissionalId > 0 ? Profissional::find($profissionalId, $barbearia->id) : null;
+        $servico = Servico::find((int) ($dados['servico_id'] ?? 0), $barbearia->id);
+
+        $errors = $this->validarListaEspera($dados, $servico);
+
+        if ($errors !== []) {
+            Session::flash('agendamento_publico_errors', $errors);
+            Session::flash('agendamento_publico_old', $dados);
+            $this->redirect('/agendar/' . $slug);
+        }
+
+        $telefone = $this->apenasDigitos((string) $dados['telefone']);
+        $cliente = Cliente::buscarPorTelefone($barbearia->id, $telefone);
+
+        if ($cliente === null) {
+            $clienteId = Cliente::create($barbearia->id, (string) $dados['nome'], $telefone, $dados['email']);
+        } else {
+            $clienteId = $cliente->id;
+            Cliente::update($clienteId, $barbearia->id, (string) $dados['nome'], $telefone, $dados['email'] ?? $cliente->email);
+        }
+
+        ListaEspera::create(
+            $barbearia->id,
+            $profissional?->id,
+            $servico->id,
+            $clienteId,
+            (string) $dados['data'],
+            null,
+        );
+
+        Session::flash('agendamento_publico_success', 'Você entrou na lista de espera! Vamos entrar em contato assim que um horário abrir.');
+        $this->redirect('/agendar/' . $slug);
+    }
+
     public function confirmado(string $slug): void
     {
         $barbearia = Barbearia::findBySlugAtiva($slug);
@@ -168,85 +224,6 @@ final class AgendamentoPublicoController extends Controller
             'barbearia' => $barbearia,
             'confirmacao' => $confirmacao,
         ], 'site');
-    }
-
-    /** @return array<int, string> */
-    private function calcularHorariosDisponiveis(Barbearia $barbearia, Profissional $profissional, Servico $servico, string $data): array
-    {
-        if ($profissional->horarioInicio === null || $profissional->horarioFim === null) {
-            return [];
-        }
-
-        try {
-            $dia = new \DateTimeImmutable($data);
-        } catch (\Exception) {
-            return [];
-        }
-
-        $hoje = new \DateTimeImmutable('today');
-
-        if ($dia < $hoje) {
-            return [];
-        }
-
-        $diaSemana = (int) $dia->format('w');
-
-        if (!in_array($diaSemana, $profissional->diasAtendimento, true)) {
-            return [];
-        }
-
-        $inicioExpediente = new \DateTimeImmutable($data . ' ' . $profissional->horarioInicio);
-        $fimExpediente = new \DateTimeImmutable($data . ' ' . $profissional->horarioFim);
-        $duracao = $servico->duracaoMinutos;
-        $agora = new \DateTimeImmutable();
-
-        $ocupados = Agendamento::doDiaPorProfissional($barbearia->id, $profissional->id, $data);
-        $bloqueios = BloqueioAgenda::doProfissionalNoPeriodo(
-            $profissional->id,
-            $dia->format('Y-m-d 00:00:00'),
-            $dia->modify('+1 day')->format('Y-m-d 00:00:00'),
-        );
-
-        $slots = [];
-        $cursor = $inicioExpediente;
-
-        while ($cursor->modify('+' . $duracao . ' minutes') <= $fimExpediente) {
-            $fimSlot = $cursor->modify('+' . $duracao . ' minutes');
-
-            if ($cursor >= $agora) {
-                $livre = true;
-
-                foreach ($ocupados as $ocupado) {
-                    $ocupadoInicio = new \DateTimeImmutable($ocupado->dataHora);
-                    $ocupadoFim = $ocupadoInicio->modify('+' . $ocupado->servicoDuracao . ' minutes');
-
-                    if ($cursor < $ocupadoFim && $fimSlot > $ocupadoInicio) {
-                        $livre = false;
-
-                        break;
-                    }
-                }
-
-                foreach ($bloqueios as $bloqueio) {
-                    $bloqueioInicio = new \DateTimeImmutable($bloqueio->dataInicio);
-                    $bloqueioFim = new \DateTimeImmutable($bloqueio->dataFim);
-
-                    if ($cursor < $bloqueioFim && $fimSlot > $bloqueioInicio) {
-                        $livre = false;
-
-                        break;
-                    }
-                }
-
-                if ($livre) {
-                    $slots[] = $cursor->format('H:i');
-                }
-            }
-
-            $cursor = $cursor->modify('+' . self::GRANULARIDADE_MINUTOS . ' minutes');
-        }
-
-        return $slots;
     }
 
     /** @return array<int, string> */
@@ -267,6 +244,42 @@ final class AgendamentoPublicoController extends Controller
 
         if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $data) || !preg_match('/^\d{2}:\d{2}$/', $hora)) {
             $errors[] = 'Escolha uma data e horário válidos.';
+        }
+
+        $nome = trim((string) ($dados['nome'] ?? ''));
+
+        if ($nome === '' || mb_strlen($nome) < 3) {
+            $errors[] = 'Informe seu nome completo.';
+        }
+
+        $telefone = $this->apenasDigitos((string) ($dados['telefone'] ?? ''));
+
+        if (mb_strlen($telefone) < 10) {
+            $errors[] = 'Informe um telefone válido com DDD.';
+        }
+
+        $email = trim((string) ($dados['email'] ?? ''));
+
+        if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = 'Informe um e-mail válido (ou deixe em branco).';
+        }
+
+        return $errors;
+    }
+
+    /** @return array<int, string> */
+    private function validarListaEspera(array $dados, ?Servico $servico): array
+    {
+        $errors = [];
+
+        if ($servico === null) {
+            $errors[] = 'Escolha um serviço válido.';
+        }
+
+        $data = (string) ($dados['data'] ?? '');
+
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $data) || $data < (new \DateTimeImmutable('today'))->format('Y-m-d')) {
+            $errors[] = 'Escolha uma data válida.';
         }
 
         $nome = trim((string) ($dados['nome'] ?? ''));

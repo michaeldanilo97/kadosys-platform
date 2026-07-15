@@ -15,6 +15,7 @@ use Barbearias\Models\Unidade;
  * @var string $csrf
  * @var array<int, string> $errors
  * @var array $old
+ * @var string|null $success
  */
 $basePath = $config['base_path'] ?? '';
 ?>
@@ -26,6 +27,12 @@ $basePath = $config['base_path'] ?? '';
             Escolha o profissional, o serviço e o melhor horário pra você.
             Já tem conta? <a href="<?= $basePath ?>/minha-conta/<?= htmlspecialchars($barbearia->slug, ENT_QUOTES, 'UTF-8') ?>/entrar">Entrar</a>
         </p>
+
+        <?php if ($success): ?>
+            <div class="form-alert form-alert-success">
+                <div><?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8') ?></div>
+            </div>
+        <?php endif; ?>
 
         <?php if ($errors !== []): ?>
             <div class="form-alert">
@@ -116,6 +123,7 @@ $basePath = $config['base_path'] ?? '';
                 </div>
 
                 <button type="submit" class="btn-k btn-k-grad" style="width:100%; margin-top: 0.5rem;" data-btn-confirmar disabled>Escolha um horário</button>
+                <button type="submit" formaction="<?= $basePath ?>/agendar/<?= htmlspecialchars($barbearia->slug, ENT_QUOTES, 'UTF-8') ?>/lista-espera" class="btn-k btn-k-outline" style="width:100%; margin-top: 0.75rem;" data-btn-lista-espera hidden>Entrar na lista de espera desse dia</button>
             </form>
         <?php endif; ?>
     </div>
@@ -136,6 +144,7 @@ $basePath = $config['base_path'] ?? '';
         var listaHorarios = form.querySelector('[data-lista-horarios]');
         var statusHorarios = form.querySelector('[data-horarios-status]');
         var btnConfirmar = form.querySelector('[data-btn-confirmar]');
+        var btnListaEspera = form.querySelector('[data-btn-lista-espera]');
         var horarioEscolhido = null;
         var inputHoraOculto = null;
 
@@ -198,6 +207,7 @@ $basePath = $config['base_path'] ?? '';
             }
             btnConfirmar.disabled = true;
             btnConfirmar.textContent = 'Escolha um horário';
+            btnListaEspera.hidden = true;
         }
 
         function buscarHorarios() {
@@ -226,7 +236,8 @@ $basePath = $config['base_path'] ?? '';
                     var horarios = dados.horarios || [];
 
                     if (horarios.length === 0) {
-                        statusHorarios.textContent = 'Nenhum horário livre nesse dia. Tente outra data.';
+                        statusHorarios.textContent = 'Nenhum horário livre nesse dia.';
+                        btnListaEspera.hidden = false;
 
                         return;
                     }
