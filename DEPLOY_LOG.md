@@ -17,6 +17,23 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 120 - 2026-07-15
+
+**Correção: link da seleção de igreja duplicava o domínio**
+
+- Bug do Ajuste 119: os links da tela "Qual igreja?" (e o redirecionamento
+  automático quando só uma igreja é encontrada) apontavam para um
+  endereço quebrado, tipo `ijpm.kadosys.com.br.kadosys.com.br` - o
+  domínio raiz aparecia duplicado.
+- Causa: `Tenant::subdominio` já guarda o host completo da igreja (ex.:
+  `ijpm.kadosys.com.br`), não só o pedaço antes do domínio raiz (ver
+  `Provisionador::provisionar()`) - o código novo montava o link
+  colando `.` + domínio raiz de novo em cima disso.
+- Corrigido para usar `subdominio` direto, sem concatenar o domínio
+  raiz por cima.
+
+---
+
 ## Ajuste 119 - 2026-07-15
 
 **Login no domínio raiz: seleciona a igreja quando o e-mail está em mais de uma**

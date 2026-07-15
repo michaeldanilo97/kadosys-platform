@@ -90,7 +90,7 @@ final class AuthController extends Controller
         $encontradas = Tenant::ativasComEmailCadastrado($email);
 
         if (count($encontradas) === 1) {
-            $this->redirecionarParaFora('https://' . $encontradas[0]->subdominio . '.' . $rootDomain . '/login?email=' . urlencode($email));
+            $this->redirecionarParaFora('https://' . $encontradas[0]->subdominio . '/login?email=' . urlencode($email));
         }
 
         if (count($encontradas) === 0) {
@@ -101,7 +101,6 @@ final class AuthController extends Controller
             'pageTitle' => 'Selecione sua igreja - KADOSYS Igrejas',
             'email' => $email,
             'igrejas' => $encontradas,
-            'rootDomain' => $rootDomain,
         ], 'auth');
     }
 
