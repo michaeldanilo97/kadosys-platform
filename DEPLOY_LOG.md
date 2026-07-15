@@ -17,6 +17,44 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 137 - 2026-07-15
+
+**Barbearias: relatórios consolidados (faturamento, agendamentos, ticket médio, ocupação)**
+
+- Nova tela **`/dashboard/relatorios`**, com filtro de período (padrão
+  o mês atual):
+  - **Receitas/despesas/saldo** do período (reaproveitando o mesmo
+    resumo já usado no Financeiro);
+  - **Agendamentos por status** (total, concluídos, agendados,
+    cancelados);
+  - **Ticket médio**: faturamento dos atendimentos concluídos dividido
+    pela quantidade (mesma base de cálculo usada na comissão - valor
+    pago no PDV quando existe, senão o preço atual do serviço);
+  - **Taxa de ocupação por profissional**: horas ocupadas (soma da
+    duração dos atendimentos concluídos) contra uma **estimativa** de
+    horas disponíveis no período, calculada a partir do
+    expediente cadastrado (dias/horário de atendimento) - não desconta
+    férias/folgas pontuais (bloqueios de agenda), então é uma
+    aproximação de capacidade, não um cálculo exato; isso está
+    explicado na própria tela.
+- Sem gráficos - só números e uma tabela, para manter simples e rápido
+  de carregar mesmo num período longo.
+
+**Sem migração pendente** - reaproveita tabelas já existentes
+(`agendamentos`, `financeiro_lancamentos`, `profissionais`).
+
+**Testado localmente** (MariaDB + servidor PHP embutido, via curl com
+sessão autenticada): com 2 atendimentos concluídos no mês (R$55 pago
+no PDV + R$30 no preço de tabela) e uma venda de produto de R$90,00,
+o relatório mostrou receitas R$145,00, ticket médio R$42,50 (85/2) e 2
+agendamentos concluídos - todos batendo com o cálculo manual esperado;
+tabela de ocupação mostrou os dois profissionais ativos com horas
+disponíveis coerentes com os dias/horário cadastrados de cada um;
+filtro pra um período sem nenhum dado (mês anterior) retornou tudo
+zerado sem erro. Nenhum warning/erro no log do PHP durante os testes.
+
+---
+
 ## Ajuste 136 - 2026-07-15
 
 **Barbearias: produtos e estoque (venda avulsa + baixa automática)**

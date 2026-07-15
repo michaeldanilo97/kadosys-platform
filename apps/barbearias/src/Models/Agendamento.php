@@ -250,6 +250,82 @@ final class Agendamento
     }
 
     /**
+     * Quantidade de agendamentos por status num periodo - usado no
+     * relatorio consolidado (ver Barbearias\Controllers\RelatorioController).
+     *
+     * @return array{agendado: int, concluido: int, cancelado: int}
+     */
+    public static function contarPorStatusNoPeriodo(int $barbeariaId, string $dataInicio, string $dataFim): array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT status, COUNT(*) AS total FROM agendamentos
+             WHERE barbearia_id = :barbearia_id AND data_hora BETWEEN :inicio AND :fim
+             GROUP BY status'
+        );
+        $stmt->execute(['barbearia_id' => $barbeariaId, 'inicio' => $dataInicio, 'fim' => $dataFim]);
+
+        $contagem = [self::STATUS_AGENDADO => 0, self::STATUS_CONCLUIDO => 0, self::STATUS_CANCELADO => 0];
+
+        foreach ($stmt->fetchAll() as $row) {
+            $contagem[(string) $row['status']] = (int) $row['total'];
+        }
+
+        return $contagem;
+    }
+
+    /**
+     * Faturamento total de atendimentos CONCLUIDOS num periodo (mesma
+     * base de calculo da comissao: valor pago no PDV quando existe,
+     * senao o preco atual do servico) - usado no relatorio consolidado
+     * pra calcular o ticket medio.
+     *
+     * @return array{quantidade: int, total: float}
+     */
+    public static function faturamentoServicosNoPeriodo(int $barbeariaId, string $dataInicio, string $dataFim): array
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT COUNT(a.id) AS quantidade, COALESCE(SUM(COALESCE(fl.valor, s.preco)), 0) AS total
+             FROM agendamentos a
+             INNER JOIN servicos s ON s.id = a.servico_id
+             LEFT JOIN financeiro_lancamentos fl ON fl.agendamento_id = a.id AND fl.barbearia_id = a.barbearia_id
+             WHERE a.barbearia_id = :barbearia_id AND a.status = 'concluido'
+               AND a.data_hora BETWEEN :inicio AND :fim"
+        );
+        $stmt->execute(['barbearia_id' => $barbeariaId, 'inicio' => $dataInicio, 'fim' => $dataFim]);
+        $row = $stmt->fetch();
+
+        return ['quantidade' => (int) ($row['quantidade'] ?? 0), 'total' => (float) ($row['total'] ?? 0)];
+    }
+
+    /**
+     * Minutos ocupados (soma da duracao dos servicos) por profissional,
+     * considerando so atendimentos CONCLUIDOS no periodo - usado no
+     * relatorio consolidado pra calcular a taxa de ocupacao.
+     *
+     * @return array<int, int> profissional_id => minutos
+     */
+    public static function minutosOcupadosPorProfissional(int $barbeariaId, string $dataInicio, string $dataFim): array
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT a.profissional_id, COALESCE(SUM(s.duracao_minutos), 0) AS minutos
+             FROM agendamentos a
+             INNER JOIN servicos s ON s.id = a.servico_id
+             WHERE a.barbearia_id = :barbearia_id AND a.status = 'concluido'
+               AND a.data_hora BETWEEN :inicio AND :fim
+             GROUP BY a.profissional_id"
+        );
+        $stmt->execute(['barbearia_id' => $barbeariaId, 'inicio' => $dataInicio, 'fim' => $dataFim]);
+
+        $mapa = [];
+
+        foreach ($stmt->fetchAll() as $row) {
+            $mapa[(int) $row['profissional_id']] = (int) $row['minutos'];
+        }
+
+        return $mapa;
+    }
+
+    /**
      * Atendimentos concluidos de UM profissional num periodo, com o
      * valor usado na base de calculo da comissao - usado no detalhe do
      * relatorio de fechamento (ver Barbearias\Controllers\ComissaoController).

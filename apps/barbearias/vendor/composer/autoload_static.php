@@ -50,6 +50,7 @@ class ComposerStaticInit52ccd6c8a3d3688b6572e8e675f2f624
         'Barbearias\\Controllers\\PortfolioController' => __DIR__ . '/../..' . '/src/Controllers/PortfolioController.php',
         'Barbearias\\Controllers\\ProdutoController' => __DIR__ . '/../..' . '/src/Controllers/ProdutoController.php',
         'Barbearias\\Controllers\\ProfissionalController' => __DIR__ . '/../..' . '/src/Controllers/ProfissionalController.php',
+        'Barbearias\\Controllers\\RelatorioController' => __DIR__ . '/../..' . '/src/Controllers/RelatorioController.php',
         'Barbearias\\Controllers\\ServicoController' => __DIR__ . '/../..' . '/src/Controllers/ServicoController.php',
         'Barbearias\\Controllers\\UnidadeController' => __DIR__ . '/../..' . '/src/Controllers/UnidadeController.php',
         'Barbearias\\Controllers\\WebhookController' => __DIR__ . '/../..' . '/src/Controllers/WebhookController.php',
