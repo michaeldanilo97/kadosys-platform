@@ -7,6 +7,7 @@ namespace Barbearias\Controllers;
 use Barbearias\Core\Auth;
 use Barbearias\Core\Controller;
 use Barbearias\Core\Csrf;
+use Barbearias\Core\Documento;
 use Barbearias\Core\Session;
 use Barbearias\Models\Barbearia;
 use Barbearias\Models\Cliente;
@@ -57,7 +58,7 @@ final class ClienteController extends Controller
             $this->redirect('/dashboard/clientes');
         }
 
-        $dados = $this->request->only(['nome', 'telefone', 'email', 'data_nascimento']);
+        $dados = $this->request->only(['nome', 'telefone', 'email', 'cpf', 'data_nascimento']);
         $errors = $this->validar($dados);
 
         if ($errors !== []) {
@@ -66,7 +67,9 @@ final class ClienteController extends Controller
             $this->redirect('/dashboard/clientes/novo');
         }
 
-        Cliente::create($this->barbeariaId(), (string) $dados['nome'], $dados['telefone'], $dados['email'], $dados['data_nascimento']);
+        $cpf = trim((string) ($dados['cpf'] ?? ''));
+
+        Cliente::create($this->barbeariaId(), (string) $dados['nome'], $dados['telefone'], $dados['email'], $dados['data_nascimento'], $cpf !== '' ? Documento::apenasDigitos($cpf) : null);
 
         Session::flash('cliente_success', 'Cliente cadastrado com sucesso.');
         $this->redirect('/dashboard/clientes');
@@ -103,7 +106,7 @@ final class ClienteController extends Controller
             $this->redirect('/dashboard/clientes');
         }
 
-        $dados = $this->request->only(['nome', 'telefone', 'email', 'data_nascimento']);
+        $dados = $this->request->only(['nome', 'telefone', 'email', 'cpf', 'data_nascimento']);
         $errors = $this->validar($dados);
 
         if ($errors !== []) {
@@ -112,7 +115,9 @@ final class ClienteController extends Controller
             $this->redirect('/dashboard/clientes/' . $id . '/editar');
         }
 
-        Cliente::update((int) $id, $barbeariaId, (string) $dados['nome'], $dados['telefone'], $dados['email'], $dados['data_nascimento']);
+        $cpf = trim((string) ($dados['cpf'] ?? ''));
+
+        Cliente::update((int) $id, $barbeariaId, (string) $dados['nome'], $dados['telefone'], $dados['email'], $dados['data_nascimento'], $cpf !== '' ? Documento::apenasDigitos($cpf) : null);
 
         Session::flash('cliente_success', 'Cliente atualizado com sucesso.');
         $this->redirect('/dashboard/clientes');
@@ -142,6 +147,17 @@ final class ClienteController extends Controller
 
         if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors[] = 'Informe um e-mail válido (ou deixe em branco).';
+        }
+
+        $telefone = trim((string) ($dados['telefone'] ?? ''));
+        $cpf = trim((string) ($dados['cpf'] ?? ''));
+
+        if ($cpf !== '' && !Documento::validarCpf($cpf)) {
+            $errors[] = 'Informe um CPF válido (ou deixe em branco).';
+        }
+
+        if ($telefone === '' && $email === '' && $cpf === '') {
+            $errors[] = 'Informe pelo menos um contato: telefone, e-mail ou CPF - é o que identifica o cliente pra vincular pontos e histórico.';
         }
 
         $dataNascimento = trim((string) ($dados['data_nascimento'] ?? ''));

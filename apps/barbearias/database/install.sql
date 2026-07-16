@@ -226,6 +226,7 @@ CREATE TABLE IF NOT EXISTS clientes (
     nome VARCHAR(150) NOT NULL,
     telefone VARCHAR(20) NULL,
     email VARCHAR(150) NULL,
+    cpf VARCHAR(14) NULL,
     data_nascimento DATE NULL,
     pontos_fidelidade INT UNSIGNED NOT NULL DEFAULT 0,
     password VARCHAR(255) NULL,
