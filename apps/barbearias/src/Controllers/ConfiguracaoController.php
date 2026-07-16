@@ -50,6 +50,32 @@ final class ConfiguracaoController extends Controller
         ], 'dashboard');
     }
 
+    /**
+     * Troca o plano da barbearia imediatamente - a proxima cobranca
+     * (Pix ou cartao, ver AssinaturaController) ja sai no valor do
+     * plano novo.
+     */
+    public function trocarPlano(): void
+    {
+        $usuario = $this->exigirAdmin();
+
+        if (!Csrf::verify($this->request->input('_csrf_token'))) {
+            $this->redirect('/dashboard/configuracoes');
+        }
+
+        $plano = (string) $this->request->input('plano', '');
+
+        if (!Plano::valido($plano)) {
+            Session::flash('config_perfil_errors', ['Escolha um plano válido.']);
+            $this->redirect('/dashboard/configuracoes');
+        }
+
+        Barbearia::atualizarPlano($usuario->barbeariaId, $plano);
+
+        Session::flash('config_perfil_success', 'Plano alterado para ' . Plano::label($plano) . '.');
+        $this->redirect('/dashboard/configuracoes');
+    }
+
     public function atualizarPerfil(): void
     {
         $usuario = $this->exigirAdmin();

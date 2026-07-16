@@ -17,7 +17,7 @@ use Barbearias\Core\Database;
  */
 final class Cliente
 {
-    private const SELECT_COLUNAS = 'id, barbearia_id, nome, telefone, email, data_nascimento, pontos_fidelidade, password, created_at';
+    private const SELECT_COLUNAS = 'id, barbearia_id, nome, telefone, email, cpf, data_nascimento, pontos_fidelidade, password, created_at';
 
     public function __construct(
         public readonly int $id,
@@ -25,6 +25,7 @@ final class Cliente
         public readonly string $nome,
         public readonly ?string $telefone,
         public readonly ?string $email,
+        public readonly ?string $cpf,
         public readonly ?string $dataNascimento,
         public readonly int $pontosFidelidade,
         public readonly ?string $passwordHash,
@@ -41,10 +42,11 @@ final class Cliente
         $params = ['barbearia_id' => $barbeariaId];
 
         if ($search !== '') {
-            $where .= ' AND (nome LIKE :busca OR telefone LIKE :busca2 OR email LIKE :busca3)';
+            $where .= ' AND (nome LIKE :busca OR telefone LIKE :busca2 OR email LIKE :busca3 OR cpf LIKE :busca4)';
             $params['busca'] = '%' . $search . '%';
             $params['busca2'] = '%' . $search . '%';
             $params['busca3'] = '%' . $search . '%';
+            $params['busca4'] = '%' . $search . '%';
         }
 
         $total = (int) self::contarComFiltro($where, $params);
@@ -163,33 +165,35 @@ final class Cliente
         return array_map(self::fromRow(...), $stmt->fetchAll());
     }
 
-    public static function create(int $barbeariaId, string $nome, ?string $telefone, ?string $email, ?string $dataNascimento = null): int
+    public static function create(int $barbeariaId, string $nome, ?string $telefone, ?string $email, ?string $dataNascimento = null, ?string $cpf = null): int
     {
         $stmt = Database::connection()->prepare(
-            'INSERT INTO clientes (barbearia_id, nome, telefone, email, data_nascimento, created_at)
-             VALUES (:barbearia_id, :nome, :telefone, :email, :data_nascimento, NOW())'
+            'INSERT INTO clientes (barbearia_id, nome, telefone, email, cpf, data_nascimento, created_at)
+             VALUES (:barbearia_id, :nome, :telefone, :email, :cpf, :data_nascimento, NOW())'
         );
         $stmt->execute([
             'barbearia_id' => $barbeariaId,
             'nome' => trim($nome),
             'telefone' => self::nullable($telefone),
             'email' => self::nullable($email),
+            'cpf' => self::nullable($cpf),
             'data_nascimento' => self::nullable($dataNascimento),
         ]);
 
         return (int) Database::connection()->lastInsertId();
     }
 
-    public static function update(int $id, int $barbeariaId, string $nome, ?string $telefone, ?string $email, ?string $dataNascimento): void
+    public static function update(int $id, int $barbeariaId, string $nome, ?string $telefone, ?string $email, ?string $dataNascimento, ?string $cpf = null): void
     {
         $stmt = Database::connection()->prepare(
-            'UPDATE clientes SET nome = :nome, telefone = :telefone, email = :email, data_nascimento = :data_nascimento
+            'UPDATE clientes SET nome = :nome, telefone = :telefone, email = :email, cpf = :cpf, data_nascimento = :data_nascimento
              WHERE id = :id AND barbearia_id = :barbearia_id'
         );
         $stmt->execute([
             'nome' => trim($nome),
             'telefone' => self::nullable($telefone),
             'email' => self::nullable($email),
+            'cpf' => self::nullable($cpf),
             'data_nascimento' => self::nullable($dataNascimento),
             'id' => $id,
             'barbearia_id' => $barbeariaId,
@@ -297,6 +301,7 @@ final class Cliente
             nome: (string) $row['nome'],
             telefone: $row['telefone'] ?? null,
             email: $row['email'] ?? null,
+            cpf: $row['cpf'] ?? null,
             dataNascimento: $row['data_nascimento'] ?? null,
             pontosFidelidade: (int) ($row['pontos_fidelidade'] ?? 0),
             passwordHash: $row['password'] ?? null,

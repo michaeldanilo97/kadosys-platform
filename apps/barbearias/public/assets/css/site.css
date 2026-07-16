@@ -462,6 +462,17 @@
     padding: 10px;
 }
 
+.pix-qrcode {
+    display: block;
+    width: 100%;
+    max-width: 220px;
+    height: auto;
+    margin: 1rem auto 0;
+    padding: 0.6rem;
+    background: #FFFFFF;
+    border-radius: 12px;
+}
+
 .pix-copiacola {
     display: flex;
     gap: 0.5rem;

@@ -39,7 +39,7 @@ $trialVencido = $barbearia->metodoPagamento === 'trial'
             <p class="subtitle">Assim que o pagamento cair, sua conta é liberada automaticamente.</p>
 
             <?php if ($fatura->pixQrCodeBase64): ?>
-                <img src="data:image/png;base64,<?= htmlspecialchars($fatura->pixQrCodeBase64, ENT_QUOTES, 'UTF-8') ?>" alt="QR Code Pix">
+                <img class="pix-qrcode" src="data:image/png;base64,<?= htmlspecialchars($fatura->pixQrCodeBase64, ENT_QUOTES, 'UTF-8') ?>" alt="QR Code Pix">
             <?php endif; ?>
 
             <div class="pix-copiacola">

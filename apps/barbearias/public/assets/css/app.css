@@ -150,6 +150,12 @@ a {
     border-color: var(--primary);
 }
 
+.form-hint {
+    font-size: 0.8rem;
+    color: var(--gray-400);
+    margin: -0.4rem 0 1.1rem;
+}
+
 .auth-alert {
     padding: 0.75rem 1rem;
     border-radius: 10px;

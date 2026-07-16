@@ -48,10 +48,15 @@ $actionUrl = $isEdit ? $basePath . '/dashboard/clientes/' . $cliente->id : $base
                     <input type="email" id="email" name="email" value="<?= htmlspecialchars($old['email'] ?? $cliente->email ?? '', ENT_QUOTES, 'UTF-8') ?>" placeholder="cliente@email.com">
                 </div>
                 <div class="form-field">
+                    <label for="cpf">CPF</label>
+                    <input type="text" id="cpf" name="cpf" value="<?= htmlspecialchars($old['cpf'] ?? $cliente->cpf ?? '', ENT_QUOTES, 'UTF-8') ?>" placeholder="000.000.000-00">
+                </div>
+                <div class="form-field">
                     <label for="data_nascimento">Data de nascimento</label>
                     <input type="date" id="data_nascimento" name="data_nascimento" value="<?= htmlspecialchars($old['data_nascimento'] ?? $cliente->dataNascimento ?? '', ENT_QUOTES, 'UTF-8') ?>">
                 </div>
             </div>
+            <p class="form-hint">Preencha pelo menos um: telefone, e-mail ou CPF.</p>
 
             <div class="crud-form-actions">
                 <button type="submit" class="btn-k btn-k-grad"><?= $isEdit ? 'Salvar alterações' : 'Cadastrar' ?></button>

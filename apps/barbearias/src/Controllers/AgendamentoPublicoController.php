@@ -134,7 +134,7 @@ final class AgendamentoPublicoController extends Controller
             $clienteId = Cliente::create($barbearia->id, (string) $dados['nome'], $telefone, $dados['email']);
         } else {
             $clienteId = $cliente->id;
-            Cliente::update($clienteId, $barbearia->id, (string) $dados['nome'], $telefone, $dados['email'] ?? $cliente->email, $cliente->dataNascimento);
+            Cliente::update($clienteId, $barbearia->id, (string) $dados['nome'], $telefone, $dados['email'] ?? $cliente->email, $cliente->dataNascimento, $cliente->cpf);
         }
 
         Agendamento::create(
@@ -197,7 +197,7 @@ final class AgendamentoPublicoController extends Controller
             $clienteId = Cliente::create($barbearia->id, (string) $dados['nome'], $telefone, $dados['email']);
         } else {
             $clienteId = $cliente->id;
-            Cliente::update($clienteId, $barbearia->id, (string) $dados['nome'], $telefone, $dados['email'] ?? $cliente->email, $cliente->dataNascimento);
+            Cliente::update($clienteId, $barbearia->id, (string) $dados['nome'], $telefone, $dados['email'] ?? $cliente->email, $cliente->dataNascimento, $cliente->cpf);
         }
 
         ListaEspera::create(
