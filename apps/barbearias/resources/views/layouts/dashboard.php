@@ -2,6 +2,7 @@
 
 use Barbearias\Core\Csrf;
 use Barbearias\Core\View;
+use Barbearias\Models\BarbeariaAviso;
 
 /**
  * @var string $content
@@ -13,6 +14,12 @@ use Barbearias\Core\View;
  */
 $basePath = $config['base_path'] ?? '';
 $menu = $activeMenu ?? '';
+
+// Aviso da plataforma (publicado pelo Super Admin) - o mesmo sino em
+// toda pagina do painel, independente do controller que a renderizou,
+// por isso calculado aqui direto no layout (ver Igrejas\Models\PlataformaAviso
+// pro mesmo padrao no outro app).
+$avisoPlataforma = BarbeariaAviso::ativo();
 
 $itensMenu = [
     ['slug' => 'painel', 'href' => '/dashboard', 'icone' => '🏠', 'label' => 'Painel'],
@@ -88,6 +95,28 @@ $itensMenu = [
             <p class="barbearia-nome"><?= htmlspecialchars($barbearia->nome ?? '', ENT_QUOTES, 'UTF-8') ?></p>
             <p class="usuario-nome"><?= htmlspecialchars($user->name ?? '', ENT_QUOTES, 'UTF-8') ?></p>
             <div class="dash-sidebar-footer-actions">
+                <div class="topbar-dropdown topbar-dropdown-up" data-topbar-dropdown>
+                    <button type="button" class="btn-theme-toggle" aria-label="Notificações" aria-expanded="false" data-dropdown-toggle>
+                        🔔 Avisos
+                        <?php if ($avisoPlataforma !== null): ?><span class="dot"></span><?php endif; ?>
+                    </button>
+
+                    <div class="topbar-dropdown-panel notif-panel" data-dropdown-panel hidden>
+                        <div class="topbar-dropdown-head">Avisos da plataforma</div>
+
+                        <?php if ($avisoPlataforma === null): ?>
+                            <div class="notif-empty">Nenhum aviso no momento.</div>
+                        <?php else: ?>
+                            <div class="notif-item">
+                                <span>
+                                    <?= htmlspecialchars($avisoPlataforma->mensagem, ENT_QUOTES, 'UTF-8') ?>
+                                    <span class="notif-data"><?= (new DateTimeImmutable($avisoPlataforma->createdAt))->format('d/m/Y') ?></span>
+                                </span>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
                 <button type="button" class="btn-theme-toggle" data-theme-toggle aria-label="Alternar tema claro/escuro">
                     <span data-theme-icon>🌙</span> Tema
                 </button>

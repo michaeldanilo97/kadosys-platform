@@ -1,0 +1,333 @@
+:root {
+    --bg: #0B1120;
+    --bg-2: #111827;
+    --surface: #161F32;
+    --surface-2: #1C2740;
+    --border: rgba(148, 163, 184, 0.16);
+    --text: #E5E7EB;
+    --text-dim: #94A3B8;
+    --primary: #6366F1;
+    --accent: #22D3EE;
+    --danger: #EF4444;
+    --danger-dim: rgba(239, 68, 68, 0.12);
+    --warning: #F59E0B;
+    --success: #22C55E;
+    --radius: 14px;
+    --radius-sm: 10px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: inherit;
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 700;
+}
+
+/* ---------- Auth ---------- */
+
+.auth-shell {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background:
+        radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.18), transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(34, 211, 238, 0.12), transparent 45%),
+        var(--bg);
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 40px 36px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.auth-brand {
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+}
+
+.auth-eyebrow {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+}
+
+.auth-card h1 {
+    font-size: 1.4rem;
+    margin: 4px 0 6px;
+}
+
+.auth-subtitle {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    margin-bottom: 24px;
+}
+
+.auth-alert {
+    background: var(--danger-dim);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    color: #FCA5A5;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    margin-bottom: 18px;
+}
+
+.field label {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+}
+
+.field input {
+    width: 100%;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 11px 14px;
+    color: var(--text);
+    font-size: 0.95rem;
+}
+
+.field input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
+    border-radius: var(--radius-sm);
+    padding: 10px 18px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-primary {
+    width: 100%;
+    margin-top: 6px;
+    border: none;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: #fff;
+    font-weight: 600;
+}
+
+.btn-danger {
+    background: var(--danger-dim);
+    border-color: rgba(239, 68, 68, 0.35);
+    color: #FCA5A5;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+}
+
+/* ---------- Dashboard shell ---------- */
+
+.shell {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.sidebar-brand {
+    font-size: 1.05rem;
+    padding: 0 8px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.nav-link.active,
+.nav-link:hover {
+    background: var(--surface-2);
+    color: var(--text);
+}
+
+.sidebar-footer {
+    margin-top: auto;
+}
+
+.main {
+    flex: 1;
+    padding: 32px;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.page-header h1 {
+    font-size: 1.4rem;
+    margin: 0 0 4px;
+}
+
+.page-header p {
+    color: var(--text-dim);
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* ---------- Cards / table ---------- */
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+}
+
+th, td {
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+th {
+    color: var(--text-dim);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+}
+
+tbody tr:hover {
+    background: var(--surface-2);
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 600;
+}
+
+.badge-produto-igrejas {
+    background: rgba(99, 102, 241, 0.15);
+    color: #A5B4FC;
+}
+
+.badge-produto-barbearias {
+    background: rgba(34, 211, 238, 0.15);
+    color: #67E8F9;
+}
+
+.badge-status-ativo {
+    background: rgba(34, 197, 94, 0.15);
+    color: #86EFAC;
+}
+
+.badge-status-suspenso {
+    background: rgba(239, 68, 68, 0.15);
+    color: #FCA5A5;
+}
+
+.badge-status-pendente,
+.badge-status-provisionando {
+    background: rgba(245, 158, 11, 0.15);
+    color: #FCD34D;
+}
+
+.badge-status-erro {
+    background: rgba(239, 68, 68, 0.15);
+    color: #FCA5A5;
+}
+
+.flash {
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 20px;
+    font-size: 0.88rem;
+}
+
+.flash-success {
+    background: rgba(34, 197, 94, 0.12);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #86EFAC;
+}
+
+.flash-error {
+    background: var(--danger-dim);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    color: #FCA5A5;
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--text-dim);
+    padding: 40px 20px;
+}

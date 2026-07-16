@@ -487,3 +487,16 @@ CREATE TABLE IF NOT EXISTS assinatura_consumos (
     CONSTRAINT assinatura_consumos_agendamento_id_foreign
         FOREIGN KEY (agendamento_id) REFERENCES agendamentos (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Avisos do dono da plataforma (KADOSYS) para as barbearias cadastradas,
+-- publicados pelo Super Admin (apps/superadmin) e mostrados no sino de
+-- notificacoes do painel - ver Barbearias\Models\BarbeariaAviso. Uma
+-- linha ativa por vez, visivel pra todas as barbearias (banco ja
+-- compartilhado, sem precisar de coluna barbearia_id aqui).
+CREATE TABLE IF NOT EXISTS barbearia_avisos (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    mensagem TEXT NOT NULL,
+    ativo TINYINT(1) NOT NULL DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY barbearia_avisos_ativo_index (ativo)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
