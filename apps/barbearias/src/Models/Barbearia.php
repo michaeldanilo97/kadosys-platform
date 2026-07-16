@@ -25,10 +25,14 @@ final class Barbearia
     public const STATUS_ATIVA = 'ativo';
     public const STATUS_SUSPENSA = 'suspenso';
 
+    public const MODO_AGENDAMENTO = 'agendamento';
+    public const MODO_FILA = 'fila';
+
     private const SELECT_COLUNAS = 'id, nome, slug, telefone, documento_tipo, documento, razao_social,
         logo_path, cor_primaria,
         plano, metodo_pagamento, mp_preapproval_id, trial_expira_em, proximo_vencimento, plano_agendado,
-        fidelidade_pontos_por_real, ultimo_acesso_em, status, created_at';
+        fidelidade_pontos_por_real, ultimo_acesso_em, status, modo_atendimento,
+        pix_chave, pix_nome_beneficiario, pix_cidade, created_at';
 
     public function __construct(
         public readonly int $id,
@@ -49,8 +53,22 @@ final class Barbearia
         public readonly ?float $fidelidadePontosPorReal,
         public readonly ?string $ultimoAcessoEm,
         public readonly string $status,
+        public readonly string $modoAtendimento = self::MODO_AGENDAMENTO,
+        public readonly ?string $pixChave = null,
+        public readonly ?string $pixNomeBeneficiario = null,
+        public readonly ?string $pixCidade = null,
         public readonly ?string $createdAt = null,
     ) {
+    }
+
+    public function usaFila(): bool
+    {
+        return $this->modoAtendimento === self::MODO_FILA;
+    }
+
+    public function pixConfigurado(): bool
+    {
+        return $this->pixChave !== null && $this->pixChave !== '';
     }
 
     public static function find(int $id): ?self
@@ -203,6 +221,31 @@ final class Barbearia
         $stmt->execute(['plano' => $plano, 'id' => $id]);
     }
 
+    public static function atualizarModoAtendimento(int $id, string $modo): void
+    {
+        $modo = in_array($modo, [self::MODO_AGENDAMENTO, self::MODO_FILA], true) ? $modo : self::MODO_AGENDAMENTO;
+
+        $stmt = Database::connection()->prepare(
+            'UPDATE barbearias SET modo_atendimento = :modo WHERE id = :id'
+        );
+        $stmt->execute(['modo' => $modo, 'id' => $id]);
+    }
+
+    public static function atualizarPix(int $id, ?string $chave, ?string $nomeBeneficiario, ?string $cidade): void
+    {
+        $limpar = static fn (?string $valor): ?string => $valor !== null && trim($valor) !== '' ? trim($valor) : null;
+
+        $stmt = Database::connection()->prepare(
+            'UPDATE barbearias SET pix_chave = :chave, pix_nome_beneficiario = :nome, pix_cidade = :cidade WHERE id = :id'
+        );
+        $stmt->execute([
+            'chave' => $limpar($chave),
+            'nome' => $limpar($nomeBeneficiario),
+            'cidade' => $limpar($cidade),
+            'id' => $id,
+        ]);
+    }
+
     public static function atualizarMpPreapprovalId(int $id, string $preapprovalId): void
     {
         $stmt = Database::connection()->prepare(
@@ -283,6 +326,10 @@ final class Barbearia
             fidelidadePontosPorReal: $row['fidelidade_pontos_por_real'] !== null ? (float) $row['fidelidade_pontos_por_real'] : null,
             ultimoAcessoEm: $row['ultimo_acesso_em'] ?? null,
             status: (string) $row['status'],
+            modoAtendimento: (string) ($row['modo_atendimento'] ?? self::MODO_AGENDAMENTO),
+            pixChave: $row['pix_chave'] ?? null,
+            pixNomeBeneficiario: $row['pix_nome_beneficiario'] ?? null,
+            pixCidade: $row['pix_cidade'] ?? null,
             createdAt: isset($row['created_at']) ? (string) $row['created_at'] : null,
         );
     }

@@ -7,6 +7,7 @@ namespace Barbearias\Controllers;
 use Barbearias\Core\Auth;
 use Barbearias\Core\Controller;
 use Barbearias\Core\Csrf;
+use Barbearias\Core\PixEstatico;
 use Barbearias\Core\Session;
 use Barbearias\Models\Agendamento;
 use Barbearias\Models\AssinaturaCliente;
@@ -203,14 +204,29 @@ final class AgendamentoController extends Controller
             $saldoAssinatura = ['assinatura' => $assinatura, 'usados' => $usados, 'restantes' => max(0, $assinatura->planoAtendimentosPorMes - $usados)];
         }
 
+        $barbearia = Barbearia::find($barbeariaId);
+        $pixPayload = null;
+
+        if ($barbearia !== null && $barbearia->pixConfigurado()) {
+            $pixPayload = PixEstatico::montarPayload(
+                chave: (string) $barbearia->pixChave,
+                nomeBeneficiario: $barbearia->pixNomeBeneficiario ?? $barbearia->nome,
+                cidade: $barbearia->pixCidade ?? 'BRASIL',
+                valor: $agendamento->servicoPreco,
+                txid: 'AGD' . $agendamento->id,
+                descricao: $agendamento->servicoNome,
+            );
+        }
+
         echo $this->view('dashboard.agendamentos.pagamento', [
             'pageTitle' => 'Registrar pagamento - KADOSYS Barbearias',
             'activeMenu' => 'agendamentos',
             'user' => $this->usuario(),
-            'barbearia' => Barbearia::find($barbeariaId),
+            'barbearia' => $barbearia,
             'agendamento' => $agendamento,
             'formasPagamento' => FinanceiroLancamento::FORMAS_PAGAMENTO,
             'saldoAssinatura' => $saldoAssinatura,
+            'pixPayload' => $pixPayload,
             'errors' => Session::flash('agendamento_pagamento_errors') ?? [],
             'old' => Session::flash('agendamento_pagamento_old') ?? [],
         ], 'dashboard');

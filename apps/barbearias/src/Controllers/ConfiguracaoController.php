@@ -51,6 +51,54 @@ final class ConfiguracaoController extends Controller
     }
 
     /**
+     * Escolhe entre Agendamento (horario marcado) e Fila (ordem de
+     * chegada) - os dois modos nao convivem ao mesmo tempo (ver
+     * Barbearias\Models\Barbearia::usaFila()).
+     */
+    public function atualizarModoAtendimento(): void
+    {
+        $usuario = $this->exigirAdmin();
+
+        if (!Csrf::verify($this->request->input('_csrf_token'))) {
+            $this->redirect('/dashboard/configuracoes');
+        }
+
+        $modo = (string) $this->request->input('modo_atendimento', Barbearia::MODO_AGENDAMENTO);
+        Barbearia::atualizarModoAtendimento($usuario->barbeariaId, $modo);
+
+        Session::flash('config_perfil_success', $modo === Barbearia::MODO_FILA ? 'Modo Fila ativado.' : 'Modo Agendamento ativado.');
+        $this->redirect('/dashboard/configuracoes');
+    }
+
+    /**
+     * Chave Pix propria da barbearia (recebe direto na conta dela, sem
+     * gateway) - usada pelo QR Code exibido na hora de fechar um
+     * atendimento (ver AgendamentoController::pagamentoForm).
+     */
+    public function salvarPix(): void
+    {
+        $usuario = $this->exigirAdmin();
+
+        if (!Csrf::verify($this->request->input('_csrf_token'))) {
+            $this->redirect('/dashboard/configuracoes');
+        }
+
+        $chave = trim((string) $this->request->input('pix_chave', ''));
+        $nome = trim((string) $this->request->input('pix_nome_beneficiario', ''));
+        $cidade = trim((string) $this->request->input('pix_cidade', ''));
+
+        if ($chave !== '' && ($nome === '' || $cidade === '')) {
+            Session::flash('config_perfil_errors', ['Pra ativar o Pix, preencha também o nome do beneficiário e a cidade.']);
+            $this->redirect('/dashboard/configuracoes');
+        }
+
+        Barbearia::atualizarPix($usuario->barbeariaId, $chave, $nome, $cidade);
+
+        Session::flash('config_perfil_success', $chave !== '' ? 'Chave Pix salva.' : 'Chave Pix removida.');
+        $this->redirect('/dashboard/configuracoes');
+    }
+
+    /**
      * Troca o plano da barbearia imediatamente - a proxima cobranca
      * (Pix ou cartao, ver AssinaturaController) ja sai no valor do
      * plano novo.
