@@ -17,6 +17,82 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 143 - 2026-07-16
+
+**Novo app: KADOSYS Super Admin (painel unico cruzando Igrejas + Barbearias)**
+
+- Novo app standalone **`apps/superadmin`** (mesmo padrao sem framework
+  dos outros dois - Core proprio, sem nenhuma dependencia direta de
+  `apps/igrejas` ou `apps/barbearias`), com login por chave mestra
+  (bcrypt), igual ao painel `/plataforma` do Igrejas.
+- **`/sites`**: lista TODAS as igrejas e barbearias cadastradas numa
+  tabela unica (produto, nome, plano, status, criado em, ultimo
+  acesso), com busca por nome/slug. Cada linha pode ser:
+  - **Suspensa/Reativada**: so muda o `status` no banco de cada
+    produto (bloqueia o acesso, sem apagar nada).
+  - **Excluida (permanente, irreversivel)**: exige digitar o nome
+    exato do site numa tela de confirmacao antes de liberar o botao.
+    Barbearia: `DELETE` simples (toda a cascata de agendamentos,
+    clientes, financeiro etc. e resolvida pelas FKs `ON DELETE CASCADE`
+    ja existentes). Igreja: exclui banco de dados e usuario MySQL no
+    cPanel (melhor esforco, reaproveitando as mesmas credenciais/token
+    ja configurados pro provisionamento do Igrejas) e sempre remove o
+    registro central no final, mesmo se o cPanel falhar - so avisa que
+    o subdominio precisa ser removido manualmente depois (essa
+    hospedagem nao expoe exclusao de subdominio via API).
+- **`/avisos`**: publica uma mensagem no sino de notificacoes de
+  Igrejas, Barbearias ou Todos - escreve direto em `plataforma_avisos`
+  (Igrejas) e/ou na tabela nova `barbearia_avisos` (Barbearias, ver
+  abaixo), reaproveitando a mesma logica de "um aviso ativo por vez"
+  ja usada no Igrejas.
+
+**Novo no Barbearias, como pre-requisito**: o Barbearias nao tinha
+nenhum sistema de aviso/notificacao ainda - foi adicionada a tabela
+`barbearia_avisos` (migration 014, ja incluida tambem em
+`install.sql`) e um sino no rodape da sidebar do painel, mostrando o
+aviso ativo (se houver) publicado pelo Super Admin.
+
+**Acao manual pendente no banco `kadosys1_barbearias`** (se
+`install.sql` ja rodou antes): rodar
+`apps/barbearias/database/migrations/014_barbearia_avisos.sql` uma
+unica vez.
+
+**Deploy do novo app (unico passo realmente novo neste ajuste)**:
+1. Criar um subdominio novo no cPanel (ex.: `admin.kadosys.com.br`)
+   apontando pra `apps/superadmin/public` (mesmo esquema ja usado pro
+   Igrejas/Barbearias - subdominio aponta pra dentro da pasta
+   `public/` do app).
+2. Configurar as variaveis de ambiente desse subdominio (MultiPHP INI
+   Editor, ou `config/*.local.php` direto no servidor):
+   - `SUPERADMIN_SENHA_HASH` - hash bcrypt de uma chave mestra nova,
+     gerado com
+     `php -r "echo password_hash('sua-chave-aqui', PASSWORD_BCRYPT);"`.
+   - `SUPERADMIN_IGREJAS_DB_HOST/PORT/DATABASE/USERNAME/PASSWORD` -
+     mesmas credenciais do banco central do Igrejas
+     (`kadosys1_igrejas`), so pra leitura/escrita de
+     `plataforma_tenants`/`plataforma_avisos`.
+   - `SUPERADMIN_BARBEARIAS_DB_HOST/PORT/DATABASE/USERNAME/PASSWORD` -
+     mesmas credenciais do banco do Barbearias
+     (`kadosys1_barbearias`).
+   - `CPANEL_HOST/PORT/USERNAME/API_TOKEN/ROOT_DOMAIN` - as MESMAS
+     variaveis ja configuradas pro Igrejas (reaproveitadas, nenhum
+     token novo precisa ser gerado).
+3. Rodar `composer install` na pasta `apps/superadmin` se o servidor
+   suportar Composer (o app ja sobe com um `vendor/` minimo commitado,
+   igual aos outros dois, pra funcionar mesmo sem isso).
+
+**Testado localmente** (MariaDB + servidor PHP embutido, bancos
+espelhando os schemas de producao): login com chave mestra, listagem
+unificada mostrando igrejas e barbearias juntas, suspender/reativar
+dos dois lados, exclusao com nome errado (rejeitada) e nome certo
+(efetivada - barbearia com cascata confirmada no banco, igreja com
+aviso correto de cPanel nao configurado), publicacao de aviso "Todos"
+gravando nos dois bancos, aviso "Somente Igrejas" sem afetar
+Barbearias, encerrar aviso manualmente, e o sino do painel Barbearias
+mostrando o aviso publicado (com acentuacao correta).
+
+---
+
 ## Ajuste 142 - 2026-07-15
 
 **Barbearias: assinaturas de cliente (pacotes pré-pagos de atendimentos por mês)**
