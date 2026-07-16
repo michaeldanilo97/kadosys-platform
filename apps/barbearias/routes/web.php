@@ -187,6 +187,7 @@ $router->post('/dashboard/produtos/{id}/vender', [ProdutoController::class, 'ven
 
 // Configuracoes (dados da barbearia + equipe) - so admin.
 $router->get('/dashboard/configuracoes', [ConfiguracaoController::class, 'index'], [AuthMiddleware::class]);
+$router->post('/dashboard/configuracoes/plano', [ConfiguracaoController::class, 'trocarPlano'], [AuthMiddleware::class]);
 $router->post('/dashboard/configuracoes/perfil', [ConfiguracaoController::class, 'atualizarPerfil'], [AuthMiddleware::class]);
 $router->post('/dashboard/configuracoes/equipe', [ConfiguracaoController::class, 'criarUsuario'], [AuthMiddleware::class]);
 $router->get('/dashboard/configuracoes/equipe/{id}/editar', [ConfiguracaoController::class, 'editarUsuario'], [AuthMiddleware::class]);

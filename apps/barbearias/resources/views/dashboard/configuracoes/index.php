@@ -2,6 +2,7 @@
 
 use Barbearias\Core\Csrf;
 use Barbearias\Models\Barbearia;
+use Barbearias\Models\Plano;
 use Barbearias\Models\User;
 
 /**
@@ -33,6 +34,28 @@ $basePath = $config['base_path'] ?? '';
         <p style="color: var(--gray-400); margin: 0 0 1rem;">
             Plano atual: <strong style="color: var(--text);"><?= htmlspecialchars($planoLabel, ENT_QUOTES, 'UTF-8') ?></strong>
         </p>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin-bottom:1.25rem;">
+            <?php foreach (Plano::LABELS as $planoValor => $planoNome): ?>
+                <?php $ehAtual = $barbearia->plano === $planoValor; ?>
+                <div class="glass-card" style="padding:1rem; border:1px solid <?= $ehAtual ? 'var(--primary)' : 'var(--glass-border)' ?>;">
+                    <p style="margin:0; font-weight:600; color:var(--text);"><?= htmlspecialchars($planoNome, ENT_QUOTES, 'UTF-8') ?></p>
+                    <p style="margin:0.3rem 0 0.8rem; color:var(--gray-400); font-size:0.85rem;">
+                        R$ <?= number_format(Plano::VALOR_MENSAL[$planoValor], 2, ',', '.') ?>/mês
+                    </p>
+                    <?php if ($ehAtual): ?>
+                        <span class="btn-k btn-k-outline" style="width:100%; text-align:center; pointer-events:none; opacity:0.7;">Plano atual</span>
+                    <?php else: ?>
+                        <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/plano" onsubmit="return confirm('Trocar para o plano <?= htmlspecialchars($planoNome, ENT_QUOTES, 'UTF-8') ?>? A próxima cobrança já sai no novo valor.');">
+                            <?= Csrf::field() ?>
+                            <input type="hidden" name="plano" value="<?= htmlspecialchars($planoValor, ENT_QUOTES, 'UTF-8') ?>">
+                            <button type="submit" class="btn-k btn-k-grad" style="width:100%;">Trocar para este plano</button>
+                        </form>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
         <div class="crud-form-actions" style="margin-top: 0;">
             <a href="<?= $basePath ?>/dashboard/faturas" class="btn-k btn-k-outline">Ver faturas</a>
             <a href="<?= $basePath ?>/dashboard/assinatura" class="btn-k btn-k-outline">Gerenciar pagamento</a>

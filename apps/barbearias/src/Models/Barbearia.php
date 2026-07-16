@@ -188,6 +188,21 @@ final class Barbearia
         $stmt->execute(['id' => $id]);
     }
 
+    /**
+     * Troca o plano da barbearia imediatamente - sem proporcionalidade
+     * nem agendamento pro proximo ciclo (o campo plano_agendado existe
+     * no schema pra paridade com o Igrejas, mas essa logica mais
+     * elaborada ainda nao foi construida aqui). A proxima cobranca
+     * (Pix ou cartao) ja sai no valor do novo plano.
+     */
+    public static function atualizarPlano(int $id, string $plano): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE barbearias SET plano = :plano WHERE id = :id'
+        );
+        $stmt->execute(['plano' => $plano, 'id' => $id]);
+    }
+
     public static function atualizarMpPreapprovalId(int $id, string $preapprovalId): void
     {
         $stmt = Database::connection()->prepare(
