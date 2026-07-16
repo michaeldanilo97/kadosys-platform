@@ -177,16 +177,25 @@ $basePath = $config['base_path'] ?? '';
         </form>
     </div>
 
-    <div class="glass-card dash-panel">
-        <div class="dash-panel-head">
-            <h2>Agendamento online</h2>
-            <p>Compartilhe esse link com seus clientes - eles escolhem o profissional, o serviço e o horário sozinhos.</p>
+    <?php if ($barbearia->usaFila()): ?>
+        <div class="glass-card dash-panel">
+            <div class="dash-panel-head">
+                <h2>Fila de atendimento</h2>
+                <p>O link público da fila fica na tela <a href="<?= $basePath ?>/dashboard/fila">Fila</a>, junto com quem está aguardando agora.</p>
+            </div>
         </div>
-        <div class="pix-copiacola" data-link-agendamento data-caminho="<?= $basePath ?>/agendar/<?= htmlspecialchars($barbearia->slug, ENT_QUOTES, 'UTF-8') ?>">
-            <input type="text" readonly data-link-agendamento-input>
-            <button type="button" class="btn-k btn-k-grad btn-k-sm" data-link-agendamento-copiar>Copiar</button>
+    <?php else: ?>
+        <div class="glass-card dash-panel">
+            <div class="dash-panel-head">
+                <h2>Agendamento online</h2>
+                <p>Compartilhe esse link com seus clientes - eles escolhem o profissional, o serviço e o horário sozinhos.</p>
+            </div>
+            <div class="pix-copiacola" data-link-agendamento data-caminho="<?= $basePath ?>/agendar/<?= htmlspecialchars($barbearia->slug, ENT_QUOTES, 'UTF-8') ?>">
+                <input type="text" readonly data-link-agendamento-input>
+                <button type="button" class="btn-k btn-k-grad btn-k-sm" data-link-agendamento-copiar>Copiar</button>
+            </div>
         </div>
-    </div>
+    <?php endif; ?>
 
     <div class="glass-card dash-panel">
         <div class="dash-panel-head">
