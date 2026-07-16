@@ -6,6 +6,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         initTheme();
         initSidebar();
+        initTopbarDropdowns();
     });
 
     function initTheme() {
@@ -69,6 +70,62 @@
         if (overlay) {
             overlay.addEventListener('click', fechar);
         }
+    }
+
+    // Sino de avisos da plataforma no rodape da sidebar: botao + painel
+    // escondido por "hidden", fecha ao clicar fora ou apertar Esc.
+    function initTopbarDropdowns() {
+        var dropdowns = document.querySelectorAll('[data-topbar-dropdown]');
+
+        if (dropdowns.length === 0) {
+            return;
+        }
+
+        function fecharTodos(exceto) {
+            dropdowns.forEach(function (dropdown) {
+                if (dropdown === exceto) {
+                    return;
+                }
+
+                var panel = dropdown.querySelector('[data-dropdown-panel]');
+                var toggle = dropdown.querySelector('[data-dropdown-toggle]');
+
+                if (panel) {
+                    panel.hidden = true;
+                }
+                if (toggle) {
+                    toggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
+
+        dropdowns.forEach(function (dropdown) {
+            var toggle = dropdown.querySelector('[data-dropdown-toggle]');
+            var panel = dropdown.querySelector('[data-dropdown-panel]');
+
+            if (!toggle || !panel) {
+                return;
+            }
+
+            toggle.addEventListener('click', function (event) {
+                event.stopPropagation();
+
+                var abrindo = panel.hidden;
+                fecharTodos(dropdown);
+                panel.hidden = !abrindo;
+                toggle.setAttribute('aria-expanded', abrindo ? 'true' : 'false');
+            });
+        });
+
+        document.addEventListener('click', function () {
+            fecharTodos(null);
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                fecharTodos(null);
+            }
+        });
     }
 
     // PWA: registra o service worker (so cacheia CSS/JS/icones, nunca

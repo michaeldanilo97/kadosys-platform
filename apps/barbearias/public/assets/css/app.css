@@ -281,6 +281,79 @@ a {
     border-color: var(--primary);
 }
 
+/* ---- Sino de avisos da plataforma (sidebar footer) -------------------- */
+
+.topbar-dropdown {
+    position: relative;
+}
+
+.topbar-dropdown .btn-theme-toggle {
+    position: relative;
+}
+
+.topbar-dropdown .dot {
+    position: absolute;
+    top: 6px;
+    right: 10px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+}
+
+.topbar-dropdown-panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    min-width: 240px;
+    background: var(--bg-dark-2);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    padding: 0.5rem;
+    z-index: 50;
+}
+
+.topbar-dropdown-up .topbar-dropdown-panel {
+    bottom: calc(100% + 0.5rem);
+}
+
+.topbar-dropdown-head {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--gray-400);
+    padding: 0.35rem 0.5rem 0.5rem;
+}
+
+.notif-panel {
+    max-height: 260px;
+    overflow-y: auto;
+}
+
+.notif-empty {
+    padding: 0.7rem 0.5rem;
+    font-size: 0.82rem;
+    color: var(--gray-400);
+}
+
+.notif-item {
+    padding: 0.55rem 0.5rem;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    color: var(--text);
+    text-align: left;
+}
+
+.notif-data {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 0.72rem;
+    color: var(--gray-400);
+}
+
 /* ---- Shell do painel (sidebar + topbar) ------------------------------ */
 
 .dash-shell {
