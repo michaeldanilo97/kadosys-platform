@@ -3,7 +3,7 @@
         'name' => 'kadosys/superadmin',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '4a11f54aebe7eb5809ef930cf18fb52bd3b52345',
+        'reference' => 'b395108ca4b2a60178b218cb7cbff7250511ffbb',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'kadosys/superadmin' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '4a11f54aebe7eb5809ef930cf18fb52bd3b52345',
+            'reference' => 'b395108ca4b2a60178b218cb7cbff7250511ffbb',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

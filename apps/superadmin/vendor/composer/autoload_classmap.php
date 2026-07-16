@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'Superadmin\\Controllers\\AuthController' => $baseDir . '/src/Controllers/AuthController.php',
+    'Superadmin\\Controllers\\AvisoController' => $baseDir . '/src/Controllers/AvisoController.php',
     'Superadmin\\Controllers\\SiteController' => $baseDir . '/src/Controllers/SiteController.php',
     'Superadmin\\Core\\Controller' => $baseDir . '/src/Core/Controller.php',
     'Superadmin\\Core\\CpanelUapiClient' => $baseDir . '/src/Core/CpanelUapiClient.php',
@@ -21,6 +22,8 @@ return array(
     'Superadmin\\Core\\Router' => $baseDir . '/src/Core/Router.php',
     'Superadmin\\Core\\Session' => $baseDir . '/src/Core/Session.php',
     'Superadmin\\Core\\View' => $baseDir . '/src/Core/View.php',
+    'Superadmin\\Models\\AvisoBarbearia' => $baseDir . '/src/Models/AvisoBarbearia.php',
+    'Superadmin\\Models\\AvisoIgreja' => $baseDir . '/src/Models/AvisoIgreja.php',
     'Superadmin\\Models\\SiteBarbearia' => $baseDir . '/src/Models/SiteBarbearia.php',
     'Superadmin\\Models\\SiteIgreja' => $baseDir . '/src/Models/SiteIgreja.php',
 );

@@ -33,6 +33,7 @@ class ComposerStaticInit350ef342ea3d7b343803a306751bd87b
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Superadmin\\Controllers\\AuthController' => __DIR__ . '/../..' . '/src/Controllers/AuthController.php',
+        'Superadmin\\Controllers\\AvisoController' => __DIR__ . '/../..' . '/src/Controllers/AvisoController.php',
         'Superadmin\\Controllers\\SiteController' => __DIR__ . '/../..' . '/src/Controllers/SiteController.php',
         'Superadmin\\Core\\Controller' => __DIR__ . '/../..' . '/src/Core/Controller.php',
         'Superadmin\\Core\\CpanelUapiClient' => __DIR__ . '/../..' . '/src/Core/CpanelUapiClient.php',
@@ -46,6 +47,8 @@ class ComposerStaticInit350ef342ea3d7b343803a306751bd87b
         'Superadmin\\Core\\Router' => __DIR__ . '/../..' . '/src/Core/Router.php',
         'Superadmin\\Core\\Session' => __DIR__ . '/../..' . '/src/Core/Session.php',
         'Superadmin\\Core\\View' => __DIR__ . '/../..' . '/src/Core/View.php',
+        'Superadmin\\Models\\AvisoBarbearia' => __DIR__ . '/../..' . '/src/Models/AvisoBarbearia.php',
+        'Superadmin\\Models\\AvisoIgreja' => __DIR__ . '/../..' . '/src/Models/AvisoIgreja.php',
         'Superadmin\\Models\\SiteBarbearia' => __DIR__ . '/../..' . '/src/Models/SiteBarbearia.php',
         'Superadmin\\Models\\SiteIgreja' => __DIR__ . '/../..' . '/src/Models/SiteIgreja.php',
     );

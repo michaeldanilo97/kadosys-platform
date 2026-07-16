@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Superadmin\Controllers\AuthController;
+use Superadmin\Controllers\AvisoController;
 use Superadmin\Controllers\SiteController;
 use Superadmin\Core\Middleware\AuthMiddleware;
 
@@ -24,5 +25,6 @@ $router->post('/sites/{produto}/{id}/reativar', [SiteController::class, 'reativa
 $router->get('/sites/{produto}/{id}/excluir', [SiteController::class, 'confirmarExclusao'], [AuthMiddleware::class]);
 $router->post('/sites/{produto}/{id}/excluir', [SiteController::class, 'excluir'], [AuthMiddleware::class]);
 
-// As rotas /avisos (envio de avisos) sao adicionadas aqui quando o
-// modulo e implementado - protegidas por AuthMiddleware.
+$router->get('/avisos', [AvisoController::class, 'index'], [AuthMiddleware::class]);
+$router->post('/avisos', [AvisoController::class, 'publicar'], [AuthMiddleware::class]);
+$router->post('/avisos/{produto}/{id}/encerrar', [AvisoController::class, 'encerrar'], [AuthMiddleware::class]);
