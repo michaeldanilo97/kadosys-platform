@@ -33,17 +33,21 @@ class ComposerStaticInit350ef342ea3d7b343803a306751bd87b
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Superadmin\\Controllers\\AuthController' => __DIR__ . '/../..' . '/src/Controllers/AuthController.php',
+        'Superadmin\\Controllers\\SiteController' => __DIR__ . '/../..' . '/src/Controllers/SiteController.php',
         'Superadmin\\Core\\Controller' => __DIR__ . '/../..' . '/src/Core/Controller.php',
         'Superadmin\\Core\\CpanelUapiClient' => __DIR__ . '/../..' . '/src/Core/CpanelUapiClient.php',
         'Superadmin\\Core\\Csrf' => __DIR__ . '/../..' . '/src/Core/Csrf.php',
         'Superadmin\\Core\\DatabaseBarbearias' => __DIR__ . '/../..' . '/src/Core/DatabaseBarbearias.php',
         'Superadmin\\Core\\DatabaseIgrejas' => __DIR__ . '/../..' . '/src/Core/DatabaseIgrejas.php',
+        'Superadmin\\Core\\Desprovisionador' => __DIR__ . '/../..' . '/src/Core/Desprovisionador.php',
         'Superadmin\\Core\\MiddlewareInterface' => __DIR__ . '/../..' . '/src/Core/MiddlewareInterface.php',
         'Superadmin\\Core\\Middleware\\AuthMiddleware' => __DIR__ . '/../..' . '/src/Core/Middleware/AuthMiddleware.php',
         'Superadmin\\Core\\Request' => __DIR__ . '/../..' . '/src/Core/Request.php',
         'Superadmin\\Core\\Router' => __DIR__ . '/../..' . '/src/Core/Router.php',
         'Superadmin\\Core\\Session' => __DIR__ . '/../..' . '/src/Core/Session.php',
         'Superadmin\\Core\\View' => __DIR__ . '/../..' . '/src/Core/View.php',
+        'Superadmin\\Models\\SiteBarbearia' => __DIR__ . '/../..' . '/src/Models/SiteBarbearia.php',
+        'Superadmin\\Models\\SiteIgreja' => __DIR__ . '/../..' . '/src/Models/SiteIgreja.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
