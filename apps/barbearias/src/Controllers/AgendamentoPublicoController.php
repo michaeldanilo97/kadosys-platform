@@ -37,6 +37,10 @@ final class AgendamentoPublicoController extends Controller
             return;
         }
 
+        if ($barbearia->usaFila()) {
+            $this->redirect('/fila/' . $slug);
+        }
+
         $profissionais = Profissional::ativos($barbearia->id);
         $profissionalIds = array_map(static fn (Profissional $p) => $p->id, $profissionais);
 
@@ -64,7 +68,7 @@ final class AgendamentoPublicoController extends Controller
     {
         $barbearia = Barbearia::findBySlugAtiva($slug);
 
-        if ($barbearia === null) {
+        if ($barbearia === null || $barbearia->usaFila()) {
             $this->jsonResponse(['horarios' => []], 404);
         }
 
@@ -87,6 +91,10 @@ final class AgendamentoPublicoController extends Controller
             $this->renderNotFound();
 
             return;
+        }
+
+        if ($barbearia->usaFila()) {
+            $this->redirect('/fila/' . $slug);
         }
 
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
@@ -170,6 +178,10 @@ final class AgendamentoPublicoController extends Controller
             $this->renderNotFound();
 
             return;
+        }
+
+        if ($barbearia->usaFila()) {
+            $this->redirect('/fila/' . $slug);
         }
 
         if (!Csrf::verify($this->request->input('_csrf_token'))) {
