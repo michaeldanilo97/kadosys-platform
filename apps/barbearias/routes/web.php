@@ -154,6 +154,7 @@ $router->post('/dashboard/financeiro/lancamentos/{id}/excluir', [FinanceiroContr
 
 // Comissoes (fechamento por profissional, com base nos atendimentos concluidos).
 $router->get('/dashboard/comissoes', [ComissaoController::class, 'index'], [AuthMiddleware::class]);
+$router->post('/dashboard/comissoes/{id}/pagar', [ComissaoController::class, 'pagar'], [AuthMiddleware::class]);
 
 // Painel de recepcao (tela cheia, pensada pra ficar numa TV do salao).
 $router->get('/dashboard/recepcao', [RecepcaoController::class, 'index'], [AuthMiddleware::class]);
