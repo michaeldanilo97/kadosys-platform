@@ -35,6 +35,10 @@ CREATE TABLE IF NOT EXISTS barbearias (
     fidelidade_pontos_por_real DECIMAL(6, 2) NULL,
     ultimo_acesso_em DATETIME NULL,
     status ENUM('pendente', 'ativo', 'suspenso') NOT NULL DEFAULT 'pendente',
+    modo_atendimento ENUM('agendamento', 'fila') NOT NULL DEFAULT 'agendamento',
+    pix_chave VARCHAR(140) NULL,
+    pix_nome_beneficiario VARCHAR(25) NULL,
+    pix_cidade VARCHAR(15) NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY barbearias_slug_unique (slug),
@@ -115,6 +119,29 @@ CREATE TABLE IF NOT EXISTS profissionais (
     KEY profissionais_barbearia_id_index (barbearia_id),
     CONSTRAINT profissionais_barbearia_id_foreign
         FOREIGN KEY (barbearia_id) REFERENCES barbearias (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Modo de atendimento por fila (ordem de chegada, sem horario marcado) -
+-- alternativa ao Agendamento (barbearias.modo_atendimento escolhe qual
+-- dos dois esta em uso). Uma linha por pessoa na fila - "entrou_em"
+-- define a ordem (FIFO). Cliente pode nao ter cadastro nenhum em
+-- "clientes" (fila e pensada pra ser rapida, sem exigir cadastro
+-- completo), por isso guarda nome e telefone direto aqui.
+CREATE TABLE IF NOT EXISTS fila_atendimento (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    barbearia_id INT UNSIGNED NOT NULL,
+    profissional_id INT UNSIGNED NULL,
+    nome VARCHAR(150) NOT NULL,
+    telefone VARCHAR(20) NULL,
+    status ENUM('aguardando', 'em_atendimento', 'atendido', 'cancelado') NOT NULL DEFAULT 'aguardando',
+    entrou_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    chamado_em TIMESTAMP NULL,
+    atendido_em TIMESTAMP NULL,
+    KEY fila_atendimento_barbearia_id_status_index (barbearia_id, status),
+    CONSTRAINT fila_atendimento_barbearia_id_foreign
+        FOREIGN KEY (barbearia_id) REFERENCES barbearias (id) ON DELETE CASCADE,
+    CONSTRAINT fila_atendimento_profissional_id_foreign
+        FOREIGN KEY (profissional_id) REFERENCES profissionais (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Unidade fisica (filial) de uma barbearia. Toda barbearia nasce com

@@ -17,6 +17,8 @@ use Barbearias\Controllers\CrmController;
 use Barbearias\Controllers\DashboardController;
 use Barbearias\Controllers\FaturaController;
 use Barbearias\Controllers\FidelidadeController;
+use Barbearias\Controllers\FilaController;
+use Barbearias\Controllers\FilaPublicaController;
 use Barbearias\Controllers\FinanceiroController;
 use Barbearias\Controllers\LandingController;
 use Barbearias\Controllers\ListaEsperaController;
@@ -64,6 +66,12 @@ $router->post('/minha-conta/{slug}/agendamentos/{agendamentoId}/cancelar', [Clie
 $router->get('/minha-conta/{slug}/agendamentos/{agendamentoId}/reagendar', [ClienteAreaController::class, 'reagendarForm']);
 $router->get('/minha-conta/{slug}/agendamentos/{agendamentoId}/reagendar/horarios', [ClienteAreaController::class, 'horariosParaReagendar']);
 $router->post('/minha-conta/{slug}/agendamentos/{agendamentoId}/reagendar', [ClienteAreaController::class, 'reagendar']);
+
+// Fila de espera publica (sem login) - alternativa ao agendamento, so
+// pra barbearias com modo_atendimento = 'fila'.
+$router->get('/fila/{slug}', [FilaPublicaController::class, 'mostrar']);
+$router->post('/fila/{slug}', [FilaPublicaController::class, 'entrar']);
+$router->get('/fila/{slug}/confirmado', [FilaPublicaController::class, 'confirmado']);
 
 // Notificacoes assincronas do Mercado Pago (confirmacao de pagamento).
 $router->post('/webhooks/mercadopago', [WebhookController::class, 'mercadoPago']);
@@ -128,6 +136,14 @@ $router->post('/dashboard/agendamentos/{id}/pagamento', [AgendamentoController::
 $router->post('/dashboard/agendamentos/{id}/usar-assinatura', [AgendamentoController::class, 'usarAssinatura'], [AuthMiddleware::class]);
 $router->post('/dashboard/agendamentos/{id}/excluir', [AgendamentoController::class, 'destroy'], [AuthMiddleware::class]);
 
+// Fila de atendimento (equipe) - alternativa ao Agendamento, so pra
+// barbearias com modo_atendimento = 'fila'.
+$router->get('/dashboard/fila', [FilaController::class, 'index'], [AuthMiddleware::class]);
+$router->post('/dashboard/fila', [FilaController::class, 'adicionar'], [AuthMiddleware::class]);
+$router->post('/dashboard/fila/{id}/chamar', [FilaController::class, 'chamar'], [AuthMiddleware::class]);
+$router->post('/dashboard/fila/{id}/concluir', [FilaController::class, 'concluir'], [AuthMiddleware::class]);
+$router->post('/dashboard/fila/{id}/cancelar', [FilaController::class, 'cancelar'], [AuthMiddleware::class]);
+
 // Bloqueios de agenda (ferias, folgas, compromissos pontuais).
 $router->get('/dashboard/bloqueios', [BloqueioController::class, 'index'], [AuthMiddleware::class]);
 $router->get('/dashboard/bloqueios/novo', [BloqueioController::class, 'create'], [AuthMiddleware::class]);
@@ -188,6 +204,8 @@ $router->post('/dashboard/produtos/{id}/vender', [ProdutoController::class, 'ven
 // Configuracoes (dados da barbearia + equipe) - so admin.
 $router->get('/dashboard/configuracoes', [ConfiguracaoController::class, 'index'], [AuthMiddleware::class]);
 $router->post('/dashboard/configuracoes/plano', [ConfiguracaoController::class, 'trocarPlano'], [AuthMiddleware::class]);
+$router->post('/dashboard/configuracoes/modo-atendimento', [ConfiguracaoController::class, 'atualizarModoAtendimento'], [AuthMiddleware::class]);
+$router->post('/dashboard/configuracoes/pix', [ConfiguracaoController::class, 'salvarPix'], [AuthMiddleware::class]);
 $router->post('/dashboard/configuracoes/perfil', [ConfiguracaoController::class, 'atualizarPerfil'], [AuthMiddleware::class]);
 $router->post('/dashboard/configuracoes/equipe', [ConfiguracaoController::class, 'criarUsuario'], [AuthMiddleware::class]);
 $router->get('/dashboard/configuracoes/equipe/{id}/editar', [ConfiguracaoController::class, 'editarUsuario'], [AuthMiddleware::class]);

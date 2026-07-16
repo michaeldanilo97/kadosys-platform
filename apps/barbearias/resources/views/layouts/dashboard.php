@@ -23,9 +23,20 @@ $avisoPlataforma = BarbeariaAviso::ativo();
 
 $itensMenu = [
     ['slug' => 'painel', 'href' => '/dashboard', 'icone' => '🏠', 'label' => 'Painel'],
-    ['slug' => 'agendamentos', 'href' => '/dashboard/agendamentos', 'icone' => '📅', 'label' => 'Agendamentos'],
-    ['slug' => 'bloqueios', 'href' => '/dashboard/bloqueios', 'icone' => '🚫', 'label' => 'Bloqueios'],
-    ['slug' => 'lista-espera', 'href' => '/dashboard/lista-espera', 'icone' => '⏳', 'label' => 'Lista de espera'],
+];
+
+// Fila e Agendamento sao modos alternativos (ver Barbearia::usaFila()) -
+// a barbearia usa um ou outro, nunca os dois ao mesmo tempo.
+if ($barbearia?->usaFila()) {
+    $itensMenu[] = ['slug' => 'fila', 'href' => '/dashboard/fila', 'icone' => '🎟️', 'label' => 'Fila'];
+} else {
+    $itensMenu[] = ['slug' => 'agendamentos', 'href' => '/dashboard/agendamentos', 'icone' => '📅', 'label' => 'Agendamentos'];
+    $itensMenu[] = ['slug' => 'bloqueios', 'href' => '/dashboard/bloqueios', 'icone' => '🚫', 'label' => 'Bloqueios'];
+    $itensMenu[] = ['slug' => 'lista-espera', 'href' => '/dashboard/lista-espera', 'icone' => '⏳', 'label' => 'Lista de espera'];
+}
+
+array_push(
+    $itensMenu,
     ['slug' => 'recepcao', 'href' => '/dashboard/recepcao', 'icone' => '📺', 'label' => 'Recepção (TV)', 'target' => '_blank'],
     ['slug' => 'clientes', 'href' => '/dashboard/clientes', 'icone' => '📇', 'label' => 'Clientes'],
     ['slug' => 'crm', 'href' => '/dashboard/crm', 'icone' => '🎯', 'label' => 'CRM'],
@@ -40,7 +51,7 @@ $itensMenu = [
     ['slug' => 'relatorios', 'href' => '/dashboard/relatorios', 'icone' => '📊', 'label' => 'Relatórios'],
     ['slug' => 'faturas', 'href' => '/dashboard/faturas', 'icone' => '🧾', 'label' => 'Faturas'],
     ['slug' => 'configuracoes', 'href' => '/dashboard/configuracoes', 'icone' => '⚙️', 'label' => 'Configurações'],
-];
+);
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

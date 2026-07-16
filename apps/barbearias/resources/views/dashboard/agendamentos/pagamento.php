@@ -1,6 +1,7 @@
 <?php
 
 use Barbearias\Core\Csrf;
+use Barbearias\Core\View;
 use Barbearias\Models\Agendamento;
 use Barbearias\Models\AssinaturaCliente;
 
@@ -9,6 +10,7 @@ use Barbearias\Models\AssinaturaCliente;
  * @var Agendamento $agendamento
  * @var array<int, string> $formasPagamento
  * @var array{assinatura: AssinaturaCliente, usados: int, restantes: int}|null $saldoAssinatura
+ * @var string|null $pixPayload
  * @var array<int, string> $errors
  * @var array $old
  */
@@ -86,6 +88,18 @@ $valorSugerido = $old['valor'] ?? number_format($agendamento->servicoPreco, 2, '
                 </div>
             </div>
 
+            <?php if ($pixPayload !== null): ?>
+                <div class="glass-card" data-pix-secao hidden style="margin: 0 0 1.5rem; padding: 1.25rem;">
+                    <p style="margin: 0 0 0.6rem; font-weight: 600;">QR Code Pix da barbearia</p>
+                    <p class="form-field-hint" style="margin: 0 0 0.8rem;">Mostre a tela pro cliente escanear no app do banco. O valor já vem preenchido (<?= htmlspecialchars((string) $valorSugerido, ENT_QUOTES, 'UTF-8') ?>).</p>
+                    <div data-pix-qr></div>
+                    <div class="pix-copiacola" style="margin-top: 0.8rem;">
+                        <input type="text" value="<?= htmlspecialchars($pixPayload, ENT_QUOTES, 'UTF-8') ?>" readonly data-pix-copia-cola>
+                        <button type="button" class="btn-k btn-k-outline btn-k-sm" data-pix-copiar>Copiar</button>
+                    </div>
+                </div>
+            <?php endif; ?>
+
             <div class="crud-form-actions">
                 <button type="submit" class="btn-k btn-k-grad">Concluir e registrar pagamento</button>
                 <a href="<?= $basePath ?>/dashboard/agendamentos" class="btn-k btn-k-outline">Cancelar</a>
@@ -93,3 +107,11 @@ $valorSugerido = $old['valor'] ?? number_format($agendamento->servicoPreco, 2, '
         </form>
     </div>
 </main>
+
+<?php if ($pixPayload !== null): ?>
+    <script>
+        window.KADOSYS_PIX_PAYLOAD = <?= json_encode($pixPayload) ?>;
+    </script>
+    <script src="<?= $basePath ?>/assets/js/vendor/qrcode-generator.js?v=<?= View::assetVersion('assets/js/vendor/qrcode-generator.js') ?>"></script>
+    <script src="<?= $basePath ?>/assets/js/pagamento-pix.js?v=<?= View::assetVersion('assets/js/pagamento-pix.js') ?>"></script>
+<?php endif; ?>

@@ -64,6 +64,71 @@ $basePath = $config['base_path'] ?? '';
 
     <div class="glass-card dash-panel">
         <div class="dash-panel-head">
+            <h2>Modo de atendimento</h2>
+        </div>
+        <p style="color: var(--gray-400); margin: 0 0 1rem;">
+            Escolha como os clientes são atendidos - os dois modos não funcionam ao mesmo tempo.
+        </p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem;">
+            <div class="glass-card" style="padding:1rem; border:1px solid <?= !$barbearia->usaFila() ? 'var(--primary)' : 'var(--glass-border)' ?>;">
+                <p style="margin:0; font-weight:600; color:var(--text);">📅 Agendamento</p>
+                <p style="margin:0.3rem 0 0.8rem; color:var(--gray-400); font-size:0.85rem;">Cliente marca um horário específico.</p>
+                <?php if (!$barbearia->usaFila()): ?>
+                    <span class="btn-k btn-k-outline" style="width:100%; text-align:center; pointer-events:none; opacity:0.7;">Ativo</span>
+                <?php else: ?>
+                    <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/modo-atendimento">
+                        <?= Csrf::field() ?>
+                        <input type="hidden" name="modo_atendimento" value="agendamento">
+                        <button type="submit" class="btn-k btn-k-grad" style="width:100%;">Ativar</button>
+                    </form>
+                <?php endif; ?>
+            </div>
+            <div class="glass-card" style="padding:1rem; border:1px solid <?= $barbearia->usaFila() ? 'var(--primary)' : 'var(--glass-border)' ?>;">
+                <p style="margin:0; font-weight:600; color:var(--text);">🚶 Fila</p>
+                <p style="margin:0.3rem 0 0.8rem; color:var(--gray-400); font-size:0.85rem;">Cliente entra na fila por ordem de chegada, sem hora marcada.</p>
+                <?php if ($barbearia->usaFila()): ?>
+                    <span class="btn-k btn-k-outline" style="width:100%; text-align:center; pointer-events:none; opacity:0.7;">Ativo</span>
+                <?php else: ?>
+                    <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/modo-atendimento">
+                        <?= Csrf::field() ?>
+                        <input type="hidden" name="modo_atendimento" value="fila">
+                        <button type="submit" class="btn-k btn-k-grad" style="width:100%;">Ativar</button>
+                    </form>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-card dash-panel">
+        <div class="dash-panel-head">
+            <h2>Pix da barbearia</h2>
+        </div>
+        <p style="color: var(--gray-400); margin: 0 0 1rem;">
+            Cadastre sua própria chave Pix pra gerar um QR Code na hora de fechar o atendimento - o dinheiro cai
+            direto na sua conta, sem passar pelo KADOSYS.
+        </p>
+        <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/pix" class="crud-form-grid">
+            <div class="form-field">
+                <label for="pix_chave">Chave Pix</label>
+                <input type="text" id="pix_chave" name="pix_chave" value="<?= htmlspecialchars($barbearia->pixChave ?? '', ENT_QUOTES, 'UTF-8') ?>" placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatória">
+            </div>
+            <div class="form-field">
+                <label for="pix_nome_beneficiario">Nome do beneficiário</label>
+                <input type="text" id="pix_nome_beneficiario" name="pix_nome_beneficiario" value="<?= htmlspecialchars($barbearia->pixNomeBeneficiario ?? '', ENT_QUOTES, 'UTF-8') ?>" maxlength="25" placeholder="Como aparece no app do banco">
+            </div>
+            <div class="form-field">
+                <label for="pix_cidade">Cidade</label>
+                <input type="text" id="pix_cidade" name="pix_cidade" value="<?= htmlspecialchars($barbearia->pixCidade ?? '', ENT_QUOTES, 'UTF-8') ?>" maxlength="15" placeholder="Sua cidade">
+            </div>
+            <?= Csrf::field() ?>
+            <div class="crud-form-actions" style="align-self:end;">
+                <button type="submit" class="btn-k btn-k-grad">Salvar chave Pix</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="glass-card dash-panel">
+        <div class="dash-panel-head">
             <h2>Dados da barbearia</h2>
         </div>
 
