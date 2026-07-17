@@ -160,7 +160,7 @@
                                 <li><i class="fas fa-check"></i> Projeção de letras, versículos e avisos</li>
                                 <li><i class="fas fa-check"></i> Doações e controle financeiro via Pix</li>
                             </ul>
-                            <a href="apps/igrejas" class="btn btn-link text-primary p-0 text-decoration-none fw-semibold mt-3">Acessar <i class="fas fa-arrow-right ms-2"></i></a>
+                            <a href="https://igrejas.kadosys.com.br" class="btn btn-link text-primary p-0 text-decoration-none fw-semibold mt-3">Acessar <i class="fas fa-arrow-right ms-2"></i></a>
                         </div>
                     </div>
                     <!-- Sistema 2: Barbearias (disponivel) -->
@@ -180,7 +180,7 @@
                                 <li><i class="fas fa-check"></i> Lembretes automáticos por WhatsApp</li>
                                 <li><i class="fas fa-check"></i> Comissões e faturamento por profissional</li>
                             </ul>
-                            <a href="apps/barbearias" class="btn btn-link text-primary p-0 text-decoration-none fw-semibold mt-3">Acessar <i class="fas fa-arrow-right ms-2"></i></a>
+                            <a href="https://barbearias.kadosys.com.br" class="btn btn-link text-primary p-0 text-decoration-none fw-semibold mt-3">Acessar <i class="fas fa-arrow-right ms-2"></i></a>
                         </div>
                     </div>
                     <!-- Sistema 3: Creches (em desenvolvimento) -->
@@ -485,14 +485,14 @@
                 </div>
                 <div class="modal-body p-4">
                     <div class="list-group list-group-flush bg-transparent">
-                        <a href="apps/igrejas" class="list-group-item list-group-item-action bg-transparent text-white border-secondary border-opacity-25 py-3 d-flex justify-content-between align-items-center">
+                        <a href="https://igrejas.kadosys.com.br" class="list-group-item list-group-item-action bg-transparent text-white border-secondary border-opacity-25 py-3 d-flex justify-content-between align-items-center">
                             <div>
                                 <i class="fas fa-church text-primary me-3"></i>
                                 <span>Kadosys<sup class="brand-tm">TM</sup> Igrejas</span>
                             </div>
                             <small class="text-green fw-semibold">Acessar</small>
                         </a>
-                        <a href="apps/barbearias" class="list-group-item list-group-item-action bg-transparent text-white border-secondary border-opacity-25 py-3 d-flex justify-content-between align-items-center">
+                        <a href="https://barbearias.kadosys.com.br" class="list-group-item list-group-item-action bg-transparent text-white border-secondary border-opacity-25 py-3 d-flex justify-content-between align-items-center">
                             <div>
                                 <i class="fas fa-scissors text-primary me-3"></i>
                                 <span>Kadosys<sup class="brand-tm">TM</sup> Barbearias</span>
@@ -561,8 +561,8 @@
                 <div class="col-lg-3 col-md-4">
                     <h5 class="fw-bold mb-4">Nossos Sistemas</h5>
                     <ul class="list-unstyled footer-links">
-                        <li><a href="apps/igrejas">Kadosys<sup class="brand-tm">TM</sup> Igrejas</a></li>
-                        <li><a href="#sistemas">Kadosys<sup class="brand-tm">TM</sup> Barbearias</a></li>
+                        <li><a href="https://igrejas.kadosys.com.br">Kadosys<sup class="brand-tm">TM</sup> Igrejas</a></li>
+                        <li><a href="https://barbearias.kadosys.com.br">Kadosys<sup class="brand-tm">TM</sup> Barbearias</a></li>
                         <li><a href="#sistemas">Kadosys<sup class="brand-tm">TM</sup> Creches</a></li>
                         <li><a href="#sistemas">Kadosys<sup class="brand-tm">TM</sup> Condomínios</a></li>
                         <li><a href="#sistemas">Kadosys<sup class="brand-tm">TM</sup> Sites</a></li>
