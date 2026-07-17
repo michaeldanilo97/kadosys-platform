@@ -163,14 +163,14 @@
                             <a href="apps/igrejas" class="btn btn-link text-primary p-0 text-decoration-none fw-semibold mt-3">Acessar <i class="fas fa-arrow-right ms-2"></i></a>
                         </div>
                     </div>
-                    <!-- Sistema 2: Barbearias (em desenvolvimento) -->
+                    <!-- Sistema 2: Barbearias (disponivel) -->
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
                         <div class="glass-card h-100 p-4 card-hover">
                             <div class="d-flex justify-content-between align-items-start mb-4">
                                 <div class="icon-box">
                                     <i class="fas fa-scissors fs-2 text-primary"></i>
                                 </div>
-                                <span class="system-status status-soon"><i class="fas fa-circle"></i> Em desenvolvimento</span>
+                                <span class="system-status status-live"><i class="fas fa-circle"></i> Disponível</span>
                             </div>
                             <h3 class="h4 fw-bold mb-2">Kadosys<sup class="brand-tm">TM</sup> Barbearias</h3>
                             <p class="text-gray-400 mb-3">Gestão completa para barbearias, do agendamento à comissão do profissional.</p>
@@ -180,7 +180,7 @@
                                 <li><i class="fas fa-check"></i> Lembretes automáticos por WhatsApp</li>
                                 <li><i class="fas fa-check"></i> Comissões e faturamento por profissional</li>
                             </ul>
-                            <span class="system-cta-soon mt-3">Em desenvolvimento <i class="fas fa-clock ms-2"></i></span>
+                            <a href="apps/barbearias" class="btn btn-link text-primary p-0 text-decoration-none fw-semibold mt-3">Acessar <i class="fas fa-arrow-right ms-2"></i></a>
                         </div>
                     </div>
                     <!-- Sistema 3: Creches (em desenvolvimento) -->
@@ -492,13 +492,13 @@
                             </div>
                             <small class="text-green fw-semibold">Acessar</small>
                         </a>
-                        <div class="list-group-item bg-transparent text-white border-secondary border-opacity-25 py-3 d-flex justify-content-between align-items-center system-item-soon">
+                        <a href="apps/barbearias" class="list-group-item list-group-item-action bg-transparent text-white border-secondary border-opacity-25 py-3 d-flex justify-content-between align-items-center">
                             <div>
                                 <i class="fas fa-scissors text-primary me-3"></i>
                                 <span>Kadosys<sup class="brand-tm">TM</sup> Barbearias</span>
                             </div>
-                            <small class="text-gray-500">Em desenvolvimento</small>
-                        </div>
+                            <small class="text-green fw-semibold">Acessar</small>
+                        </a>
                         <div class="list-group-item bg-transparent text-white border-secondary border-opacity-25 py-3 d-flex justify-content-between align-items-center system-item-soon">
                             <div>
                                 <i class="fas fa-baby text-primary me-3"></i>
