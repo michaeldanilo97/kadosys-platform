@@ -2,6 +2,7 @@
     'use strict';
 
     var THEME_STORAGE_KEY = 'kadosys_barbearias_theme';
+    var COLLAPSE_STORAGE_KEY = 'kadosys_barbearias_sidebar_collapsed';
 
     document.addEventListener('DOMContentLoaded', function () {
         initTheme();
@@ -54,6 +55,8 @@
         var sidebar = document.querySelector('[data-sidebar]');
         var overlay = document.querySelector('[data-sidebar-overlay]');
         var toggleBtn = document.querySelector('[data-sidebar-toggle]');
+        var collapseBtn = document.querySelector('[data-sidebar-collapse]');
+        var shell = document.querySelector('.dash-shell');
 
         function fechar() {
             sidebar.classList.remove('aberta');
@@ -69,6 +72,36 @@
 
         if (overlay) {
             overlay.addEventListener('click', fechar);
+        }
+
+        // Menu recolhivel (desktop): encolhe a sidebar pra so mostrar os
+        // icones. Independente do drawer mobile acima (".aberta") - so
+        // faz sentido em telas grandes, onde a sidebar fica sempre visivel.
+        if (collapseBtn && sidebar && shell) {
+            var isCollapsed = false;
+
+            try {
+                isCollapsed = window.localStorage.getItem(COLLAPSE_STORAGE_KEY) === '1';
+            } catch (error) {
+                isCollapsed = false;
+            }
+
+            if (isCollapsed) {
+                sidebar.classList.add('is-collapsed');
+                shell.classList.add('sidebar-collapsed');
+            }
+
+            collapseBtn.addEventListener('click', function () {
+                var willBeCollapsed = !sidebar.classList.contains('is-collapsed');
+                sidebar.classList.toggle('is-collapsed');
+                shell.classList.toggle('sidebar-collapsed');
+
+                try {
+                    window.localStorage.setItem(COLLAPSE_STORAGE_KEY, willBeCollapsed ? '1' : '0');
+                } catch (error) {
+                    // Armazenamento indisponivel; ignora.
+                }
+            });
         }
     }
 
