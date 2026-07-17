@@ -14,6 +14,8 @@ use Barbearias\Models\BarbeariaAviso;
  */
 $basePath = $config['base_path'] ?? '';
 $menu = $activeMenu ?? '';
+$tituloTopbar = preg_replace('/\s*-\s*KADOSYS Barbearias$/', '', $pageTitle ?? '') ?: 'Painel';
+$iniciais = $user?->name ? mb_strtoupper(mb_substr($user->name, 0, 1, 'UTF-8'), 'UTF-8') : 'U';
 
 // Aviso da plataforma (publicado pelo Super Admin) - o mesmo sino em
 // toda pagina do painel, independente do controller que a renderizou,
@@ -91,14 +93,17 @@ array_push(
             <?php if ($barbearia?->logoPath): ?>
                 <img src="<?= $basePath . '/' . htmlspecialchars($barbearia->logoPath, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($barbearia->nome, ENT_QUOTES, 'UTF-8') ?>" class="dash-sidebar-logo">
             <?php else: ?>
-                <span class="text-gradient">KADOSYS</span> Barbearias
+                <span class="dash-sidebar-brand-label"><span class="text-gradient">KADOSYS</span> Barbearias</span>
             <?php endif; ?>
+            <button type="button" class="dash-sidebar-collapse-btn" data-sidebar-collapse aria-label="Recolher menu">
+                <span>«</span>
+            </button>
         </div>
         <nav class="dash-nav">
             <?php foreach ($itensMenu as $item): ?>
-                <a href="<?= $basePath . $item['href'] ?>" class="dash-nav-link<?= $menu === $item['slug'] ? ' active' : '' ?>" <?= isset($item['target']) ? 'target="' . $item['target'] . '"' : '' ?>>
+                <a href="<?= $basePath . $item['href'] ?>" class="dash-nav-link<?= $menu === $item['slug'] ? ' active' : '' ?>" title="<?= htmlspecialchars($item['label'], ENT_QUOTES, 'UTF-8') ?>" <?= isset($item['target']) ? 'target="' . $item['target'] . '"' : '' ?>>
                     <span class="icone"><?= $item['icone'] ?></span>
-                    <span><?= $item['label'] ?></span>
+                    <span class="dash-nav-link-label"><?= $item['label'] ?></span>
                 </a>
             <?php endforeach; ?>
         </nav>
@@ -108,7 +113,7 @@ array_push(
             <div class="dash-sidebar-footer-actions">
                 <div class="topbar-dropdown topbar-dropdown-up" data-topbar-dropdown>
                     <button type="button" class="btn-theme-toggle" aria-label="Notificações" aria-expanded="false" data-dropdown-toggle>
-                        🔔 Avisos
+                        🔔 <span class="dash-sidebar-footer-label">Avisos</span>
                         <?php if ($avisoPlataforma !== null): ?><span class="dot"></span><?php endif; ?>
                     </button>
 
@@ -129,12 +134,8 @@ array_push(
                 </div>
 
                 <button type="button" class="btn-theme-toggle" data-theme-toggle aria-label="Alternar tema claro/escuro">
-                    <span data-theme-icon>🌙</span> Tema
+                    <span data-theme-icon>🌙</span> <span class="dash-sidebar-footer-label">Tema</span>
                 </button>
-                <form method="POST" action="<?= $basePath ?>/logout">
-                    <?= Csrf::field() ?>
-                    <button type="submit" class="btn-logout">Sair</button>
-                </form>
             </div>
         </div>
     </aside>
@@ -142,7 +143,24 @@ array_push(
     <div class="dash-main">
         <header class="dash-topbar">
             <button type="button" class="sidebar-toggle-btn" data-sidebar-toggle aria-label="Abrir menu">☰</button>
-            <span class="brand"><span class="text-gradient">KADOSYS</span></span>
+            <h1 class="dash-topbar-title"><?= htmlspecialchars($tituloTopbar, ENT_QUOTES, 'UTF-8') ?></h1>
+
+            <div class="topbar-dropdown dash-topbar-user" data-topbar-dropdown>
+                <button type="button" class="dash-topbar-user-btn" aria-label="Menu do usuário" aria-expanded="false" data-dropdown-toggle>
+                    <span class="dash-topbar-avatar"><?= htmlspecialchars($iniciais, ENT_QUOTES, 'UTF-8') ?></span>
+                    <span class="dash-topbar-user-name"><?= htmlspecialchars($user->name ?? '', ENT_QUOTES, 'UTF-8') ?></span>
+                    <span class="dash-topbar-user-chevron">⌄</span>
+                </button>
+
+                <div class="topbar-dropdown-panel user-panel" data-dropdown-panel hidden>
+                    <div class="topbar-dropdown-head"><?= htmlspecialchars($barbearia->nome ?? '', ENT_QUOTES, 'UTF-8') ?></div>
+                    <a href="<?= $basePath ?>/dashboard/configuracoes" class="user-panel-item">⚙️ Configurações</a>
+                    <form method="POST" action="<?= $basePath ?>/logout" class="user-panel-item">
+                        <?= Csrf::field() ?>
+                        <button type="submit" class="btn-logout-inline">🚪 Sair</button>
+                    </form>
+                </div>
+            </div>
         </header>
 
         <?= $content ?>

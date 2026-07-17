@@ -73,6 +73,54 @@ a {
     border-radius: var(--radius);
 }
 
+/* ---- Camadas de fundo + scroll-reveal (site institucional) --------- */
+
+.bg-aurora {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 60% 45% at 18% 8%, rgba(59, 130, 246, 0.16), transparent 60%),
+        radial-gradient(ellipse 55% 40% at 85% 25%, rgba(139, 92, 246, 0.14), transparent 62%),
+        radial-gradient(ellipse 50% 40% at 50% 105%, rgba(59, 130, 246, 0.10), transparent 65%);
+}
+
+.bg-grid {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+        linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+    background-size: 56px 56px;
+}
+
+.js .reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.js .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
+
+    .reveal {
+        opacity: 1;
+        transform: none;
+    }
+}
+
 .btn-k {
     display: inline-flex;
     align-items: center;
@@ -372,20 +420,54 @@ a {
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    background: var(--bg-dark-2);
+    background: rgba(17, 24, 39, 0.75);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border-right: 1px solid var(--glass-border);
     position: sticky;
     top: 0;
     height: 100vh;
     overflow-y: auto;
-    transition: var(--transition);
+    overflow-x: hidden;
+    transition: width 0.25s ease;
     z-index: 20;
 }
 
+:root[data-theme="light"] .dash-sidebar {
+    background: rgba(255, 255, 255, 0.85);
+}
+
 .dash-sidebar-brand {
-    padding: 1.5rem 1.25rem 1rem;
+    padding: 1.5rem 1rem 1rem 1.25rem;
     font-weight: 800;
     font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.dash-sidebar-brand-label {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.dash-sidebar-collapse-btn {
+    flex-shrink: 0;
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: var(--gray-400);
+    border-radius: 8px;
+    width: 1.8rem;
+    height: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.dash-sidebar-collapse-btn:hover {
+    color: var(--text);
+    border-color: rgba(59, 130, 246, 0.4);
 }
 
 .dash-sidebar-logo {
@@ -412,13 +494,16 @@ a {
     color: var(--gray-400);
     font-size: 0.9rem;
     font-weight: 500;
-    transition: var(--transition);
+    border: 1px solid transparent;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .dash-nav-link .icone {
     font-size: 1rem;
     width: 1.25rem;
     text-align: center;
+    flex-shrink: 0;
+    transition: color 0.15s ease;
 }
 
 .dash-nav-link:hover {
@@ -426,9 +511,19 @@ a {
     color: var(--text);
 }
 
+.dash-nav-link:hover .icone {
+    color: #93C5FD;
+}
+
 .dash-nav-link.active {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.16), rgba(139, 92, 246, 0.16));
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.14));
+    border-color: rgba(59, 130, 246, 0.35);
     color: var(--white);
+    box-shadow: 0 0 16px rgba(59, 130, 246, 0.15);
+}
+
+.dash-nav-link.active .icone {
+    color: #93C5FD;
 }
 
 .dash-sidebar-footer {
@@ -450,6 +545,43 @@ a {
     font-size: 0.78rem;
     color: var(--gray-500);
     margin: 0 0 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---- Menu recolhivel (sidebar em modo icone) --------------------------
+   So faz sentido em telas grandes, onde a sidebar fica sempre visivel
+   (abaixo de 861px ela vira o drawer mobile ".aberta" - ver media
+   query mais abaixo, um mecanismo totalmente separado). */
+
+@media (min-width: 861px) {
+    .dash-sidebar.is-collapsed {
+        width: 80px;
+    }
+
+    .dash-sidebar.is-collapsed .dash-sidebar-brand-label,
+    .dash-sidebar.is-collapsed .dash-nav-link-label,
+    .dash-sidebar.is-collapsed .dash-sidebar-footer-label,
+    .dash-sidebar.is-collapsed .dash-sidebar-footer .barbearia-nome,
+    .dash-sidebar.is-collapsed .dash-sidebar-footer .usuario-nome {
+        display: none;
+    }
+
+    .dash-sidebar.is-collapsed .dash-sidebar-brand {
+        justify-content: center;
+        padding: 1.5rem 0.5rem 1rem;
+    }
+
+    .dash-sidebar.is-collapsed .dash-sidebar-collapse-btn span {
+        display: inline-block;
+        transform: scaleX(-1);
+    }
+
+    .dash-sidebar.is-collapsed .dash-nav-link {
+        justify-content: center;
+        gap: 0;
+    }
 }
 
 .dash-main {
@@ -458,18 +590,37 @@ a {
 }
 
 .dash-topbar {
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem 1.25rem;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--glass-border);
     position: sticky;
     top: 0;
-    background: var(--bg-dark);
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     z-index: 15;
 }
 
+:root[data-theme="light"] .dash-topbar {
+    background: rgba(248, 250, 252, 0.85);
+}
+
+.dash-topbar-title {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .sidebar-toggle-btn {
+    display: none;
     background: transparent;
     border: 1px solid var(--glass-border);
     color: var(--text);
@@ -478,6 +629,86 @@ a {
     height: 2.25rem;
     font-size: 1.1rem;
     cursor: pointer;
+    flex-shrink: 0;
+}
+
+.dash-topbar-user {
+    flex-shrink: 0;
+}
+
+.dash-topbar-user .topbar-dropdown-panel {
+    left: auto;
+    right: 0;
+    top: calc(100% + 0.5rem);
+}
+
+.dash-topbar-user-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    padding: 0.35rem 0.9rem 0.35rem 0.35rem;
+    cursor: pointer;
+    color: var(--text);
+    transition: var(--transition);
+}
+
+.dash-topbar-user-btn:hover {
+    border-color: rgba(59, 130, 246, 0.4);
+}
+
+.dash-topbar-avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.dash-topbar-user-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    max-width: 160px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dash-topbar-user-chevron {
+    color: var(--gray-400);
+    font-size: 0.75rem;
+}
+
+.user-panel-item {
+    display: flex;
+    width: 100%;
+}
+
+a.user-panel-item,
+.user-panel-item .btn-logout-inline {
+    padding: 0.55rem 0.6rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--text);
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    width: 100%;
+}
+
+a.user-panel-item:hover,
+.user-panel-item .btn-logout-inline:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--white);
 }
 
 .sidebar-overlay {
@@ -497,8 +728,20 @@ a {
         box-shadow: 20px 0 40px rgba(0, 0, 0, 0.4);
     }
 
-    .dash-topbar {
-        display: flex;
+    .dash-sidebar-collapse-btn {
+        display: none;
+    }
+
+    .sidebar-toggle-btn {
+        display: block;
+    }
+
+    .dash-topbar-title {
+        display: none;
+    }
+
+    .dash-topbar-user-name {
+        display: none;
     }
 
     .sidebar-overlay.aberta {
@@ -918,7 +1161,15 @@ a {
     background: rgba(15, 23, 42, 0.045);
 }
 
+:root[data-theme="light"] .dash-nav-link:hover .icone {
+    color: var(--primary);
+}
+
 :root[data-theme="light"] .dash-nav-link.active {
+    color: var(--primary);
+}
+
+:root[data-theme="light"] .dash-nav-link.active .icone {
     color: var(--primary);
 }
 
