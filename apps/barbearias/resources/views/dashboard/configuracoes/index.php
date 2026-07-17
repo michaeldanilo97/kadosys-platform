@@ -35,14 +35,22 @@ $basePath = $config['base_path'] ?? '';
             Plano atual: <strong style="color: var(--text);"><?= htmlspecialchars($planoLabel, ENT_QUOTES, 'UTF-8') ?></strong>
         </p>
 
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin-bottom:1.25rem;">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:1rem; margin-bottom:1.25rem; align-items:stretch;">
             <?php foreach (Plano::LABELS as $planoValor => $planoNome): ?>
                 <?php $ehAtual = $barbearia->plano === $planoValor; ?>
-                <div class="glass-card" style="padding:1rem; border:1px solid <?= $ehAtual ? 'var(--primary)' : 'var(--glass-border)' ?>;">
+                <div class="glass-card" style="padding:1.25rem; border:1px solid <?= $ehAtual ? 'var(--primary)' : 'var(--glass-border)' ?>; display:flex; flex-direction:column;">
                     <p style="margin:0; font-weight:600; color:var(--text);"><?= htmlspecialchars($planoNome, ENT_QUOTES, 'UTF-8') ?></p>
                     <p style="margin:0.3rem 0 0.8rem; color:var(--gray-400); font-size:0.85rem;">
                         R$ <?= number_format(Plano::VALOR_MENSAL[$planoValor], 2, ',', '.') ?>/mês
                     </p>
+                    <ul style="list-style:none; margin:0 0 1rem; padding:0; display:flex; flex-direction:column; gap:0.45rem; flex-grow:1;">
+                        <?php foreach (Plano::features($planoValor) as $feature): ?>
+                            <li style="display:flex; align-items:flex-start; gap:0.5rem; font-size:0.82rem; color:var(--text);">
+                                <i class="bi bi-check-lg" style="color:var(--primary); margin-top:0.1rem;"></i>
+                                <?= htmlspecialchars($feature, ENT_QUOTES, 'UTF-8') ?>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
                     <?php if ($ehAtual): ?>
                         <span class="btn-k btn-k-outline" style="width:100%; text-align:center; pointer-events:none; opacity:0.7;">Plano atual</span>
                     <?php else: ?>

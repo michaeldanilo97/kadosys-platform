@@ -47,6 +47,36 @@ final class Plano
         self::ENTERPRISE => 69.90,
     ];
 
+    /**
+     * O que cada plano inclui - usado tanto na pagina de vendas
+     * (landing/home.php) quanto na troca de plano dentro da dashboard
+     * (dashboard/configuracoes/index.php), pra pessoa que ja e cliente
+     * entender o que ganha (ou perde) ao trocar, sem precisar sair do
+     * painel pra conferir a pagina de vendas.
+     *
+     * @var array<string, array<int, string>>
+     */
+    public const FEATURES = [
+        self::ESSENCIAL => [
+            'Até 1 profissional',
+            'Agendamentos ilimitados',
+            'Cadastro de clientes',
+            'Suporte por WhatsApp',
+        ],
+        self::PREMIUM => [
+            'Até 5 profissionais',
+            'Tudo do Essencial',
+            'Lembretes automáticos por WhatsApp',
+            'Relatórios de faturamento',
+        ],
+        self::ENTERPRISE => [
+            'Profissionais ilimitados',
+            'Tudo do Plus',
+            'Múltiplas unidades',
+            'Suporte prioritário',
+        ],
+    ];
+
     public static function label(string $plano): string
     {
         return self::LABELS[$plano] ?? self::LABELS[self::ESSENCIAL];
@@ -55,6 +85,12 @@ final class Plano
     public static function valorMensal(string $plano): float
     {
         return self::VALOR_MENSAL[$plano] ?? self::VALOR_MENSAL[self::ESSENCIAL];
+    }
+
+    /** @return array<int, string> */
+    public static function features(string $plano): array
+    {
+        return self::FEATURES[$plano] ?? self::FEATURES[self::ESSENCIAL];
     }
 
     public static function valido(string $plano): bool

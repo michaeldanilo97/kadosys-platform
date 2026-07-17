@@ -49,26 +49,6 @@ $faqs = [
     ['pergunta' => 'Meus clientes precisam baixar algum aplicativo?', 'resposta' => 'Não. O agendamento é feito por um link web que você compartilha no Instagram ou WhatsApp - funciona direto no navegador do celular.'],
 ];
 
-$planosFeatures = [
-    Plano::ESSENCIAL => [
-        'Até 1 profissional',
-        'Agendamentos ilimitados',
-        'Cadastro de clientes',
-        'Suporte por WhatsApp',
-    ],
-    Plano::PREMIUM => [
-        'Até 5 profissionais',
-        'Tudo do Essencial',
-        'Lembretes automáticos por WhatsApp',
-        'Relatórios de faturamento',
-    ],
-    Plano::ENTERPRISE => [
-        'Profissionais ilimitados',
-        'Tudo do Plus',
-        'Múltiplas unidades',
-        'Suporte prioritário',
-    ],
-];
 ?>
 <section class="hero">
     <div class="hero-inner">
@@ -202,7 +182,7 @@ $planosFeatures = [
                 </p>
                 <p class="plano-trial-nota"><?= (int) $trialDias ?> dias grátis, depois cobrança mensal</p>
                 <ul class="plano-features">
-                    <?php foreach ($planosFeatures[$plano] as $feature): ?>
+                    <?php foreach (Plano::features($plano) as $feature): ?>
                         <li><i class="bi bi-check-lg"></i> <?= htmlspecialchars($feature, ENT_QUOTES, 'UTF-8') ?></li>
                     <?php endforeach; ?>
                 </ul>
