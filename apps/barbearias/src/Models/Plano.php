@@ -66,7 +66,7 @@ final class Plano
         self::PREMIUM => [
             'Até 5 profissionais',
             'Tudo do Essencial',
-            'Lembretes automáticos por WhatsApp',
+            'Lembretes automáticos por e-mail',
             'Relatórios de faturamento',
         ],
         self::ENTERPRISE => [
