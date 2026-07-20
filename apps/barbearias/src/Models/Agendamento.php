@@ -459,6 +459,57 @@ final class Agendamento
         $stmt->execute(['id' => $id, 'barbearia_id' => $barbeariaId]);
     }
 
+    /**
+     * Agendamentos de amanha ainda sem lembrete enviado, com cliente com
+     * e-mail cadastrado e barbearia ativa num plano pago (o lembrete
+     * automatico e beneficio do Plus/Premium, nao do Essencial - ver
+     * Barbearias\Models\Plano::FEATURES). Cruza todas as barbearias de
+     * uma vez so (banco unico) - usado pelo cron
+     * enviar_lembretes_agendamento.php.
+     *
+     * @return array<int, array{id: int, dataHora: string, clienteNome: string, clienteEmail: string, barbeariaNome: string, profissionalNome: string, servicoNome: string}>
+     */
+    public static function pendentesLembreteAmanha(): array
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT a.id, a.data_hora, c.nome AS cliente_nome, c.email AS cliente_email,
+                    b.nome AS barbearia_nome, p.nome AS profissional_nome, s.nome AS servico_nome
+             FROM agendamentos a
+             INNER JOIN barbearias b ON b.id = a.barbearia_id
+             INNER JOIN clientes c ON c.id = a.cliente_id
+             INNER JOIN profissionais p ON p.id = a.profissional_id
+             INNER JOIN servicos s ON s.id = a.servico_id
+             WHERE a.status = :status AND a.lembrete_enviado_em IS NULL
+               AND DATE(a.data_hora) = CURDATE() + INTERVAL 1 DAY
+               AND c.email IS NOT NULL AND c.email <> ''
+               AND b.status = :barbearia_status AND b.plano != :plano_essencial
+             ORDER BY a.data_hora ASC"
+        );
+        $stmt->execute([
+            'status' => self::STATUS_AGENDADO,
+            'barbearia_status' => Barbearia::STATUS_ATIVA,
+            'plano_essencial' => Plano::ESSENCIAL,
+        ]);
+
+        return array_map(static function (array $row): array {
+            return [
+                'id' => (int) $row['id'],
+                'dataHora' => (string) $row['data_hora'],
+                'clienteNome' => (string) $row['cliente_nome'],
+                'clienteEmail' => (string) $row['cliente_email'],
+                'barbeariaNome' => (string) $row['barbearia_nome'],
+                'profissionalNome' => (string) $row['profissional_nome'],
+                'servicoNome' => (string) $row['servico_nome'],
+            ];
+        }, $stmt->fetchAll());
+    }
+
+    public static function marcarLembreteEnviado(int $id): void
+    {
+        $stmt = Database::connection()->prepare('UPDATE agendamentos SET lembrete_enviado_em = NOW() WHERE id = :id');
+        $stmt->execute(['id' => $id]);
+    }
+
     private static function nullable(?string $valor): ?string
     {
         $valor = $valor !== null ? trim($valor) : '';
