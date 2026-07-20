@@ -80,6 +80,10 @@ $router->post('/webhooks/mercadopago', [WebhookController::class, 'mercadoPago']
 $router->get('/login', [AuthController::class, 'showLogin'], [GuestMiddleware::class]);
 $router->post('/login', [AuthController::class, 'login'], [GuestMiddleware::class]);
 $router->post('/logout', [AuthController::class, 'logout'], [AuthMiddleware::class]);
+$router->get('/esqueci-senha', [AuthController::class, 'showForgotPassword'], [GuestMiddleware::class]);
+$router->post('/esqueci-senha', [AuthController::class, 'sendForgotPassword'], [GuestMiddleware::class]);
+$router->get('/redefinir-senha/{token}', [AuthController::class, 'showResetPassword'], [GuestMiddleware::class]);
+$router->post('/redefinir-senha/{token}', [AuthController::class, 'resetPassword'], [GuestMiddleware::class]);
 
 // Dashboard administrativo (protegido).
 $router->get('/dashboard', [DashboardController::class, 'index'], [AuthMiddleware::class]);

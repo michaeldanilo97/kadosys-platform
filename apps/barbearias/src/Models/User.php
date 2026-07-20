@@ -111,6 +111,58 @@ final class User
         ]);
     }
 
+    /**
+     * Recuperacao de senha ("esqueci minha senha", ver AuthController).
+     * O token bruto so existe no e-mail enviado pro usuario - aqui so
+     * fica o hash (mesma logica de nunca guardar segredo em texto puro,
+     * ver Csrf/Session), com validade de 1h.
+     */
+    /**
+     * O prazo de validade (1h) e calculado no proprio MySQL (NOW() +
+     * INTERVAL), nunca no PHP - assim a comparacao feita depois em
+     * emailDoPasswordResetValido() (expires_at >= NOW()) usa sempre o
+     * mesmo relogio dos dois lados, sem risco de descompasso entre o
+     * fuso horario configurado no PHP (America/Sao_Paulo) e o fuso do
+     * proprio servidor MySQL.
+     */
+    public static function createPasswordResetToken(string $email, string $tokenHash): void
+    {
+        $stmt = Database::connection()->prepare(
+            'INSERT INTO password_resets (email, token_hash, expires_at, created_at)
+             VALUES (:email, :token_hash, NOW() + INTERVAL 1 HOUR, NOW())'
+        );
+        $stmt->execute([
+            'email' => $email,
+            'token_hash' => $tokenHash,
+        ]);
+    }
+
+    /**
+     * Devolve o e-mail associado a um token valido (nao expirado), ou
+     * null se o token nao existe/ja expirou - nunca revela qual token
+     * exato falhou, so se e valido ou nao.
+     */
+    public static function emailDoPasswordResetValido(string $tokenHash): ?string
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT email FROM password_resets WHERE token_hash = :token_hash AND expires_at >= NOW() LIMIT 1'
+        );
+        $stmt->execute(['token_hash' => $tokenHash]);
+        $email = $stmt->fetchColumn();
+
+        return $email !== false ? (string) $email : null;
+    }
+
+    /**
+     * Invalida todos os tokens de um e-mail depois de usados (ou ao
+     * pedir um novo) - um link de recuperacao so pode ser usado uma vez.
+     */
+    public static function invalidarPasswordResets(string $email): void
+    {
+        $stmt = Database::connection()->prepare('DELETE FROM password_resets WHERE email = :email');
+        $stmt->execute(['email' => $email]);
+    }
+
     public static function delete(int $id, int $barbeariaId): void
     {
         $stmt = Database::connection()->prepare('DELETE FROM users WHERE id = :id AND barbearia_id = :barbearia_id');
