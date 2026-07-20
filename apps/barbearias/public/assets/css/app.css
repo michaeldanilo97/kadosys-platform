@@ -217,6 +217,12 @@ a {
     border: 1px solid rgba(239, 68, 68, 0.25);
 }
 
+.auth-alert.success {
+    background: rgba(34, 197, 94, 0.12);
+    color: #86EFAC;
+    border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
 /* ---- Dashboard ------------------------------------------------------ */
 
 .dashboard-topbar {

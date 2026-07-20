@@ -95,6 +95,16 @@ CREATE TABLE IF NOT EXISTS users (
         FOREIGN KEY (barbearia_id) REFERENCES barbearias (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Recuperacao de senha ("esqueci minha senha", ver Barbearias\Controllers\AuthController).
+CREATE TABLE IF NOT EXISTS password_resets (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(150) NOT NULL,
+    token_hash CHAR(64) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY password_resets_email_index (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- "dias_atendimento" e uma lista separada por virgula dos dias da
 -- semana que o profissional atende, no formato do PHP DateTime::format('w')
 -- (0 = domingo ... 6 = sabado), ex.: "1,2,3,4,5" pra segunda a sexta.
@@ -276,6 +286,7 @@ CREATE TABLE IF NOT EXISTS agendamentos (
     cliente_id INT UNSIGNED NOT NULL,
     data_hora DATETIME NOT NULL,
     status ENUM('agendado', 'concluido', 'cancelado') NOT NULL DEFAULT 'agendado',
+    lembrete_enviado_em DATETIME NULL,
     observacoes TEXT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
