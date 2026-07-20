@@ -7,6 +7,7 @@ namespace Barbearias\Controllers;
 use Barbearias\Core\Auth;
 use Barbearias\Core\Controller;
 use Barbearias\Core\Csrf;
+use Barbearias\Core\MercadoPagoClient;
 use Barbearias\Core\Session;
 use Barbearias\Models\Barbearia;
 use Barbearias\Models\Plano;
@@ -121,6 +122,97 @@ final class ConfiguracaoController extends Controller
         Barbearia::atualizarPlano($usuario->barbeariaId, $plano);
 
         Session::flash('config_perfil_success', 'Plano alterado para ' . Plano::label($plano) . '.');
+        $this->redirect('/dashboard/configuracoes');
+    }
+
+    /**
+     * Cancelamento self-service: sem fidelidade, o acesso continua ate
+     * o fim do ciclo ja pago (proximo_vencimento) - so depois disso o
+     * cron suspender_assinaturas_canceladas.php bloqueia de fato (ver
+     * Barbearias\Models\Barbearia::canceladasComCicloEncerrado). Quem
+     * paga por cartao tem a cobranca recorrente PAUSADA na hora no
+     * Mercado Pago, pra nao ser cobrado de novo - quem paga por Pix so
+     * deixa de receber a proxima cobranca (cron/gerar_faturas_pix.php
+     * ja ignora barbearia cancelada).
+     */
+    public function cancelarAssinatura(): void
+    {
+        $usuario = $this->exigirAdmin();
+        $barbearia = Barbearia::find($usuario->barbeariaId);
+
+        if (!Csrf::verify($this->request->input('_csrf_token'))) {
+            $this->redirect('/dashboard/configuracoes');
+        }
+
+        if ($barbearia === null || $barbearia->canceladoEm !== null) {
+            $this->redirect('/dashboard/configuracoes');
+        }
+
+        if ($barbearia->metodoPagamento === 'cartao' && $barbearia->mpPreapprovalId !== null) {
+            $mp = new MercadoPagoClient();
+
+            try {
+                $resposta = $mp->pausarAssinatura($barbearia->mpPreapprovalId);
+            } catch (\RuntimeException) {
+                Session::flash('config_perfil_errors', ['Não foi possível cancelar a cobrança recorrente agora. Tente novamente em instantes.']);
+                $this->redirect('/dashboard/configuracoes');
+            }
+
+            if ($resposta['status'] >= 300) {
+                Session::flash('config_perfil_errors', ['Não foi possível cancelar a cobrança recorrente agora. Tente novamente em instantes.']);
+                $this->redirect('/dashboard/configuracoes');
+            }
+        }
+
+        Barbearia::marcarCancelamento($barbearia->id);
+
+        $mensagem = $barbearia->proximoVencimento !== null
+            ? 'Assinatura cancelada. Você continua com acesso até ' . (new \DateTimeImmutable($barbearia->proximoVencimento))->format('d/m/Y') . '.'
+            : 'Assinatura cancelada.';
+
+        Session::flash('config_perfil_success', $mensagem);
+        $this->redirect('/dashboard/configuracoes');
+    }
+
+    /**
+     * So funciona enquanto a barbearia ainda esta 'ativo' (dentro do
+     * ciclo ja pago) - se ja passou disso, o AuthMiddleware ja bloqueou
+     * o acesso a esta pagina e manda direto pra /dashboard/assinatura,
+     * que tem seu proprio fluxo de pagamento (e limpa cancelado_em via
+     * WebhookController quando confirma).
+     */
+    public function reativarAssinatura(): void
+    {
+        $usuario = $this->exigirAdmin();
+        $barbearia = Barbearia::find($usuario->barbeariaId);
+
+        if (!Csrf::verify($this->request->input('_csrf_token'))) {
+            $this->redirect('/dashboard/configuracoes');
+        }
+
+        if ($barbearia === null || $barbearia->canceladoEm === null) {
+            $this->redirect('/dashboard/configuracoes');
+        }
+
+        if ($barbearia->metodoPagamento === 'cartao' && $barbearia->mpPreapprovalId !== null) {
+            $mp = new MercadoPagoClient();
+
+            try {
+                $resposta = $mp->reativarAssinatura($barbearia->mpPreapprovalId);
+            } catch (\RuntimeException) {
+                Session::flash('config_perfil_errors', ['Não foi possível reativar a cobrança recorrente agora. Tente novamente em instantes.']);
+                $this->redirect('/dashboard/configuracoes');
+            }
+
+            if ($resposta['status'] >= 300) {
+                Session::flash('config_perfil_errors', ['Não foi possível reativar a cobrança recorrente agora. Tente novamente em instantes.']);
+                $this->redirect('/dashboard/configuracoes');
+            }
+        }
+
+        Barbearia::cancelarCancelamento($barbearia->id);
+
+        Session::flash('config_perfil_success', 'Assinatura reativada.');
         $this->redirect('/dashboard/configuracoes');
     }
 

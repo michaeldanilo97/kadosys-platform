@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS barbearias (
     fidelidade_pontos_por_real DECIMAL(6, 2) NULL,
     ultimo_acesso_em DATETIME NULL,
     status ENUM('pendente', 'ativo', 'suspenso') NOT NULL DEFAULT 'pendente',
+    cancelado_em DATETIME NULL,
     modo_atendimento ENUM('agendamento', 'fila') NOT NULL DEFAULT 'agendamento',
     pix_chave VARCHAR(140) NULL,
     pix_nome_beneficiario VARCHAR(25) NULL,

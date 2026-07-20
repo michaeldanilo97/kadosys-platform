@@ -113,6 +113,13 @@ function gerarFatura(Barbearia $barbearia, MercadoPagoClient $mp, \DateTimeImmut
 
 function processarBarbearia(Barbearia $barbearia, MercadoPagoClient $mp, \DateTimeImmutable $agora): void
 {
+    // Assinatura cancelada (ver ConfiguracaoController::cancelarAssinatura)
+    // - nao gera fatura nova, so deixa o acesso terminar no fim do ciclo
+    // ja pago (o cron suspender_assinaturas_canceladas.php cuida disso).
+    if ($barbearia->canceladoEm !== null) {
+        return;
+    }
+
     $ultima = FaturaBarbearia::ultimaDaBarbearia($barbearia->id);
 
     if ($ultima === null) {

@@ -31,7 +31,7 @@ final class Barbearia
     private const SELECT_COLUNAS = 'id, nome, slug, telefone, documento_tipo, documento, razao_social,
         logo_path, cor_primaria,
         plano, metodo_pagamento, mp_preapproval_id, trial_expira_em, proximo_vencimento, plano_agendado,
-        fidelidade_pontos_por_real, ultimo_acesso_em, status, modo_atendimento,
+        fidelidade_pontos_por_real, ultimo_acesso_em, status, cancelado_em, modo_atendimento,
         pix_chave, pix_nome_beneficiario, pix_cidade, created_at';
 
     public function __construct(
@@ -53,6 +53,7 @@ final class Barbearia
         public readonly ?float $fidelidadePontosPorReal,
         public readonly ?string $ultimoAcessoEm,
         public readonly string $status,
+        public readonly ?string $canceladoEm = null,
         public readonly string $modoAtendimento = self::MODO_AGENDAMENTO,
         public readonly ?string $pixChave = null,
         public readonly ?string $pixNomeBeneficiario = null,
@@ -206,6 +207,63 @@ final class Barbearia
         $stmt->execute(['id' => $id]);
     }
 
+    public static function marcarSuspensa(int $id): void
+    {
+        $stmt = Database::connection()->prepare(
+            "UPDATE barbearias SET status = 'suspenso' WHERE id = :id"
+        );
+        $stmt->execute(['id' => $id]);
+    }
+
+    /**
+     * Cancelamento self-service da assinatura (ver
+     * Barbearias\Controllers\ConfiguracaoController::cancelarAssinatura) -
+     * o acesso continua liberado ate proximo_vencimento (ja pago), so
+     * depois disso o cron suspender_assinaturas_canceladas.php bloqueia
+     * de fato.
+     */
+    public static function marcarCancelamento(int $id): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE barbearias SET cancelado_em = NOW() WHERE id = :id'
+        );
+        $stmt->execute(['id' => $id]);
+    }
+
+    /**
+     * Reativacao (self-service, enquanto ainda dentro do ciclo pago -
+     * ver ConfiguracaoController::reativarAssinatura) OU automatica, via
+     * WebhookController, quando uma barbearia ja suspensa faz um novo
+     * pagamento pela tela /dashboard/assinatura.
+     */
+    public static function cancelarCancelamento(int $id): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE barbearias SET cancelado_em = NULL WHERE id = :id'
+        );
+        $stmt->execute(['id' => $id]);
+    }
+
+    /**
+     * Barbearias que cancelaram a assinatura e cujo ciclo ja pago
+     * terminou - usado pelo cron diario
+     * suspender_assinaturas_canceladas.php pra so entao bloquear o
+     * acesso de fato (antes disso, cancelado_em so significa "nao vai
+     * renovar", nao "ja perdeu o acesso").
+     *
+     * @return array<int, self>
+     */
+    public static function canceladasComCicloEncerrado(): array
+    {
+        $stmt = Database::connection()->prepare(
+            self::selectBase() . " WHERE cancelado_em IS NOT NULL AND status = 'ativo'
+                AND proximo_vencimento IS NOT NULL AND proximo_vencimento < CURDATE()"
+        );
+        $stmt->execute();
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
     /**
      * Troca o plano da barbearia imediatamente - sem proporcionalidade
      * nem agendamento pro proximo ciclo (o campo plano_agendado existe
@@ -326,6 +384,7 @@ final class Barbearia
             fidelidadePontosPorReal: $row['fidelidade_pontos_por_real'] !== null ? (float) $row['fidelidade_pontos_por_real'] : null,
             ultimoAcessoEm: $row['ultimo_acesso_em'] ?? null,
             status: (string) $row['status'],
+            canceladoEm: $row['cancelado_em'] ?? null,
             modoAtendimento: (string) ($row['modo_atendimento'] ?? self::MODO_AGENDAMENTO),
             pixChave: $row['pix_chave'] ?? null,
             pixNomeBeneficiario: $row['pix_nome_beneficiario'] ?? null,
