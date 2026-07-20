@@ -68,6 +68,26 @@ $basePath = $config['base_path'] ?? '';
             <a href="<?= $basePath ?>/dashboard/faturas" class="btn-k btn-k-outline">Ver faturas</a>
             <a href="<?= $basePath ?>/dashboard/assinatura" class="btn-k btn-k-outline">Gerenciar pagamento</a>
         </div>
+
+        <?php if ($barbearia->canceladoEm === null): ?>
+            <p style="margin: 1.25rem 0 0; padding-top: 1.25rem; border-top: 1px solid var(--glass-border); font-size: 0.85rem;">
+                <span style="color: var(--gray-400);">Não tem fidelidade - pode cancelar quando quiser.</span>
+                <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/assinatura/cancelar" style="display:inline;" onsubmit="return confirm('Cancelar a assinatura da plataforma? Você continua com acesso até o fim do ciclo já pago, mas não vai ser cobrado de novo.');">
+                    <?= Csrf::field() ?>
+                    <button type="submit" style="background:none; border:none; padding:0; color:#F87171; text-decoration:underline; cursor:pointer; font-size:inherit;">Cancelar assinatura</button>
+                </form>
+            </p>
+        <?php else: ?>
+            <div style="margin: 1.25rem 0 0; padding-top: 1.25rem; border-top: 1px solid var(--glass-border);">
+                <div class="auth-alert error" style="margin-bottom: 0.75rem;">
+                    Assinatura cancelada<?= $barbearia->proximoVencimento !== null ? ' - acesso liberado até ' . (new DateTimeImmutable($barbearia->proximoVencimento))->format('d/m/Y') . '.' : '.' ?>
+                </div>
+                <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/assinatura/reativar">
+                    <?= Csrf::field() ?>
+                    <button type="submit" class="btn-k btn-k-outline">Reativar assinatura</button>
+                </form>
+            </div>
+        <?php endif; ?>
     </div>
 
     <div class="glass-card dash-panel">

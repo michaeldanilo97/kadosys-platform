@@ -80,6 +80,35 @@ final class MercadoPagoClient
     }
 
     /**
+     * Pausa uma assinatura recorrente de cartao - o Mercado Pago para de
+     * tentar cobrar, mas (diferente de cancelar) o preapproval continua
+     * podendo ser retomado depois via reativarAssinatura(), sem o
+     * cliente precisar passar pelo checkout de novo. Usado no
+     * cancelamento self-service (ver
+     * Barbearias\Controllers\ConfiguracaoController::cancelarAssinatura).
+     *
+     * @return array{status:int, body:array}
+     */
+    public function pausarAssinatura(string $preapprovalId): array
+    {
+        return $this->request('PUT', '/preapproval/' . urlencode($preapprovalId), [
+            'status' => 'paused',
+        ]);
+    }
+
+    /**
+     * Retoma uma assinatura pausada - volta a cobrar no proximo ciclo.
+     *
+     * @return array{status:int, body:array}
+     */
+    public function reativarAssinatura(string $preapprovalId): array
+    {
+        return $this->request('PUT', '/preapproval/' . urlencode($preapprovalId), [
+            'status' => 'authorized',
+        ]);
+    }
+
+    /**
      * Lista os pagamentos ja debitados (ou tentados) de uma assinatura
      * recorrente de cartao (preapproval) - o "extrato" da cobranca
      * automatica.

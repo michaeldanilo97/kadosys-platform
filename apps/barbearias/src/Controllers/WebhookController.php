@@ -79,6 +79,12 @@ final class WebhookController extends Controller
             FaturaBarbearia::marcarPaga($fatura->id);
             Barbearia::marcarAtiva($fatura->barbeariaId);
             Barbearia::atualizarProximoVencimento($fatura->barbeariaId, new \DateTimeImmutable('+30 days'));
+            // Cobre o caso de reativacao apos o ciclo cancelado ja ter
+            // terminado (barbearia suspensa que gerou uma cobranca nova
+            // manualmente na tela /dashboard/assinatura) - sem isso o
+            // cron suspender_assinaturas_canceladas.php suspenderia de
+            // novo no proximo vencimento, mesmo com o pagamento em dia.
+            Barbearia::cancelarCancelamento($fatura->barbeariaId);
         }
 
         http_response_code(200);
@@ -121,6 +127,7 @@ final class WebhookController extends Controller
         if ($barbearia !== null && $statusInterno === 'autorizada') {
             Barbearia::marcarAtiva($barbearia->id);
             Barbearia::atualizarProximoVencimento($barbearia->id, new \DateTimeImmutable('+30 days'));
+            Barbearia::cancelarCancelamento($barbearia->id);
         }
 
         http_response_code(200);
