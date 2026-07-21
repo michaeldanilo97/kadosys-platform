@@ -288,6 +288,7 @@ CREATE TABLE IF NOT EXISTS agendamentos (
     data_hora DATETIME NOT NULL,
     status ENUM('agendado', 'concluido', 'cancelado') NOT NULL DEFAULT 'agendado',
     lembrete_enviado_em DATETIME NULL,
+    lembrete_proximo_enviado_em DATETIME NULL,
     observacoes TEXT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
