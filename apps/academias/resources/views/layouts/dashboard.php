@@ -24,13 +24,18 @@ $iniciais = $user?->name ? mb_strtoupper(mb_substr($user->name, 0, 1, 'UTF-8'), 
 // quando o Super Admin integrar o Academias (ver Fase 7).
 $avisoPlataforma = AcademiaAviso::ativo();
 
-// Menu enxuto da Fase 1 (esqueleto + billing) - os demais itens
-// (Alunos, Professores, Check-in, Ficha de Treino, Avaliação Física,
-// Configurações etc.) entram junto com os controllers de cada fase
-// seguinte, pra nunca ter um link no menu que ainda nao existe.
+// Menu cresce fase a fase - os itens so entram aqui junto com o
+// controller correspondente, pra nunca ter um link que ainda nao
+// existe (Check-in, Ficha de Treino, Avaliação Física e Relatórios
+// chegam nas proximas fases).
 $itensMenu = [
     ['slug' => 'painel', 'href' => '/dashboard', 'icone' => '🏠', 'label' => 'Painel'],
+    ['slug' => 'alunos', 'href' => '/dashboard/alunos', 'icone' => '🏋️', 'label' => 'Alunos'],
+    ['slug' => 'professores', 'href' => '/dashboard/professores', 'icone' => '🧑‍🏫', 'label' => 'Professores'],
+    ['slug' => 'planos-matricula', 'href' => '/dashboard/planos-matricula', 'icone' => '📦', 'label' => 'Planos de Matrícula'],
+    ['slug' => 'financeiro', 'href' => '/dashboard/financeiro', 'icone' => '💰', 'label' => 'Financeiro'],
     ['slug' => 'faturas', 'href' => '/dashboard/faturas', 'icone' => '🧾', 'label' => 'Faturas'],
+    ['slug' => 'configuracoes', 'href' => '/dashboard/configuracoes', 'icone' => '⚙️', 'label' => 'Configurações'],
 ];
 ?>
 <!DOCTYPE html>
@@ -132,6 +137,7 @@ $itensMenu = [
 
                 <div class="topbar-dropdown-panel user-panel" data-dropdown-panel hidden>
                     <div class="topbar-dropdown-head"><?= htmlspecialchars($academia->nome ?? '', ENT_QUOTES, 'UTF-8') ?></div>
+                    <a href="<?= $basePath ?>/dashboard/configuracoes" class="user-panel-item">⚙️ Configurações</a>
                     <form method="POST" action="<?= $basePath ?>/logout" class="user-panel-item">
                         <?= Csrf::field() ?>
                         <button type="submit" class="btn-logout-inline">🚪 Sair</button>
