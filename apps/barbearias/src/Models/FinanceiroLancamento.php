@@ -157,6 +157,16 @@ final class FinanceiroLancamento
         return $stmt->fetch() !== false;
     }
 
+    public static function existeParaFilaAtendimento(int $filaAtendimentoId, int $barbeariaId): bool
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT 1 FROM financeiro_lancamentos WHERE fila_atendimento_id = :fila_atendimento_id AND barbearia_id = :barbearia_id LIMIT 1'
+        );
+        $stmt->execute(['fila_atendimento_id' => $filaAtendimentoId, 'barbearia_id' => $barbeariaId]);
+
+        return $stmt->fetch() !== false;
+    }
+
     public static function create(
         int $barbeariaId,
         ?int $caixaId,
@@ -170,17 +180,19 @@ final class FinanceiroLancamento
         string $dataLancamento,
         ?int $produtoId = null,
         ?int $quantidade = null,
+        ?int $filaAtendimentoId = null,
     ): int {
         $stmt = Database::connection()->prepare(
             'INSERT INTO financeiro_lancamentos
-                (barbearia_id, caixa_id, agendamento_id, produto_id, quantidade, usuario_id, tipo, categoria, forma_pagamento, valor, descricao, data_lancamento, created_at)
+                (barbearia_id, caixa_id, agendamento_id, fila_atendimento_id, produto_id, quantidade, usuario_id, tipo, categoria, forma_pagamento, valor, descricao, data_lancamento, created_at)
              VALUES
-                (:barbearia_id, :caixa_id, :agendamento_id, :produto_id, :quantidade, :usuario_id, :tipo, :categoria, :forma_pagamento, :valor, :descricao, :data_lancamento, NOW())'
+                (:barbearia_id, :caixa_id, :agendamento_id, :fila_atendimento_id, :produto_id, :quantidade, :usuario_id, :tipo, :categoria, :forma_pagamento, :valor, :descricao, :data_lancamento, NOW())'
         );
         $stmt->execute([
             'barbearia_id' => $barbeariaId,
             'caixa_id' => $caixaId,
             'agendamento_id' => $agendamentoId,
+            'fila_atendimento_id' => $filaAtendimentoId,
             'produto_id' => $produtoId,
             'quantidade' => $quantidade,
             'usuario_id' => $usuarioId,

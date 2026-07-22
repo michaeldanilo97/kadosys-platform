@@ -8,6 +8,7 @@ use Barbearias\Core\Controller;
 use Barbearias\Core\Csrf;
 use Barbearias\Core\Session;
 use Barbearias\Models\Barbearia;
+use Barbearias\Models\Cliente;
 use Barbearias\Models\FilaAtendimento;
 use Barbearias\Models\Profissional;
 
@@ -70,11 +71,15 @@ final class FilaPublicaController extends Controller
         $profissionalId = (int) ($dados['profissional_id'] ?? 0);
         $profissional = $profissionalId > 0 ? Profissional::find($profissionalId, $barbearia->id) : null;
 
+        $telefone = $this->apenasDigitos((string) ($dados['telefone'] ?? '')) ?: null;
+        $clienteId = $telefone !== null ? $this->vincularCliente($barbearia->id, (string) $dados['nome'], $telefone) : null;
+
         $id = FilaAtendimento::entrar(
             $barbearia->id,
             (string) $dados['nome'],
-            $this->apenasDigitos((string) ($dados['telefone'] ?? '')) ?: null,
+            $telefone,
             $profissional?->id,
+            $clienteId,
         );
 
         Session::flash('fila_publica_entrada', $id);
@@ -140,6 +145,26 @@ final class FilaPublicaController extends Controller
     private function apenasDigitos(string $valor): string
     {
         return preg_replace('/\D+/', '', $valor) ?? '';
+    }
+
+    /**
+     * Mesmo padrao do agendamento publico (ver
+     * Cliente::buscarPorTelefone em AgendamentoPublicoController): liga
+     * a entrada na fila a uma conta de cliente pelo telefone, criando
+     * uma nova se ainda nao existir - assim o historico e a fidelidade
+     * tambem funcionam pra quem entra pela fila.
+     */
+    private function vincularCliente(int $barbeariaId, string $nome, string $telefone): int
+    {
+        $cliente = Cliente::buscarPorTelefone($barbeariaId, $telefone);
+
+        if ($cliente === null) {
+            return Cliente::create($barbeariaId, $nome, $telefone, null);
+        }
+
+        Cliente::update($cliente->id, $barbeariaId, $nome, $telefone, $cliente->email, $cliente->dataNascimento, $cliente->cpf);
+
+        return $cliente->id;
     }
 
     private function renderNotFound(): void

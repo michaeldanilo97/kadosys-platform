@@ -13,6 +13,7 @@ use Barbearias\Models\Agendamento;
 use Barbearias\Models\Avaliacao;
 use Barbearias\Models\Barbearia;
 use Barbearias\Models\Cliente;
+use Barbearias\Models\FilaAtendimento;
 use Barbearias\Models\Profissional;
 use Barbearias\Models\Servico;
 
@@ -43,6 +44,7 @@ final class ClienteAreaController extends Controller
         $proximos = Agendamento::proximosDoCliente($barbearia->id, $cliente->id);
         $historico = Agendamento::historicoDoCliente($barbearia->id, $cliente->id);
         $avaliados = Avaliacao::agendamentosAvaliados(array_map(static fn (Agendamento $a) => $a->id, $historico));
+        $historicoFila = FilaAtendimento::historicoDoCliente($barbearia->id, $cliente->id);
 
         echo $this->view('public.minha-conta.painel', [
             'pageTitle' => 'Minha conta - ' . $barbearia->nome,
@@ -50,6 +52,7 @@ final class ClienteAreaController extends Controller
             'cliente' => $cliente,
             'proximos' => $proximos,
             'historico' => $historico,
+            'historicoFila' => $historicoFila,
             'avaliados' => $avaliados,
             'csrf' => Csrf::field(),
             'success' => Session::flash('cliente_area_success'),

@@ -141,6 +141,7 @@ CREATE TABLE IF NOT EXISTS profissionais (
 CREATE TABLE IF NOT EXISTS fila_atendimento (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     barbearia_id INT UNSIGNED NOT NULL,
+    cliente_id INT UNSIGNED NULL,
     profissional_id INT UNSIGNED NULL,
     nome VARCHAR(150) NOT NULL,
     telefone VARCHAR(20) NULL,
@@ -275,6 +276,12 @@ CREATE TABLE IF NOT EXISTS clientes (
         FOREIGN KEY (barbearia_id) REFERENCES barbearias (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- So agora, depois de "clientes" existir, e que da pra ligar
+-- fila_atendimento.cliente_id (a tabela fila_atendimento e criada mais
+-- acima, antes de "clientes" existir).
+ALTER TABLE fila_atendimento ADD CONSTRAINT fila_atendimento_cliente_id_foreign
+    FOREIGN KEY (cliente_id) REFERENCES clientes (id) ON DELETE SET NULL;
+
 -- "unidade_id" fica NULL quando a barbearia so tem uma unidade (o
 -- caso comum) - o painel so pede pra escolher a unidade quando ha mais
 -- de uma ativa (ver Barbearias\Models\Unidade::temMultiplasAtivas).
@@ -405,6 +412,7 @@ CREATE TABLE IF NOT EXISTS financeiro_lancamentos (
     barbearia_id INT UNSIGNED NOT NULL,
     caixa_id INT UNSIGNED NULL,
     agendamento_id INT UNSIGNED NULL,
+    fila_atendimento_id INT UNSIGNED NULL,
     produto_id INT UNSIGNED NULL,
     quantidade INT UNSIGNED NULL,
     usuario_id INT UNSIGNED NULL,
@@ -419,12 +427,15 @@ CREATE TABLE IF NOT EXISTS financeiro_lancamentos (
     KEY financeiro_lancamentos_caixa_id_index (caixa_id),
     KEY financeiro_lancamentos_data_lancamento_index (data_lancamento),
     UNIQUE KEY financeiro_lancamentos_agendamento_id_unique (agendamento_id),
+    UNIQUE KEY financeiro_lancamentos_fila_atendimento_id_unique (fila_atendimento_id),
     CONSTRAINT financeiro_lancamentos_barbearia_id_foreign
         FOREIGN KEY (barbearia_id) REFERENCES barbearias (id) ON DELETE CASCADE,
     CONSTRAINT financeiro_lancamentos_caixa_id_foreign
         FOREIGN KEY (caixa_id) REFERENCES caixas (id) ON DELETE SET NULL,
     CONSTRAINT financeiro_lancamentos_agendamento_id_foreign
         FOREIGN KEY (agendamento_id) REFERENCES agendamentos (id) ON DELETE SET NULL,
+    CONSTRAINT financeiro_lancamentos_fila_atendimento_id_foreign
+        FOREIGN KEY (fila_atendimento_id) REFERENCES fila_atendimento (id) ON DELETE SET NULL,
     CONSTRAINT financeiro_lancamentos_produto_id_foreign
         FOREIGN KEY (produto_id) REFERENCES produtos (id) ON DELETE SET NULL,
     CONSTRAINT financeiro_lancamentos_usuario_id_foreign
