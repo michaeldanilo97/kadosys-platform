@@ -17,6 +17,38 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 146 - 2026-07-22
+
+**Telao: mostra "Carregando vídeo..." em vez de tela muda enquanto o video nao inicia**
+
+- Reportado ao vivo: telao ficava preto/mudo por 20-30s+ sem NENHUMA
+  pista visivel de que algo estava acontecendo, so um F5 manual
+  resolvia. O mecanismo de auto-recuperacao (reload automatico apos
+  timeout, ja existente ha varios ajustes) continua funcionando igual -
+  so que agora, assim que a vigia de reproducao comeca (ver
+  `agendarChecagemReproducao` em `telao.js`), a tela mostra
+  "Carregando vídeo..." (aviso neutro, cinza, distinto da mensagem de
+  erro em branco/negrito) em vez de ficar 100% muda enquanto espera.
+- **Investigacao**: nao foi possivel reproduzir com um vídeo real do
+  YouTube (este ambiente de teste nao tem acesso a youtube.com,
+  bloqueado por politica de rede) nem confirmar a causa raiz exata sem
+  o log do console do navegador no momento do travamento (ainda nao
+  recebido). O codigo ja tem bastante logica de auto-recuperacao
+  acumulada de ajustes anteriores (timeout de buffering, timeout de
+  "sem resposta", tratamento de excecao, reload automatico unico por
+  video/sessao) - os limites de tempo foram mantidos como estao
+  (comentarios no codigo explicam que reduzi-los ja causou regressao
+  antes: video que ia comecar sendo interrompido no meio). Testado
+  localmente (Playwright + servidor real) com o cenario de YouTube
+  genuinamente bloqueado: confirmado que o reload automatico existente
+  ainda dispara normalmente (nao foi quebrado), e que o novo aviso
+  "Carregando vídeo..." renderiza certinho, visivel e legivel.
+- **Proximo passo se persistir**: com o log do console (F12 > Console)
+  no exato momento do travamento, da pra identificar com certeza qual
+  caminho de recuperacao esta (ou nao esta) disparando.
+
+---
+
 ## Ajuste 145 - 2026-07-22
 
 **KADOSYS Kids: corrige quiz revelando a resposta certa antes da crianca responder**

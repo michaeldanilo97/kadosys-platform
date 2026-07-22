@@ -70,7 +70,27 @@
     }
 
     videoOverlay.textContent = mensagem;
+    videoOverlay.classList.remove('carregando');
     videoOverlay.classList.add('tem-erro');
+  }
+
+  /**
+   * Mostrado assim que comeca a vigia de reproducao (ver
+   * agendarChecagemReproducao), antes de qualquer timeout de erro
+   * disparar - sem isso, a tela ficava 100% muda/preta nos primeiros
+   * segundos (as vezes ate uns 20s) sem nenhuma pista de que o telao
+   * estava tentando carregar o video, indistinguivel de um travamento
+   * de verdade. Nao e erro (por isso classe separada de "tem-erro"),
+   * so avisa que o carregamento esta em andamento.
+   */
+  function mostrarCarregandoVideo() {
+    if (!videoOverlay) {
+      return;
+    }
+
+    videoOverlay.textContent = 'Carregando vídeo…';
+    videoOverlay.classList.remove('tem-erro');
+    videoOverlay.classList.add('carregando');
   }
 
   function esconderErroVideo() {
@@ -79,7 +99,7 @@
     }
 
     videoOverlay.textContent = '';
-    videoOverlay.classList.remove('tem-erro');
+    videoOverlay.classList.remove('tem-erro', 'carregando');
   }
 
   // Mapa dos codigos de erro documentados da API do YouTube - ver
@@ -461,7 +481,7 @@
     }
 
     checagemVideoId = videoId;
-    esconderErroVideo();
+    mostrarCarregandoVideo();
 
     var observacoesTravado = 0;
     var observacoesBufferParado = 0;
