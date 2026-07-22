@@ -17,6 +17,31 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 145 - 2026-07-22
+
+**KADOSYS Kids: corrige quiz revelando a resposta certa antes da crianca responder**
+
+- `resources/views/kids/show.php`: a tela de quiz do modo crianca
+  (`/kids/conteudo/{id}`) mostrava um ✅ fixo do lado da alternativa
+  correta assim que a pagina carregava - a crianca via a resposta antes
+  de tentar. Trocado por alternativas clicaveis (`<button>`), sem
+  nenhuma marca visual antes do clique; so depois que a crianca escolhe
+  uma alternativa o JS revela ✅ na certa e ❌ na escolhida (se errada) e
+  trava o restante das opcoes daquela pergunta.
+- CSS novo em `kids-biblioteca.css` pros estados do botao (hover antes
+  de responder, `.correta`/`.errada` depois).
+- A tela de preview do quiz no painel administrativo
+  (`dashboard/kids/biblioteca/show.php`, vista pela equipe/professor)
+  continua mostrando a resposta certa de propósito - não foi alterada.
+
+**Testado localmente** (MariaDB + servidor PHP embutido): conferido no
+HTML retornado por `/kids/conteudo/{id}` que nenhuma alternativa vem
+marcada como certa antes do clique (so o atributo `data-correta`, usado
+pelo JS, sem nenhum indicio visual), e que apos clicar numa alternativa
+a certa fica verde e a errada (se for o caso) fica vermelha.
+
+---
+
 ## Ajuste 144 - 2026-07-22
 
 **KADOSYS Kids: Avatar da Crianca (nivel, cosmeticos e titulos ganhos por participacao)**

@@ -63,16 +63,38 @@ $tipoInfo = $conteudo->tipoInfo();
             <?php foreach ($conteudo->quizPerguntas as $indice => $pergunta): ?>
                 <div class="kids-quiz-pergunta">
                     <p><?= ($indice + 1) ?>. <?= htmlspecialchars($pergunta['pergunta'], ENT_QUOTES, 'UTF-8') ?></p>
-                    <div class="kids-quiz-alternativas">
+                    <div class="kids-quiz-alternativas" data-quiz-alternativas>
                         <?php foreach ($pergunta['alternativas'] as $altIndice => $alternativa): ?>
-                            <div class="kids-quiz-alternativa">
-                                <?= $altIndice === (int) $pergunta['correta'] ? '✅' : '⬜' ?>
+                            <button
+                                type="button"
+                                class="kids-quiz-alternativa"
+                                data-correta="<?= $altIndice === (int) $pergunta['correta'] ? '1' : '0' ?>"
+                            >
                                 <?= htmlspecialchars($alternativa, ENT_QUOTES, 'UTF-8') ?>
-                            </div>
+                            </button>
                         <?php endforeach; ?>
                     </div>
                 </div>
             <?php endforeach; ?>
+            <script>
+                document.querySelectorAll('[data-quiz-alternativas]').forEach(function (grupo) {
+                    grupo.addEventListener('click', function (event) {
+                        var escolhida = event.target.closest('.kids-quiz-alternativa');
+                        if (!escolhida || grupo.classList.contains('respondida')) {
+                            return;
+                        }
+                        grupo.classList.add('respondida');
+                        grupo.querySelectorAll('.kids-quiz-alternativa').forEach(function (botao) {
+                            botao.disabled = true;
+                            if (botao.dataset.correta === '1') {
+                                botao.classList.add('correta');
+                            } else if (botao === escolhida) {
+                                botao.classList.add('errada');
+                            }
+                        });
+                    });
+                });
+            </script>
         <?php endif; ?>
 
         <div style="margin-top: 1.6rem;">
