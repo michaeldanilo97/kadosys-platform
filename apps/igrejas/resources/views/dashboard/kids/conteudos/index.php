@@ -47,15 +47,8 @@ $qs = static function (array $overrides) use ($search, $tipoFiltro, $origemFiltr
 <?php endif; ?>
 
 <div class="dash-panel">
-    <form method="GET" action="<?= $basePath ?>/dashboard/kids/conteudos" class="crud-search">
-        <i class="bi bi-search"></i>
-        <input
-            type="search"
-            name="busca"
-            value="<?= htmlspecialchars($search, ENT_QUOTES, 'UTF-8') ?>"
-            placeholder="Buscar por título, categoria ou tema..."
-        >
-        <select name="tipo" onchange="this.form.submit()" style="max-width: 180px;">
+    <form method="GET" action="<?= $basePath ?>/dashboard/kids/conteudos" class="crud-filters">
+        <select name="tipo" onchange="this.form.submit()">
             <option value="">Todos os tipos</option>
             <?php foreach (KidsConteudo::TIPOS as $slug => $info): ?>
                 <option value="<?= $slug ?>" <?= $tipoFiltro === $slug ? 'selected' : '' ?>>
@@ -63,16 +56,25 @@ $qs = static function (array $overrides) use ($search, $tipoFiltro, $origemFiltr
                 </option>
             <?php endforeach; ?>
         </select>
-        <select name="origem" onchange="this.form.submit()" style="max-width: 160px;">
+        <select name="origem" onchange="this.form.submit()">
             <option value="">Todas as origens</option>
             <option value="kadosys" <?= $origemFiltro === 'kadosys' ? 'selected' : '' ?>>⭐ KADOSYS</option>
             <option value="igreja" <?= $origemFiltro === 'igreja' ? 'selected' : '' ?>>🏠 Minha igreja</option>
         </select>
-        <?php if ($search !== '' || $tipoFiltro !== '' || $origemFiltro !== ''): ?>
-            <a href="<?= $basePath ?>/dashboard/kids/conteudos" class="crud-search-clear" aria-label="Limpar filtros">
-                <i class="bi bi-x-lg"></i>
-            </a>
-        <?php endif; ?>
+        <div class="crud-search">
+            <i class="bi bi-search"></i>
+            <input
+                type="search"
+                name="busca"
+                value="<?= htmlspecialchars($search, ENT_QUOTES, 'UTF-8') ?>"
+                placeholder="Buscar por título, categoria ou tema..."
+            >
+            <?php if ($search !== '' || $tipoFiltro !== '' || $origemFiltro !== ''): ?>
+                <a href="<?= $basePath ?>/dashboard/kids/conteudos" class="crud-search-clear" aria-label="Limpar filtros">
+                    <i class="bi bi-x-lg"></i>
+                </a>
+            <?php endif; ?>
+        </div>
     </form>
 
     <?php if ($conteudos === []): ?>
