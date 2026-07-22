@@ -15,7 +15,7 @@ use Superadmin\Core\DatabaseIgrejas;
  */
 final class SiteIgreja
 {
-    private const SELECT_BASE = 'SELECT id, slug, nome_igreja, subdominio, plano, status,
+    private const SELECT_BASE = 'SELECT id, slug, nome_igreja, subdominio, plano, metodo_pagamento, status,
         trial_expira_em, proximo_vencimento, ultimo_acesso_em, created_at, db_name, db_user
         FROM plataforma_tenants';
 
@@ -25,6 +25,7 @@ final class SiteIgreja
         public readonly string $nomeIgreja,
         public readonly string $subdominio,
         public readonly string $plano,
+        public readonly string $metodoPagamento,
         public readonly string $status,
         public readonly ?string $trialExpiraEm,
         public readonly ?string $proximoVencimento,
@@ -63,6 +64,90 @@ final class SiteIgreja
     }
 
     /**
+     * Libera/estende manualmente o acesso de uma igreja, sem depender
+     * do proprio fluxo de pagamento (trial vencido, cartao recusado ou
+     * fatura Pix nao paga) - usado quando o dono da plataforma precisa
+     * ativar ou dar mais prazo pra uma igreja na mao.
+     *
+     * Nao mexe em `status` (ver AuthMiddleware do Igrejas: esse campo e
+     * usado por TenantResolver pra decidir se troca de banco, e o
+     * bloqueio de acesso por pagamento e decidido separadamente, por
+     * metodo_pagamento) - so ataca o campo que de fato desbloqueia cada
+     * metodo: trial_expira_em (trial), a assinatura de cartao mais
+     * recente (cartao) ou a fatura Pix mais recente (pix).
+     */
+    public static function estenderAcesso(int $id, int $dias): string
+    {
+        $tenant = self::find($id);
+
+        if ($tenant === null) {
+            return 'Igreja nao encontrada.';
+        }
+
+        $agora = new \DateTimeImmutable();
+
+        if ($tenant->metodoPagamento === 'trial') {
+            $base = $tenant->trialExpiraEm !== null ? new \DateTimeImmutable($tenant->trialExpiraEm) : $agora;
+            $novaData = ($base > $agora ? $base : $agora)->modify("+{$dias} days");
+
+            $stmt = DatabaseIgrejas::connection()->prepare(
+                'UPDATE plataforma_tenants SET trial_expira_em = :data WHERE id = :id'
+            );
+            $stmt->execute(['data' => $novaData->format('Y-m-d H:i:s'), 'id' => $id]);
+
+            return 'Teste gratis estendido ate ' . $novaData->format('d/m/Y') . '.';
+        }
+
+        if ($tenant->metodoPagamento === 'cartao') {
+            $stmt = DatabaseIgrejas::connection()->prepare(
+                'SELECT id FROM plataforma_assinaturas WHERE tenant_id = :tenant_id ORDER BY id DESC LIMIT 1'
+            );
+            $stmt->execute(['tenant_id' => $id]);
+            $assinaturaId = $stmt->fetchColumn();
+
+            if ($assinaturaId === false) {
+                return 'Nenhuma assinatura de cartao encontrada para essa igreja - nada foi alterado.';
+            }
+
+            $stmt = DatabaseIgrejas::connection()->prepare(
+                "UPDATE plataforma_assinaturas SET status = 'autorizada' WHERE id = :id"
+            );
+            $stmt->execute(['id' => $assinaturaId]);
+
+            return 'Assinatura de cartao marcada como autorizada - acesso liberado.';
+        }
+
+        if ($tenant->metodoPagamento === 'pix') {
+            $stmt = DatabaseIgrejas::connection()->prepare(
+                'SELECT id, vencimento FROM plataforma_faturas WHERE tenant_id = :tenant_id ORDER BY id DESC LIMIT 1'
+            );
+            $stmt->execute(['tenant_id' => $id]);
+            $fatura = $stmt->fetch();
+
+            if ($fatura === false) {
+                return 'Nenhuma fatura Pix encontrada para essa igreja - nada foi alterado.';
+            }
+
+            $vencimentoAtual = new \DateTimeImmutable($fatura['vencimento']);
+            $novaData = ($vencimentoAtual > $agora ? $vencimentoAtual : $agora)->modify("+{$dias} days");
+
+            $stmt = DatabaseIgrejas::connection()->prepare(
+                "UPDATE plataforma_faturas SET status = 'paga', pago_em = NOW(), vencimento = :vencimento WHERE id = :id"
+            );
+            $stmt->execute(['vencimento' => $novaData->format('Y-m-d H:i:s'), 'id' => $fatura['id']]);
+
+            $stmt = DatabaseIgrejas::connection()->prepare(
+                'UPDATE plataforma_tenants SET proximo_vencimento = :data WHERE id = :id'
+            );
+            $stmt->execute(['data' => $novaData->format('Y-m-d'), 'id' => $id]);
+
+            return 'Fatura Pix marcada como paga - proximo vencimento em ' . $novaData->format('d/m/Y') . '.';
+        }
+
+        return 'Metodo de pagamento desconhecido - nada foi alterado.';
+    }
+
+    /**
      * So remove o registro central - a exclusao do banco de dados/
      * usuario MySQL da igreja (cPanel) e feita a parte, ANTES desta
      * chamada, por Superadmin\Core\Desprovisionador.
@@ -81,6 +166,7 @@ final class SiteIgreja
             nomeIgreja: $row['nome_igreja'],
             subdominio: $row['subdominio'],
             plano: $row['plano'],
+            metodoPagamento: $row['metodo_pagamento'],
             status: $row['status'],
             trialExpiraEm: $row['trial_expira_em'],
             proximoVencimento: $row['proximo_vencimento'],

@@ -81,7 +81,7 @@ $rotulosStatus = [
                             <td><?= htmlspecialchars(substr($site['criado_em'], 0, 10), ENT_QUOTES, 'UTF-8') ?></td>
                             <td><?= $site['ultimo_acesso_em'] ? htmlspecialchars(substr($site['ultimo_acesso_em'], 0, 16), ENT_QUOTES, 'UTF-8') : '-' ?></td>
                             <td>
-                                <div style="display:flex; gap:6px;">
+                                <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
                                     <?php if ($site['status'] === 'suspenso'): ?>
                                         <form method="POST" action="<?= $basePath ?>/sites/<?= $site['produto'] ?>/<?= $site['id'] ?>/reativar">
                                             <?= $csrf ?>
@@ -93,6 +93,23 @@ $rotulosStatus = [
                                             <button type="submit" class="btn btn-sm">Suspender</button>
                                         </form>
                                     <?php endif; ?>
+                                    <form
+                                        method="POST"
+                                        action="<?= $basePath ?>/sites/<?= $site['produto'] ?>/<?= $site['id'] ?>/estender"
+                                        style="display:flex; gap:4px; align-items:center;"
+                                        title="Ativa o site e estende o trial/vencimento pelo numero de dias informado"
+                                    >
+                                        <?= $csrf ?>
+                                        <input
+                                            type="number"
+                                            name="dias"
+                                            value="30"
+                                            min="1"
+                                            max="365"
+                                            style="width:60px; background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:6px 8px; color:var(--text);"
+                                        >
+                                        <button type="submit" class="btn btn-sm">Ativar/Estender</button>
+                                    </form>
                                     <a href="<?= $basePath ?>/sites/<?= $site['produto'] ?>/<?= $site['id'] ?>/excluir" class="btn btn-sm btn-danger">Excluir</a>
                                 </div>
                             </td>
