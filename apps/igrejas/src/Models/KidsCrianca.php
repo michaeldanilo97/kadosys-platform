@@ -14,7 +14,9 @@ use PDO;
  * (Membro vinculado ou nome/telefone avulso), informacoes de seguranca
  * (autorizados a retirar, alergias/observacoes medicas) e as colunas de
  * gamificacao (xp/moedas/sequencia), incrementadas a cada check-in (ver
- * KidsCheckin::registrar()).
+ * KidsCheckin::registrar()), alem dos itens de Avatar equipados
+ * (chapeu/acessorio/fundo/titulo - ver KidsAvatar pro catalogo e formula
+ * de nivel a partir do xp).
  */
 final class KidsCrianca
 {
@@ -46,6 +48,10 @@ final class KidsCrianca
         public readonly ?string $pinDefinidoEm,
         public readonly int $pinTentativasInvalidas,
         public readonly ?string $pinBloqueadoAte,
+        public readonly ?string $avatarChapeu,
+        public readonly ?string $avatarAcessorio,
+        public readonly ?string $avatarFundo,
+        public readonly ?string $avatarTitulo,
         public readonly string $createdAt,
     ) {
     }
@@ -381,6 +387,55 @@ final class KidsCrianca
         return $this->responsavelMembroNome ?? $this->responsavelNome;
     }
 
+    public function nivel(): int
+    {
+        return KidsAvatar::nivel($this->xp);
+    }
+
+    /**
+     * Salva os itens de Avatar equipados pela crianca (ver
+     * KidsAppController::avatarSalvar()) - cada slug e conferido contra
+     * o catalogo/nivel atual antes de gravar, pra nunca confiar so no
+     * que veio do formulario (uma crianca nao pode "trapacear" e equipar
+     * um item que ainda nao desbloqueou so editando o POST). Slugs
+     * invalidos ou ainda bloqueados viram null (nenhum item equipado
+     * naquela categoria) em vez de erro - a tela sempre volta pro estado
+     * consistente mais proximo do que foi pedido.
+     */
+    public static function atualizarAvatar(
+        int $id,
+        ?string $chapeu,
+        ?string $acessorio,
+        ?string $fundo,
+        ?string $titulo,
+    ): void {
+        $crianca = self::find($id);
+
+        if ($crianca === null) {
+            return;
+        }
+
+        $nivel = $crianca->nivel();
+
+        $chapeu = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoChapeus(), $chapeu, $nivel) ? $chapeu : null;
+        $acessorio = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoAcessorios(), $acessorio, $nivel) ? $acessorio : null;
+        $fundo = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoFundos(), $fundo, $nivel) ? $fundo : null;
+        $titulo = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoTitulos(), $titulo, $nivel) ? $titulo : null;
+
+        $stmt = Database::connection()->prepare(
+            'UPDATE kids_criancas
+             SET avatar_chapeu = :chapeu, avatar_acessorio = :acessorio, avatar_fundo = :fundo, avatar_titulo = :titulo
+             WHERE id = :id'
+        );
+        $stmt->execute([
+            'chapeu' => $chapeu,
+            'acessorio' => $acessorio,
+            'fundo' => $fundo,
+            'titulo' => $titulo,
+            'id' => $id,
+        ]);
+    }
+
     /**
      * @param array<string, mixed> $data
      * @return array<string, mixed>
@@ -440,6 +495,10 @@ final class KidsCrianca
             pinDefinidoEm: $row['pin_definido_em'] ?? null,
             pinTentativasInvalidas: (int) ($row['pin_tentativas_invalidas'] ?? 0),
             pinBloqueadoAte: $row['pin_bloqueado_ate'] ?? null,
+            avatarChapeu: $row['avatar_chapeu'] ?? null,
+            avatarAcessorio: $row['avatar_acessorio'] ?? null,
+            avatarFundo: $row['avatar_fundo'] ?? null,
+            avatarTitulo: $row['avatar_titulo'] ?? null,
             createdAt: (string) $row['created_at'],
         );
     }

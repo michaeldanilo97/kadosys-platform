@@ -17,6 +17,69 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 145 - 2026-07-22
+
+**KADOSYS Kids: corrige quiz revelando a resposta certa antes da crianca responder**
+
+- `resources/views/kids/show.php`: a tela de quiz do modo crianca
+  (`/kids/conteudo/{id}`) mostrava um ✅ fixo do lado da alternativa
+  correta assim que a pagina carregava - a crianca via a resposta antes
+  de tentar. Trocado por alternativas clicaveis (`<button>`), sem
+  nenhuma marca visual antes do clique; so depois que a crianca escolhe
+  uma alternativa o JS revela ✅ na certa e ❌ na escolhida (se errada) e
+  trava o restante das opcoes daquela pergunta.
+- CSS novo em `kids-biblioteca.css` pros estados do botao (hover antes
+  de responder, `.correta`/`.errada` depois).
+- A tela de preview do quiz no painel administrativo
+  (`dashboard/kids/biblioteca/show.php`, vista pela equipe/professor)
+  continua mostrando a resposta certa de propósito - não foi alterada.
+
+**Testado localmente** (MariaDB + servidor PHP embutido): conferido no
+HTML retornado por `/kids/conteudo/{id}` que nenhuma alternativa vem
+marcada como certa antes do clique (so o atributo `data-correta`, usado
+pelo JS, sem nenhum indicio visual), e que apos clicar numa alternativa
+a certa fica verde e a errada (se for o caso) fica vermelha.
+
+---
+
+## Ajuste 144 - 2026-07-22
+
+**KADOSYS Kids: Avatar da Crianca (nivel, cosmeticos e titulos ganhos por participacao)**
+
+- Migracao 144 (nova, `apps/igrejas/database/migrations/057_kids_avatar.sql`,
+  ja replicada em `install.sql`): 4 colunas novas em `kids_criancas`
+  (`avatar_chapeu`, `avatar_acessorio`, `avatar_fundo`, `avatar_titulo`)
+  guardando so o slug do item ATUALMENTE equipado em cada categoria -
+  o xp que ja existia (ganho a cada check-in ou conteudo concluido)
+  continua sendo a unica fonte de progresso, sem tabela nova de
+  "desbloqueios".
+- Novo model `Igrejas\Models\KidsAvatar`: catalogo estatico (emoji +
+  nome + nivel minimo) de 10 chapeus, 10 acessorios, 6 fundos e 8
+  titulos (incluindo "Pequeno Missionário" e "Guardião dos Versículos"),
+  alem da formula de nivel a partir do xp acumulado (20 niveis, curva
+  pensada pra o primeiro nivel vir em 1-2 check-ins e os seguintes
+  exigirem semanas de participacao constante).
+- `KidsCrianca::atualizarAvatar()`: salva os itens escolhidos, mas
+  sempre reconferindo no servidor se o nivel atual realmente desbloqueou
+  aquele slug antes de gravar - um POST forjado tentando equipar um
+  item ainda bloqueado e silenciosamente ignorado (volta pra "nenhum"
+  naquela categoria), nunca aceito.
+- Nova tela **/kids/avatar** (mesmo "modo crianca" por PIN do resto do
+  modulo Kids): palco com o avatar (chapeu + boneco + acessorio,
+  fundo em gradiente conforme o item equipado), barra de XP/nivel, e
+  uma galeria por categoria - itens bloqueados aparecem escurecidos com
+  cadeado e o nivel necessario. Acesso pelo botao "Meu Avatar" no topo
+  da home do modo crianca.
+
+**Testado localmente** (MariaDB + servidor PHP embutido, install.sql
+completo): login por PIN, tela do avatar mostrando nivel/itens corretos
+pro xp da crianca de teste, equipar um item desbloqueado (salva
+certinho), tentativa forjada de equipar um item de nivel superior ao
+atual (rejeitada no servidor, campo volta pra vazio), e um check-in
+novo continuando a somar xp e recalcular o nivel normalmente.
+
+---
+
 ## Ajuste 143 - 2026-07-16
 
 **Novo app: KADOSYS Super Admin (painel unico cruzando Igrejas + Barbearias)**
