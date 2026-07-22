@@ -25,12 +25,13 @@ final class FilaAtendimento
      */
     private const DURACAO_PADRAO_MINUTOS = 30;
 
-    private const SELECT_COLUNAS = 'id, barbearia_id, profissional_id, nome, telefone, status,
+    private const SELECT_COLUNAS = 'id, barbearia_id, cliente_id, profissional_id, nome, telefone, status,
         entrou_em, chamado_em, atendido_em';
 
     public function __construct(
         public readonly int $id,
         public readonly int $barbeariaId,
+        public readonly ?int $clienteId,
         public readonly ?int $profissionalId,
         public readonly string $nome,
         public readonly ?string $telefone,
@@ -107,20 +108,40 @@ final class FilaAtendimento
         return $media !== false && $media !== null ? (int) round((float) $media) : self::DURACAO_PADRAO_MINUTOS;
     }
 
-    public static function entrar(int $barbeariaId, string $nome, ?string $telefone, ?int $profissionalId = null): int
+    public static function entrar(int $barbeariaId, string $nome, ?string $telefone, ?int $profissionalId = null, ?int $clienteId = null): int
     {
         $stmt = Database::connection()->prepare(
-            "INSERT INTO fila_atendimento (barbearia_id, profissional_id, nome, telefone, status, entrou_em)
-             VALUES (:barbearia_id, :profissional_id, :nome, :telefone, 'aguardando', NOW())"
+            "INSERT INTO fila_atendimento (barbearia_id, cliente_id, profissional_id, nome, telefone, status, entrou_em)
+             VALUES (:barbearia_id, :cliente_id, :profissional_id, :nome, :telefone, 'aguardando', NOW())"
         );
         $stmt->execute([
             'barbearia_id' => $barbeariaId,
+            'cliente_id' => $clienteId,
             'profissional_id' => $profissionalId,
             'nome' => trim($nome),
             'telefone' => self::nullable($telefone),
         ]);
 
         return (int) Database::connection()->lastInsertId();
+    }
+
+    /**
+     * Passagens concluidas de UM cliente especifico pela fila - usado
+     * pela area do cliente (ver Barbearias\Controllers\ClienteAreaController),
+     * o "historico" equivalente ao de agendamentos pra quem usa Fila.
+     *
+     * @return array<int, self>
+     */
+    public static function historicoDoCliente(int $barbeariaId, int $clienteId): array
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT " . self::SELECT_COLUNAS . " FROM fila_atendimento
+             WHERE barbearia_id = :barbearia_id AND cliente_id = :cliente_id AND status = 'atendido'
+             ORDER BY atendido_em DESC"
+        );
+        $stmt->execute(['barbearia_id' => $barbeariaId, 'cliente_id' => $clienteId]);
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
     }
 
     public static function chamar(int $id, int $barbeariaId): void
@@ -161,6 +182,7 @@ final class FilaAtendimento
         return new self(
             id: (int) $row['id'],
             barbeariaId: (int) $row['barbearia_id'],
+            clienteId: $row['cliente_id'] !== null ? (int) $row['cliente_id'] : null,
             profissionalId: $row['profissional_id'] !== null ? (int) $row['profissional_id'] : null,
             nome: (string) $row['nome'],
             telefone: $row['telefone'] ?? null,

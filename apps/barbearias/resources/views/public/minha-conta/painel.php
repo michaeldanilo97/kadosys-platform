@@ -3,6 +3,7 @@
 use Barbearias\Models\Agendamento;
 use Barbearias\Models\Barbearia;
 use Barbearias\Models\Cliente;
+use Barbearias\Models\FilaAtendimento;
 
 /**
  * @var array $config
@@ -10,6 +11,7 @@ use Barbearias\Models\Cliente;
  * @var Cliente $cliente
  * @var array<int, Agendamento> $proximos
  * @var array<int, Agendamento> $historico
+ * @var array<int, FilaAtendimento> $historicoFila
  * @var array<int, int> $avaliados
  * @var string $csrf
  * @var string|null $success
@@ -57,6 +59,24 @@ $statusLabel = [
         </div>
     <?php endif; ?>
 
+    <?php if ($barbearia->usaFila()): ?>
+        <div class="glass-card cadastro-card">
+            <div class="dash-panel-head" style="margin-bottom: 1rem;">
+                <h2 style="margin:0; font-size:1.1rem;">Minhas passagens na fila</h2>
+                <a href="<?= $basePath ?>/fila/<?= $slug ?>" class="btn-k btn-k-grad btn-k-sm">+ Entrar na fila</a>
+            </div>
+
+            <?php if ($historicoFila === []): ?>
+                <p class="crud-empty" style="padding: 1rem 0;">Nenhum atendimento pela fila ainda.</p>
+            <?php else: ?>
+                <?php foreach ($historicoFila as $item): ?>
+                    <div class="confirmacao-detalhes" style="margin: 0 0 1rem;">
+                        <div><span>Data</span><span><?= (new DateTimeImmutable($item->atendidoEm ?? $item->entrouEm))->format('d/m/Y H:i') ?></span></div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+    <?php else: ?>
     <div class="glass-card cadastro-card">
         <div class="dash-panel-head" style="margin-bottom: 1rem;">
             <h2 style="margin:0; font-size:1.1rem;">Próximos agendamentos</h2>
@@ -127,4 +147,5 @@ $statusLabel = [
             <?php endforeach; ?>
         <?php endif; ?>
     </div>
+    <?php endif; ?>
 </div>

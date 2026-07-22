@@ -132,10 +132,7 @@ $emAtendimento = array_values(array_filter($fila, static fn (FilaAtendimento $it
                                             <button type="submit" class="crud-icon-btn" title="Chamar">📣</button>
                                         </form>
                                     <?php else: ?>
-                                        <form method="POST" action="<?= $basePath ?>/dashboard/fila/<?= $item->id ?>/concluir">
-                                            <?= Csrf::field() ?>
-                                            <button type="submit" class="crud-icon-btn" title="Concluir atendimento">✅</button>
-                                        </form>
+                                        <a href="<?= $basePath ?>/dashboard/fila/<?= $item->id ?>/concluir" class="crud-icon-btn" title="Concluir e registrar pagamento">✅</a>
                                     <?php endif; ?>
                                     <form method="POST" action="<?= $basePath ?>/dashboard/fila/<?= $item->id ?>/cancelar" onsubmit="return confirm('Remover da fila?');">
                                         <?= Csrf::field() ?>

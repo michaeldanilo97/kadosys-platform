@@ -145,6 +145,7 @@ $router->post('/dashboard/agendamentos/{id}/excluir', [AgendamentoController::cl
 $router->get('/dashboard/fila', [FilaController::class, 'index'], [AuthMiddleware::class]);
 $router->post('/dashboard/fila', [FilaController::class, 'adicionar'], [AuthMiddleware::class]);
 $router->post('/dashboard/fila/{id}/chamar', [FilaController::class, 'chamar'], [AuthMiddleware::class]);
+$router->get('/dashboard/fila/{id}/concluir', [FilaController::class, 'concluirForm'], [AuthMiddleware::class]);
 $router->post('/dashboard/fila/{id}/concluir', [FilaController::class, 'concluir'], [AuthMiddleware::class]);
 $router->post('/dashboard/fila/{id}/cancelar', [FilaController::class, 'cancelar'], [AuthMiddleware::class]);
 
