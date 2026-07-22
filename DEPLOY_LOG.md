@@ -17,6 +17,67 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 148 - 2026-07-22
+
+**Novo produto: KADOSYS Academias (Fase 1 - esqueleto, cobrança e site público)**
+
+Início de um novo app na plataforma, `apps/academias`, gestão completa
+para academias (check-in por QR Code, ficha de treino, avaliação
+física, ranking de frequência - módulos completos vêm nas próximas
+fases). Segue exatamente a mesma receita já usada em Barbearias: app
+100% autocontido (`Academias\*`, próprio `composer.json`/`vendor`,
+próprio `src/Core/*`), banco único compartilhado `kadosys1_academias`
+com isolamento lógico por `academia_id` em cada tabela (sem banco por
+cliente, ao contrário do Igrejas).
+
+**O que entra nesta Fase 1:**
+- Core completo clonado de Barbearias (Auth, Csrf, Database, Documento,
+  Mailer, MercadoPagoClient, Middlewares, PixEstatico, Request, Router,
+  Session, View) + `AlunoAuth` (sessão separada pro futuro painel do
+  aluno, mesmo padrão do `ClienteAuth` de Barbearias).
+- Schema inicial (`install.sql`): `academias` (tenant), `academia_faturas`,
+  `academia_avisos` (já preparado pra integração futura com o Super
+  Admin), `users`, `password_resets`, `unidades`, `planos_matricula`,
+  `professores`, `alunos` (já com as colunas de gamificação/check-in
+  que a Fase 3 vai usar, pra não precisar de outra migration só por
+  isso).
+- Cobrança da própria academia com a Kadosys: mesmo motor de Barbearias
+  - trial grátis (5 dias) ou Pix/cartão recorrente via Mercado Pago,
+  cadastro público, webhook, tela de bloqueio por pagamento pendente,
+  histórico de faturas, crons de renovação Pix e suspensão por
+  cancelamento.
+- Site público rico (hero, seção "por que usar", recursos, funcionalidades,
+  planos, FAQ, footer) com conteúdo genuíno de academia (não é o texto
+  de Barbearias com find-and-replace) - já reaproveitando o mesmo
+  tratamento visual reforçado que Barbearias ganhou no ajuste anterior.
+- Dashboard já moderno desde o início (sidebar colapsável, glass
+  effects, white-label por logo/cor, tema claro/escuro) - em vez de
+  ganhar isso depois, como aconteceu com Barbearias.
+- PWA (`manifest.json` + `sw.js` + ícones) e `seed_admin.php` pra criar
+  uma academia de teste via linha de comando.
+
+**Fora de escopo nesta Fase 1** (chega nas próximas): CRUD de Alunos/
+Professores/Planos de Matrícula, o check-in/checkout por QR Code fixo
+(mecânica: a academia deixa um QR fixo na entrada, o aluno já logado no
+painel dele escaneia pra entrar e escaneia de novo pra sair), ficha de
+treino com evolução de carga, avaliação física, painel do aluno e
+integração com o Super Admin (listagem unificada de sites + avisos da
+plataforma).
+
+**Testado**: `php -l` em todos os arquivos PHP, banco local MariaDB com
+`install.sql` + `seed_admin.php`, fluxo completo via curl (landing,
+cadastro, login, dashboard, faturas, tela de assinatura) sem nenhum
+erro/warning no log do servidor PHP.
+
+**Deploy do novo app (passo novo, igual já foi feito pro Igrejas/
+Barbearias/Super Admin)**: criar um subdomínio novo no cPanel (ex.:
+`academias.kadosys.com.br`) apontando pra `apps/academias/public`,
+rodar `composer install` (ou confiar no autoload mínimo já commitado),
+configurar as variáveis de ambiente (banco `kadosys1_academias` +
+credenciais do Mercado Pago, mesma conta já usada em Igrejas/
+Barbearias) e rodar `apps/academias/database/install.sql` uma única
+vez no banco novo.
+
 ## Ajuste 147 - 2026-07-22
 
 **KADOSYS Kids: substitui conteudos "casca" da biblioteca oficial por conteudo de verdade (sem exigir upload)**

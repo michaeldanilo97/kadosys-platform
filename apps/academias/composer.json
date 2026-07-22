@@ -1,0 +1,19 @@
+{
+    "name": "kadosys/academias",
+    "description": "KADOSYS Academias - Plataforma de gestao para academias",
+    "type": "project",
+    "require": {
+        "php": ">=8.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Academias\\Core\\": "src/Core/",
+            "Academias\\Controllers\\": "src/Controllers/",
+            "Academias\\Models\\": "src/Models/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}
