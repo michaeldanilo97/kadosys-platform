@@ -128,6 +128,61 @@ final class SiteBarbearia
     }
 
     /**
+     * Situacao REAL de acesso da barbearia - diferente do campo
+     * `status` sozinho, reproduz a mesma decisao que
+     * Barbearias\Core\Middleware\AuthMiddleware usa pra bloquear o
+     * dashboard (ver Barbearia::STATUS_SUSPENSA/STATUS_PENDENTE, trial
+     * vencido ou fatura Pix vencida). Cartao so depende do proprio
+     * `status` (a barbearia nao guarda historico de status de
+     * assinatura de cartao como o Igrejas faz).
+     *
+     * @return array{bloqueado: bool, motivo: string, vencimento: ?string}
+     */
+    public function acesso(): array
+    {
+        if ($this->status === 'suspenso') {
+            return ['bloqueado' => true, 'motivo' => 'Suspenso', 'vencimento' => $this->proximoVencimento];
+        }
+
+        if ($this->status === 'pendente') {
+            return ['bloqueado' => true, 'motivo' => 'Pagamento inicial pendente', 'vencimento' => null];
+        }
+
+        if ($this->metodoPagamento === 'trial') {
+            $vencido = $this->trialExpiraEm !== null && new \DateTimeImmutable() > new \DateTimeImmutable($this->trialExpiraEm);
+
+            return [
+                'bloqueado' => $vencido,
+                'motivo' => $vencido ? 'Teste gratis vencido' : 'Em teste gratis',
+                'vencimento' => $this->trialExpiraEm,
+            ];
+        }
+
+        if ($this->metodoPagamento === 'pix') {
+            $stmt = DatabaseBarbearias::connection()->prepare(
+                'SELECT status, vencimento FROM barbearia_faturas WHERE barbearia_id = :barbearia_id ORDER BY id DESC LIMIT 1'
+            );
+            $stmt->execute(['barbearia_id' => $this->id]);
+            $fatura = $stmt->fetch();
+
+            if ($fatura === false) {
+                return ['bloqueado' => false, 'motivo' => 'Sem fatura Pix ainda', 'vencimento' => null];
+            }
+
+            $vencida = $fatura['status'] === 'expirada'
+                || ($fatura['status'] === 'pendente' && new \DateTimeImmutable() > new \DateTimeImmutable($fatura['vencimento']));
+
+            return [
+                'bloqueado' => $vencida,
+                'motivo' => $vencida ? 'Fatura Pix vencida' : ($fatura['status'] === 'paga' ? 'Pix em dia' : 'Pix pendente'),
+                'vencimento' => $fatura['vencimento'],
+            ];
+        }
+
+        return ['bloqueado' => false, 'motivo' => 'Cartao (assinatura MP ativa)', 'vencimento' => $this->proximoVencimento];
+    }
+
+    /**
      * A propria linha - o cascade das FKs cuida do resto (ver
      * install.sql do apps/barbearias).
      */

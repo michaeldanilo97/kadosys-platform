@@ -22,6 +22,11 @@ $rotulosStatus = [
     'provisionando' => 'Provisionando',
     'erro' => 'Erro',
 ];
+$rotulosPagamento = [
+    'trial' => 'Teste gratis',
+    'pix' => 'Pix',
+    'cartao' => 'Cartao',
+];
 ?>
 <div class="page-header">
     <div>
@@ -58,7 +63,10 @@ $rotulosStatus = [
                         <th>Nome</th>
                         <th>Identificador</th>
                         <th>Plano</th>
+                        <th>Pagamento</th>
+                        <th>Vencimento/Prazo</th>
                         <th>Status</th>
+                        <th>Acesso</th>
                         <th>Criado em</th>
                         <th>Ultimo acesso</th>
                         <th></th>
@@ -77,7 +85,15 @@ $rotulosStatus = [
                             </td>
                             <td><?= htmlspecialchars($site['identificador'], ENT_QUOTES, 'UTF-8') ?></td>
                             <td><?= htmlspecialchars($site['plano'], ENT_QUOTES, 'UTF-8') ?></td>
+                            <td><?= $rotulosPagamento[$site['metodo_pagamento']] ?? htmlspecialchars($site['metodo_pagamento'], ENT_QUOTES, 'UTF-8') ?></td>
+                            <td style="color:var(--text-dim);"><?= $site['acesso_vencimento'] ? htmlspecialchars(substr($site['acesso_vencimento'], 0, 10), ENT_QUOTES, 'UTF-8') : '-' ?></td>
                             <td><span class="badge badge-status-<?= $site['status'] ?>"><?= $rotulosStatus[$site['status']] ?? $site['status'] ?></span></td>
+                            <td>
+                                <span class="badge <?= $site['acesso_bloqueado'] ? 'badge-acesso-bloqueado' : 'badge-acesso-liberado' ?>" title="<?= htmlspecialchars($site['acesso_motivo'], ENT_QUOTES, 'UTF-8') ?>">
+                                    <?= $site['acesso_bloqueado'] ? 'Bloqueado' : 'Liberado' ?>
+                                </span>
+                                <div style="color:var(--text-dim); font-size:0.72rem; margin-top:3px; white-space:normal; max-width:160px;"><?= htmlspecialchars($site['acesso_motivo'], ENT_QUOTES, 'UTF-8') ?></div>
+                            </td>
                             <td><?= htmlspecialchars(substr($site['criado_em'], 0, 10), ENT_QUOTES, 'UTF-8') ?></td>
                             <td><?= $site['ultimo_acesso_em'] ? htmlspecialchars(substr($site['ultimo_acesso_em'], 0, 16), ENT_QUOTES, 'UTF-8') : '-' ?></td>
                             <td>

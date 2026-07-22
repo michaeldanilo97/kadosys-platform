@@ -148,6 +148,78 @@ final class SiteIgreja
     }
 
     /**
+     * Situacao REAL de acesso da igreja - diferente do campo `status`
+     * (que so controla provisionamento/roteamento de subdominio, ver
+     * TenantResolver), reproduz a mesma decisao que
+     * Igrejas\Core\Middleware\AuthMiddleware usa pra bloquear o
+     * dashboard: trial vencido, cartao pausado/cancelado ou fatura Pix
+     * vencida. Uma igreja pode aparecer com `status = 'ativo'` aqui e
+     * ainda assim estar com o painel bloqueado pro cliente - e
+     * exatamente esse caso que este metodo expoe.
+     *
+     * @return array{bloqueado: bool, motivo: string, vencimento: ?string}
+     */
+    public function acesso(): array
+    {
+        if ($this->status !== 'ativo') {
+            return ['bloqueado' => true, 'motivo' => 'Site ' . $this->status, 'vencimento' => null];
+        }
+
+        if ($this->metodoPagamento === 'trial') {
+            $vencido = $this->trialExpiraEm !== null && new \DateTimeImmutable() > new \DateTimeImmutable($this->trialExpiraEm);
+
+            return [
+                'bloqueado' => $vencido,
+                'motivo' => $vencido ? 'Teste gratis vencido' : 'Em teste gratis',
+                'vencimento' => $this->trialExpiraEm,
+            ];
+        }
+
+        if ($this->metodoPagamento === 'cartao') {
+            $stmt = DatabaseIgrejas::connection()->prepare(
+                'SELECT status FROM plataforma_assinaturas WHERE tenant_id = :tenant_id ORDER BY id DESC LIMIT 1'
+            );
+            $stmt->execute(['tenant_id' => $this->id]);
+            $status = $stmt->fetchColumn();
+
+            if ($status === false) {
+                return ['bloqueado' => false, 'motivo' => 'Sem assinatura de cartao ainda', 'vencimento' => null];
+            }
+
+            $bloqueado = in_array($status, ['pausada', 'cancelada'], true);
+
+            return [
+                'bloqueado' => $bloqueado,
+                'motivo' => 'Cartao ' . $status,
+                'vencimento' => $this->proximoVencimento,
+            ];
+        }
+
+        if ($this->metodoPagamento === 'pix') {
+            $stmt = DatabaseIgrejas::connection()->prepare(
+                'SELECT status, vencimento FROM plataforma_faturas WHERE tenant_id = :tenant_id ORDER BY id DESC LIMIT 1'
+            );
+            $stmt->execute(['tenant_id' => $this->id]);
+            $fatura = $stmt->fetch();
+
+            if ($fatura === false) {
+                return ['bloqueado' => false, 'motivo' => 'Sem fatura Pix ainda', 'vencimento' => null];
+            }
+
+            $vencida = $fatura['status'] === 'expirada'
+                || ($fatura['status'] === 'pendente' && new \DateTimeImmutable() > new \DateTimeImmutable($fatura['vencimento']));
+
+            return [
+                'bloqueado' => $vencida,
+                'motivo' => $vencida ? 'Fatura Pix vencida' : ($fatura['status'] === 'paga' ? 'Pix em dia' : 'Pix pendente'),
+                'vencimento' => $fatura['vencimento'],
+            ];
+        }
+
+        return ['bloqueado' => false, 'motivo' => 'OK', 'vencimento' => null];
+    }
+
+    /**
      * So remove o registro central - a exclusao do banco de dados/
      * usuario MySQL da igreja (cPanel) e feita a parte, ANTES desta
      * chamada, por Superadmin\Core\Desprovisionador.

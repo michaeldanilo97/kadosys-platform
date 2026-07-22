@@ -192,6 +192,8 @@ final class SiteController extends Controller
 
     private static function normalizarIgreja(SiteIgreja $tenant): array
     {
+        $acesso = $tenant->acesso();
+
         return [
             'produto' => 'igrejas',
             'id' => $tenant->id,
@@ -199,14 +201,20 @@ final class SiteController extends Controller
             'identificador' => $tenant->subdominio,
             'url' => 'https://' . $tenant->subdominio,
             'plano' => $tenant->plano,
+            'metodo_pagamento' => $tenant->metodoPagamento,
             'status' => $tenant->status,
             'criado_em' => $tenant->criadoEm,
             'ultimo_acesso_em' => $tenant->ultimoAcessoEm,
+            'acesso_bloqueado' => $acesso['bloqueado'],
+            'acesso_motivo' => $acesso['motivo'],
+            'acesso_vencimento' => $acesso['vencimento'],
         ];
     }
 
     private static function normalizarBarbearia(SiteBarbearia $barbearia): array
     {
+        $acesso = $barbearia->acesso();
+
         return [
             'produto' => 'barbearias',
             'id' => $barbearia->id,
@@ -214,9 +222,13 @@ final class SiteController extends Controller
             'identificador' => $barbearia->slug,
             'url' => null,
             'plano' => $barbearia->plano,
+            'metodo_pagamento' => $barbearia->metodoPagamento,
             'status' => $barbearia->status,
             'criado_em' => $barbearia->criadoEm,
             'ultimo_acesso_em' => $barbearia->ultimoAcessoEm,
+            'acesso_bloqueado' => $acesso['bloqueado'],
+            'acesso_motivo' => $acesso['motivo'],
+            'acesso_vencimento' => $acesso['vencimento'],
         ];
     }
 }
