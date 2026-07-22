@@ -14,7 +14,8 @@ use Superadmin\Models\SiteIgreja;
 
 /**
  * Listagem unificada de sites (Igrejas + Barbearias) e acoes
- * administrativas sobre eles: suspender, reativar, excluir.
+ * administrativas sobre eles: suspender, reativar, estender acesso
+ * (ativar/postergar trial ou vencimento) e excluir.
  *
  * "Excluir" e IRREVERSIVEL - remove banco/usuario do cPanel (Igreja) ou
  * a linha + tudo em cascata (Barbearia), sem backup automatico. Por
@@ -71,6 +72,25 @@ final class SiteController extends Controller
         $this->validarCsrf();
         $this->atualizarStatus($produto, (int) $id, 'ativo');
         Session::flash('sites_sucesso', 'Site reativado.');
+        $this->redirect('/sites');
+    }
+
+    public function estender(string $produto, string $id): void
+    {
+        $this->validarCsrf();
+
+        if (!in_array($produto, self::PRODUTOS_VALIDOS, true)) {
+            $this->redirect('/sites');
+        }
+
+        $dias = (int) $this->request->input('dias', 30);
+        $dias = max(1, min(365, $dias));
+
+        $mensagem = $produto === 'igrejas'
+            ? SiteIgreja::estenderAcesso((int) $id, $dias)
+            : SiteBarbearia::estenderAcesso((int) $id, $dias);
+
+        Session::flash('sites_sucesso', $mensagem);
         $this->redirect('/sites');
     }
 

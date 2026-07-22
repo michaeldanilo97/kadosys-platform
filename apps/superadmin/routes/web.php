@@ -22,6 +22,7 @@ $router->post('/sair', [AuthController::class, 'sair']);
 $router->get('/sites', [SiteController::class, 'index'], [AuthMiddleware::class]);
 $router->post('/sites/{produto}/{id}/suspender', [SiteController::class, 'suspender'], [AuthMiddleware::class]);
 $router->post('/sites/{produto}/{id}/reativar', [SiteController::class, 'reativar'], [AuthMiddleware::class]);
+$router->post('/sites/{produto}/{id}/estender', [SiteController::class, 'estender'], [AuthMiddleware::class]);
 $router->get('/sites/{produto}/{id}/excluir', [SiteController::class, 'confirmarExclusao'], [AuthMiddleware::class]);
 $router->post('/sites/{produto}/{id}/excluir', [SiteController::class, 'excluir'], [AuthMiddleware::class]);
 
