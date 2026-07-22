@@ -7,8 +7,10 @@ namespace Igrejas\Core\Middleware;
 use Igrejas\Core\Auth;
 use Igrejas\Core\MiddlewareInterface;
 use Igrejas\Core\Request;
+use Igrejas\Core\Session;
 use Igrejas\Core\TenantResolver;
 use Igrejas\Models\AgendaEvento;
+use Igrejas\Models\AssinaturaTenant;
 use Igrejas\Models\FaturaPix;
 use Igrejas\Models\User;
 
@@ -43,6 +45,7 @@ final class AuthMiddleware implements MiddlewareInterface
         }
 
         $this->bloquearSeFaturaPixVencida($request);
+        $this->bloquearSeAssinaturaCartaoNaoAutorizada($request);
         $this->bloquearSeTrialExpirado($request);
         $this->bloquearSePermissaoNegada($request, $auth);
     }
@@ -94,6 +97,60 @@ final class AuthMiddleware implements MiddlewareInterface
         }
 
         return true;
+    }
+
+    /**
+     * Quem paga por cartao renova sozinho, direto no Mercado Pago via
+     * preapproval - se essa cobranca recorrente para de ser autorizada
+     * (cartao recusado, assinatura cancelada/pausada pelo proprio
+     * Mercado Pago ou pelo banco emissor), nada detectava isso ate
+     * agora: o tenant continuava com acesso liberado pra sempre, mesmo
+     * sem pagar mais nada. Repara essa lacuna reaproveitando o registro
+     * que o webhook ja mantem (ver AssinaturaController::
+     * processarAssinaturaTenant) - sem mexer em Tenant::status, que e
+     * usado por TenantResolver pra decidir se troca de banco (colocar
+     * 'suspenso' la quebraria a resolucao do subdominio inteiro, nao so
+     * o acesso ao dashboard).
+     */
+    private function bloquearSeAssinaturaCartaoNaoAutorizada(Request $request): void
+    {
+        if (!$this->assinaturaCartaoNaoAutorizada()) {
+            return;
+        }
+
+        $uri = $this->uriSemBase($request);
+
+        // Mesma excecao do trial expirado: precisa continuar acessando
+        // Configuracoes pra poder assinar de novo, senao vira loop de
+        // redirecionamento.
+        if ($uri === '/logout' || str_starts_with($uri, '/dashboard/configuracoes')) {
+            return;
+        }
+
+        Session::flash('config_errors', [
+            'Sua assinatura por cartão foi cancelada ou está com o pagamento recusado. Assine novamente abaixo pra continuar usando o sistema.',
+        ]);
+
+        $base = $this->config['base_path'] ?? '';
+        header('Location: ' . $base . '/dashboard/configuracoes');
+        exit;
+    }
+
+    /**
+     * So a decisao (sem side-effect de header/exit), separada pra poder
+     * ser testada isoladamente.
+     */
+    private function assinaturaCartaoNaoAutorizada(): bool
+    {
+        $tenant = TenantResolver::atual();
+
+        if ($tenant === null || $tenant->metodoPagamento !== 'cartao') {
+            return false;
+        }
+
+        $assinatura = AssinaturaTenant::ultimaDoTenant($tenant->id);
+
+        return $assinatura !== null && in_array($assinatura->status, ['pausada', 'cancelada'], true);
     }
 
     private function bloquearSeTrialExpirado(Request $request): void
