@@ -17,6 +17,46 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 149 - 2026-07-22
+
+**KADOSYS Academias (Fase 2 - CRUD backbone: Alunos, Professores, Planos de Matrícula, Financeiro, Configurações)**
+
+Segunda fase do novo produto Academias (ver Ajuste 148 pra Fase 1 -
+esqueleto/cobrança/site público). Entra o backbone operacional:
+
+- **Alunos**: CRUD completo (nome, telefone, e-mail, CPF, data de
+  nascimento, plano de matrícula, início/vencimento da matrícula,
+  status, objetivo, restrições de saúde). Já com as colunas de
+  gamificação/check-in no model (`streakAtual`, `pontosFrequencia`
+  etc.) que a Fase 3 vai passar a escrever.
+- **Professores**: CRUD (nome, especialidade, contato, ativo/inativo).
+- **Planos de Matrícula**: CRUD (nome, preço, duração em dias,
+  descrição) - o catálogo que a academia oferece pros próprios alunos,
+  sem relação com o plano de assinatura da academia com a Kadosys.
+- **Financeiro**: caixa (abrir/fechar) + lançamentos de receita/despesa,
+  mesmo padrão já usado em Barbearias, com um campo extra opcional
+  `aluno_id` pra marcar quando o lançamento é o pagamento de uma
+  mensalidade.
+- **Configurações**: perfil da academia (nome, telefone, cor de
+  destaque, logo), chave Pix própria (pra receber mensalidade na
+  recepção), troca de plano/cancelamento de assinatura com a Kadosys,
+  equipe (criar/editar/excluir acesso). Removida a seção "modo de
+  atendimento" (fila/agendamento) do template original de Barbearias -
+  não existe esse conceito em Academias.
+- Sidebar do dashboard atualizada com os 5 novos itens de menu.
+- Painel inicial (`/dashboard`) agora mostra números reais (alunos
+  ativos, total de alunos, professores ativos, planos de matrícula)
+  em vez do texto de boas-vindas genérico da Fase 1.
+- Nova migration (`001_caixas_financeiro.sql`) + `install.sql`
+  atualizado com as tabelas `caixas` e `financeiro_lancamentos`.
+
+**Testado**: banco local MariaDB do zero (`install.sql`), fluxo
+completo via curl com sessão real (login, CSRF, criar plano de
+matrícula, professor, aluno vinculado ao plano, lançamento financeiro
+vinculado ao aluno, atualizar perfil da academia com cor de destaque) -
+cada escrita confirmada direto no banco, sem nenhum erro/warning no
+log do servidor PHP.
+
 ## Ajuste 148 - 2026-07-22
 
 **Novo produto: KADOSYS Academias (Fase 1 - esqueleto, cobrança e site público)**
