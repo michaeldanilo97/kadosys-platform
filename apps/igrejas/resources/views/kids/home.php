@@ -32,10 +32,15 @@ $primeiroNome = explode(' ', $crianca->nome)[0];
                 </span>
             </span>
         </div>
-        <form method="POST" action="<?= $basePath ?>/kids/sair">
-            <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
-            <button type="submit" class="kids-app-sair"><i class="bi bi-box-arrow-right"></i> Sair</button>
-        </form>
+        <div style="display: flex; gap: 0.6rem;">
+            <a href="<?= $basePath ?>/kids/avatar" class="kids-app-sair" style="background: linear-gradient(135deg, var(--kids-roxo), var(--kids-rosa)); color: #FFFFFF;">
+                <i class="bi bi-person-video3"></i> Meu Avatar
+            </a>
+            <form method="POST" action="<?= $basePath ?>/kids/sair">
+                <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+                <button type="submit" class="kids-app-sair"><i class="bi bi-box-arrow-right"></i> Sair</button>
+            </form>
+        </div>
     </div>
 
     <p class="kids-login-subtitulo" style="text-align: left; margin-bottom: 1.5rem;">Escolha uma aventura para começar hoje.</p>

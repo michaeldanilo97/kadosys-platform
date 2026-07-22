@@ -8,6 +8,7 @@ use Igrejas\Core\Controller;
 use Igrejas\Core\Csrf;
 use Igrejas\Core\Middleware\KidsSessaoMiddleware;
 use Igrejas\Core\Session;
+use Igrejas\Models\KidsAvatar;
 use Igrejas\Models\KidsConteudo;
 use Igrejas\Models\KidsCrianca;
 
@@ -84,6 +85,58 @@ final class KidsAppController extends Controller
         }
 
         $this->redirect("/kids/conteudo/{$id}");
+    }
+
+    /**
+     * Tela do Avatar da Crianca: nivel/progresso calculados a partir do
+     * xp acumulado (ver KidsAvatar::progresso()), e cada categoria do
+     * catalogo (chapeu/acessorio/fundo/titulo) marcada como desbloqueada
+     * ou nao pro nivel atual - a view decide como mostrar cada estado
+     * (equipado, desbloqueado ou ainda bloqueado).
+     */
+    public function avatar(): void
+    {
+        $crianca = $this->criancaLogada();
+        $nivel = $crianca->nivel();
+
+        echo $this->view('kids.avatar', [
+            'pageTitle' => 'Meu Avatar - KADOSYS Kids',
+            'crianca' => $crianca,
+            'progresso' => KidsAvatar::progresso($crianca->xp),
+            'catalogoChapeus' => KidsAvatar::catalogoChapeus(),
+            'catalogoAcessorios' => KidsAvatar::catalogoAcessorios(),
+            'catalogoFundos' => KidsAvatar::catalogoFundos(),
+            'catalogoTitulos' => KidsAvatar::catalogoTitulos(),
+            'nivel' => $nivel,
+            'csrfToken' => Csrf::token(),
+            'salvo' => Session::flash('kids_avatar_salvo'),
+        ], 'kids-app');
+    }
+
+    public function avatarSalvar(): void
+    {
+        $crianca = $this->criancaLogada();
+
+        if (Csrf::verify($this->request->input('_csrf_token'))) {
+            KidsCrianca::atualizarAvatar(
+                $crianca->id,
+                $this->nullableInput('avatar_chapeu'),
+                $this->nullableInput('avatar_acessorio'),
+                $this->nullableInput('avatar_fundo'),
+                $this->nullableInput('avatar_titulo'),
+            );
+
+            Session::flash('kids_avatar_salvo', true);
+        }
+
+        $this->redirect('/kids/avatar');
+    }
+
+    private function nullableInput(string $campo): ?string
+    {
+        $valor = trim((string) $this->request->input($campo, ''));
+
+        return $valor === '' ? null : $valor;
     }
 
     /**
