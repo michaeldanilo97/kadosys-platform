@@ -17,6 +17,62 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 147 - 2026-07-22
+
+**KADOSYS Kids: substitui conteudos "casca" da biblioteca oficial por conteudo de verdade (sem exigir upload)**
+
+Reportado: varios conteudos oficiais KADOSYS na Biblioteca (colorir,
+jogo, slide, hq, video, audio, pdf) mostravam so um texto interno tipo
+*"Adicione o link do vídeo em Kids > Conteúdos > Editar."* como se
+fosse o conteúdo - a criança abria, lia essa instrução sem sentido pra
+ela, e clicava em "Concluir" ganhando XP de graça, sem fazer nada de
+verdade.
+
+- **Colorir (7 itens)**: cada um agora e um SVG interativo de verdade -
+  a criança clica numa área do desenho e escolhe a cor numa paleta,
+  tudo embutido direto no `texto_conteudo` (sem nenhum arquivo de
+  imagem). Novo item: "Jonas e a Baleia" (faltava no lote anterior).
+- **Jogo (4 itens)**: "Monte a Arca de Noé" e "Memória Bíblica" viraram
+  jogos da memória reais (8 pares, embaralha a cada partida); "Corrida
+  da Fé" virou uma trivia de 8 perguntas com contador de estrelas;
+  "Bingo dos Frutos do Espírito" já tinha uma atividade real pra
+  brincar em família - só tirou a frase de instrução interna que vazava
+  antes dela.
+- **Slide (2 itens)**: "Os 12 Discípulos de Jesus" e "Mapa da Terra
+  Santa" viram apresentações navegáveis (anterior/próxima + contador).
+- **HQ (3 itens)**: "José no Egito", "Daniel" e "A Vida de Jesus" viram
+  quadrinhos reais em painéis (cena + legenda), lidos direto na tela.
+- **PDF (3 itens)**: "Caderno de Atividades: Os 10 Mandamentos",
+  "Cartilha: Livros da Bíblia" e "Diploma Kids KADOSYS" agora são
+  arquivos PDF reais, gerados e versionados em
+  `apps/igrejas/public/assets/kids/pdfs/` - **asset estático do
+  próprio app, não é upload por igreja** (não requer nenhuma ação
+  manual da equipe).
+- **Vídeo/áudio (8 itens removidos)**: sem nenhum link real de
+  vídeo/áudio licenciado pra usar, a alternativa honesta era remover
+  esses itens do catálogo oficial em vez de deixar a instrução interna
+  visível pra criança. Ficam disponíveis pra reintroduzir no futuro
+  quando houver conteúdo de verdade pra linkar.
+- **Views**: `kids/show.php` e `dashboard/kids/biblioteca/show.php`
+  agora renderizam `texto_conteudo` como HTML confiável **somente**
+  quando `origem = 'kadosys'` e `tipo` é colorir/jogo/slide/hq (conteúdo
+  só editável via migração, nunca pelo formulário da igreja - sem
+  abrir brecha de XSS pra conteúdo cadastrado pela própria igreja, que
+  continua sempre escapado).
+- Migração 058 (`kids_conteudos_reais.sql`) atualiza igrejas já
+  instaladas; o mesmo conteúdo também foi anexado ao final do
+  `install.sql` pra instalações novas já nascerem certas.
+
+**Testado localmente** (MariaDB + servidor PHP + Playwright real):
+`install.sql` sozinho já produz o catálogo final correto (85 itens, 0
+placeholders remanescentes, 0 vídeo/áudio kadosys); testado clicar
+numa parte do desenho de colorir (preenche a cor), jogo da memória
+(carta vira ao clicar), trivia (marca acerto e soma estrela),
+slideshow (avança e atualiza contador) e o link do PDF apontando pro
+arquivo certo.
+
+---
+
 ## Ajuste 146 - 2026-07-22
 
 **Telao: mostra "Carregando vídeo..." em vez de tela muda enquanto o video nao inicia**
