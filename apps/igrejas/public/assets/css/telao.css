@@ -98,6 +98,22 @@ html, body {
   background: rgba(5, 7, 13, 0.88);
 }
 
+/* Aviso neutro (nao e erro) mostrado assim que o telao comeca a
+   esperar o video responder (ver mostrarCarregandoVideo em telao.js) -
+   sem isso a tela ficava 100% muda/preta nos primeiros segundos, sem
+   nenhuma pista de que algo estava acontecendo. */
+.telao-video-overlay.carregando {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3vw 6vw;
+  text-align: center;
+  font-size: clamp(0.9rem, 1.8vw, 1.3rem);
+  font-weight: 500;
+  color: var(--telao-muted);
+  background: rgba(5, 7, 13, 0.5);
+}
+
 .telao-biblia {
   z-index: 3;
 }

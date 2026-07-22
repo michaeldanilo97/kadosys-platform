@@ -56,7 +56,11 @@ $tipoInfo = $conteudo->tipoInfo();
         <?php endif; ?>
 
         <?php if ($conteudo->textoConteudo): ?>
-            <div class="texto"><?= htmlspecialchars($conteudo->textoConteudo, ENT_QUOTES, 'UTF-8') ?></div>
+            <?php if ($conteudo->origem === 'kadosys' && in_array($conteudo->tipo, ['colorir', 'jogo', 'slide', 'hq'], true)): ?>
+                <?= $conteudo->textoConteudo ?>
+            <?php else: ?>
+                <div class="texto"><?= htmlspecialchars($conteudo->textoConteudo, ENT_QUOTES, 'UTF-8') ?></div>
+            <?php endif; ?>
         <?php endif; ?>
 
         <?php if ($conteudo->tipo === 'quiz' && $conteudo->quizPerguntas !== null): ?>

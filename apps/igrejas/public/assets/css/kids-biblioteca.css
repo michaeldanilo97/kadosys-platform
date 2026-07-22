@@ -923,3 +923,275 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
     transform: none;
   }
 }
+
+/* Conteudo interativo da Biblioteca oficial KADOSYS (colorir/jogo/
+   slide/hq) - HTML confiavel vindo direto do texto_conteudo (ver
+   kids/show.php e dashboard/kids/biblioteca/show.php), sem depender de
+   nenhum upload da igreja. */
+
+/* ---- Colorir (SVG interativo) ------------------------------------- */
+
+.kids-colorir {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.kids-colorir-svg {
+  width: 100%;
+  max-width: 440px;
+  height: auto;
+  background: #FFFFFF;
+  border-radius: 20px;
+  box-shadow: 0 6px 0 rgba(58, 46, 92, 0.08);
+  touch-action: manipulation;
+}
+
+.kids-colorir-svg .col {
+  cursor: pointer;
+  transition: fill 0.1s ease;
+}
+
+.kids-colorir-svg .col:hover {
+  opacity: 0.85;
+}
+
+.kids-colorir-paleta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.kids-colorir-cor {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  border: 3px solid #FFFFFF;
+  box-shadow: 0 0 0 2px rgba(58, 46, 92, 0.15);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.12s ease;
+}
+
+.kids-colorir-cor:hover {
+  transform: scale(1.08);
+}
+
+.kids-colorir-cor.ativa {
+  box-shadow: 0 0 0 3px var(--kids-roxo);
+  transform: scale(1.12);
+}
+
+.kids-colorir-limpar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: none;
+  background: #FFFFFF;
+  color: var(--kids-texto);
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 0.6rem 1.1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgba(58, 46, 92, 0.12);
+}
+
+/* ---- Jogo da memoria ------------------------------------------------ */
+
+.kids-jogo-memoria {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.kids-jogo-status {
+  text-align: center;
+  font-weight: 700;
+  color: var(--kids-texto);
+  margin: 0;
+}
+
+.kids-memoria-grade {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.7rem;
+}
+
+.kids-memoria-carta {
+  aspect-ratio: 1;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--kids-roxo), var(--kids-azul));
+  color: #FFFFFF;
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgba(58, 46, 92, 0.18);
+  transition: transform 0.15s ease;
+}
+
+.kids-memoria-carta:hover {
+  transform: translateY(-2px);
+}
+
+.kids-memoria-carta.virada {
+  background: #FFFFFF;
+  box-shadow: 0 4px 0 rgba(58, 46, 92, 0.1);
+}
+
+.kids-memoria-carta.encontrada {
+  background: rgba(107, 203, 119, 0.18);
+  box-shadow: 0 4px 0 rgba(58, 46, 92, 0.06);
+  cursor: default;
+}
+
+/* ---- Corrida da Fe (trivia sequencial) ------------------------------- */
+
+.kids-corrida-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, var(--kids-amarelo), var(--kids-laranja));
+  color: #4A3200;
+  font-weight: 800;
+  padding: 0.9rem 1.2rem;
+  border-radius: 18px;
+  margin-bottom: 1.2rem;
+}
+
+/* ---- Slideshow (apresentacao navegavel) ------------------------------ */
+
+.kids-slides {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.kids-slide {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 2.2rem 1.8rem;
+  box-shadow: 0 6px 0 rgba(58, 46, 92, 0.08);
+  width: 100%;
+  max-width: 480px;
+  min-height: 220px;
+  justify-content: center;
+}
+
+.kids-slide.is-ativo {
+  display: flex;
+}
+
+.kids-slide-emoji {
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: 0.8rem;
+}
+
+.kids-slide h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--kids-texto);
+  margin: 0 0 0.6rem;
+}
+
+.kids-slide p {
+  color: var(--kids-texto-suave);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.kids-slides-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.kids-slides-btn {
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  border: none;
+  background: var(--kids-roxo);
+  color: #FFFFFF;
+  font-size: 1.3rem;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #6E37B8;
+  transition: transform 0.12s ease;
+}
+
+.kids-slides-btn:hover {
+  transform: translateY(-2px);
+}
+
+.kids-slides-contador {
+  font-weight: 700;
+  color: var(--kids-texto-suave);
+  font-size: 0.85rem;
+  min-width: 3.5rem;
+  text-align: center;
+}
+
+/* ---- HQ (quadrinhos em paineis) --------------------------------------- */
+
+.kids-hq {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.kids-hq-painel {
+  --cor-painel: var(--kids-azul);
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  background: #FFFFFF;
+  border-left: 6px solid var(--cor-painel);
+  border-radius: 18px;
+  padding: 1.1rem 1.3rem;
+  box-shadow: 0 4px 0 rgba(58, 46, 92, 0.06);
+}
+
+.kids-hq-cena {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: var(--cor-painel);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+}
+
+.kids-hq-legenda {
+  margin: 0;
+  color: var(--kids-texto);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 640px) {
+  .kids-memoria-grade {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+
+  .kids-hq-painel {
+    flex-direction: column;
+    text-align: center;
+  }
+}
