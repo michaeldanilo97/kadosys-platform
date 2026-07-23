@@ -21,6 +21,10 @@ $tipoInfo = $conteudo->tipoInfo();
     <div class="kids-conteudo-painel">
         <?php if ($pontosGanhos !== null): ?>
             <div class="kids-premio-banner">
+                <?php $confetes = ['🎊', '⭐', '✨', '🎉', '💛']; ?>
+                <?php foreach ($confetes as $i => $confete): ?>
+                    <span class="kids-premio-confete" style="left: <?= 8 + $i * 20 ?>%; animation-delay: <?= $i * 0.08 ?>s;"><?= $confete ?></span>
+                <?php endforeach; ?>
                 <span class="emoji">🎉</span>
                 <span>Você ganhou +<?= $pontosGanhos['xp'] ?> XP e +<?= $pontosGanhos['moedas'] ?> moedas!</span>
             </div>

@@ -510,6 +510,19 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
 .kids-quiz-alternativa.correta {
   border-color: var(--kids-verde);
   background: rgba(107, 203, 119, 0.16);
+  animation: kids-pop 0.35s ease;
+}
+
+@keyframes kids-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kids-quiz-alternativa.correta {
+    animation: none;
+  }
 }
 
 .kids-quiz-alternativa.correta::before {
@@ -559,6 +572,7 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
 }
 
 .kids-premio-banner {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.9rem;
@@ -568,10 +582,59 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
   margin-bottom: 1.4rem;
   color: #4A3200;
   font-weight: 700;
+  overflow: hidden;
+  animation: kids-premio-entrada 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
 .kids-premio-banner .emoji {
   font-size: 2.2rem;
+  display: inline-block;
+  animation: kids-premio-emoji 0.9s ease-in-out 0.4s 2;
+}
+
+.kids-premio-confete {
+  position: absolute;
+  top: -1.2rem;
+  font-size: 1.1rem;
+  animation: kids-confete-cair 1.4s ease-in forwards;
+  pointer-events: none;
+}
+
+@keyframes kids-premio-entrada {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes kids-premio-emoji {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-14deg) scale(1.15); }
+  50% { transform: rotate(0deg) scale(1); }
+  75% { transform: rotate(14deg) scale(1.15); }
+}
+
+@keyframes kids-confete-cair {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(90px) rotate(200deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kids-premio-banner,
+  .kids-premio-banner .emoji,
+  .kids-premio-confete {
+    animation: none;
+  }
 }
 
 /* Login por PIN (dashboard/../kids/entrar.php) - escolha do perfil +
@@ -1089,6 +1152,112 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
   background: rgba(107, 203, 119, 0.18);
   box-shadow: 0 4px 0 rgba(58, 46, 92, 0.06);
   cursor: default;
+  animation: kids-pop 0.35s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kids-memoria-carta.encontrada {
+    animation: none;
+  }
+}
+
+/* ---- Caca-palavras ---------------------------------------------------- */
+
+.kids-cacapalavras {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.kids-cp-status {
+  font-weight: 700;
+  color: var(--kids-texto);
+  margin: 0;
+}
+
+.kids-cp-grade {
+  display: grid;
+  gap: 3px;
+  background: #FFFFFF;
+  border-radius: 18px;
+  padding: 0.7rem;
+  box-shadow: 0 5px 0 rgba(58, 46, 92, 0.08);
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.kids-cp-celula {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 7px;
+  background: #F7F5FF;
+  color: var(--kids-texto);
+  font-weight: 700;
+  font-size: 0.85rem;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.12s ease, transform 0.12s ease;
+}
+
+.kids-cp-celula:hover {
+  transform: scale(1.08);
+}
+
+.kids-cp-celula.selecionada {
+  background: var(--kids-amarelo);
+}
+
+.kids-cp-celula.encontrada {
+  background: var(--kids-verde);
+  color: #FFFFFF;
+  cursor: default;
+  animation: kids-pop 0.35s ease;
+}
+
+.kids-cp-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.kids-cp-palavra {
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  background: #F1EFFA;
+  color: var(--kids-texto);
+  font-weight: 700;
+  font-size: 0.78rem;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.kids-cp-palavra.encontrada {
+  background: var(--kids-verde);
+  color: #FFFFFF;
+  text-decoration: line-through;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kids-cp-celula:hover {
+    transform: none;
+  }
+
+  .kids-cp-celula.encontrada {
+    animation: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .kids-cp-celula {
+    width: 24px;
+    height: 24px;
+    font-size: 0.72rem;
+  }
 }
 
 /* ---- Corrida da Fe (trivia sequencial) ------------------------------- */

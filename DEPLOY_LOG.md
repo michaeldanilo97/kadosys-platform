@@ -17,6 +17,41 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 153 - 2026-07-23
+
+**KADOSYS Kids: novo jogo "Caça-Nomes" (achar nomes bíblicos na grade de letras) + animações de celebração**
+
+Reportado: faltava um tipo de atividade "pra achar os nomes" na
+Biblioteca (um caça-palavras de verdade) e as telas de conclusão
+estavam paradas demais pra prender a atenção da criança.
+
+- **Caça-Nomes (3 puzzles novos, tipo "jogo")**: "Os 12 Discípulos",
+  "Heróis do Velho Testamento" e "Frutos do Espírito" - uma grade de
+  letras (10x10/11x11) com os nomes escondidos na horizontal, vertical
+  ou diagonal. A criança toca na primeira letra da palavra e depois na
+  última - se formar uma linha reta que bate com algum nome da lista,
+  ele é marcado como encontrado (fica verde, risca na lista). Cada
+  grade foi gerada por um script auxiliar (garante que as palavras
+  cabem sem conflito de letra entre elas), mas a interação em si roda
+  100% no navegador, sem chamada nenhuma ao servidor - mesmo padrão já
+  usado no jogo da memória e na trivia.
+- **Animações de celebração**: o banner "Você ganhou +X XP" que aparece
+  ao concluir qualquer atividade agora entra com uma animação de
+  "pulo" e solta confetes caindo, com o emoji balançando; acertar uma
+  alternativa do quiz ou achar um par no jogo da memória agora dá um
+  "pulinho" de destaque na hora. Tudo respeita
+  `prefers-reduced-motion` (desliga a animação pra quem pediu menos
+  movimento no sistema).
+- Nova migration (`059_kids_caca_palavras.sql`) + `install.sql`
+  atualizado com os 3 puzzles novos.
+
+**Testado localmente** (MariaDB + servidor PHP + Playwright real):
+`install.sql` sozinho já carrega os 3 puzzles novos sem erro; testado
+com Chromium de verdade - tocar na primeira e na última letra de uma
+palavra válida marca ela como encontrada (grade E lista de palavras),
+uma seleção que não forma nenhuma palavra da lista não marca nada por
+engano, e o banner de conclusão renderiza os confetes corretamente.
+
 ## Ajuste 152 - 2026-07-23
 
 **KADOSYS Academias (Fase 4 - Ficha de treino + evolução de carga)**
