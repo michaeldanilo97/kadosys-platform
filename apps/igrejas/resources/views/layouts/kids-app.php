@@ -26,5 +26,10 @@ $basePath = $config['base_path'] ?? '';
 </head>
 <body class="kids-standalone">
 <?= $content ?>
+<script src="<?= $basePath ?>/assets/js/kids-sons.js?v=<?= View::assetVersion('assets/js/kids-sons.js') ?>"></script>
+<script src="<?= $basePath ?>/assets/js/kids-interacoes.js?v=<?= View::assetVersion('assets/js/kids-interacoes.js') ?>"></script>
+<script src="<?= $basePath ?>/assets/js/kids-jogo-memoria.js?v=<?= View::assetVersion('assets/js/kids-jogo-memoria.js') ?>"></script>
+<script src="<?= $basePath ?>/assets/js/kids-jogo-trivia.js?v=<?= View::assetVersion('assets/js/kids-jogo-trivia.js') ?>"></script>
+<script src="<?= $basePath ?>/assets/js/kids-jogo-cacapalavras.js?v=<?= View::assetVersion('assets/js/kids-jogo-cacapalavras.js') ?>"></script>
 </body>
 </html>

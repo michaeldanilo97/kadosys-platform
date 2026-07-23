@@ -11,12 +11,17 @@
 $basePath = $config['base_path'] ?? '';
 $tipoInfo = $conteudo->tipoInfo();
 $isQuiz = $conteudo->tipo === 'quiz' && $conteudo->quizPerguntas !== null;
-// "Complete o Versiculo" e "Ligue o Personagem" (tipo atividade) tem o
-// mesmo mecanismo de progresso/gate do quiz, embutido no proprio HTML
-// confiavel (ver migracao 063) - reconhecido pelos data-attributes do
-// widget, sem precisar de uma coluna nova so pra isso.
+// "Complete o Versiculo", "Ligue o Personagem" (tipo atividade) e os
+// jogos com niveis/gate proprio (memoria, trivia, caca-palavras - ver
+// kids-jogo-*.js) tem o mesmo mecanismo de progresso do quiz, embutido no
+// proprio HTML confiavel - reconhecido pelos data-attributes do widget,
+// sem precisar de uma coluna nova so pra isso.
 $temGateProgresso = $isQuiz || ($conteudo->textoConteudo !== null
-    && (str_contains($conteudo->textoConteudo, 'data-completar') || str_contains($conteudo->textoConteudo, 'data-ligar')));
+    && (str_contains($conteudo->textoConteudo, 'data-completar')
+        || str_contains($conteudo->textoConteudo, 'data-ligar')
+        || str_contains($conteudo->textoConteudo, 'data-jogo-memoria')
+        || str_contains($conteudo->textoConteudo, 'data-jogo-trivia')
+        || str_contains($conteudo->textoConteudo, 'data-cacapalavras')));
 ?>
 <div class="kids-mundo">
     <div class="kids-topo">

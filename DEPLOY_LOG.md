@@ -17,6 +17,63 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 168 - 2026-07-23
+
+**Igrejas: modo Kids com sons, níveis e conclusão forçada nos jogos**
+
+O módulo Kids tinha um problema concreto: os conteúdos do tipo "jogo"
+(memória, trivia, caça-palavras) não tinham nenhuma trava de conclusão -
+dava pra clicar em "Concluir e ganhar XP" sem jogar nada, e cada jogo
+tinha o algoritmo inteiro copiado e colado dentro do próprio conteúdo
+(o caça-palavras, por exemplo, tinha o mesmo script de ~230 linhas
+triplicado). Também não existia nenhum som na Biblioteca Kids.
+
+- **`kids-sons.js`** (novo): efeitos sonoros sintetizados via Web Audio
+  API (osciladores, sem arquivo de áudio nenhum pra hospedar) - clique,
+  virar carta, acerto, erro, moeda, fase concluída, vitória. Botão de
+  mudo flutuante (🔊/🔇) injetado automaticamente em toda página Kids,
+  com preferência salva no `localStorage`.
+- **`kids-interacoes.js`** (novo): hook universal de som/animação - um
+  `MutationObserver` detecta as classes de estado que os jogos já
+  usavam antes (`virada`, `correta`, `errada`, `errada-tmp`,
+  `encontrada`) e dispara o som certo automaticamente, sem precisar
+  editar nenhum dos 97 conteúdos já existentes. Também expõe
+  `KidsProgresso` (banner de "fase concluída" + liberar o botão
+  Concluir), usado pelos motores de jogo abaixo.
+- **`kids-jogo-memoria.js`**, **`kids-jogo-trivia.js`** (novos): motores
+  genéricos de jogo da memória (com fases progressivas de pares) e
+  trivia (com rodadas) - o conteúdo só declara os dados
+  (`data-fases`/`data-rodadas` em JSON), e só libera o Concluir depois
+  da última fase/rodada 100% certa. Errar não trava - dá pra tentar de
+  novo.
+- **`kids-jogo-cacapalavras.js`** (novo): o algoritmo de
+  arrastar-para-selecionar do caça-palavras, que estava triplicado
+  inline em 3 conteúdos diferentes, virou um arquivo só, carregado uma
+  vez - com a mesma trava de só liberar o Concluir quando todas as
+  palavras forem encontradas.
+- **CSS** (`kids-biblioteca.css`): animação de "virar carta", tremida
+  nas respostas erradas, banner de fase concluída, estilo do botão de
+  mudo - tudo com `prefers-reduced-motion` respeitado.
+- **`kids/show.php`**: o gate de "só libera Concluir com o jogo
+  terminado" (que já existia pro quiz) passou a reconhecer também os
+  novos marcadores de memória/trivia/caça-palavras. Preview do admin
+  (`dashboard/kids/biblioteca/show.php`) sincronizado pra carregar os
+  mesmos scripts.
+- **Migração 064**: os 2 jogos da memória e a trivia existentes
+  (Monte a Arca de Noé, Memória Bíblica, Corrida da Fé) ganharam fases/
+  rodadas de verdade; os 3 caça-palavras existentes perderam o script
+  duplicado (agora usam o motor global); conteúdo novo - "Memória:
+  Milagres de Jesus" (3 fases), "Trilha da Criação" (trivia em 2
+  rodadas), "Caça-Nomes: Mulheres da Bíblia" (grade gerada
+  proceduralmente) e mais 2 quizzes ("Mulheres da Bíblia",
+  "Oração e Mandamentos").
+- Testado com Playwright fazendo login de criança de verdade (PIN):
+  jogo da memória, trivia e caça-palavras confirmados com o Concluir
+  escondido até o fim e liberado só depois de terminar; quiz já
+  existente testado de novo pra garantir que o hook universal de som
+  não quebrou nada. Instalação limpa do `install.sql` com a migração
+  064 já mesclada testada do zero, sem erros.
+
 ## Ajuste 167 - 2026-07-23
 
 **Barbearias e Food: aviso de contagem regressiva do teste grátis**
