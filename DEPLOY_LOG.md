@@ -17,6 +17,58 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 150 - 2026-07-23
+
+**KADOSYS Academias (Fase 3 - Check-in/checkout por QR fixo + gamificação/ranking)**
+
+Terceira fase do novo produto Academias (ver Ajuste 149 pra Fase 2 - CRUD
+backbone). Entra a mecânica de presença, o diferencial principal pedido
+pelo usuário:
+
+- **QR fixo na entrada**: a academia tem UM único QR
+  (`/dashboard/checkin/qr`), pensado pra ficar num tablet ou impresso na
+  recepção - não é um QR por aluno. Token regenerável a qualquer momento
+  em "Gerar novo QR", invalidando o QR antigo na hora.
+- **Check-in/checkout com o mesmo QR**: o aluno, já logado no painel dele
+  pelo celular, escaneia esse QR pra entrar; escaneia de novo pra sair. A
+  câmera nativa do celular já basta - é só uma URL
+  (`/checkin/{slug}/{token}`). Cada leitura fecha ou abre um registro em
+  `academia_checkins` (entrada/saída), com a duração do treino mostrada
+  no check-out. Se o aluno ainda não estiver logado no navegador, cai
+  numa tela de entrar/criar-senha com retorno automático pro mesmo check-in
+  assim que autenticar - nenhum passo extra.
+- **Área do aluno** (`/minha-conta/{slug}`): login próprio, separado da
+  equipe (`Academias\Core\AlunoAuth`, sessão própria). Aluno "reivindica"
+  o cadastro que a equipe já criou pra ele (confirma telefone/e-mail,
+  cria senha) - ninguém se cadastra do zero por essa tela. Painel mostra
+  status atual (dentro/fora), sequência de dias, pontos e histórico
+  recente - **sem botão manual de check-in**, de propósito: a prova de
+  presença é escanear o QR físico no local.
+- **Gamificação**: sequência de dias consecutivos (`streak`) incrementa
+  só se o check-in anterior contabilizado foi ontem; check-ins repetidos
+  no mesmo dia não inflam a sequência; qualquer intervalo maior reseta
+  pra 1. Recorde de sequência nunca diminui. Cada check-in soma 10
+  pontos de frequência.
+- **Ranking** (`/dashboard/ranking`, espelhado no painel do aluno):
+  número de check-ins do mês corrente, calculado ao vivo (sem coluna de
+  contagem pra não precisar de reset mensal).
+- **Painel da equipe** (`/dashboard/checkin`): quem está na academia
+  agora (check-ins em aberto) + histórico paginado.
+- Nova migration (`002_checkins.sql`) + `install.sql` atualizado com a
+  tabela `academia_checkins`.
+
+**Testado**: banco local MariaDB do zero (`install.sql`), fluxo completo
+via curl com sessões reais de equipe e aluno - login da equipe, geração
+do QR, cadastro de aluno pela equipe, aluno reivindicando o próprio
+acesso, "escaneando" o QR (check-in, depois check-out com duração),
+segundo check-in no mesmo dia confirmando que a sequência não infla,
+conferência direta no banco de `academia_checkins` e das colunas de
+gamificação em `alunos`, painéis "quem está dentro"/histórico/ranking da
+equipe, regeneração de QR invalidando o token antigo, e o fluxo de
+"escanear sem estar logado" completando o check-in pendente
+automaticamente após o login. Nenhum erro/warning no log do servidor
+PHP.
+
 ## Ajuste 149 - 2026-07-22
 
 **KADOSYS Academias (Fase 2 - CRUD backbone: Alunos, Professores, Planos de Matrícula, Financeiro, Configurações)**

@@ -218,6 +218,51 @@ final class Aluno
         $stmt->execute(['foto_path' => $fotoPath, 'id' => $id, 'academia_id' => $academiaId]);
     }
 
+    /**
+     * Atualiza streak/pontos de frequencia no momento de um check-in
+     * (entrada) - chamada por Academias\Controllers\CheckinController.
+     * Regra: se o ultimo check-in contabilizado foi ontem, incrementa a
+     * sequencia; se foi hoje, nao mexe (nao infla o streak com varios
+     * check-ins no mesmo dia); qualquer outra data (ou nunca), reinicia
+     * em 1. streak_recorde nunca diminui.
+     */
+    public static function registrarCheckinGamificacao(int $id, int $academiaId): void
+    {
+        $aluno = self::find($id, $academiaId);
+
+        if ($aluno === null) {
+            return;
+        }
+
+        $hoje = new \DateTimeImmutable('today');
+        $ultimo = $aluno->ultimoCheckinDia !== null ? new \DateTimeImmutable($aluno->ultimoCheckinDia) : null;
+
+        if ($ultimo !== null && $ultimo->format('Y-m-d') === $hoje->format('Y-m-d')) {
+            return;
+        }
+
+        $ontem = $hoje->modify('-1 day');
+        $novoStreak = ($ultimo !== null && $ultimo->format('Y-m-d') === $ontem->format('Y-m-d'))
+            ? $aluno->streakAtual + 1
+            : 1;
+
+        $stmt = Database::connection()->prepare(
+            'UPDATE alunos SET
+                streak_atual = :streak_atual,
+                streak_recorde = GREATEST(streak_recorde, :streak_atual2),
+                pontos_frequencia = pontos_frequencia + 10,
+                ultimo_checkin_dia = :hoje
+             WHERE id = :id AND academia_id = :academia_id'
+        );
+        $stmt->execute([
+            'streak_atual' => $novoStreak,
+            'streak_atual2' => $novoStreak,
+            'hoje' => $hoje->format('Y-m-d'),
+            'id' => $id,
+            'academia_id' => $academiaId,
+        ]);
+    }
+
     public static function definirSenha(int $id, int $academiaId, string $senha): void
     {
         $stmt = Database::connection()->prepare(
