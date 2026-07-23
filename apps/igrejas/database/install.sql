@@ -2979,3 +2979,1120 @@ VALUES
 })();
 </script>',
      NULL, 'publicado', NOW());
+
+
+-- Migration 060 (quiz + explicacao biblica) - ja incluida aqui pra
+-- instalacoes novas partirem com explicacao em cada pergunta.
+-- Gerado por gerar_migration_060.php - nao editar a mao.
+UPDATE kids_conteudos SET quiz_perguntas = '[{"pergunta":"Quem construiu a arca?","alternativas":["Moisés","Noé","Davi","Abraão"],"correta":1,"explicacao":"Foi Noé! Deus pediu que ele construísse uma arca bem grande pra salvar sua família e os animais da grande enchente. Noé obedeceu, mesmo sem entender tudo - e Deus cumpriu a promessa de proteger quem confia nele."},{"pergunta":"Quantos dias e noites choveu no dilúvio?","alternativas":["7","40","100","3"],"correta":1,"explicacao":"Choveu 40 dias e 40 noites! Mesmo com tanta chuva, Noé e sua família ficaram seguros dentro da arca, porque confiaram no plano de Deus."},{"pergunta":"Quem derrotou o gigante Golias?","alternativas":["Saul","Salomão","Davi","Sansão"],"correta":2,"explicacao":"Foi Davi, ainda um jovem pastor! Com uma pedrinha, uma funda e muita fé em Deus, ele venceu um gigante guerreiro. Deus pode usar quem parece pequeno pra fazer coisas grandes."}]'
+WHERE origem = 'kadosys' AND tipo = 'quiz' AND titulo = 'Quiz: Personagens da Bíblia';
+
+UPDATE kids_conteudos SET quiz_perguntas = '[{"pergunta":"Qual é o primeiro livro da Bíblia?","alternativas":["Êxodo","Gênesis","Salmos","Mateus"],"correta":1,"explicacao":"É Gênesis! Esse livro conta o começo de tudo: a criação do mundo, do primeiro homem e da primeira mulher, feitos por Deus com muito amor."},{"pergunta":"Quantos livros tem o Novo Testamento?","alternativas":["27","39","66","12"],"correta":0,"explicacao":"São 27 livros! Eles contam a vida de Jesus, o começo da igreja e cartas cheias de ensinamentos pra quem quer viver seguindo a Deus."},{"pergunta":"Qual desses é um dos quatro Evangelhos?","alternativas":["Gênesis","Salmos","João","Rute"],"correta":2,"explicacao":"É o livro de João! Mateus, Marcos, Lucas e João são os quatro Evangelhos - cada um conta a história de Jesus com o seu próprio jeito."}]'
+WHERE origem = 'kadosys' AND tipo = 'quiz' AND titulo = 'Quiz: Livros da Bíblia';
+
+UPDATE kids_conteudos SET quiz_perguntas = '[{"pergunta":"O que Jesus transformou água em, nas bodas de Caná?","alternativas":["Suco","Vinho","Leite","Mel"],"correta":1,"explicacao":"Jesus transformou água em vinho! Foi o primeiro milagre dele, feito numa festa de casamento, mostrando que ele se importa até com os detalhes da nossa alegria."},{"pergunta":"Quantos pães Jesus usou para alimentar a multidão?","alternativas":["2","5","10","20"],"correta":1,"explicacao":"Foram só 5 pães (e 2 peixinhos)! Jesus multiplicou essa pequena oferta de um menino e alimentou milhares de pessoas. Com Deus, o pouco pode virar muito."},{"pergunta":"Sobre o que Jesus andou, para mostrar seu poder?","alternativas":["Fogo","Nuvens","Água","Areia"],"correta":2,"explicacao":"Jesus andou sobre a água do mar! Isso mostrou aos discípulos que ele tem poder sobre a natureza - e que podemos confiar nele mesmo nas tempestades da vida."}]'
+WHERE origem = 'kadosys' AND tipo = 'quiz' AND titulo = 'Quiz: Milagres de Jesus';
+
+UPDATE kids_conteudos SET quiz_perguntas = '[{"pergunta":"Quem construiu uma arca para salvar sua família e os animais?","alternativas":["Noé","Abraão","Moisés","Davi"],"correta":0,"explicacao":"Foi Noé! Ele confiou em Deus e obedeceu, mesmo quando ninguém mais acreditava que ia chover. Sua obediência salvou sua família."},{"pergunta":"Quem enfrentou o gigante Golias com uma funda?","alternativas":["Sansão","Davi","Josué","Gideão"],"correta":1,"explicacao":"Foi Davi! Ele não confiava só na sua força, mas no poder de Deus - por isso não teve medo de enfrentar um gigante."},{"pergunta":"Quem foi jogado na cova dos leões e não se machucou?","alternativas":["Daniel","José","Jonas","Elias"],"correta":0,"explicacao":"Foi Daniel! Ele continuou orando a Deus mesmo sendo proibido, e Deus fechou a boca dos leões para protegê-lo. Deus cuida de quem é fiel a ele."},{"pergunta":"Quem liderou o povo de Israel para fora do Egito?","alternativas":["Josué","Moisés","Abraão","Davi"],"correta":1,"explicacao":"Foi Moisés! Deus o escolheu para libertar o povo que vivia escravo no Egito e guiá-lo até a terra prometida."}]'
+WHERE origem = 'kadosys' AND tipo = 'quiz' AND titulo = 'Quiz: Heróis do Velho Testamento';
+
+UPDATE kids_conteudos SET quiz_perguntas = '[{"pergunta":"Na parábola do Bom Samaritano, quem ajudou o homem ferido?","alternativas":["Um sacerdote","Um samaritano","Um levita","Um soldado"],"correta":1,"explicacao":"Foi o samaritano! Mesmo sendo de um povo mal visto na época, ele parou para cuidar de um estranho ferido. Jesus ensinou que amar o próximo é cuidar de quem precisa, não importa quem seja."},{"pergunta":"Na parábola do filho pródigo, o que o pai fez quando o filho voltou?","alternativas":["Ficou bravo","Não deixou entrar","Correu para abraçá-lo","Mandou ele embora"],"correta":2,"explicacao":"O pai correu para abraçá-lo com alegria! Essa história mostra como Deus nos recebe de braços abertos sempre que voltamos para ele, não importa o que tenha acontecido."},{"pergunta":"Na parábola da ovelha perdida, quantas ovelhas o pastor tinha ao todo?","alternativas":["10","50","100","1000"],"correta":2,"explicacao":"Eram 100 ovelhas! O pastor deixou as outras 99 para ir buscar só uma que se perdeu, mostrando que cada pessoa é muito importante para Deus."},{"pergunta":"O que a semente de mostarda representa na parábola de Jesus?","alternativas":["O Reino de Deus crescendo","Uma árvore grande","Um pássaro","Uma flor"],"correta":0,"explicacao":"Representa o Reino de Deus! Ele começa pequeno, como uma sementinha, mas cresce cada vez mais - assim como a fé pode crescer dentro de nós."}]'
+WHERE origem = 'kadosys' AND tipo = 'quiz' AND titulo = 'Quiz: Parábolas de Jesus';
+
+UPDATE kids_conteudos SET quiz_perguntas = '[{"pergunta":"Qual discípulo caminhou sobre a água com Jesus?","alternativas":["João","Tiago","Pedro","André"],"correta":2,"explicacao":"Foi Pedro! Ele deu alguns passos sobre a água olhando para Jesus, mas começou a afundar quando teve medo. Jesus o segurou - ele sempre estende a mão pra nós."},{"pergunta":"Qual discípulo traiu Jesus?","alternativas":["Tomé","Judas","Filipe","Mateus"],"correta":1,"explicacao":"Foi Judas Iscariotes. Ele entregou Jesus por dinheiro, uma escolha muito triste. A história de Judas nos lembra como é importante ser fiel de verdade."},{"pergunta":"Qual discípulo duvidou da ressurreição até ver Jesus com seus próprios olhos?","alternativas":["Tomé","Pedro","João","Bartolomeu"],"correta":0,"explicacao":"Foi Tomé! Depois de ver e tocar em Jesus ressuscitado, ele finalmente creu. Jesus disse que é ainda mais especial crer mesmo sem ver."},{"pergunta":"Qual era a profissão de Mateus antes de seguir Jesus?","alternativas":["Pescador","Cobrador de impostos","Médico","Carpinteiro"],"correta":1,"explicacao":"Mateus cobrava impostos, um trabalho que muita gente não gostava. Mesmo assim, Jesus o chamou para ser discípulo - Deus escolhe qualquer pessoa que queira segui-lo."}]'
+WHERE origem = 'kadosys' AND tipo = 'quiz' AND titulo = 'Quiz: Os 12 Discípulos';
+
+UPDATE kids_conteudos SET quiz_perguntas = '[{"pergunta":"Em que dia Deus criou o sol, a lua e as estrelas?","alternativas":["Dia 2","Dia 3","Dia 4","Dia 5"],"correta":2,"explicacao":"Foi no quarto dia! Deus organizou tudo com cuidado e ordem, um passo de cada vez, para que o mundo funcionasse direitinho."},{"pergunta":"Em que dia Deus descansou?","alternativas":["Dia 5","Dia 6","Dia 7","Dia 1"],"correta":2,"explicacao":"No sétimo dia! Deus descansou depois de criar tudo, nos ensinando que descansar também é importante em nossa semana."},{"pergunta":"O que Deus criou primeiro?","alternativas":["Os animais","A luz","O homem","As plantas"],"correta":1,"explicacao":"Foi a luz! No primeiro dia, Deus disse \\"haja luz\\" e a escuridão deu lugar à claridade - o começo de tudo o que ele ainda ia criar."},{"pergunta":"De que Deus formou o primeiro homem?","alternativas":["Água","Pó da terra","Fogo","Madeira"],"correta":1,"explicacao":"Do pó da terra! Deus o formou com as próprias mãos e soprou nele o fôlego de vida - cada pessoa é uma criação especial e única de Deus."}]'
+WHERE origem = 'kadosys' AND tipo = 'quiz' AND titulo = 'Quiz: A Criação do Mundo';
+
+UPDATE kids_conteudos SET quiz_perguntas = '[{"pergunta":"Quantos frutos do Espírito são citados em Gálatas 5?","alternativas":["5","7","9","12"],"correta":2,"explicacao":"São 9 frutos: amor, alegria, paz, paciência, benignidade, bondade, fidelidade, mansidão e domínio próprio. Eles crescem em nós quando vivemos perto de Deus."},{"pergunta":"Qual destes é um fruto do Espírito?","alternativas":["Inveja","Paciência","Orgulho","Preguiça"],"correta":1,"explicacao":"É a paciência! Ela nos ajuda a esperar e a lidar bem com as dificuldades do dia a dia, confiando que Deus está no controle."},{"pergunta":"Em qual livro da Bíblia encontramos a lista do Fruto do Espírito?","alternativas":["Romanos","Gálatas","Salmos","Atos"],"correta":1,"explicacao":"É em Gálatas, capítulo 5! O apóstolo Paulo escreveu essa carta para ensinar como viver guiado pelo Espírito Santo."},{"pergunta":"Além do amor e da alegria, qual outro fruto começa com a letra P?","alternativas":["Fé","Paz","Bondade","Mansidão"],"correta":1,"explicacao":"É a paz! Deus quer que tenhamos um coração tranquilo, sem brigas nem preocupação demais, confiando nele."}]'
+WHERE origem = 'kadosys' AND tipo = 'quiz' AND titulo = 'Quiz: Frutos do Espírito';
+
+UPDATE kids_conteudos SET quiz_perguntas = '[{"pergunta":"O que aconteceu no dia de Pentecostes?","alternativas":["Choveu","O Espírito Santo desceu sobre os discípulos","Houve um terremoto","Jesus subiu ao céu"],"correta":1,"explicacao":"O Espírito Santo desceu sobre os discípulos! Isso deu coragem e força para eles contarem a todos as boas notícias sobre Jesus, e assim a igreja começou."},{"pergunta":"Quem era Saulo antes de se tornar o apóstolo Paulo?","alternativas":["Um pescador","Um perseguidor dos cristãos","Um rei","Um sacerdote"],"correta":1,"explicacao":"Ele perseguia os cristãos! Mas depois de encontrar Jesus numa luz forte no caminho, Saulo mudou completamente e virou Paulo, um dos maiores anunciadores da fé."},{"pergunta":"O que os primeiros cristãos faziam juntos, segundo Atos 2?","alternativas":["Brigavam por comida","Partilhavam tudo o que tinham","Escondiam suas coisas","Viviam sozinhos"],"correta":1,"explicacao":"Eles partilhavam tudo o que tinham! Cuidavam uns dos outros com generosidade, um exemplo bonito de amor entre irmãos na fé."},{"pergunta":"Quem foi o primeiro mártir cristão, apedrejado por sua fé?","alternativas":["Pedro","Estêvão","Filipe","Tiago"],"correta":1,"explicacao":"Foi Estêvão! Mesmo sendo apedrejado, ele perdoou quem fez aquilo com ele, seguindo o exemplo de amor e perdão que Jesus ensinou."}]'
+WHERE origem = 'kadosys' AND tipo = 'quiz' AND titulo = 'Quiz: A Igreja Primitiva';
+
+UPDATE kids_conteudos SET quiz_perguntas = '[{"pergunta":"Segundo Provérbios, o que é o começo da sabedoria?","alternativas":["Estudar muito","O temor do Senhor","Ser rico","Ter muitos amigos"],"correta":1,"explicacao":"É o temor do Senhor - ou seja, respeitar e amar a Deus de verdade. Quando colocamos Deus em primeiro lugar, aprendemos a viver com sabedoria."},{"pergunta":"Provérbios ensina que devemos confiar no Senhor de...","alternativas":["Todo o coração","Vez em quando","Apenas nos domingos","Só quando precisamos"],"correta":0,"explicacao":"De todo o coração! Provérbios 3:5 ensina para confiarmos em Deus sempre, sem depender só do nosso próprio entendimento."},{"pergunta":"Quem escreveu a maior parte do livro de Provérbios?","alternativas":["Davi","Salomão","Moisés","Paulo"],"correta":1,"explicacao":"Foi o rei Salomão! Deus deu a ele uma sabedoria muito grande, e Salomão escreveu esses conselhos para ajudar as pessoas a viverem melhor."},{"pergunta":"O que Provérbios diz sobre a resposta mansa?","alternativas":["Que afasta o furor","Que não serve pra nada","Que é sinal de fraqueza","Que ninguém entende"],"correta":0,"explicacao":"Que ela afasta o furor! Responder com calma, mesmo quando alguém está bravo, ajuda a acalmar a situação em vez de piorar a briga."}]'
+WHERE origem = 'kadosys' AND tipo = 'quiz' AND titulo = 'Quiz: Provérbios e Sabedoria';
+
+UPDATE kids_conteudos SET quiz_perguntas = '[{"pergunta":"Em que cidade Jesus nasceu?","alternativas":["Nazaré","Belém","Jerusalém","Jericó"],"correta":1,"explicacao":"Foi em Belém! Isso já tinha sido anunciado por profetas centenas de anos antes - Deus cumpre suas promessas no tempo certo."},{"pergunta":"O que os pastores viram no céu anunciando o nascimento de Jesus?","alternativas":["Um cometa","Uma tempestade","Anjos","Um arco-íris"],"correta":2,"explicacao":"Eles viram anjos! Os anjos anunciaram a boa notícia do nascimento de Jesus primeiro para pastores simples, mostrando que essa alegria é para todos."},{"pergunta":"O que comemoramos na Páscoa cristã?","alternativas":["O nascimento de Jesus","A ressurreição de Jesus","O batismo de Jesus","A subida ao céu"],"correta":1,"explicacao":"A ressurreição de Jesus! Ele venceu a morte e está vivo, e essa é a maior alegria da fé cristã."},{"pergunta":"Quantos dias depois de morrer Jesus ressuscitou?","alternativas":["1","2","3","7"],"correta":2,"explicacao":"No terceiro dia! Assim como Jesus prometeu antes de morrer, ele ressuscitou exatamente como havia dito - podemos confiar em cada palavra dele."}]'
+WHERE origem = 'kadosys' AND tipo = 'quiz' AND titulo = 'Quiz: Natal e Páscoa';
+
+-- Migration 061 (caca-palavras: selecao por arraste) - ja incluida
+-- aqui pra instalacoes novas partirem com a interacao corrigida.
+-- Gerado por gerar_migration_061.php - nao editar a mao.
+UPDATE kids_conteudos SET texto_conteudo = '<div class="kids-cacapalavras" data-cacapalavras>
+<p class="kids-cp-status" data-cp-status>0/8 encontradas</p>
+<div class="kids-cp-grade" style="grid-template-columns: repeat(10, 1fr);">
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="0">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="1">B</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="2">P</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="3">E</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="4">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="5">G</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="6">B</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="7">C</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="8">J</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="9">T</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="0">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="1">R</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="2">J</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="3">P</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="4">P</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="5">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="6">L</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="7">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="8">U</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="9">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="0">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="1">R</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="2">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="3">I</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="4">E</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="5">I</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="6">H</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="7">R</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="8">T</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="9">T</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="0">U</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="1">B</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="2">Ã</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="3">L</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="4">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="5">U</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="6">B</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="7">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="8">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="9">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="0">J</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="1">U</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="2">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="3">I</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="4">R</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="5">B</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="6">M</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="7">N</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="8">P</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="9">V</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="0">N</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="1">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="2">L</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="3">F</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="4">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="5">É</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="6">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="7">R</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="8">J</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="9">V</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="0">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="1">J</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="2">J</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="3">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="4">J</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="5">R</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="6">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="7">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="8">I</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="9">N</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="0">E</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="1">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="2">L</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="3">T</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="4">É</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="5">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="6">J</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="7">V</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="8">N</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="9">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="0">J</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="1">M</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="2">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="3">T</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="4">E</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="5">U</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="6">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="7">T</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="8">N</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="9">E</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="0">C</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="1">P</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="2">B</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="3">T</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="4">T</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="5">I</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="6">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="7">G</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="8">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="9">N</button>
+</div>
+<div class="kids-cp-lista">
+<span class="kids-cp-palavra" data-cp-palavra="PEDRO">PEDRO</span>
+<span class="kids-cp-palavra" data-cp-palavra="ANDRÉ">ANDRÉ</span>
+<span class="kids-cp-palavra" data-cp-palavra="TIAGO">TIAGO</span>
+<span class="kids-cp-palavra" data-cp-palavra="JOÃO">JOÃO</span>
+<span class="kids-cp-palavra" data-cp-palavra="FILIPE">FILIPE</span>
+<span class="kids-cp-palavra" data-cp-palavra="TOMÉ">TOMÉ</span>
+<span class="kids-cp-palavra" data-cp-palavra="MATEUS">MATEUS</span>
+<span class="kids-cp-palavra" data-cp-palavra="JUDAS">JUDAS</span>
+</div>
+<script type="application/json" data-cp-dados>[{"word":"FILIPE","cells":[[5,3],[4,3],[3,3],[2,3],[1,3],[0,3]],"achada":false},{"word":"MATEUS","cells":[[8,1],[8,2],[8,3],[8,4],[8,5],[8,6]],"achada":false},{"word":"PEDRO","cells":[[1,4],[2,4],[3,4],[4,4],[5,4]],"achada":false},{"word":"ANDRÉ","cells":[[3,8],[4,7],[5,6],[6,5],[7,4]],"achada":false},{"word":"TIAGO","cells":[[9,4],[9,5],[9,6],[9,7],[9,8]],"achada":false},{"word":"JUDAS","cells":[[4,0],[3,0],[2,0],[1,0],[0,0]],"achada":false},{"word":"JOÃO","cells":[[1,2],[2,2],[3,2],[4,2]],"achada":false},{"word":"TOMÉ","cells":[[2,8],[3,7],[4,6],[5,5]],"achada":false}]</script>
+</div>
+<script>
+(function () {
+    document.querySelectorAll(''[data-cacapalavras]'').forEach(function (jogo) {
+        var dadosEl = jogo.querySelector(''[data-cp-dados]'');
+        var palavras = JSON.parse(dadosEl.textContent);
+        var status = jogo.querySelector(''[data-cp-status]'');
+        var total = palavras.length;
+        var encontradas = 0;
+
+        var ancora = null;
+        var caminhoAtual = null;
+        var ativo = false;
+        var moveu = false;
+
+        function celulaEm(r, c) {
+            return jogo.querySelector(''[data-r="'' + r + ''"][data-c="'' + c + ''"]'');
+        }
+
+        function limparSelecao() {
+            jogo.querySelectorAll(''.selecionada'').forEach(function (el) {
+                el.classList.remove(''selecionada'');
+            });
+        }
+
+        function marcarCaminho(caminho) {
+            caminho.forEach(function (pos) {
+                var el = celulaEm(pos[0], pos[1]);
+
+                if (el) {
+                    el.classList.add(''selecionada'');
+                }
+            });
+        }
+
+        function caminhoEntre(r1, c1, r2, c2) {
+            var dr = r2 - r1;
+            var dc = c2 - c1;
+            var passos = Math.max(Math.abs(dr), Math.abs(dc));
+
+            if (passos === 0) {
+                return [[r1, c1]];
+            }
+
+            if (dr !== 0 && dc !== 0 && Math.abs(dr) !== Math.abs(dc)) {
+                return null;
+            }
+
+            var stepR = dr === 0 ? 0 : dr / Math.abs(dr);
+            var stepC = dc === 0 ? 0 : dc / Math.abs(dc);
+            var caminho = [];
+
+            for (var i = 0; i <= passos; i++) {
+                caminho.push([r1 + stepR * i, c1 + stepC * i]);
+            }
+
+            return caminho;
+        }
+
+        function caminhosIguais(a, b) {
+            if (a.length !== b.length) {
+                return false;
+            }
+
+            var direto = a.every(function (p, i) { return p[0] === b[i][0] && p[1] === b[i][1]; });
+            var reverso = a.every(function (p, i) { return p[0] === b[b.length - 1 - i][0] && p[1] === b[b.length - 1 - i][1]; });
+
+            return direto || reverso;
+        }
+
+        function achaPalavra(caminho) {
+            var encontrada = null;
+
+            palavras.forEach(function (p) {
+                if (!p.achada && caminhosIguais(caminho, p.cells)) {
+                    encontrada = p;
+                }
+            });
+
+            return encontrada;
+        }
+
+        function marcarEncontrada(palavra, caminho) {
+            palavra.achada = true;
+            encontradas++;
+
+            caminho.forEach(function (pos) {
+                var el = celulaEm(pos[0], pos[1]);
+
+                if (el) {
+                    el.classList.add(''encontrada'');
+                }
+            });
+
+            var chip = jogo.querySelector(''[data-cp-palavra="'' + palavra.word + ''"]'');
+
+            if (chip) {
+                chip.classList.add(''encontrada'');
+            }
+
+            if (status) {
+                status.textContent = encontradas + ''/'' + total + '' encontradas'' + (encontradas === total ? '' - tudo achado! 🎉'' : '''');
+            }
+        }
+
+        function flashErro(caminho) {
+            caminho.forEach(function (pos) {
+                var el = celulaEm(pos[0], pos[1]);
+
+                if (el) {
+                    el.classList.add(''errada-tmp'');
+                }
+            });
+
+            setTimeout(function () {
+                caminho.forEach(function (pos) {
+                    var el = celulaEm(pos[0], pos[1]);
+
+                    if (el) {
+                        el.classList.remove(''errada-tmp'');
+                    }
+                });
+            }, 350);
+        }
+
+        function iniciarSelecao(r, c) {
+            ancora = { r: r, c: c };
+            caminhoAtual = [[r, c]];
+            limparSelecao();
+            marcarCaminho(caminhoAtual);
+        }
+
+        function atualizarCaminho(r, c) {
+            var caminho = caminhoEntre(ancora.r, ancora.c, r, c);
+
+            if (caminho) {
+                caminhoAtual = caminho;
+                limparSelecao();
+                marcarCaminho(caminhoAtual);
+            }
+        }
+
+        function cancelarSelecao() {
+            ancora = null;
+            caminhoAtual = null;
+            limparSelecao();
+        }
+
+        function finalizarSelecao() {
+            if (!ancora || !caminhoAtual || caminhoAtual.length < 2) {
+                return;
+            }
+
+            var acertou = achaPalavra(caminhoAtual);
+
+            if (acertou) {
+                marcarEncontrada(acertou, caminhoAtual);
+            } else {
+                flashErro(caminhoAtual);
+            }
+
+            limparSelecao();
+            ancora = null;
+            caminhoAtual = null;
+        }
+
+        jogo.querySelectorAll(''[data-cp-celula]'').forEach(function (celula) {
+            celula.addEventListener(''pointerdown'', function (event) {
+                if (celula.classList.contains(''encontrada'')) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                var r = parseInt(celula.getAttribute(''data-r''), 10);
+                var c = parseInt(celula.getAttribute(''data-c''), 10);
+
+                ativo = true;
+                moveu = false;
+
+                if (!ancora) {
+                    iniciarSelecao(r, c);
+
+                    return;
+                }
+
+                if (r === ancora.r && c === ancora.c) {
+                    cancelarSelecao();
+
+                    return;
+                }
+
+                atualizarCaminho(r, c);
+                finalizarSelecao();
+            });
+        });
+
+        jogo.addEventListener(''pointermove'', function (event) {
+            if (!ativo || !ancora) {
+                return;
+            }
+
+            var alvo = document.elementFromPoint(event.clientX, event.clientY);
+            var celula = alvo ? alvo.closest(''[data-cp-celula]'') : null;
+
+            if (!celula || !jogo.contains(celula) || celula.classList.contains(''encontrada'')) {
+                return;
+            }
+
+            moveu = true;
+
+            var r = parseInt(celula.getAttribute(''data-r''), 10);
+            var c = parseInt(celula.getAttribute(''data-c''), 10);
+
+            atualizarCaminho(r, c);
+        });
+
+        document.addEventListener(''pointerup'', function () {
+            if (!ativo) {
+                return;
+            }
+
+            ativo = false;
+
+            if (moveu) {
+                finalizarSelecao();
+            }
+        });
+
+        document.addEventListener(''pointercancel'', function () {
+            ativo = false;
+        });
+    });
+})();
+</script>'
+WHERE origem = 'kadosys' AND tipo = 'jogo' AND titulo = 'Caça-Nomes: Os 12 Discípulos';
+
+UPDATE kids_conteudos SET texto_conteudo = '<div class="kids-cacapalavras" data-cacapalavras>
+<p class="kids-cp-status" data-cp-status>0/8 encontradas</p>
+<div class="kids-cp-grade" style="grid-template-columns: repeat(10, 1fr);">
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="0">T</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="1">B</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="2">F</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="3">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="4">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="5">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="6">U</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="7">V</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="8">N</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="9">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="0">P</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="1">M</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="2">J</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="3">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="4">Ã</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="5">I</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="6">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="7">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="8">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="9">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="0">É</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="1">L</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="2">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="3">T</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="4">T</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="5">E</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="6">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="7">B</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="8">É</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="9">N</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="0">U</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="1">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="2">R</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="3">É</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="4">R</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="5">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="6">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="7">R</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="8">U</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="9">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="0">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="1">E</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="2">E</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="3">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="4">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="5">J</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="6">B</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="7">I</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="8">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="9">Ã</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="0">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="1">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="2">T</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="3">U</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="4">R</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="5">I</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="6">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="7">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="8">G</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="9">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="0">J</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="1">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="2">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="3">J</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="4">C</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="5">F</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="6">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="7">L</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="8">L</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="9">R</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="0">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="1">L</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="2">E</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="3">I</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="4">N</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="5">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="6">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="7">M</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="8">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="9">E</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="0">L</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="1">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="2">F</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="3">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="4">G</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="5">L</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="6">U</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="7">P</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="8">C</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="9">H</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="0">R</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="1">N</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="2">J</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="3">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="4">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="5">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="6">V</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="7">I</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="8">B</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="9">E</button>
+</div>
+<div class="kids-cp-lista">
+<span class="kids-cp-palavra" data-cp-palavra="NOÉ">NOÉ</span>
+<span class="kids-cp-palavra" data-cp-palavra="MOISÉS">MOISÉS</span>
+<span class="kids-cp-palavra" data-cp-palavra="JOSUÉ">JOSUÉ</span>
+<span class="kids-cp-palavra" data-cp-palavra="DAVI">DAVI</span>
+<span class="kids-cp-palavra" data-cp-palavra="ESTER">ESTER</span>
+<span class="kids-cp-palavra" data-cp-palavra="DANIEL">DANIEL</span>
+<span class="kids-cp-palavra" data-cp-palavra="SANSÃO">SANSÃO</span>
+<span class="kids-cp-palavra" data-cp-palavra="GIDEÃO">GIDEÃO</span>
+</div>
+<script type="application/json" data-cp-dados>[{"word":"MOISÉS","cells":[[7,7],[6,6],[5,5],[4,4],[3,3],[2,2]],"achada":false},{"word":"DANIEL","cells":[[7,6],[7,5],[7,4],[7,3],[7,2],[7,1]],"achada":false},{"word":"SANSÃO","cells":[[0,9],[1,9],[2,9],[3,9],[4,9],[5,9]],"achada":false},{"word":"GIDEÃO","cells":[[5,8],[4,7],[3,6],[2,5],[1,4],[0,3]],"achada":false},{"word":"JOSUÉ","cells":[[6,0],[5,0],[4,0],[3,0],[2,0]],"achada":false},{"word":"ESTER","cells":[[7,2],[6,2],[5,2],[4,2],[3,2]],"achada":false},{"word":"DAVI","cells":[[9,4],[9,5],[9,6],[9,7]],"achada":false},{"word":"NOÉ","cells":[[0,8],[1,8],[2,8]],"achada":false}]</script>
+</div>
+<script>
+(function () {
+    document.querySelectorAll(''[data-cacapalavras]'').forEach(function (jogo) {
+        var dadosEl = jogo.querySelector(''[data-cp-dados]'');
+        var palavras = JSON.parse(dadosEl.textContent);
+        var status = jogo.querySelector(''[data-cp-status]'');
+        var total = palavras.length;
+        var encontradas = 0;
+
+        var ancora = null;
+        var caminhoAtual = null;
+        var ativo = false;
+        var moveu = false;
+
+        function celulaEm(r, c) {
+            return jogo.querySelector(''[data-r="'' + r + ''"][data-c="'' + c + ''"]'');
+        }
+
+        function limparSelecao() {
+            jogo.querySelectorAll(''.selecionada'').forEach(function (el) {
+                el.classList.remove(''selecionada'');
+            });
+        }
+
+        function marcarCaminho(caminho) {
+            caminho.forEach(function (pos) {
+                var el = celulaEm(pos[0], pos[1]);
+
+                if (el) {
+                    el.classList.add(''selecionada'');
+                }
+            });
+        }
+
+        function caminhoEntre(r1, c1, r2, c2) {
+            var dr = r2 - r1;
+            var dc = c2 - c1;
+            var passos = Math.max(Math.abs(dr), Math.abs(dc));
+
+            if (passos === 0) {
+                return [[r1, c1]];
+            }
+
+            if (dr !== 0 && dc !== 0 && Math.abs(dr) !== Math.abs(dc)) {
+                return null;
+            }
+
+            var stepR = dr === 0 ? 0 : dr / Math.abs(dr);
+            var stepC = dc === 0 ? 0 : dc / Math.abs(dc);
+            var caminho = [];
+
+            for (var i = 0; i <= passos; i++) {
+                caminho.push([r1 + stepR * i, c1 + stepC * i]);
+            }
+
+            return caminho;
+        }
+
+        function caminhosIguais(a, b) {
+            if (a.length !== b.length) {
+                return false;
+            }
+
+            var direto = a.every(function (p, i) { return p[0] === b[i][0] && p[1] === b[i][1]; });
+            var reverso = a.every(function (p, i) { return p[0] === b[b.length - 1 - i][0] && p[1] === b[b.length - 1 - i][1]; });
+
+            return direto || reverso;
+        }
+
+        function achaPalavra(caminho) {
+            var encontrada = null;
+
+            palavras.forEach(function (p) {
+                if (!p.achada && caminhosIguais(caminho, p.cells)) {
+                    encontrada = p;
+                }
+            });
+
+            return encontrada;
+        }
+
+        function marcarEncontrada(palavra, caminho) {
+            palavra.achada = true;
+            encontradas++;
+
+            caminho.forEach(function (pos) {
+                var el = celulaEm(pos[0], pos[1]);
+
+                if (el) {
+                    el.classList.add(''encontrada'');
+                }
+            });
+
+            var chip = jogo.querySelector(''[data-cp-palavra="'' + palavra.word + ''"]'');
+
+            if (chip) {
+                chip.classList.add(''encontrada'');
+            }
+
+            if (status) {
+                status.textContent = encontradas + ''/'' + total + '' encontradas'' + (encontradas === total ? '' - tudo achado! 🎉'' : '''');
+            }
+        }
+
+        function flashErro(caminho) {
+            caminho.forEach(function (pos) {
+                var el = celulaEm(pos[0], pos[1]);
+
+                if (el) {
+                    el.classList.add(''errada-tmp'');
+                }
+            });
+
+            setTimeout(function () {
+                caminho.forEach(function (pos) {
+                    var el = celulaEm(pos[0], pos[1]);
+
+                    if (el) {
+                        el.classList.remove(''errada-tmp'');
+                    }
+                });
+            }, 350);
+        }
+
+        function iniciarSelecao(r, c) {
+            ancora = { r: r, c: c };
+            caminhoAtual = [[r, c]];
+            limparSelecao();
+            marcarCaminho(caminhoAtual);
+        }
+
+        function atualizarCaminho(r, c) {
+            var caminho = caminhoEntre(ancora.r, ancora.c, r, c);
+
+            if (caminho) {
+                caminhoAtual = caminho;
+                limparSelecao();
+                marcarCaminho(caminhoAtual);
+            }
+        }
+
+        function cancelarSelecao() {
+            ancora = null;
+            caminhoAtual = null;
+            limparSelecao();
+        }
+
+        function finalizarSelecao() {
+            if (!ancora || !caminhoAtual || caminhoAtual.length < 2) {
+                return;
+            }
+
+            var acertou = achaPalavra(caminhoAtual);
+
+            if (acertou) {
+                marcarEncontrada(acertou, caminhoAtual);
+            } else {
+                flashErro(caminhoAtual);
+            }
+
+            limparSelecao();
+            ancora = null;
+            caminhoAtual = null;
+        }
+
+        jogo.querySelectorAll(''[data-cp-celula]'').forEach(function (celula) {
+            celula.addEventListener(''pointerdown'', function (event) {
+                if (celula.classList.contains(''encontrada'')) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                var r = parseInt(celula.getAttribute(''data-r''), 10);
+                var c = parseInt(celula.getAttribute(''data-c''), 10);
+
+                ativo = true;
+                moveu = false;
+
+                if (!ancora) {
+                    iniciarSelecao(r, c);
+
+                    return;
+                }
+
+                if (r === ancora.r && c === ancora.c) {
+                    cancelarSelecao();
+
+                    return;
+                }
+
+                atualizarCaminho(r, c);
+                finalizarSelecao();
+            });
+        });
+
+        jogo.addEventListener(''pointermove'', function (event) {
+            if (!ativo || !ancora) {
+                return;
+            }
+
+            var alvo = document.elementFromPoint(event.clientX, event.clientY);
+            var celula = alvo ? alvo.closest(''[data-cp-celula]'') : null;
+
+            if (!celula || !jogo.contains(celula) || celula.classList.contains(''encontrada'')) {
+                return;
+            }
+
+            moveu = true;
+
+            var r = parseInt(celula.getAttribute(''data-r''), 10);
+            var c = parseInt(celula.getAttribute(''data-c''), 10);
+
+            atualizarCaminho(r, c);
+        });
+
+        document.addEventListener(''pointerup'', function () {
+            if (!ativo) {
+                return;
+            }
+
+            ativo = false;
+
+            if (moveu) {
+                finalizarSelecao();
+            }
+        });
+
+        document.addEventListener(''pointercancel'', function () {
+            ativo = false;
+        });
+    });
+})();
+</script>'
+WHERE origem = 'kadosys' AND tipo = 'jogo' AND titulo = 'Caça-Nomes: Heróis do Velho Testamento';
+
+UPDATE kids_conteudos SET texto_conteudo = '<div class="kids-cacapalavras" data-cacapalavras>
+<p class="kids-cp-status" data-cp-status>0/8 encontradas</p>
+<div class="kids-cp-grade" style="grid-template-columns: repeat(11, 1fr);">
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="0">P</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="1">R</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="2">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="3">F</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="4">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="5">C</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="6">H</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="7">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="8">L</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="9">F</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="0" data-c="10">E</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="0">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="1">E</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="2">R</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="3">G</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="4">H</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="5">J</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="6">N</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="7">M</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="8">H</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="9">I</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="1" data-c="10">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="0">P</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="1">M</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="2">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="3">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="4">B</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="5">Z</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="6">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="7">P</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="8">I</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="9">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="2" data-c="10">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="0">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="1">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="2">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="3">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="4">M</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="5">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="6">C</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="7">J</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="8">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="9">E</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="3" data-c="10">I</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="0">V</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="1">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="2">C</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="3">N</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="4">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="5">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="6">L</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="7">R</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="8">T</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="9">L</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="4" data-c="10">R</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="0">N</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="1">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="2">L</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="3">I</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="4">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="5">N</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="6">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="7">I</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="8">N</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="9">I</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="5" data-c="10">G</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="0">R</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="1">M</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="2">N</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="3">G</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="4">Ê</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="5">I</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="6">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="7">C</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="8">H</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="9">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="6" data-c="10">E</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="0">U</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="1">Í</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="2">G</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="3">N</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="4">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="5">N</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="6">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="7">B</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="8">J</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="9">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="7" data-c="10">L</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="0">E</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="1">N</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="2">H</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="3">P</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="4">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="5">P</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="6">C</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="7">Ã</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="8">C</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="9">D</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="8" data-c="10">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="0">G</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="1">I</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="2">I</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="3">J</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="4">R</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="5">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="6">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="7">I</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="8">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="9">E</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="9" data-c="10">J</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="10" data-c="0">S</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="10" data-c="1">O</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="10" data-c="2">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="10" data-c="3">B</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="10" data-c="4">J</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="10" data-c="5">U</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="10" data-c="6">T</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="10" data-c="7">M</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="10" data-c="8">A</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="10" data-c="9">R</button>
+<button type="button" class="kids-cp-celula" data-cp-celula data-r="10" data-c="10">D</button>
+</div>
+<div class="kids-cp-lista">
+<span class="kids-cp-palavra" data-cp-palavra="AMOR">AMOR</span>
+<span class="kids-cp-palavra" data-cp-palavra="ALEGRIA">ALEGRIA</span>
+<span class="kids-cp-palavra" data-cp-palavra="PAZ">PAZ</span>
+<span class="kids-cp-palavra" data-cp-palavra="PACIÊNCIA">PACIÊNCIA</span>
+<span class="kids-cp-palavra" data-cp-palavra="BONDADE">BONDADE</span>
+<span class="kids-cp-palavra" data-cp-palavra="FIDELIDADE">FIDELIDADE</span>
+<span class="kids-cp-palavra" data-cp-palavra="MANSIDÃO">MANSIDÃO</span>
+<span class="kids-cp-palavra" data-cp-palavra="DOMÍNIO">DOMÍNIO</span>
+</div>
+<script type="application/json" data-cp-dados>[{"word":"FIDELIDADE","cells":[[0,9],[1,9],[2,9],[3,9],[4,9],[5,9],[6,9],[7,9],[8,9],[9,9]],"achada":false},{"word":"PACIÊNCIA","cells":[[2,0],[3,1],[4,2],[5,3],[6,4],[7,5],[8,6],[9,7],[10,8]],"achada":false},{"word":"MANSIDÃO","cells":[[2,1],[3,2],[4,3],[5,4],[6,5],[7,6],[8,7],[9,8]],"achada":false},{"word":"ALEGRIA","cells":[[8,10],[7,10],[6,10],[5,10],[4,10],[3,10],[2,10]],"achada":false},{"word":"BONDADE","cells":[[7,7],[6,6],[5,5],[4,4],[3,3],[2,2],[1,1]],"achada":false},{"word":"DOMÍNIO","cells":[[4,1],[5,1],[6,1],[7,1],[8,1],[9,1],[10,1]],"achada":false},{"word":"AMOR","cells":[[4,5],[3,4],[2,3],[1,2]],"achada":false},{"word":"PAZ","cells":[[2,7],[2,6],[2,5]],"achada":false}]</script>
+</div>
+<script>
+(function () {
+    document.querySelectorAll(''[data-cacapalavras]'').forEach(function (jogo) {
+        var dadosEl = jogo.querySelector(''[data-cp-dados]'');
+        var palavras = JSON.parse(dadosEl.textContent);
+        var status = jogo.querySelector(''[data-cp-status]'');
+        var total = palavras.length;
+        var encontradas = 0;
+
+        var ancora = null;
+        var caminhoAtual = null;
+        var ativo = false;
+        var moveu = false;
+
+        function celulaEm(r, c) {
+            return jogo.querySelector(''[data-r="'' + r + ''"][data-c="'' + c + ''"]'');
+        }
+
+        function limparSelecao() {
+            jogo.querySelectorAll(''.selecionada'').forEach(function (el) {
+                el.classList.remove(''selecionada'');
+            });
+        }
+
+        function marcarCaminho(caminho) {
+            caminho.forEach(function (pos) {
+                var el = celulaEm(pos[0], pos[1]);
+
+                if (el) {
+                    el.classList.add(''selecionada'');
+                }
+            });
+        }
+
+        function caminhoEntre(r1, c1, r2, c2) {
+            var dr = r2 - r1;
+            var dc = c2 - c1;
+            var passos = Math.max(Math.abs(dr), Math.abs(dc));
+
+            if (passos === 0) {
+                return [[r1, c1]];
+            }
+
+            if (dr !== 0 && dc !== 0 && Math.abs(dr) !== Math.abs(dc)) {
+                return null;
+            }
+
+            var stepR = dr === 0 ? 0 : dr / Math.abs(dr);
+            var stepC = dc === 0 ? 0 : dc / Math.abs(dc);
+            var caminho = [];
+
+            for (var i = 0; i <= passos; i++) {
+                caminho.push([r1 + stepR * i, c1 + stepC * i]);
+            }
+
+            return caminho;
+        }
+
+        function caminhosIguais(a, b) {
+            if (a.length !== b.length) {
+                return false;
+            }
+
+            var direto = a.every(function (p, i) { return p[0] === b[i][0] && p[1] === b[i][1]; });
+            var reverso = a.every(function (p, i) { return p[0] === b[b.length - 1 - i][0] && p[1] === b[b.length - 1 - i][1]; });
+
+            return direto || reverso;
+        }
+
+        function achaPalavra(caminho) {
+            var encontrada = null;
+
+            palavras.forEach(function (p) {
+                if (!p.achada && caminhosIguais(caminho, p.cells)) {
+                    encontrada = p;
+                }
+            });
+
+            return encontrada;
+        }
+
+        function marcarEncontrada(palavra, caminho) {
+            palavra.achada = true;
+            encontradas++;
+
+            caminho.forEach(function (pos) {
+                var el = celulaEm(pos[0], pos[1]);
+
+                if (el) {
+                    el.classList.add(''encontrada'');
+                }
+            });
+
+            var chip = jogo.querySelector(''[data-cp-palavra="'' + palavra.word + ''"]'');
+
+            if (chip) {
+                chip.classList.add(''encontrada'');
+            }
+
+            if (status) {
+                status.textContent = encontradas + ''/'' + total + '' encontradas'' + (encontradas === total ? '' - tudo achado! 🎉'' : '''');
+            }
+        }
+
+        function flashErro(caminho) {
+            caminho.forEach(function (pos) {
+                var el = celulaEm(pos[0], pos[1]);
+
+                if (el) {
+                    el.classList.add(''errada-tmp'');
+                }
+            });
+
+            setTimeout(function () {
+                caminho.forEach(function (pos) {
+                    var el = celulaEm(pos[0], pos[1]);
+
+                    if (el) {
+                        el.classList.remove(''errada-tmp'');
+                    }
+                });
+            }, 350);
+        }
+
+        function iniciarSelecao(r, c) {
+            ancora = { r: r, c: c };
+            caminhoAtual = [[r, c]];
+            limparSelecao();
+            marcarCaminho(caminhoAtual);
+        }
+
+        function atualizarCaminho(r, c) {
+            var caminho = caminhoEntre(ancora.r, ancora.c, r, c);
+
+            if (caminho) {
+                caminhoAtual = caminho;
+                limparSelecao();
+                marcarCaminho(caminhoAtual);
+            }
+        }
+
+        function cancelarSelecao() {
+            ancora = null;
+            caminhoAtual = null;
+            limparSelecao();
+        }
+
+        function finalizarSelecao() {
+            if (!ancora || !caminhoAtual || caminhoAtual.length < 2) {
+                return;
+            }
+
+            var acertou = achaPalavra(caminhoAtual);
+
+            if (acertou) {
+                marcarEncontrada(acertou, caminhoAtual);
+            } else {
+                flashErro(caminhoAtual);
+            }
+
+            limparSelecao();
+            ancora = null;
+            caminhoAtual = null;
+        }
+
+        jogo.querySelectorAll(''[data-cp-celula]'').forEach(function (celula) {
+            celula.addEventListener(''pointerdown'', function (event) {
+                if (celula.classList.contains(''encontrada'')) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                var r = parseInt(celula.getAttribute(''data-r''), 10);
+                var c = parseInt(celula.getAttribute(''data-c''), 10);
+
+                ativo = true;
+                moveu = false;
+
+                if (!ancora) {
+                    iniciarSelecao(r, c);
+
+                    return;
+                }
+
+                if (r === ancora.r && c === ancora.c) {
+                    cancelarSelecao();
+
+                    return;
+                }
+
+                atualizarCaminho(r, c);
+                finalizarSelecao();
+            });
+        });
+
+        jogo.addEventListener(''pointermove'', function (event) {
+            if (!ativo || !ancora) {
+                return;
+            }
+
+            var alvo = document.elementFromPoint(event.clientX, event.clientY);
+            var celula = alvo ? alvo.closest(''[data-cp-celula]'') : null;
+
+            if (!celula || !jogo.contains(celula) || celula.classList.contains(''encontrada'')) {
+                return;
+            }
+
+            moveu = true;
+
+            var r = parseInt(celula.getAttribute(''data-r''), 10);
+            var c = parseInt(celula.getAttribute(''data-c''), 10);
+
+            atualizarCaminho(r, c);
+        });
+
+        document.addEventListener(''pointerup'', function () {
+            if (!ativo) {
+                return;
+            }
+
+            ativo = false;
+
+            if (moveu) {
+                finalizarSelecao();
+            }
+        });
+
+        document.addEventListener(''pointercancel'', function () {
+            ativo = false;
+        });
+    });
+})();
+</script>'
+WHERE origem = 'kadosys' AND tipo = 'jogo' AND titulo = 'Caça-Nomes: Frutos do Espírito';
