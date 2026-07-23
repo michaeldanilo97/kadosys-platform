@@ -10,6 +10,7 @@ use Academias\Models\Aluno;
  * @var Aluno $aluno
  * @var AcademiaCheckin|null $checkinAberto
  * @var array<int, AcademiaCheckin> $historico
+ * @var int $totalFichasAtivas
  * @var string $csrf
  */
 $basePath = $config['base_path'] ?? '';
@@ -71,7 +72,13 @@ $slug = htmlspecialchars($academia->slug, ENT_QUOTES, 'UTF-8');
             </div>
         <?php endif; ?>
 
-        <form method="POST" action="<?= $basePath ?>/minha-conta/<?= $slug ?>/sair" style="margin-top: 1.5rem;">
+        <?php if ($totalFichasAtivas > 0): ?>
+            <a href="<?= $basePath ?>/minha-conta/<?= $slug ?>/treino" class="btn-k btn-k-grad" style="width:100%; margin-top: 1.5rem;">
+                🏋️ Meu treino (<?= $totalFichasAtivas ?> ficha<?= $totalFichasAtivas === 1 ? '' : 's' ?>)
+            </a>
+        <?php endif; ?>
+
+        <form method="POST" action="<?= $basePath ?>/minha-conta/<?= $slug ?>/sair" style="margin-top: 0.75rem;">
             <?= $csrf ?>
             <button type="submit" class="btn-k btn-k-outline" style="width:100%;">Sair</button>
         </form>

@@ -131,6 +131,22 @@ final class Aluno
         return (int) $stmt->fetchColumn();
     }
 
+    /**
+     * Lista curta de alunos ativos, pro seletor de "pra quem e a ficha"
+     * na tela de ficha de treino (ver FichaTreinoController).
+     *
+     * @return array<int, self>
+     */
+    public static function ativos(int $academiaId): array
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT " . self::SELECT_COLUNAS . " FROM alunos WHERE academia_id = :academia_id AND status = 'ativo' ORDER BY nome ASC"
+        );
+        $stmt->execute(['academia_id' => $academiaId]);
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
     public static function create(
         int $academiaId,
         string $nome,

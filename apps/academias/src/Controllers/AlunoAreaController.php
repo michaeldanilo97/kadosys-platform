@@ -11,6 +11,7 @@ use Academias\Core\Session;
 use Academias\Models\Academia;
 use Academias\Models\AcademiaCheckin;
 use Academias\Models\Aluno;
+use Academias\Models\FichaTreino;
 
 /**
  * Area do aluno (/minha-conta/{slug}) - login proprio do aluno,
@@ -40,6 +41,7 @@ final class AlunoAreaController extends Controller
 
         $checkinAberto = AcademiaCheckin::emAberto($academia->id, $aluno->id);
         $historico = AcademiaCheckin::doAluno($academia->id, $aluno->id, 15);
+        $totalFichasAtivas = count(FichaTreino::ativasDoAluno($academia->id, $aluno->id));
 
         echo $this->view('public.minha-conta.painel', [
             'pageTitle' => 'Minha conta - ' . $academia->nome,
@@ -47,6 +49,7 @@ final class AlunoAreaController extends Controller
             'aluno' => $aluno,
             'checkinAberto' => $checkinAberto,
             'historico' => $historico,
+            'totalFichasAtivas' => $totalFichasAtivas,
             'csrf' => Csrf::field(),
         ], 'site');
     }
