@@ -11,6 +11,7 @@ use Academias\Models\Aluno;
  * @var AcademiaCheckin|null $checkinAberto
  * @var array<int, AcademiaCheckin> $historico
  * @var int $totalFichasAtivas
+ * @var int $totalAvaliacoes
  * @var string $csrf
  */
 $basePath = $config['base_path'] ?? '';
@@ -75,6 +76,12 @@ $slug = htmlspecialchars($academia->slug, ENT_QUOTES, 'UTF-8');
         <?php if ($totalFichasAtivas > 0): ?>
             <a href="<?= $basePath ?>/minha-conta/<?= $slug ?>/treino" class="btn-k btn-k-grad" style="width:100%; margin-top: 1.5rem;">
                 🏋️ Meu treino (<?= $totalFichasAtivas ?> ficha<?= $totalFichasAtivas === 1 ? '' : 's' ?>)
+            </a>
+        <?php endif; ?>
+
+        <?php if ($totalAvaliacoes > 0): ?>
+            <a href="<?= $basePath ?>/minha-conta/<?= $slug ?>/avaliacao" class="btn-k btn-k-outline" style="width:100%; margin-top: 0.75rem;">
+                📏 Minha avaliação física
             </a>
         <?php endif; ?>
 
