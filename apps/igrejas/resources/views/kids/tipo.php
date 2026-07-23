@@ -7,9 +7,11 @@ use Igrejas\Models\KidsConteudo;
  * @var \Igrejas\Models\KidsCrianca $crianca
  * @var string $tipo
  * @var array<int, KidsConteudo> $conteudos
+ * @var array<int, true> $concluidosIds
  */
 $basePath = $config['base_path'] ?? '';
 $tipoInfo = KidsConteudo::TIPOS[$tipo];
+$totalConcluidos = count($concluidosIds);
 ?>
 <div class="kids-mundo">
     <div class="kids-topo">
@@ -23,9 +25,21 @@ $tipoInfo = KidsConteudo::TIPOS[$tipo];
     <?php if ($conteudos === []): ?>
         <div class="kids-vazio">Nenhum conteúdo publicado neste tipo ainda.</div>
     <?php else: ?>
+        <?php if ($totalConcluidos > 0): ?>
+            <div class="kids-progresso-pill">
+                <i class="bi bi-check-circle-fill"></i>
+                <?= $totalConcluidos ?> de <?= count($conteudos) ?> concluído<?= $totalConcluidos === 1 ? '' : 's' ?>
+                <?= $totalConcluidos >= count($conteudos) ? ' - tudo feito! 🎉' : '' ?>
+            </div>
+        <?php endif; ?>
+
         <div class="kids-conteudo-grade">
             <?php foreach ($conteudos as $conteudo): ?>
-                <a href="<?= $basePath ?>/kids/conteudo/<?= $conteudo->id ?>" class="kids-conteudo-card">
+                <?php $concluido = isset($concluidosIds[$conteudo->id]); ?>
+                <a href="<?= $basePath ?>/kids/conteudo/<?= $conteudo->id ?>" class="kids-conteudo-card<?= $concluido ? ' concluido' : '' ?>">
+                    <?php if ($concluido): ?>
+                        <span class="kids-conteudo-selo"><i class="bi bi-check-lg"></i></span>
+                    <?php endif; ?>
                     <div class="capa">
                         <?php if ($conteudo->capaPath !== null): ?>
                             <img src="<?= $basePath ?>/<?= htmlspecialchars($conteudo->capaPath, ENT_QUOTES, 'UTF-8') ?>" alt="">
@@ -41,7 +55,7 @@ $tipoInfo = KidsConteudo::TIPOS[$tipo];
                             <?php else: ?>
                                 <span class="kids-badge-origem igreja">🏠 Igreja</span>
                             <?php endif; ?>
-                            <span class="kids-badge-recompensa">+<?= $conteudo->xpRecompensa ?> XP</span>
+                            <span class="kids-badge-recompensa"><?= $concluido ? 'Concluído' : '+' . $conteudo->xpRecompensa . ' XP' ?></span>
                         </div>
                     </div>
                 </a>

@@ -271,6 +271,49 @@ final class KidsConteudo
     }
 
     /**
+     * IDs dos conteudos de um tipo ja concluidos por uma crianca - usado
+     * na grade da Biblioteca (kids/tipo.php) pra marcar "Concluído" sem
+     * precisar de uma query por card.
+     *
+     * @return array<int, true> indexado por conteudo_id, pra checar com isset()
+     */
+    public static function concluidosPorCrianca(int $criancaId, string $tipo): array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT k.conteudo_id FROM kids_conteudo_conclusoes k
+             INNER JOIN kids_conteudos c ON c.id = k.conteudo_id
+             WHERE k.crianca_id = :crianca_id AND c.tipo = :tipo'
+        );
+        $stmt->execute(['crianca_id' => $criancaId, 'tipo' => $tipo]);
+
+        return array_fill_keys(array_map('intval', array_column($stmt->fetchAll(), 'conteudo_id')), true);
+    }
+
+    /**
+     * Proximo conteudo publicado de um tipo que a crianca ainda nao
+     * concluiu, na mesma ordem da listagem (publicadosPorTipo) - usado
+     * pra avancar automaticamente pro proximo quiz nao feito assim que
+     * um e concluido (ver KidsAppController::concluir).
+     */
+    public static function proximoNaoConcluidoPorTipo(string $tipo, int $criancaId): ?self
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT c.* FROM kids_conteudos c
+             WHERE c.tipo = :tipo AND c.status = 'publicado'
+             AND NOT EXISTS (
+                 SELECT 1 FROM kids_conteudo_conclusoes k
+                 WHERE k.conteudo_id = c.id AND k.crianca_id = :crianca_id
+             )
+             ORDER BY c.origem DESC, c.titulo ASC
+             LIMIT 1"
+        );
+        $stmt->execute(['tipo' => $tipo, 'crianca_id' => $criancaId]);
+        $row = $stmt->fetch();
+
+        return $row ? self::fromRow($row) : null;
+    }
+
+    /**
      * Registra a conclusao do conteudo por uma crianca e concede
      * XP/moedas - so na primeira vez (UNIQUE em kids_conteudo_conclusoes
      * impede conceder pontos de novo se a crianca repetir o conteudo).

@@ -131,3 +131,86 @@ $renderGrade = static function (array $catalogo, string $campo, ?string $equipad
         </div>
     </form>
 </div>
+
+<script>
+    (function () {
+        // Preve visualiza o boné/acessório/fundo/título assim que a
+        // criança clica numa opção, sem esperar salvar+recarregar - o
+        // formulário continua so gravando no banco quando "Salvar
+        // visual" e enviado.
+        var catalogos = {
+            avatar_chapeu: <?= json_encode($catalogoChapeus, JSON_UNESCAPED_UNICODE) ?>,
+            avatar_acessorio: <?= json_encode($catalogoAcessorios, JSON_UNESCAPED_UNICODE) ?>,
+            avatar_fundo: <?= json_encode($catalogoFundos, JSON_UNESCAPED_UNICODE) ?>,
+            avatar_titulo: <?= json_encode($catalogoTitulos, JSON_UNESCAPED_UNICODE) ?>
+        };
+
+        var estagio = document.querySelector('.kids-avatar-stage');
+        var figura = document.querySelector('.kids-avatar-figura');
+
+        function itemDoCatalogo(campo, slug) {
+            if (!slug) {
+                return null;
+            }
+            return catalogos[campo].find(function (item) { return item.slug === slug; }) || null;
+        }
+
+        function atualizarEmoji(seletor, classe, emoji, primeiro) {
+            var atual = figura.querySelector(seletor);
+            if (!emoji) {
+                if (atual) { atual.remove(); }
+                return;
+            }
+            if (!atual) {
+                atual = document.createElement('span');
+                atual.className = classe;
+                if (primeiro) {
+                    figura.prepend(atual);
+                } else {
+                    figura.appendChild(atual);
+                }
+            }
+            atual.textContent = emoji;
+        }
+
+        document.querySelectorAll('input[name="avatar_chapeu"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var escolhido = itemDoCatalogo('avatar_chapeu', input.value);
+                atualizarEmoji('.kids-avatar-chapeu', 'kids-avatar-chapeu', escolhido ? escolhido.emoji : null, true);
+            });
+        });
+
+        document.querySelectorAll('input[name="avatar_acessorio"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var escolhido = itemDoCatalogo('avatar_acessorio', input.value);
+                atualizarEmoji('.kids-avatar-acessorio', 'kids-avatar-acessorio', escolhido ? escolhido.emoji : null, false);
+            });
+        });
+
+        document.querySelectorAll('input[name="avatar_fundo"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var escolhido = itemDoCatalogo('avatar_fundo', input.value);
+                if (escolhido && estagio) {
+                    estagio.style.background = escolhido.gradiente;
+                }
+            });
+        });
+
+        document.querySelectorAll('input[name="avatar_titulo"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var escolhido = itemDoCatalogo('avatar_titulo', input.value);
+                var chip = estagio.querySelector('.kids-avatar-titulo-chip');
+                if (!escolhido) {
+                    if (chip) { chip.remove(); }
+                    return;
+                }
+                if (!chip) {
+                    chip = document.createElement('span');
+                    chip.className = 'kids-avatar-titulo-chip';
+                    estagio.appendChild(chip);
+                }
+                chip.textContent = escolhido.nome;
+            });
+        });
+    })();
+</script>
