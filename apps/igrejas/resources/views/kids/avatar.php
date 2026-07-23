@@ -6,13 +6,16 @@ use Igrejas\Models\KidsAvatar;
  * @var array $config
  * @var \Igrejas\Models\KidsCrianca $crianca
  * @var array{nivelAtual: int, xpAtual: int, xpInicioNivel: int, xpProximoNivel: ?int, percentual: int} $progresso
- * @var array<int, array{slug: string, emoji: string, nome: string, nivel: int}> $catalogoChapeus
- * @var array<int, array{slug: string, emoji: string, nome: string, nivel: int}> $catalogoAcessorios
- * @var array<int, array{slug: string, emoji: string, nome: string, nivel: int, gradiente: string}> $catalogoFundos
- * @var array<int, array{slug: string, nome: string, nivel: int}> $catalogoTitulos
+ * @var array<int, array{slug: string, emoji: string, nome: string, nivel: ?int, custoMoedas: ?int}> $catalogoChapeus
+ * @var array<int, array{slug: string, emoji: string, nome: string, nivel: ?int, custoMoedas: ?int}> $catalogoAcessorios
+ * @var array<int, array{slug: string, emoji: string, nome: string, nivel: ?int, custoMoedas: ?int, gradiente: string}> $catalogoFundos
+ * @var array<int, array{slug: string, nome: string, nivel: ?int, custoMoedas: ?int}> $catalogoTitulos
  * @var int $nivel
+ * @var array<string, array<int, string>> $comprados
  * @var string $csrfToken
  * @var bool|null $salvo
+ * @var string|null $compraErro
+ * @var string|null $compraOk
  */
 $basePath = $config['base_path'] ?? '';
 
@@ -22,9 +25,17 @@ $chapeuEquipado = KidsAvatar::encontrar($catalogoChapeus, $crianca->avatarChapeu
 $acessorioEquipado = KidsAvatar::encontrar($catalogoAcessorios, $crianca->avatarAcessorio);
 
 /**
+ * Grade de escolha (radios) dentro do form principal de "Salvar
+ * visual" - so mostra itens ja desbloqueados (por nivel ou por compra)
+ * ou os bloqueados por nivel. Os itens da loja AINDA NAO comprados nao
+ * entram aqui (formulario de compra nao pode ficar aninhado dentro
+ * deste <form> - HTML nao permite - ver secao "Loja de moedas"
+ * separada, fora do form principal).
+ *
  * @param array<int, array<string, mixed>> $catalogo
+ * @param array<int, string> $compradosCategoria
  */
-$renderGrade = static function (array $catalogo, string $campo, ?string $equipadoSlug, int $nivelCrianca, ?string $labelNenhum) use ($basePath): void {
+$renderGrade = static function (array $catalogo, string $campo, ?string $equipadoSlug, int $nivelCrianca, array $compradosCategoria, ?string $labelNenhum): void {
     ?>
     <div class="kids-item-grade">
         <?php if ($labelNenhum !== null): ?>
@@ -35,33 +46,76 @@ $renderGrade = static function (array $catalogo, string $campo, ?string $equipad
             </label>
         <?php endif; ?>
         <?php foreach ($catalogo as $item): ?>
-            <?php $desbloqueado = $item['nivel'] <= $nivelCrianca; ?>
-            <label class="kids-item-card<?= $equipadoSlug === $item['slug'] ? ' selecionado' : ''
-                ?><?= $desbloqueado ? '' : ' bloqueado' ?>">
-                <input
-                    type="radio"
-                    name="<?= $campo ?>"
-                    value="<?= htmlspecialchars($item['slug'], ENT_QUOTES, 'UTF-8') ?>"
-                    <?= $equipadoSlug === $item['slug'] ? 'checked' : '' ?>
-                    <?= $desbloqueado ? '' : 'disabled' ?>
-                >
-                <span class="kids-item-emoji"><?= $item['emoji'] ?? '🏅' ?></span>
-                <span class="kids-item-nome"><?= htmlspecialchars($item['nome'], ENT_QUOTES, 'UTF-8') ?></span>
-                <?php if (!$desbloqueado): ?>
+            <?php
+            $comprado = in_array($item['slug'], $compradosCategoria, true);
+            $desbloqueado = ($item['nivel'] !== null && $item['nivel'] <= $nivelCrianca) || $comprado;
+            $naLoja = $item['nivel'] === null;
+            ?>
+            <?php if ($desbloqueado): ?>
+                <label class="kids-item-card<?= $equipadoSlug === $item['slug'] ? ' selecionado' : '' ?>">
+                    <input
+                        type="radio"
+                        name="<?= $campo ?>"
+                        value="<?= htmlspecialchars($item['slug'], ENT_QUOTES, 'UTF-8') ?>"
+                        <?= $equipadoSlug === $item['slug'] ? 'checked' : '' ?>
+                    >
+                    <span class="kids-item-emoji"><?= $item['emoji'] ?? '🏅' ?></span>
+                    <span class="kids-item-nome"><?= htmlspecialchars($item['nome'], ENT_QUOTES, 'UTF-8') ?></span>
+                    <?php if ($naLoja): ?>
+                        <span class="kids-item-selo-loja">🪙 Da loja</span>
+                    <?php endif; ?>
+                </label>
+            <?php elseif ($naLoja): ?>
+                <?php // Ainda nao comprado - aparece na secao "Loja de moedas", fora deste form. ?>
+            <?php else: ?>
+                <label class="kids-item-card bloqueado">
+                    <input type="radio" name="<?= $campo ?>" value="<?= htmlspecialchars($item['slug'], ENT_QUOTES, 'UTF-8') ?>" disabled>
+                    <span class="kids-item-emoji"><?= $item['emoji'] ?? '🏅' ?></span>
+                    <span class="kids-item-nome"><?= htmlspecialchars($item['nome'], ENT_QUOTES, 'UTF-8') ?></span>
                     <span class="kids-item-cadeado"><i class="bi bi-lock-fill"></i> Nível <?= $item['nivel'] ?></span>
-                <?php endif; ?>
-            </label>
+                </label>
+            <?php endif; ?>
         <?php endforeach; ?>
     </div>
     <?php
+};
+
+/**
+ * Itens da loja (custoMoedas preenchido) ainda nao comprados, de todas
+ * as categorias juntas - cada um ganha seu proprio <form> independente
+ * (irmao do form principal, nunca aninhado - ver comprar() no
+ * controller).
+ *
+ * @return array<int, array{categoria: string, rotulo: string, item: array<string, mixed>}>
+ */
+$itensDaLojaNaoComprados = static function () use ($catalogoChapeus, $catalogoAcessorios, $catalogoFundos, $catalogoTitulos, $comprados): array {
+    $porCategoria = [
+        'chapeu' => ['rotulo' => '🎩 Chapéu', 'catalogo' => $catalogoChapeus],
+        'acessorio' => ['rotulo' => '🎒 Acessório', 'catalogo' => $catalogoAcessorios],
+        'fundo' => ['rotulo' => '🌈 Fundo', 'catalogo' => $catalogoFundos],
+        'titulo' => ['rotulo' => '🏅 Título', 'catalogo' => $catalogoTitulos],
+    ];
+
+    $itens = [];
+
+    foreach ($porCategoria as $categoria => $info) {
+        foreach ($info['catalogo'] as $item) {
+            if ($item['nivel'] === null && !in_array($item['slug'], $comprados[$categoria], true)) {
+                $itens[] = ['categoria' => $categoria, 'rotulo' => $info['rotulo'], 'item' => $item];
+            }
+        }
+    }
+
+    return $itens;
 };
 ?>
 <div class="kids-mundo">
     <div class="kids-topo">
         <div class="kids-saudacao">
             <h1>🧑‍🎤 Meu Avatar</h1>
-            <p>Ganhe XP participando pra desbloquear itens novos!</p>
+            <p>Ganhe XP participando ou moedas pra desbloquear itens novos!</p>
         </div>
+        <span class="kids-stats-mini"><span>🪙 <?= $crianca->moedas ?></span></span>
         <a href="<?= $basePath ?>/kids" class="kids-voltar"><i class="bi bi-arrow-left"></i> Voltar</a>
     </div>
 
@@ -69,6 +123,19 @@ $renderGrade = static function (array $catalogo, string $campo, ?string $equipad
         <div class="kids-premio-banner">
             <span class="emoji">✨</span>
             <span>Visual salvo! Assim que você vai aparecer pro grupo.</span>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($compraOk): ?>
+        <div class="kids-premio-banner">
+            <span class="emoji">🪙</span>
+            <span>"<?= htmlspecialchars($compraOk, ENT_QUOTES, 'UTF-8') ?>" comprado! Já dá pra equipar aqui embaixo.</span>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($compraErro): ?>
+        <div class="kids-login-erro">
+            <span><?= htmlspecialchars($compraErro, ENT_QUOTES, 'UTF-8') ?></span>
         </div>
     <?php endif; ?>
 
@@ -115,21 +182,44 @@ $renderGrade = static function (array $catalogo, string $campo, ?string $equipad
         <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
 
         <h2 class="kids-secao-titulo">🏅 Título</h2>
-        <?php $renderGrade($catalogoTitulos, 'avatar_titulo', $crianca->avatarTitulo, $nivel, 'Sem título'); ?>
+        <?php $renderGrade($catalogoTitulos, 'avatar_titulo', $crianca->avatarTitulo, $nivel, $comprados['titulo'], 'Sem título'); ?>
 
         <h2 class="kids-secao-titulo">🎩 Chapéu</h2>
-        <?php $renderGrade($catalogoChapeus, 'avatar_chapeu', $crianca->avatarChapeu, $nivel, 'Sem chapéu'); ?>
+        <?php $renderGrade($catalogoChapeus, 'avatar_chapeu', $crianca->avatarChapeu, $nivel, $comprados['chapeu'], 'Sem chapéu'); ?>
 
         <h2 class="kids-secao-titulo">🎒 Acessório</h2>
-        <?php $renderGrade($catalogoAcessorios, 'avatar_acessorio', $crianca->avatarAcessorio, $nivel, 'Sem acessório'); ?>
+        <?php $renderGrade($catalogoAcessorios, 'avatar_acessorio', $crianca->avatarAcessorio, $nivel, $comprados['acessorio'], 'Sem acessório'); ?>
 
         <h2 class="kids-secao-titulo">🌈 Fundo</h2>
-        <?php $renderGrade($catalogoFundos, 'avatar_fundo', $fundoEquipado['slug'], $nivel, null); ?>
+        <?php $renderGrade($catalogoFundos, 'avatar_fundo', $fundoEquipado['slug'], $nivel, $comprados['fundo'], null); ?>
 
         <div style="margin-top: 1.6rem;">
             <button type="submit" class="kids-btn-concluir"><i class="bi bi-check-circle-fill"></i> Salvar visual</button>
         </div>
     </form>
+
+    <?php $itensLoja = $itensDaLojaNaoComprados(); ?>
+    <?php if ($itensLoja !== []): ?>
+        <h2 class="kids-secao-titulo">🪙 Loja de moedas</h2>
+        <div class="kids-item-grade">
+            <?php foreach ($itensLoja as $entrada): ?>
+                <?php $item = $entrada['item']; ?>
+                <div class="kids-item-card kids-item-card-loja">
+                    <span class="kids-item-emoji"><?= $item['emoji'] ?? '🏅' ?></span>
+                    <span class="kids-item-nome"><?= htmlspecialchars($item['nome'], ENT_QUOTES, 'UTF-8') ?></span>
+                    <span class="kids-item-selo-loja"><?= htmlspecialchars($entrada['rotulo'], ENT_QUOTES, 'UTF-8') ?></span>
+                    <form method="POST" action="<?= $basePath ?>/kids/avatar/comprar" class="kids-item-form-comprar">
+                        <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+                        <input type="hidden" name="categoria" value="<?= htmlspecialchars($entrada['categoria'], ENT_QUOTES, 'UTF-8') ?>">
+                        <input type="hidden" name="slug" value="<?= htmlspecialchars($item['slug'], ENT_QUOTES, 'UTF-8') ?>">
+                        <button type="submit" class="kids-item-btn-comprar" <?= $crianca->moedas < $item['custoMoedas'] ? 'disabled' : '' ?>>
+                            🪙 Comprar por <?= $item['custoMoedas'] ?>
+                        </button>
+                    </form>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
 </div>
 
 <script>

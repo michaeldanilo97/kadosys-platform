@@ -11,6 +11,12 @@
 $basePath = $config['base_path'] ?? '';
 $tipoInfo = $conteudo->tipoInfo();
 $isQuiz = $conteudo->tipo === 'quiz' && $conteudo->quizPerguntas !== null;
+// "Complete o Versiculo" e "Ligue o Personagem" (tipo atividade) tem o
+// mesmo mecanismo de progresso/gate do quiz, embutido no proprio HTML
+// confiavel (ver migracao 063) - reconhecido pelos data-attributes do
+// widget, sem precisar de uma coluna nova so pra isso.
+$temGateProgresso = $isQuiz || ($conteudo->textoConteudo !== null
+    && (str_contains($conteudo->textoConteudo, 'data-completar') || str_contains($conteudo->textoConteudo, 'data-ligar')));
 ?>
 <div class="kids-mundo">
     <div class="kids-topo">
@@ -65,7 +71,7 @@ $isQuiz = $conteudo->tipo === 'quiz' && $conteudo->quizPerguntas !== null;
         <?php endif; ?>
 
         <?php if ($conteudo->textoConteudo): ?>
-            <?php if ($conteudo->origem === 'kadosys' && in_array($conteudo->tipo, ['colorir', 'jogo', 'slide', 'hq'], true)): ?>
+            <?php if ($conteudo->origem === 'kadosys' && in_array($conteudo->tipo, ['colorir', 'jogo', 'slide', 'hq', 'atividade'], true)): ?>
                 <?= $conteudo->textoConteudo ?>
             <?php else: ?>
                 <div class="texto"><?= htmlspecialchars($conteudo->textoConteudo, ENT_QUOTES, 'UTF-8') ?></div>
@@ -241,14 +247,14 @@ $isQuiz = $conteudo->tipo === 'quiz' && $conteudo->quizPerguntas !== null;
             <?php if ($jaConcluido): ?>
                 <button type="button" class="kids-btn-concluir" disabled><i class="bi bi-check-circle-fill"></i> Já concluído</button>
             <?php else: ?>
-                <form method="POST" action="<?= $basePath ?>/kids/conteudo/<?= $conteudo->id ?>/concluir" data-quiz-form-concluir <?= $isQuiz ? 'hidden' : '' ?>>
+                <form method="POST" action="<?= $basePath ?>/kids/conteudo/<?= $conteudo->id ?>/concluir" data-quiz-form-concluir <?= $temGateProgresso ? 'hidden' : '' ?>>
                     <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
                     <button type="submit" class="kids-btn-concluir">
                         <i class="bi bi-star-fill"></i> Concluir e ganhar +<?= $conteudo->xpRecompensa ?> XP
                     </button>
                 </form>
-                <?php if ($isQuiz): ?>
-                    <p class="form-field-hint" data-quiz-aviso-pendente>Responda todas as perguntas certinho pra liberar o botão de concluir. Errou? Sem problema, é só tentar de novo! 💪</p>
+                <?php if ($temGateProgresso): ?>
+                    <p class="form-field-hint" data-quiz-aviso-pendente>Responda/ligue tudo certinho pra liberar o botão de concluir. Errou? Sem problema, é só tentar de novo! 💪</p>
                 <?php endif; ?>
             <?php endif; ?>
         </div>

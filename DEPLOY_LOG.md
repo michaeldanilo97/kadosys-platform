@@ -17,6 +17,58 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 156 - 2026-07-23
+
+**KADOSYS Kids: atividades "so texto" viram widgets interativos + loja de moedas do Avatar**
+
+Segunda leva pedida pelo usuário depois do Ajuste 155, respondendo a
+"os demais módulos infantis estão completos com interação direto no
+sistema?" e "implantou a utilização das moedas?":
+
+- **4 atividades que eram só texto viraram widgets de verdade**:
+  - "Complete o Versículo": 4 lacunas pra preencher, com correção na
+    hora (aceita sem acento/maiúscula) e permite tentar de novo até
+    acertar - mesmo padrão de retry do quiz (Ajuste 155).
+  - "Ligue o Personagem à sua História": jogo de ligar pares (clicar
+    no personagem, depois na história correspondente), com feedback
+    de erro sem travar a tentativa.
+  - "Desenhe a sua Oração": tela de desenho livre de verdade (canvas
+    HTML5, paleta de 8 cores + botão limpar) - antes só pedia pra
+    pegar papel e lápis fora do app.
+  - O antigo "Caça-palavras: Personagens do Novo Testamento" (que era
+    só texto e já tinha ficado redundante desde que os caça-palavras
+    de verdade existem como tipo `jogo`) virou um 4º puzzle de
+    caça-palavras real, com os mesmos 6 nomes.
+  - As 3 primeiras atividades só liberam "Concluir e ganhar XP" quando
+    tudo está certo (mesmo gate do quiz); o desenho não tem gate, é só
+    uma atividade livre.
+  - Nova migration `063_kids_atividades_interativas.sql`.
+- **Loja de moedas no Avatar**: além do "Pedir ajuda" do quiz (única
+  forma de gastar moedas até aqui), agora dá pra comprar 8 itens
+  exclusivos do Avatar (2 por categoria: chapéu, acessório, fundo,
+  título) só com moedas, independente do nível - uma segunda via de
+  progressão que não compete com o desbloqueio por XP. Nova tabela
+  `kids_avatar_compras` (migration `062_kids_avatar_compras.sql`)
+  registra a compra permanentemente; `KidsCrianca::gastarMoedas()`
+  (Ajuste 155) é reaproveitado pro desconto.
+
+**Testado**: banco local MariaDB do zero (`install.sql` completo,
+carregado com `--default-character-set=utf8mb4`) + `php -S` com uma
+criança de teste, via Playwright com Chromium real: "Complete o
+Versículo" (erro mantém o campo editável, acertar as 4 libera
+Concluir), "Ligue o Personagem" (par errado não trava, ligar os 5
+pares libera Concluir), "Desenhe a sua Oração" (traço real desenhado
+no canvas, sem gate), novo caça-palavras (arraste funcionando), e a
+loja do Avatar (compra desconta moedas certinho e o item comprado
+passa a aparecer equipável). Regressão: reexecutei os testes do
+Ajuste 155 (quiz com explicação/retry, caça-palavras por arraste) e
+nada quebrou. Um bug real foi encontrado e corrigido no teste: os
+botões de "Comprar" da loja estavam dentro do `<form>` principal de
+"Salvar visual" (form aninhado, inválido em HTML) - o clique acabava
+enviando o formulário errado. Corrigido movendo a loja pra uma seção
+com formulários próprios, fora do form de equipar. Nenhum
+erro/warning no log do servidor PHP.
+
 ## Ajuste 155 - 2026-07-23
 
 **KADOSYS Kids: caça-palavras por arraste, quiz com explicação bíblica + tentativas ilimitadas, e moedas gastas pra pedir ajuda**
