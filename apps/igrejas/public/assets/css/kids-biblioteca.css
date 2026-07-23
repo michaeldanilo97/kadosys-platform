@@ -283,6 +283,7 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
 }
 
 .kids-conteudo-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   background: #FFFFFF;
@@ -296,6 +297,44 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
 
 .kids-conteudo-card:hover {
   transform: translateY(-3px);
+}
+
+.kids-conteudo-card.concluido {
+  box-shadow: 0 6px 0 rgba(107, 203, 119, 0.35);
+}
+
+.kids-conteudo-card.concluido .capa {
+  opacity: 0.75;
+}
+
+.kids-conteudo-selo {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--kids-verde);
+  color: #FFFFFF;
+  font-size: 0.95rem;
+  box-shadow: 0 3px 0 rgba(31, 107, 44, 0.35);
+}
+
+.kids-progresso-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1.1rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(107, 203, 119, 0.18);
+  color: #1F6B2C;
+  font-weight: 700;
+  font-size: 0.82rem;
 }
 
 .kids-conteudo-card .capa {
@@ -865,7 +904,8 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
   transform: translateY(-3px);
 }
 
-.kids-item-card.selecionado {
+.kids-item-card.selecionado,
+.kids-item-card:has(input:checked) {
   border-color: var(--kids-roxo);
 }
 

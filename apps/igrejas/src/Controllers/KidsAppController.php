@@ -40,11 +40,14 @@ final class KidsAppController extends Controller
             $this->redirect('/kids');
         }
 
+        $crianca = $this->criancaLogada();
+
         echo $this->view('kids.tipo', [
             'pageTitle' => KidsConteudo::TIPOS[$tipo]['label'] . ' - KADOSYS Kids',
-            'crianca' => $this->criancaLogada(),
+            'crianca' => $crianca,
             'tipo' => $tipo,
             'conteudos' => KidsConteudo::publicadosPorTipo($tipo),
+            'concluidosIds' => KidsConteudo::concluidosPorCrianca($crianca->id, $tipo),
         ], 'kids-app');
     }
 
@@ -81,6 +84,17 @@ final class KidsAppController extends Controller
                     'xp' => $conteudo->xpRecompensa,
                     'moedas' => $conteudo->moedasRecompensa,
                 ]);
+            }
+
+            // No quiz, terminar um leva direto pro proximo ainda nao
+            // feito - sem esse pulo automatico a crianca precisava
+            // voltar pra lista e escolher manualmente toda vez.
+            if ($conteudo->tipo === 'quiz') {
+                $proximo = KidsConteudo::proximoNaoConcluidoPorTipo('quiz', $crianca->id);
+
+                if ($proximo !== null) {
+                    $this->redirect("/kids/conteudo/{$proximo->id}");
+                }
             }
         }
 

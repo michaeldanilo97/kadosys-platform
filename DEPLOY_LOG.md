@@ -17,6 +17,51 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 151 - 2026-07-23
+
+**KADOSYS Kids: quiz mostra o que já foi feito e avança sozinho pro próximo; corrige avatar sem reação ao clique**
+
+Dois problemas reportados no "modo criança" de Igrejas (`/kids/*`):
+
+- **Quiz pouco profissional**: na lista de quizzes (`/kids/tipo/quiz`) não
+  dava pra saber quais a criança já tinha feito, e ao concluir um quiz
+  ela caía de volta na mesma tela (`Já concluído`) em vez de seguir pro
+  próximo. Agora a listagem mostra um selo "✓" em cada card já
+  concluído e uma pílula de progresso ("6 de 11 concluídos"); ao
+  concluir um quiz, `KidsAppController::concluir` busca o próximo quiz
+  publicado ainda não feito (`KidsConteudo::proximoNaoConcluidoPorTipo`)
+  e manda a criança direto pra lá - só volta pro mesmo quiz quando não
+  sobra nenhum outro pra fazer. Esse "mostrar concluído" e progresso
+  também aparece nos outros tipos de conteúdo (colorir, jogo, etc.),
+  não só quiz, reaproveitando a mesma tela.
+- **Avatar não reagia a clique**: a causa era puramente visual - o CSS
+  do card de cada item (chapéu/acessório/fundo/título) só ficava com a
+  borda destacada via uma classe `.selecionado` calculada no servidor
+  na hora de renderizar a página, e o rádio interno tem
+  `pointer-events: none` (era assim de propósito, só o card em volta é
+  clicável) - só que **nenhuma regra CSS reagia ao clique**, então a
+  criança clicava, o rádio ficava marcado por baixo dos panos, mas
+  nada mudava na tela até apertar "Salvar visual" e a página recarregar
+  - parecia simplesmente quebrado. Corrigido com duas partes: (1) CSS
+  `.kids-item-card:has(input:checked)` pra destacar a borda na hora,
+  sem esperar salvar (mesmo padrão `:has()` já usado em Barbearias/
+  Academias); (2) um JS pequeno que atualiza a pré-visualização do
+  avatar no topo da tela (boné, acessório, cor de fundo, título) assim
+  que a criança clica numa opção, também antes de salvar - "Salvar
+  visual" continua sendo o único momento que grava no banco.
+
+**Testado localmente** (MariaDB + servidor PHP com sessão real de
+criança via PIN): completar quizzes em sequência confirmando o avanço
+automático pro próximo não concluído, o selo de concluído e a pílula de
+progresso na listagem, e o fallback (fica na mesma tela) quando todos os
+quizzes já foram feitos. Testado o avatar com Playwright (Chromium real,
+clicando nos rádios): confirmado que a pré-visualização do fundo muda de
+gradiente e o emoji do chapéu aparece imediatamente ao clicar, e que a
+regra `:has(input:checked)` do CSS realmente aplica a borda destacada
+(verificado isolado, já que o servidor PHP embutido usado no teste local
+não serve arquivos `.css` estáticos - limitação conhecida e já
+documentada desta sessão, não afeta o Apache real de produção).
+
 ## Ajuste 150 - 2026-07-23
 
 **KADOSYS Academias (Fase 3 - Check-in/checkout por QR fixo + gamificação/ranking)**
