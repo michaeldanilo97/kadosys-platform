@@ -17,6 +17,48 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 152 - 2026-07-23
+
+**KADOSYS Academias (Fase 4 - Ficha de treino + evolução de carga)**
+
+Quarta fase do novo produto Academias (ver Ajuste 150 pra Fase 3 -
+check-in/checkout). Entra a ficha de treino, o segundo diferencial
+pedido pelo usuário:
+
+- **Ficha de treino** (`/dashboard/fichas-treino`): a equipe/professor
+  cria uma ficha pra um aluno (nome, objetivo, validade) e monta a lista
+  de exercícios direto na tela de edição (nome, grupo muscular, séries,
+  repetições, carga sugerida, descanso, observação) - adicionar, editar
+  e remover exercício tudo na mesma página, sem telas separadas. Uma
+  academia pode ter várias fichas ativas ao mesmo tempo pro mesmo aluno
+  (ex.: "Treino A" e "Treino B" alternados), então "ativa" não é
+  exclusiva - o toggle só controla se aquela ficha aparece no painel do
+  aluno.
+- **Treino do dia** (`/minha-conta/{slug}/treino`): o aluno vê as
+  fichas ativas dele, entra em uma e marca cada exercício como feito
+  informando a carga usada e séries completas. Marcar de novo no mesmo
+  dia atualiza o registro em vez de duplicar (`UNIQUE` em
+  `treino_execucoes` por exercício+aluno+dia).
+- **Evolução de carga**: cada marcação vira um ponto no gráfico de
+  evolução daquele exercício, renderizado como um SVG simples (linha +
+  ponto no último registro, sem nenhuma biblioteca externa) direto
+  abaixo do exercício na tela do aluno.
+- Painel do aluno (`/minha-conta/{slug}`) ganhou um botão "Meu treino"
+  quando ele tem pelo menos uma ficha ativa.
+- Nova migration (`003_ficha_treino.sql`) + `install.sql` atualizado com
+  as tabelas `fichas_treino`, `ficha_exercicios` e `treino_execucoes`.
+
+**Testado**: banco local MariaDB do zero (`install.sql`), fluxo
+completo via curl com sessões reais de equipe e aluno - criação de
+professor/aluno, criação da ficha, adição/edição/remoção de exercícios,
+aluno reivindicando o próprio acesso, marcando um exercício como feito
+(e confirmando que marcar de novo no mesmo dia atualiza em vez de
+duplicar), gráfico SVG de evolução renderizando corretamente com dados
+inseridos em datas diferentes, toggle de ficha ativa/inativa refletindo
+no painel do aluno, e controle de acesso confirmando que um aluno não
+consegue ver a ficha de outro (404). Nenhum erro/warning no log do
+servidor PHP.
+
 ## Ajuste 151 - 2026-07-23
 
 **KADOSYS Kids: quiz mostra o que já foi feito e avança sozinho pro próximo; corrige avatar sem reação ao clique**

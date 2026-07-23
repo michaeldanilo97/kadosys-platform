@@ -11,10 +11,12 @@ use Academias\Controllers\CheckinController;
 use Academias\Controllers\ConfiguracaoController;
 use Academias\Controllers\DashboardController;
 use Academias\Controllers\FaturaController;
+use Academias\Controllers\FichaTreinoController;
 use Academias\Controllers\FinanceiroController;
 use Academias\Controllers\LandingController;
 use Academias\Controllers\PlanoMatriculaController;
 use Academias\Controllers\ProfessorController;
+use Academias\Controllers\TreinoController;
 use Academias\Controllers\WebhookController;
 use Academias\Core\Middleware\AuthMiddleware;
 use Academias\Core\Middleware\GuestMiddleware;
@@ -45,6 +47,12 @@ $router->post('/minha-conta/{slug}/entrar', [AlunoAreaController::class, 'entrar
 $router->get('/minha-conta/{slug}/cadastro', [AlunoAreaController::class, 'showCadastro']);
 $router->post('/minha-conta/{slug}/cadastro', [AlunoAreaController::class, 'cadastro']);
 $router->post('/minha-conta/{slug}/sair', [AlunoAreaController::class, 'sair']);
+
+// Treino do dia (area do aluno) - listar fichas ativas, ver exercicios
+// e marcar carga usada, que alimenta o grafico de evolucao.
+$router->get('/minha-conta/{slug}/treino', [TreinoController::class, 'index']);
+$router->get('/minha-conta/{slug}/treino/{fichaId}', [TreinoController::class, 'show']);
+$router->post('/minha-conta/{slug}/treino/{fichaId}/exercicios/{exercicioId}', [TreinoController::class, 'registrar']);
 
 // Autenticacao.
 $router->get('/login', [AuthController::class, 'showLogin'], [GuestMiddleware::class]);
@@ -81,6 +89,17 @@ $router->post('/dashboard/alunos', [AlunoController::class, 'store'], [AuthMiddl
 $router->get('/dashboard/alunos/{id}/editar', [AlunoController::class, 'edit'], [AuthMiddleware::class]);
 $router->post('/dashboard/alunos/{id}', [AlunoController::class, 'update'], [AuthMiddleware::class]);
 $router->post('/dashboard/alunos/{id}/excluir', [AlunoController::class, 'destroy'], [AuthMiddleware::class]);
+
+// Fichas de treino (equipe/professor) - CRUD da ficha + exercicios dela.
+$router->get('/dashboard/fichas-treino', [FichaTreinoController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/fichas-treino/novo', [FichaTreinoController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/fichas-treino', [FichaTreinoController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/fichas-treino/{id}/editar', [FichaTreinoController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/dashboard/fichas-treino/{id}', [FichaTreinoController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/fichas-treino/{id}/excluir', [FichaTreinoController::class, 'destroy'], [AuthMiddleware::class]);
+$router->post('/dashboard/fichas-treino/{id}/exercicios', [FichaTreinoController::class, 'storeExercicio'], [AuthMiddleware::class]);
+$router->post('/dashboard/fichas-treino/{id}/exercicios/{exercicioId}', [FichaTreinoController::class, 'updateExercicio'], [AuthMiddleware::class]);
+$router->post('/dashboard/fichas-treino/{id}/exercicios/{exercicioId}/excluir', [FichaTreinoController::class, 'destroyExercicio'], [AuthMiddleware::class]);
 
 // Professores.
 $router->get('/dashboard/professores', [ProfessorController::class, 'index'], [AuthMiddleware::class]);

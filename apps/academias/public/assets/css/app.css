@@ -962,6 +962,12 @@ a.user-panel-item:hover,
     color: var(--gray-400);
 }
 
+.treino-evolucao-svg {
+    width: 100%;
+    height: 60px;
+    display: block;
+}
+
 .status-badge.warn {
     background: rgba(245, 158, 11, 0.14);
     color: #FCD34D;
