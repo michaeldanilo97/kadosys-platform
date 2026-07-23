@@ -10,6 +10,7 @@ use Food\Controllers\CategoriaController;
 use Food\Controllers\CentroCustoController;
 use Food\Controllers\ClienteController;
 use Food\Controllers\CompraController;
+use Food\Controllers\ConfiguracaoController;
 use Food\Controllers\ContaPagarController;
 use Food\Controllers\ContaReceberController;
 use Food\Controllers\DashboardController;
@@ -186,3 +187,16 @@ $router->get('/dashboard/relatorios', [RelatorioController::class, 'index'], [Au
 
 // Faturas (historico de cobranca - sempre acessivel, mesmo bloqueado).
 $router->get('/dashboard/faturas', [FaturaController::class, 'index'], [AuthMiddleware::class]);
+
+// Configuracoes (perfil, white-label, Pix, dados fiscais, equipe, impressoras, backup).
+$router->get('/dashboard/configuracoes', [ConfiguracaoController::class, 'index'], [AuthMiddleware::class]);
+$router->post('/dashboard/configuracoes/perfil', [ConfiguracaoController::class, 'atualizarPerfil'], [AuthMiddleware::class]);
+$router->post('/dashboard/configuracoes/fiscal', [ConfiguracaoController::class, 'atualizarDadosFiscais'], [AuthMiddleware::class]);
+$router->post('/dashboard/configuracoes/pix', [ConfiguracaoController::class, 'salvarPix'], [AuthMiddleware::class]);
+$router->get('/dashboard/configuracoes/backup', [ConfiguracaoController::class, 'backup'], [AuthMiddleware::class]);
+$router->post('/dashboard/configuracoes/equipe', [ConfiguracaoController::class, 'criarUsuario'], [AuthMiddleware::class]);
+$router->get('/dashboard/configuracoes/equipe/{id}/editar', [ConfiguracaoController::class, 'editarUsuario'], [AuthMiddleware::class]);
+$router->post('/dashboard/configuracoes/equipe/{id}', [ConfiguracaoController::class, 'atualizarUsuario'], [AuthMiddleware::class]);
+$router->post('/dashboard/configuracoes/equipe/{id}/excluir', [ConfiguracaoController::class, 'excluirUsuario'], [AuthMiddleware::class]);
+$router->post('/dashboard/configuracoes/impressoras', [ConfiguracaoController::class, 'criarImpressora'], [AuthMiddleware::class]);
+$router->post('/dashboard/configuracoes/impressoras/{id}/excluir', [ConfiguracaoController::class, 'excluirImpressora'], [AuthMiddleware::class]);

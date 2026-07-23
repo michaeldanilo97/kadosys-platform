@@ -15,6 +15,7 @@ return array(
     'Food\\Controllers\\CentroCustoController' => $baseDir . '/src/Controllers/CentroCustoController.php',
     'Food\\Controllers\\ClienteController' => $baseDir . '/src/Controllers/ClienteController.php',
     'Food\\Controllers\\CompraController' => $baseDir . '/src/Controllers/CompraController.php',
+    'Food\\Controllers\\ConfiguracaoController' => $baseDir . '/src/Controllers/ConfiguracaoController.php',
     'Food\\Controllers\\ContaPagarController' => $baseDir . '/src/Controllers/ContaPagarController.php',
     'Food\\Controllers\\ContaReceberController' => $baseDir . '/src/Controllers/ContaReceberController.php',
     'Food\\Controllers\\DashboardController' => $baseDir . '/src/Controllers/DashboardController.php',
@@ -62,6 +63,7 @@ return array(
     'Food\\Models\\FichaTecnicaItem' => $baseDir . '/src/Models/FichaTecnicaItem.php',
     'Food\\Models\\FinanceiroLancamento' => $baseDir . '/src/Models/FinanceiroLancamento.php',
     'Food\\Models\\Fornecedor' => $baseDir . '/src/Models/Fornecedor.php',
+    'Food\\Models\\Impressora' => $baseDir . '/src/Models/Impressora.php',
     'Food\\Models\\Ingrediente' => $baseDir . '/src/Models/Ingrediente.php',
     'Food\\Models\\Pedido' => $baseDir . '/src/Models/Pedido.php',
     'Food\\Models\\PedidoItem' => $baseDir . '/src/Models/PedidoItem.php',
@@ -70,5 +72,6 @@ return array(
     'Food\\Models\\Produto' => $baseDir . '/src/Models/Produto.php',
     'Food\\Models\\Relatorio' => $baseDir . '/src/Models/Relatorio.php',
     'Food\\Models\\Restaurante' => $baseDir . '/src/Models/Restaurante.php',
+    'Food\\Models\\RestauranteAviso' => $baseDir . '/src/Models/RestauranteAviso.php',
     'Food\\Models\\User' => $baseDir . '/src/Models/User.php',
 );

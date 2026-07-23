@@ -8,13 +8,14 @@ use Superadmin\Core\Csrf;
  * @var string $busca
  * @var int $totalIgrejas
  * @var int $totalBarbearias
+ * @var int $totalFood
  * @var string|null $sucesso
  * @var string|null $erro
  * @var string $csrf
  */
 $basePath = $config['base_path'] ?? '';
 
-$rotulosProduto = ['igrejas' => 'Igrejas', 'barbearias' => 'Barbearias'];
+$rotulosProduto = ['igrejas' => 'Igrejas', 'barbearias' => 'Barbearias', 'food' => 'Food'];
 $rotulosStatus = [
     'ativo' => 'Ativo',
     'suspenso' => 'Suspenso',
@@ -31,7 +32,7 @@ $rotulosPagamento = [
 <div class="page-header">
     <div>
         <h1>Sites</h1>
-        <p>Todos os produtos KADOSYS em um so lugar - <?= count($sites) ?> site(s) (<?= $totalIgrejas ?> Igrejas, <?= $totalBarbearias ?> Barbearias).</p>
+        <p>Todos os produtos KADOSYS em um so lugar - <?= count($sites) ?> site(s) (<?= $totalIgrejas ?> Igrejas, <?= $totalBarbearias ?> Barbearias, <?= $totalFood ?> Food).</p>
     </div>
     <form method="GET" action="<?= $basePath ?>/sites">
         <input

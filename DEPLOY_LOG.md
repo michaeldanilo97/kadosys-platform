@@ -17,6 +17,43 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 166 - 2026-07-23
+
+**KADOSYS Food: Fase 9 (final) - Configurações + integração com o Super Admin**
+
+Nona e última fase do plano original do app Food: tela de Configurações
+completa e integração no painel `/sites` e `/avisos` do Super Admin,
+junto com Igrejas e Barbearias.
+
+- **Configurações**: perfil (nome/telefone/logo/cor de destaque,
+  reaproveitando os campos que já existiam em `restaurantes`), dados
+  fiscais informativos (CPF/CNPJ, razão social - sem emissão de NF-e,
+  que exigiria certificado digital + integração com a SEFAZ), chave Pix
+  própria, equipe (admin/operador, com a mesma trava de "sempre precisa
+  sobrar 1 admin ativo" já usada no Barbearias), impressoras (cadastro
+  só informativo de nome/IP - o comprovante do PDV continua saindo pela
+  impressão do navegador) e backup (exporta um JSON com todos os dados
+  do restaurante - produtos, pedidos, financeiro, clientes etc. - para
+  download sob demanda).
+- **`Food\Models\Impressora`** e **`Food\Models\RestauranteAviso`**:
+  models novos, seguindo o mesmo padrão estático já usado no resto do
+  app.
+- **Integração com o Super Admin**: clonados `SiteBarbearia` →
+  `SiteFood`, `DatabaseBarbearias` → `DatabaseFood`,
+  `config/database_barbearias.php` → `database_food.php`,
+  `AvisoBarbearia` → `AvisoFood` - o Food passa a aparecer lado a lado
+  com Igrejas/Barbearias na listagem unificada de sites (suspender/
+  reativar/estender acesso/excluir) e no painel de avisos da
+  plataforma, com o aviso aparecendo no sino de notificações do próprio
+  painel do restaurante (`Food\Models\RestauranteAviso::ativo()`).
+- Testado localmente ponta a ponta: todas as ações de Configurações
+  (perfil, dados fiscais, Pix, criar/editar/excluir usuário da equipe,
+  cadastrar/excluir impressora, baixar o backup e conferir o JSON),
+  mais o fluxo completo do Super Admin (o restaurante aparece em
+  `/sites`, suspender/reativar/estender funcionam, publicar um aviso só
+  para "Food" aparece no sino do painel do restaurante, excluir apaga
+  em cascata).
+
 ## Ajuste 165 - 2026-07-23
 
 **KADOSYS Food: Fase 8 - Dashboard rico + Gráficos + Relatórios/DRE**

@@ -10,21 +10,22 @@ use Superadmin\Core\CpanelUapiClient;
 use Superadmin\Core\Desprovisionador;
 use Superadmin\Core\Session;
 use Superadmin\Models\SiteBarbearia;
+use Superadmin\Models\SiteFood;
 use Superadmin\Models\SiteIgreja;
 
 /**
- * Listagem unificada de sites (Igrejas + Barbearias) e acoes
+ * Listagem unificada de sites (Igrejas + Barbearias + Food) e acoes
  * administrativas sobre eles: suspender, reativar, estender acesso
  * (ativar/postergar trial ou vencimento) e excluir.
  *
  * "Excluir" e IRREVERSIVEL - remove banco/usuario do cPanel (Igreja) ou
- * a linha + tudo em cascata (Barbearia), sem backup automatico. Por
- * isso exige digitar o nome exato do site antes de confirmar
+ * a linha + tudo em cascata (Barbearia/Food), sem backup automatico.
+ * Por isso exige digitar o nome exato do site antes de confirmar
  * (confirmarExclusao/excluir).
  */
 final class SiteController extends Controller
 {
-    private const PRODUTOS_VALIDOS = ['igrejas', 'barbearias'];
+    private const PRODUTOS_VALIDOS = ['igrejas', 'barbearias', 'food'];
 
     public function index(): void
     {
@@ -33,6 +34,7 @@ final class SiteController extends Controller
         $sites = array_merge(
             array_map(self::normalizarIgreja(...), SiteIgreja::listarTodas()),
             array_map(self::normalizarBarbearia(...), SiteBarbearia::listarTodas()),
+            array_map(self::normalizarFood(...), SiteFood::listarTodas()),
         );
 
         if ($busca !== '') {
@@ -53,6 +55,7 @@ final class SiteController extends Controller
             'busca' => $busca,
             'totalIgrejas' => count(array_filter($sites, static fn ($s) => $s['produto'] === 'igrejas')),
             'totalBarbearias' => count(array_filter($sites, static fn ($s) => $s['produto'] === 'barbearias')),
+            'totalFood' => count(array_filter($sites, static fn ($s) => $s['produto'] === 'food')),
             'sucesso' => Session::flash('sites_sucesso'),
             'erro' => Session::flash('sites_erro'),
             'csrf' => Csrf::field(),
@@ -86,9 +89,11 @@ final class SiteController extends Controller
         $dias = (int) $this->request->input('dias', 30);
         $dias = max(1, min(365, $dias));
 
-        $mensagem = $produto === 'igrejas'
-            ? SiteIgreja::estenderAcesso((int) $id, $dias)
-            : SiteBarbearia::estenderAcesso((int) $id, $dias);
+        $mensagem = match ($produto) {
+            'igrejas' => SiteIgreja::estenderAcesso((int) $id, $dias),
+            'barbearias' => SiteBarbearia::estenderAcesso((int) $id, $dias),
+            default => SiteFood::estenderAcesso((int) $id, $dias),
+        };
 
         Session::flash('sites_sucesso', $mensagem);
         $this->redirect('/sites');
@@ -145,9 +150,12 @@ final class SiteController extends Controller
 
                 Session::flash('sites_sucesso', $mensagem);
             }
-        } else {
+        } elseif ($produto === 'barbearias') {
             SiteBarbearia::excluir((int) $id);
             Session::flash('sites_sucesso', 'Barbearia excluida.');
+        } else {
+            SiteFood::excluir((int) $id);
+            Session::flash('sites_sucesso', 'Restaurante excluido.');
         }
 
         $this->redirect('/sites');
@@ -167,6 +175,8 @@ final class SiteController extends Controller
             SiteIgreja::atualizarStatus($id, $status);
         } elseif ($produto === 'barbearias') {
             SiteBarbearia::atualizarStatus($id, $status);
+        } elseif ($produto === 'food') {
+            SiteFood::atualizarStatus($id, $status);
         }
     }
 
@@ -185,6 +195,12 @@ final class SiteController extends Controller
             $barbearia = SiteBarbearia::find($id);
 
             return $barbearia ? self::normalizarBarbearia($barbearia) : null;
+        }
+
+        if ($produto === 'food') {
+            $restaurante = SiteFood::find($id);
+
+            return $restaurante ? self::normalizarFood($restaurante) : null;
         }
 
         return null;
@@ -226,6 +242,27 @@ final class SiteController extends Controller
             'status' => $barbearia->status,
             'criado_em' => $barbearia->criadoEm,
             'ultimo_acesso_em' => $barbearia->ultimoAcessoEm,
+            'acesso_bloqueado' => $acesso['bloqueado'],
+            'acesso_motivo' => $acesso['motivo'],
+            'acesso_vencimento' => $acesso['vencimento'],
+        ];
+    }
+
+    private static function normalizarFood(SiteFood $restaurante): array
+    {
+        $acesso = $restaurante->acesso();
+
+        return [
+            'produto' => 'food',
+            'id' => $restaurante->id,
+            'nome' => $restaurante->nome,
+            'identificador' => $restaurante->slug,
+            'url' => null,
+            'plano' => $restaurante->plano,
+            'metodo_pagamento' => $restaurante->metodoPagamento,
+            'status' => $restaurante->status,
+            'criado_em' => $restaurante->criadoEm,
+            'ultimo_acesso_em' => $restaurante->ultimoAcessoEm,
             'acesso_bloqueado' => $acesso['bloqueado'],
             'acesso_motivo' => $acesso['motivo'],
             'acesso_vencimento' => $acesso['vencimento'],

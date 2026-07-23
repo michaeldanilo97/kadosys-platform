@@ -14,6 +14,7 @@ return array(
     'Superadmin\\Core\\CpanelUapiClient' => $baseDir . '/src/Core/CpanelUapiClient.php',
     'Superadmin\\Core\\Csrf' => $baseDir . '/src/Core/Csrf.php',
     'Superadmin\\Core\\DatabaseBarbearias' => $baseDir . '/src/Core/DatabaseBarbearias.php',
+    'Superadmin\\Core\\DatabaseFood' => $baseDir . '/src/Core/DatabaseFood.php',
     'Superadmin\\Core\\DatabaseIgrejas' => $baseDir . '/src/Core/DatabaseIgrejas.php',
     'Superadmin\\Core\\Desprovisionador' => $baseDir . '/src/Core/Desprovisionador.php',
     'Superadmin\\Core\\MiddlewareInterface' => $baseDir . '/src/Core/MiddlewareInterface.php',
@@ -23,7 +24,9 @@ return array(
     'Superadmin\\Core\\Session' => $baseDir . '/src/Core/Session.php',
     'Superadmin\\Core\\View' => $baseDir . '/src/Core/View.php',
     'Superadmin\\Models\\AvisoBarbearia' => $baseDir . '/src/Models/AvisoBarbearia.php',
+    'Superadmin\\Models\\AvisoFood' => $baseDir . '/src/Models/AvisoFood.php',
     'Superadmin\\Models\\AvisoIgreja' => $baseDir . '/src/Models/AvisoIgreja.php',
     'Superadmin\\Models\\SiteBarbearia' => $baseDir . '/src/Models/SiteBarbearia.php',
+    'Superadmin\\Models\\SiteFood' => $baseDir . '/src/Models/SiteFood.php',
     'Superadmin\\Models\\SiteIgreja' => $baseDir . '/src/Models/SiteIgreja.php',
 );

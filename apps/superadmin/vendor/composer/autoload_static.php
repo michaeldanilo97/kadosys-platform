@@ -39,6 +39,7 @@ class ComposerStaticInit350ef342ea3d7b343803a306751bd87b
         'Superadmin\\Core\\CpanelUapiClient' => __DIR__ . '/../..' . '/src/Core/CpanelUapiClient.php',
         'Superadmin\\Core\\Csrf' => __DIR__ . '/../..' . '/src/Core/Csrf.php',
         'Superadmin\\Core\\DatabaseBarbearias' => __DIR__ . '/../..' . '/src/Core/DatabaseBarbearias.php',
+        'Superadmin\\Core\\DatabaseFood' => __DIR__ . '/../..' . '/src/Core/DatabaseFood.php',
         'Superadmin\\Core\\DatabaseIgrejas' => __DIR__ . '/../..' . '/src/Core/DatabaseIgrejas.php',
         'Superadmin\\Core\\Desprovisionador' => __DIR__ . '/../..' . '/src/Core/Desprovisionador.php',
         'Superadmin\\Core\\MiddlewareInterface' => __DIR__ . '/../..' . '/src/Core/MiddlewareInterface.php',
@@ -48,8 +49,10 @@ class ComposerStaticInit350ef342ea3d7b343803a306751bd87b
         'Superadmin\\Core\\Session' => __DIR__ . '/../..' . '/src/Core/Session.php',
         'Superadmin\\Core\\View' => __DIR__ . '/../..' . '/src/Core/View.php',
         'Superadmin\\Models\\AvisoBarbearia' => __DIR__ . '/../..' . '/src/Models/AvisoBarbearia.php',
+        'Superadmin\\Models\\AvisoFood' => __DIR__ . '/../..' . '/src/Models/AvisoFood.php',
         'Superadmin\\Models\\AvisoIgreja' => __DIR__ . '/../..' . '/src/Models/AvisoIgreja.php',
         'Superadmin\\Models\\SiteBarbearia' => __DIR__ . '/../..' . '/src/Models/SiteBarbearia.php',
+        'Superadmin\\Models\\SiteFood' => __DIR__ . '/../..' . '/src/Models/SiteFood.php',
         'Superadmin\\Models\\SiteIgreja' => __DIR__ . '/../..' . '/src/Models/SiteIgreja.php',
     );
 

@@ -488,3 +488,30 @@ CREATE TABLE IF NOT EXISTS contas_a_receber (
     CONSTRAINT contas_a_receber_cliente_id_foreign
         FOREIGN KEY (cliente_id) REFERENCES clientes (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Impressoras cadastradas so pra referencia (nome/IP) - sem integracao
+-- real com driver/protocolo ESC-POS nesta entrega.
+CREATE TABLE IF NOT EXISTS impressoras (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    restaurante_id INT UNSIGNED NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    ip VARCHAR(45) NULL,
+    ativo TINYINT(1) NOT NULL DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY impressoras_restaurante_id_index (restaurante_id),
+    CONSTRAINT impressoras_restaurante_id_foreign
+        FOREIGN KEY (restaurante_id) REFERENCES restaurantes (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Aviso do dono da plataforma (KADOSYS) pros restaurantes cadastrados -
+-- so uma linha ativa por vez, visivel pra todos (banco ja
+-- compartilhado, sem precisar de restaurante_id aqui). Publicado pelo
+-- Super Admin (apps/superadmin).
+CREATE TABLE IF NOT EXISTS restaurante_avisos (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    mensagem TEXT NOT NULL,
+    ativo TINYINT(1) NOT NULL DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY restaurante_avisos_ativo_index (ativo)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

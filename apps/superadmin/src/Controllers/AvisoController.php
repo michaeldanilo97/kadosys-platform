@@ -8,16 +8,18 @@ use Superadmin\Core\Controller;
 use Superadmin\Core\Csrf;
 use Superadmin\Core\Session;
 use Superadmin\Models\AvisoBarbearia;
+use Superadmin\Models\AvisoFood;
 use Superadmin\Models\AvisoIgreja;
 
 /**
  * Envio de avisos da plataforma - aparecem no sino de notificacoes de
- * cada produto (Igrejas: plataforma_avisos; Barbearias: barbearia_avisos).
- * O admin escolhe o publico: so Igrejas, so Barbearias, ou Todos.
+ * cada produto (Igrejas: plataforma_avisos; Barbearias: barbearia_avisos;
+ * Food: restaurante_avisos). O admin escolhe o publico: um produto so ou
+ * Todos.
  */
 final class AvisoController extends Controller
 {
-    private const PRODUTOS_VALIDOS = ['igrejas', 'barbearias'];
+    private const PRODUTOS_VALIDOS = ['igrejas', 'barbearias', 'food'];
 
     public function index(): void
     {
@@ -26,8 +28,10 @@ final class AvisoController extends Controller
             'activeMenu' => 'avisos',
             'avisoIgreja' => AvisoIgreja::ativo(),
             'avisoBarbearia' => AvisoBarbearia::ativo(),
+            'avisoFood' => AvisoFood::ativo(),
             'historicoIgreja' => AvisoIgreja::todos(),
             'historicoBarbearia' => AvisoBarbearia::todos(),
+            'historicoFood' => AvisoFood::todos(),
             'sucesso' => Session::flash('avisos_sucesso'),
             'erro' => Session::flash('avisos_erro'),
             'csrf' => Csrf::field(),
@@ -52,7 +56,8 @@ final class AvisoController extends Controller
         $alvos = match ($publico) {
             'igrejas' => ['igrejas'],
             'barbearias' => ['barbearias'],
-            default => ['igrejas', 'barbearias'],
+            'food' => ['food'],
+            default => ['igrejas', 'barbearias', 'food'],
         };
 
         if (in_array('igrejas', $alvos, true)) {
@@ -63,10 +68,15 @@ final class AvisoController extends Controller
             AvisoBarbearia::publicar($mensagem);
         }
 
+        if (in_array('food', $alvos, true)) {
+            AvisoFood::publicar($mensagem);
+        }
+
         $rotulo = match ($publico) {
             'igrejas' => 'Igrejas',
             'barbearias' => 'Barbearias',
-            default => 'Igrejas e Barbearias',
+            'food' => 'Food',
+            default => 'Igrejas, Barbearias e Food',
         };
 
         Session::flash('avisos_sucesso', 'Aviso publicado para ' . $rotulo . '.');
@@ -84,11 +94,11 @@ final class AvisoController extends Controller
             $this->redirect('/avisos');
         }
 
-        if ($produto === 'igrejas') {
-            AvisoIgreja::encerrar((int) $id);
-        } else {
-            AvisoBarbearia::encerrar((int) $id);
-        }
+        match ($produto) {
+            'igrejas' => AvisoIgreja::encerrar((int) $id),
+            'barbearias' => AvisoBarbearia::encerrar((int) $id),
+            default => AvisoFood::encerrar((int) $id),
+        };
 
         Session::flash('avisos_sucesso', 'Aviso encerrado.');
         $this->redirect('/avisos');
