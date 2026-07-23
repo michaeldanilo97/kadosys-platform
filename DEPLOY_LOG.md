@@ -17,6 +17,53 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 162 - 2026-07-23
+
+**KADOSYS Food: Fase 5 - Clientes + Pedidos + baixa automática de estoque**
+
+Quinta fase do app Food: cadastro de clientes e o módulo de Pedidos
+(Balcão/WhatsApp/iFood manual/Delivery próprio), com a peça mais nova
+até aqui - baixa automática de estoque em cascata ao confirmar um
+pedido, usando a ficha técnica de cada produto vendido.
+
+- **`clientes`**: cadastro simples (nome, telefone, WhatsApp,
+  aniversário, endereço, observações). Ticket médio, total gasto,
+  frequência e último pedido **não ficam guardados** - são calculados
+  na hora via query sobre `pedidos` (`Cliente::estatisticas()`), só
+  contando pedidos já confirmados.
+- **`pedidos` + `pedido_itens`**: pedido nasce com status "recebido"
+  (ainda em montagem, sem efeito real) e itens são adicionados um a um
+  - mesmo padrão já usado em Ficha Técnica/Compras. A coluna `status`
+  já nasce com os 6 valores do fluxo de produção completo do spec
+  original (Recebido/Em preparo/Finalizado/Saiu para entrega/Entregue/
+  Cancelado), mas só "Confirmar" e "Cancelar" são expostos nesta fase -
+  a tela de Produção (TV da cozinha) que vai expor o resto do fluxo
+  chega na Fase 6.
+- **`Pedido::finalizar()`**: dentro de **uma única transação**,
+  percorre cada item → ficha técnica do produto → desconta o estoque
+  de cada ingrediente proporcionalmente (quantidade vendida × consumo
+  da receita ÷ rendimento), com o mesmo UPDATE condicional atômico já
+  usado no resto da plataforma. **Se faltar estoque de qualquer
+  ingrediente, a transação inteira é revertida** e o pedido continua
+  "recebido" - a mensagem de erro aponta exatamente qual ingrediente
+  faltou. Com sucesso: loga a movimentação de saída de cada
+  ingrediente, cria um lançamento financeiro de receita e avança o
+  pedido pra "em preparo".
+- **`financeiro_lancamentos`** (schema mínimo): criado automaticamente
+  por `Pedido::finalizar()` - ainda sem tela própria (dashboard/CRUD/
+  relatórios completos ficam pra Fase 7).
+- Cancelar um pedido só é permitido enquanto ainda está "recebido"
+  (antes da baixa de estoque) - desfazer um pedido já confirmado
+  exigiria reverter o estoque com segurança, fora de escopo aqui (mesma
+  lógica conservadora já usada nas Compras).
+- 2 novos itens no menu lateral: "Pedidos" e "Clientes".
+- Testado fim a fim localmente (MariaDB + `php -S` + curl + Playwright):
+  criação de pedido + itens, confirmação com baixa de estoque
+  conferida manualmente item a item (matemática exata), lançamento
+  financeiro automático correto, bloqueio por estoque insuficiente com
+  rollback total (nada alterado), cancelamento, e estatísticas de
+  cliente contando só o pedido confirmado.
+
 ## Ajuste 161 - 2026-07-23
 
 **KADOSYS Food: Fase 4 - Estoque + Compras**

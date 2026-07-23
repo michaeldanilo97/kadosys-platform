@@ -108,6 +108,22 @@ final class Produto
         ];
     }
 
+    /**
+     * Produtos com status "ativo" - usado no seletor de itens de um
+     * Pedido, que nao deve oferecer produtos pausados/inativos.
+     *
+     * @return array<int, self>
+     */
+    public static function ativos(int $restauranteId): array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT ' . self::SELECT_COLUNAS . " FROM produtos WHERE restaurante_id = :restaurante_id AND status = 'ativo' ORDER BY nome ASC"
+        );
+        $stmt->execute(['restaurante_id' => $restauranteId]);
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
     public static function find(int $id, int $restauranteId): ?self
     {
         $stmt = Database::connection()->prepare(
