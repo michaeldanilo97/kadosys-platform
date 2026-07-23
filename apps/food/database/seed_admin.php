@@ -54,6 +54,10 @@ if ($restauranteId) {
     );
     $criarRestaurante->execute(['nome' => $nomeRestaurante, 'slug' => $slug]);
     $restauranteId = (int) $pdo->lastInsertId();
+
+    if (class_exists(\Food\Models\Categoria::class)) {
+        \Food\Models\Categoria::seedPadrao($restauranteId);
+    }
 }
 
 $hash = password_hash($password, PASSWORD_BCRYPT);
