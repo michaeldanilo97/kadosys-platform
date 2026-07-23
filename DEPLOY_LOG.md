@@ -17,6 +17,58 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 157 - 2026-07-23
+
+**KADOSYS Academias: dashboard modernizado (icones, efeitos, painel rico)**
+
+Pedido do usuário: "academias, modernize dashboard e funções, está muito
+simples quero algo tipo igrejas com efeitos e etc". Academias herdou o
+tratamento visual do Barbearias (emoji cru, sem hover/transicao, popup
+nativo de confirmação) - este ajuste porta pro Academias o mesmo
+tratamento que o Igrejas já tinha:
+
+- **Bootstrap Icons no lugar de emoji**: menu lateral, topbar, sino de
+  avisos, toggle de tema, menu do usuário e os botões de editar/excluir
+  de 9 telas de CRUD (Alunos, Professores, Planos de Matrícula,
+  Avaliação Física, Fichas de Treino, Financeiro, Configurações,
+  Check-in) agora usam `<i class="bi bi-...">` (CDN, mesmo padrão do
+  Igrejas) em vez de caracteres de emoji.
+- **`kadosys-modal.js` (popup de confirmação estilizado)**: copiado
+  verbatim do Igrejas (é 100% genérico, sem nada específico daquele
+  app) e ligado no `dashboard.js` via `initConfirmForms()` - todo
+  `onsubmit="return confirm(...)"` nativo virou `data-confirm="..."`
+  nas 9 telas de CRUD (exclusão de aluno/professor/plano/avaliação/
+  ficha/exercício/lançamento, troca de plano da assinatura, cancelar
+  assinatura, fechar caixa, regenerar QR de check-in).
+- **Efeitos visuais**: `.kpi-card` e `.modulo-card` ganharam hover
+  (lift + sombra + transição), ícone colorido em badge (`.kpi-icon`
+  azul/violeta/ciano/verde), seta que aparece no hover dos cards de
+  módulo, pulso suave (`prefers-reduced-motion`-aware) no ícone de
+  "check-ins agora".
+- **Painel enriquecido**: KPIs viraram links coloridos com ícone e
+  trend (Check-ins agora - com indicador "ao vivo", Receita de hoje,
+  Alunos ativos, Professores ativos); grid de módulos expandido de 4
+  pra 10 (todos exceto o próprio Painel); painel de avisos da
+  plataforma + top frequência do mês direto na tela inicial (antes só
+  dava pra ver o aviso no sininho da sidebar); painel de ações rápidas
+  (Novo aluno, Abrir QR de check-in, Nova avaliação física, Lançar no
+  financeiro).
+- `DashboardController` passou a agregar check-ins em aberto
+  (`AcademiaCheckin::presentesAgora`), receita do dia
+  (`FinanceiroLancamento::resumoDoPeriodo`), ranking do mês
+  (`AcademiaCheckin::rankingDoMes`) e o aviso ativo da plataforma
+  (`AcademiaAviso::ativo`) pra alimentar o painel.
+
+Testado localmente (MariaDB + PHP embutido + Playwright/Chromium real):
+login, painel com KPIs/módulos/quick actions, popup de confirmação
+substituindo o `confirm()` nativo na exclusão de aluno, alternância de
+tema claro/escuro, sidebar em modo mobile - tudo funcionando. Os ícones
+aparecem em branco nos screenshots de teste porque o proxy do sandbox
+bloqueia o CDN do Bootstrap Icons (`jsdelivr.net`); em produção
+carregam normalmente, do mesmo jeito que já funcionam hoje no Igrejas.
+
+---
+
 ## Ajuste 156 - 2026-07-23
 
 **KADOSYS Kids: atividades "so texto" viram widgets interativos + loja de moedas do Avatar**

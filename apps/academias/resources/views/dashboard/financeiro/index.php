@@ -120,7 +120,7 @@ $valorEsperadoCaixa = $caixa !== null ? $caixa->valorAbertura + $totalCaixaRecei
                 <div><span>Valor esperado</span><span><?= $moeda($valorEsperadoCaixa) ?></span></div>
             </div>
 
-            <form method="POST" action="<?= $basePath ?>/dashboard/financeiro/caixa/fechar" class="crud-form-grid" onsubmit="return confirm('Fechar o caixa? Essa ação não pode ser desfeita.');">
+            <form method="POST" action="<?= $basePath ?>/dashboard/financeiro/caixa/fechar" class="crud-form-grid" data-confirm="Fechar o caixa? Essa ação não pode ser desfeita.">
                 <?= Csrf::field() ?>
                 <div class="form-field">
                     <label for="valor_fechamento_informado">Valor contado ao fechar (R$)</label>
@@ -236,9 +236,9 @@ $valorEsperadoCaixa = $caixa !== null ? $caixa->valorAbertura + $totalCaixaRecei
                                 <td class="text-dim"><?= $labelFormaPagamento[$lancamento->formaPagamento] ?? $lancamento->formaPagamento ?></td>
                                 <td class="text-dim"><?= $moeda($lancamento->valor) ?></td>
                                 <td class="actions-col">
-                                    <form method="POST" action="<?= $basePath ?>/dashboard/financeiro/lancamentos/<?= $lancamento->id ?>/excluir" onsubmit="return confirm('Excluir este lançamento?');">
+                                    <form method="POST" action="<?= $basePath ?>/dashboard/financeiro/lancamentos/<?= $lancamento->id ?>/excluir" data-confirm="Excluir este lançamento?">
                                         <?= Csrf::field() ?>
-                                        <button type="submit" class="crud-icon-btn danger" title="Excluir">🗑️</button>
+                                        <button type="submit" class="crud-icon-btn danger" title="Excluir"><i class="bi bi-trash-fill"></i></button>
                                     </form>
                                 </td>
                             </tr>

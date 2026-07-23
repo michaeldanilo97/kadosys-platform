@@ -53,10 +53,10 @@ $basePath = $config['base_path'] ?? '';
                                 <td class="text-dim"><?= htmlspecialchars($item['ficha']->objetivo ?? '-', ENT_QUOTES, 'UTF-8') ?></td>
                                 <td><span class="status-badge <?= $item['ficha']->ativa ? 'ok' : 'dim' ?>"><?= $item['ficha']->ativa ? 'Ativa' : 'Inativa' ?></span></td>
                                 <td class="actions-col">
-                                    <a href="<?= $basePath ?>/dashboard/fichas-treino/<?= $item['ficha']->id ?>/editar" class="crud-icon-btn" title="Editar">✏️</a>
-                                    <form method="POST" action="<?= $basePath ?>/dashboard/fichas-treino/<?= $item['ficha']->id ?>/excluir" onsubmit="return confirm('Excluir esta ficha e todo o histórico de execução dela?');">
+                                    <a href="<?= $basePath ?>/dashboard/fichas-treino/<?= $item['ficha']->id ?>/editar" class="crud-icon-btn" title="Editar"><i class="bi bi-pencil-fill"></i></a>
+                                    <form method="POST" action="<?= $basePath ?>/dashboard/fichas-treino/<?= $item['ficha']->id ?>/excluir" data-confirm="Excluir esta ficha e todo o histórico de execução dela?">
                                         <?= Csrf::field() ?>
-                                        <button type="submit" class="crud-icon-btn danger" title="Excluir">🗑️</button>
+                                        <button type="submit" class="crud-icon-btn danger" title="Excluir"><i class="bi bi-trash-fill"></i></button>
                                     </form>
                                 </td>
                             </tr>

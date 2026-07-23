@@ -130,10 +130,10 @@ $campoExercicio = static function (string $campo, string $valorAtual) use ($exer
                                 <td class="text-dim"><?= $exercicio->cargaSugeridaKg !== null ? number_format($exercicio->cargaSugeridaKg, 1, ',', '.') . ' kg' : '-' ?></td>
                                 <td class="text-dim"><?= $exercicio->descansoSegundos !== null ? $exercicio->descansoSegundos . 's' : '-' ?></td>
                                 <td class="actions-col">
-                                    <a href="<?= $basePath ?>/dashboard/fichas-treino/<?= $ficha->id ?>/editar?exercicio=<?= $exercicio->id ?>" class="crud-icon-btn" title="Editar">✏️</a>
-                                    <form method="POST" action="<?= $basePath ?>/dashboard/fichas-treino/<?= $ficha->id ?>/exercicios/<?= $exercicio->id ?>/excluir" onsubmit="return confirm('Remover este exercício?');">
+                                    <a href="<?= $basePath ?>/dashboard/fichas-treino/<?= $ficha->id ?>/editar?exercicio=<?= $exercicio->id ?>" class="crud-icon-btn" title="Editar"><i class="bi bi-pencil-fill"></i></a>
+                                    <form method="POST" action="<?= $basePath ?>/dashboard/fichas-treino/<?= $ficha->id ?>/exercicios/<?= $exercicio->id ?>/excluir" data-confirm="Remover este exercício?">
                                         <?= Csrf::field() ?>
-                                        <button type="submit" class="crud-icon-btn danger" title="Excluir">🗑️</button>
+                                        <button type="submit" class="crud-icon-btn danger" title="Excluir"><i class="bi bi-trash-fill"></i></button>
                                     </form>
                                 </td>
                             </tr>

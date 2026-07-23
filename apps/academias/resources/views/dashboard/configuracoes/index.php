@@ -54,7 +54,7 @@ $basePath = $config['base_path'] ?? '';
                     <?php if ($ehAtual): ?>
                         <span class="btn-k btn-k-outline" style="width:100%; text-align:center; pointer-events:none; opacity:0.7;">Plano atual</span>
                     <?php else: ?>
-                        <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/plano" onsubmit="return confirm('Trocar para o plano <?= htmlspecialchars($planoNome, ENT_QUOTES, 'UTF-8') ?>? A próxima cobrança já sai no novo valor.');">
+                        <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/plano" data-confirm="Trocar para o plano <?= htmlspecialchars($planoNome, ENT_QUOTES, 'UTF-8') ?>? A próxima cobrança já sai no novo valor.">
                             <?= Csrf::field() ?>
                             <input type="hidden" name="plano" value="<?= htmlspecialchars($planoValor, ENT_QUOTES, 'UTF-8') ?>">
                             <button type="submit" class="btn-k btn-k-grad" style="width:100%;">Trocar para este plano</button>
@@ -72,7 +72,7 @@ $basePath = $config['base_path'] ?? '';
         <?php if ($academia->canceladoEm === null): ?>
             <p style="margin: 1.25rem 0 0; padding-top: 1.25rem; border-top: 1px solid var(--glass-border); font-size: 0.85rem;">
                 <span style="color: var(--gray-400);">Não tem fidelidade - pode cancelar quando quiser.</span>
-                <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/assinatura/cancelar" style="display:inline;" onsubmit="return confirm('Cancelar a assinatura da plataforma? Você continua com acesso até o fim do ciclo já pago, mas não vai ser cobrado de novo.');">
+                <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/assinatura/cancelar" style="display:inline;" data-confirm="Cancelar a assinatura da plataforma? Você continua com acesso até o fim do ciclo já pago, mas não vai ser cobrado de novo.">
                     <?= Csrf::field() ?>
                     <button type="submit" style="background:none; border:none; padding:0; color:#F87171; text-decoration:underline; cursor:pointer; font-size:inherit;">Cancelar assinatura</button>
                 </form>
@@ -207,11 +207,11 @@ $basePath = $config['base_path'] ?? '';
                             <td><span class="status-badge info"><?= $membro->role === User::ROLE_ADMIN ? 'Admin' : 'Equipe' ?></span></td>
                             <td><span class="status-badge <?= $membro->active ? 'ok' : 'dim' ?>"><?= $membro->active ? 'Ativo' : 'Inativo' ?></span></td>
                             <td class="actions-col">
-                                <a href="<?= $basePath ?>/dashboard/configuracoes/equipe/<?= $membro->id ?>/editar" class="crud-icon-btn" title="Editar">✏️</a>
+                                <a href="<?= $basePath ?>/dashboard/configuracoes/equipe/<?= $membro->id ?>/editar" class="crud-icon-btn" title="Editar"><i class="bi bi-pencil-fill"></i></a>
                                 <?php if ($membro->id !== $user->id): ?>
-                                    <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/equipe/<?= $membro->id ?>/excluir" onsubmit="return confirm('Remover o acesso de <?= htmlspecialchars(addslashes($membro->name), ENT_QUOTES, 'UTF-8') ?>?');">
+                                    <form method="POST" action="<?= $basePath ?>/dashboard/configuracoes/equipe/<?= $membro->id ?>/excluir" data-confirm="Remover o acesso de <?= htmlspecialchars($membro->name, ENT_QUOTES, 'UTF-8') ?>?">
                                         <?= Csrf::field() ?>
-                                        <button type="submit" class="crud-icon-btn danger" title="Remover">🗑️</button>
+                                        <button type="submit" class="crud-icon-btn danger" title="Remover"><i class="bi bi-trash-fill"></i></button>
                                     </form>
                                 <?php endif; ?>
                             </td>

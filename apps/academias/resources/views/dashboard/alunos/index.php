@@ -70,10 +70,10 @@ $statusBadge = [
                                 <td class="text-dim"><?= $aluno->matriculaVencimento ? (new DateTimeImmutable($aluno->matriculaVencimento))->format('d/m/Y') : '-' ?></td>
                                 <td><span class="status-badge <?= $statusBadge[$aluno->status] ?? 'dim' ?>"><?= $statusLabel[$aluno->status] ?? $aluno->status ?></span></td>
                                 <td class="actions-col">
-                                    <a href="<?= $basePath ?>/dashboard/alunos/<?= $aluno->id ?>/editar" class="crud-icon-btn" title="Editar">✏️</a>
-                                    <form method="POST" action="<?= $basePath ?>/dashboard/alunos/<?= $aluno->id ?>/excluir" onsubmit="return confirm('Excluir este aluno?');">
+                                    <a href="<?= $basePath ?>/dashboard/alunos/<?= $aluno->id ?>/editar" class="crud-icon-btn" title="Editar"><i class="bi bi-pencil-fill"></i></a>
+                                    <form method="POST" action="<?= $basePath ?>/dashboard/alunos/<?= $aluno->id ?>/excluir" data-confirm="Excluir este aluno?">
                                         <?= Csrf::field() ?>
-                                        <button type="submit" class="crud-icon-btn danger" title="Excluir">🗑️</button>
+                                        <button type="submit" class="crud-icon-btn danger" title="Excluir"><i class="bi bi-trash-fill"></i></button>
                                     </form>
                                 </td>
                             </tr>

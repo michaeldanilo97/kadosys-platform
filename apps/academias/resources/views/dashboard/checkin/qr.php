@@ -25,7 +25,7 @@ $basePath = $config['base_path'] ?? '';
         <div data-checkin-qr style="display:flex; justify-content:center; margin: 1.5rem 0;"></div>
         <p class="form-field-hint" style="word-break: break-all;"><?= htmlspecialchars($urlCheckin, ENT_QUOTES, 'UTF-8') ?></p>
 
-        <form method="POST" action="<?= $basePath ?>/dashboard/checkin/qr/regenerar" style="margin-top: 1.5rem;" onsubmit="return confirm('Gerar um QR novo? O QR impresso/exibido atualmente para de funcionar.');">
+        <form method="POST" action="<?= $basePath ?>/dashboard/checkin/qr/regenerar" style="margin-top: 1.5rem;" data-confirm="Gerar um QR novo? O QR impresso/exibido atualmente para de funcionar.">
             <?= Csrf::field() ?>
             <button type="submit" class="btn-k btn-k-outline">Gerar novo QR (invalida o atual)</button>
         </form>
