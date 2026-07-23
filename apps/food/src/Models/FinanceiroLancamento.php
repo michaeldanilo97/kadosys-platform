@@ -7,12 +7,13 @@ namespace Food\Models;
 use Food\Core\Database;
 
 /**
- * Lancamento financeiro (receita ou despesa). Ainda sem tela propria
- * nesta fase - o unico ponto de entrada e create(), chamado
- * automaticamente por Pedido::finalizar() (uma receita por pedido
- * confirmado) e, a partir da Fase 6, pelo Caixa (sangria/suprimento,
- * ambos com categoria propria e sem pedido_id). O dashboard/CRUD/
- * relatorios completos de Financeiro ficam pra Fase 7.
+ * Lancamento financeiro (receita ou despesa). Criado automaticamente
+ * por Pedido::finalizar() (uma receita por pedido confirmado, ou uma
+ * por forma de pagamento em vendas com split) e pelo Caixa (sangria/
+ * suprimento). A partir da Fase 7 tambem ganha uma tela propria
+ * (dashboard/Financeiro) com listagem paginada e resumo por periodo -
+ * lancamentos continuam so podendo ser CRIADOS automaticamente (nunca
+ * manualmente pela tela), so a leitura/exclusao e exposta ali.
  */
 final class FinanceiroLancamento
 {
@@ -21,6 +22,27 @@ final class FinanceiroLancamento
 
     public const CATEGORIA_SANGRIA = 'Sangria';
     public const CATEGORIA_SUPRIMENTO = 'Suprimento';
+
+    /** @var array<int, string> */
+    public const FORMAS_PAGAMENTO = ['dinheiro', 'pix', 'cartao_credito', 'cartao_debito', 'outro'];
+
+    private const SELECT_COLUNAS = 'id, restaurante_id, pedido_id, caixa_id, tipo, categoria, forma_pagamento,
+        valor, descricao, data_lancamento, created_at';
+
+    public function __construct(
+        public readonly int $id,
+        public readonly int $restauranteId,
+        public readonly ?int $pedidoId,
+        public readonly ?int $caixaId,
+        public readonly string $tipo,
+        public readonly ?string $categoria,
+        public readonly string $formaPagamento,
+        public readonly float $valor,
+        public readonly ?string $descricao,
+        public readonly string $dataLancamento,
+        public readonly ?string $createdAt = null,
+    ) {
+    }
 
     public static function create(
         int $restauranteId,
@@ -51,6 +73,68 @@ final class FinanceiroLancamento
         ]);
 
         return (int) Database::connection()->lastInsertId();
+    }
+
+    /**
+     * @return array{items: array<int, self>, total: int, page: int, perPage: int, lastPage: int}
+     */
+    public static function paginate(int $restauranteId, int $page, int $perPage, string $tipo = ''): array
+    {
+        $where = 'WHERE restaurante_id = :restaurante_id';
+        $params = ['restaurante_id' => $restauranteId];
+
+        if (in_array($tipo, [self::TIPO_RECEITA, self::TIPO_DESPESA], true)) {
+            $where .= ' AND tipo = :tipo';
+            $params['tipo'] = $tipo;
+        }
+
+        $stmtTotal = Database::connection()->prepare("SELECT COUNT(*) FROM financeiro_lancamentos {$where}");
+        $stmtTotal->execute($params);
+        $total = (int) $stmtTotal->fetchColumn();
+
+        $lastPage = max(1, (int) ceil($total / $perPage));
+        $page = max(1, min($page, $lastPage));
+        $offset = ($page - 1) * $perPage;
+
+        $stmt = Database::connection()->prepare(
+            'SELECT ' . self::SELECT_COLUNAS . " FROM financeiro_lancamentos {$where}
+             ORDER BY data_lancamento DESC, id DESC LIMIT {$perPage} OFFSET {$offset}"
+        );
+        $stmt->execute($params);
+
+        return [
+            'items' => array_map(self::fromRow(...), $stmt->fetchAll()),
+            'total' => $total,
+            'page' => $page,
+            'perPage' => $perPage,
+            'lastPage' => $lastPage,
+        ];
+    }
+
+    /**
+     * @return array{receitas: float, despesas: float, saldo: float}
+     */
+    public static function resumoDoPeriodo(int $restauranteId, string $dataInicio, string $dataFim): array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT tipo, COALESCE(SUM(valor), 0) AS total FROM financeiro_lancamentos
+             WHERE restaurante_id = :restaurante_id AND data_lancamento BETWEEN :inicio AND :fim
+             GROUP BY tipo'
+        );
+        $stmt->execute(['restaurante_id' => $restauranteId, 'inicio' => $dataInicio, 'fim' => $dataFim]);
+
+        $receitas = 0.0;
+        $despesas = 0.0;
+
+        foreach ($stmt->fetchAll() as $row) {
+            if ($row['tipo'] === self::TIPO_RECEITA) {
+                $receitas = (float) $row['total'];
+            } elseif ($row['tipo'] === self::TIPO_DESPESA) {
+                $despesas = (float) $row['total'];
+            }
+        }
+
+        return ['receitas' => $receitas, 'despesas' => $despesas, 'saldo' => $receitas - $despesas];
     }
 
     /**
@@ -97,5 +181,30 @@ final class FinanceiroLancamento
         $stmt->execute(['caixa_id' => $caixaId, 'restaurante_id' => $restauranteId]);
 
         return (float) $stmt->fetchColumn();
+    }
+
+    public static function delete(int $id, int $restauranteId): void
+    {
+        $stmt = Database::connection()->prepare(
+            'DELETE FROM financeiro_lancamentos WHERE id = :id AND restaurante_id = :restaurante_id'
+        );
+        $stmt->execute(['id' => $id, 'restaurante_id' => $restauranteId]);
+    }
+
+    private static function fromRow(array $row): self
+    {
+        return new self(
+            id: (int) $row['id'],
+            restauranteId: (int) $row['restaurante_id'],
+            pedidoId: $row['pedido_id'] !== null ? (int) $row['pedido_id'] : null,
+            caixaId: $row['caixa_id'] !== null ? (int) $row['caixa_id'] : null,
+            tipo: (string) $row['tipo'],
+            categoria: $row['categoria'] !== null ? (string) $row['categoria'] : null,
+            formaPagamento: (string) $row['forma_pagamento'],
+            valor: (float) $row['valor'],
+            descricao: $row['descricao'] !== null ? (string) $row['descricao'] : null,
+            dataLancamento: (string) $row['data_lancamento'],
+            createdAt: isset($row['created_at']) ? (string) $row['created_at'] : null,
+        );
     }
 }

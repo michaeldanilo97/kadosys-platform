@@ -17,6 +17,59 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 164 - 2026-07-23
+
+**KADOSYS Food: Fase 7 - Financeiro completo + Precificação Inteligente**
+
+Sétima fase do app Food: contas a pagar/receber (com despesas
+recorrentes/parceladas geradas automaticamente), centros de custo, e o
+simulador de Precificação Inteligente com a fórmula exata da taxa
+iFood Entrega II.
+
+- **`contas_a_pagar` / `contas_a_receber`**: status só guarda
+  pendente/paga(recebida)/cancelada de propósito - "vencida" é
+  **calculado na hora** (`estaVencida()`: pendente + vencimento
+  passado) em vez de persistido, pra nunca ficar desatualizado se um
+  cron atrasar.
+- **Despesas recorrentes**: `serie_id` agrupa as parcelas de uma mesma
+  despesa (a primeira linha aponta pra si mesma). Novo cron
+  `gerar_despesas_recorrentes.php` (mensal): pra cada série ativa, se a
+  parcela mais recente já foi paga e não atingiu o limite de parcelas
+  (`parcela_total` nulo = sem fim, ex. aluguel), gera a próxima com
+  vencimento um mês depois - idempotente (só gera de novo se a atual já
+  foi resolvida).
+- **`centros_custo`**: agrupamento opcional (Cozinha, Delivery,
+  Administrativo...) vinculável a qualquer conta a pagar/receber.
+- **`Food\Core\IfoodTaxaEntrega`**: função pura (comissão 12% do valor
+  + taxa fixa por faixa de distância: ≤3km R$3,99 / 3-5km R$5,99 /
+  5-7km R$7,99 / >7km R$9,99), retorna comissão/taxa fixa/valor líquido
+  recebido.
+- **Precificação Inteligente**: simulador avulso (não salva produto
+  nenhum) que reaproveita o **mesmo** `Food\Core\Custeio` já usado por
+  `Produto::recalcularCusto()` - o número mostrado aqui é sempre
+  idêntico ao que um produto real usaria com os mesmos parâmetros.
+  Calculadora separada pra simular o valor líquido de um pedido iFood
+  pela distância. A mesma tela também edita os valores padrão de
+  overhead/margem/taxas (`CusteioConfig::atualizar()`, antes só lidos,
+  nunca editáveis).
+- **`FinanceiroLancamento`** ganhou tela própria de listagem (resumo do
+  dia/mês, filtro por tipo, paginação) - upgrade de model "só grava"
+  pra um Model completo (`paginate()`, `resumoDoPeriodo()`, `delete()`),
+  mantendo a assinatura de `create()` intacta (Pedido::finalizar() e o
+  Caixa continuam funcionando sem alteração nenhuma).
+- 2 novos itens no menu lateral: "Financeiro" e "Precificação".
+- Testado fim a fim localmente (MariaDB + `php -S` + curl): simulador
+  de custeio conferido matemática exata (custo total, markup, margem,
+  preços ideais por canal incluindo o "engordamento" de iFood/
+  delivery), calculadora iFood Entrega II conferida (R$50 a 4km →
+  comissão R$6,00 + taxa R$5,99 → líquido R$38,01), salvamento dos
+  valores padrão da loja, CRUD de centros de custo, conta a pagar
+  recorrente de 12x gerando a parcela seguinte via cron **só** depois
+  de paga a atual (rodar de novo sem gerar duplicata), conta a receber
+  vencida exibindo o badge correto, KPI de vencidas atualizando em
+  tempo real, e nenhuma regressão nas telas de Caixa/PDV/Produção da
+  Fase 6.
+
 ## Ajuste 163 - 2026-07-23
 
 **KADOSYS Food: Fase 6 - Produção (cozinha/TV) + Caixa + PDV**

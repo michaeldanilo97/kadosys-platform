@@ -7,16 +7,21 @@ use Food\Controllers\AuthController;
 use Food\Controllers\CadastroController;
 use Food\Controllers\CaixaController;
 use Food\Controllers\CategoriaController;
+use Food\Controllers\CentroCustoController;
 use Food\Controllers\ClienteController;
 use Food\Controllers\CompraController;
+use Food\Controllers\ContaPagarController;
+use Food\Controllers\ContaReceberController;
 use Food\Controllers\DashboardController;
 use Food\Controllers\EstoqueController;
 use Food\Controllers\FaturaController;
+use Food\Controllers\FinanceiroController;
 use Food\Controllers\FornecedorController;
 use Food\Controllers\IngredienteController;
 use Food\Controllers\LandingController;
 use Food\Controllers\PdvController;
 use Food\Controllers\PedidoController;
+use Food\Controllers\PrecificacaoController;
 use Food\Controllers\ProducaoController;
 use Food\Controllers\ProdutoController;
 use Food\Controllers\WebhookController;
@@ -145,6 +150,35 @@ $router->post('/dashboard/pdv/pagamento/{pagamentoId}/excluir', [PdvController::
 $router->post('/dashboard/pdv/finalizar', [PdvController::class, 'finalizar'], [AuthMiddleware::class]);
 $router->get('/dashboard/pdv/{id}/recibo', [PdvController::class, 'recibo'], [AuthMiddleware::class]);
 $router->post('/dashboard/pdv/cancelar', [PdvController::class, 'cancelar'], [AuthMiddleware::class]);
+
+// Financeiro (dashboard/resumo + lancamentos automaticos).
+$router->get('/dashboard/financeiro', [FinanceiroController::class, 'index'], [AuthMiddleware::class]);
+
+// Contas a pagar.
+$router->get('/dashboard/financeiro/contas-a-pagar', [ContaPagarController::class, 'index'], [AuthMiddleware::class]);
+$router->post('/dashboard/financeiro/contas-a-pagar', [ContaPagarController::class, 'store'], [AuthMiddleware::class]);
+$router->post('/dashboard/financeiro/contas-a-pagar/{id}/pagar', [ContaPagarController::class, 'pagar'], [AuthMiddleware::class]);
+$router->post('/dashboard/financeiro/contas-a-pagar/{id}/cancelar', [ContaPagarController::class, 'cancelar'], [AuthMiddleware::class]);
+$router->post('/dashboard/financeiro/contas-a-pagar/{id}/excluir', [ContaPagarController::class, 'destroy'], [AuthMiddleware::class]);
+
+// Contas a receber.
+$router->get('/dashboard/financeiro/contas-a-receber', [ContaReceberController::class, 'index'], [AuthMiddleware::class]);
+$router->post('/dashboard/financeiro/contas-a-receber', [ContaReceberController::class, 'store'], [AuthMiddleware::class]);
+$router->post('/dashboard/financeiro/contas-a-receber/{id}/receber', [ContaReceberController::class, 'receber'], [AuthMiddleware::class]);
+$router->post('/dashboard/financeiro/contas-a-receber/{id}/cancelar', [ContaReceberController::class, 'cancelar'], [AuthMiddleware::class]);
+$router->post('/dashboard/financeiro/contas-a-receber/{id}/excluir', [ContaReceberController::class, 'destroy'], [AuthMiddleware::class]);
+
+// Centros de custo.
+$router->get('/dashboard/financeiro/centros-custo', [CentroCustoController::class, 'index'], [AuthMiddleware::class]);
+$router->post('/dashboard/financeiro/centros-custo', [CentroCustoController::class, 'store'], [AuthMiddleware::class]);
+$router->post('/dashboard/financeiro/centros-custo/{id}', [CentroCustoController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/financeiro/centros-custo/{id}/excluir', [CentroCustoController::class, 'destroy'], [AuthMiddleware::class]);
+
+// Precificacao Inteligente (simulador avulso, nao salva produto).
+$router->get('/dashboard/precificacao', [PrecificacaoController::class, 'index'], [AuthMiddleware::class]);
+$router->post('/dashboard/precificacao/simular', [PrecificacaoController::class, 'simular'], [AuthMiddleware::class]);
+$router->post('/dashboard/precificacao/simular-ifood', [PrecificacaoController::class, 'simularIfood'], [AuthMiddleware::class]);
+$router->post('/dashboard/precificacao/config', [PrecificacaoController::class, 'configSalvar'], [AuthMiddleware::class]);
 
 // Faturas (historico de cobranca - sempre acessivel, mesmo bloqueado).
 $router->get('/dashboard/faturas', [FaturaController::class, 'index'], [AuthMiddleware::class]);

@@ -421,3 +421,70 @@ CREATE TABLE IF NOT EXISTS pedido_pagamentos (
     CONSTRAINT pedido_pagamentos_pedido_id_foreign
         FOREIGN KEY (pedido_id) REFERENCES pedidos (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- KADOSYS Food - Fase 7 (Financeiro completo, Precificacao Inteligente)
+-- Ver database/migrations/006_financeiro_completo.sql para
+-- detalhes/comentarios de cada coluna/decisao.
+
+CREATE TABLE IF NOT EXISTS centros_custo (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    restaurante_id INT UNSIGNED NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    ativo TINYINT(1) NOT NULL DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY centros_custo_restaurante_id_index (restaurante_id),
+    CONSTRAINT centros_custo_restaurante_id_foreign
+        FOREIGN KEY (restaurante_id) REFERENCES restaurantes (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS contas_a_pagar (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    restaurante_id INT UNSIGNED NOT NULL,
+    centro_custo_id INT UNSIGNED NULL,
+    serie_id INT UNSIGNED NULL,
+    descricao VARCHAR(255) NOT NULL,
+    categoria VARCHAR(60) NULL,
+    valor DECIMAL(10, 2) NOT NULL,
+    vencimento DATE NOT NULL,
+    status ENUM('pendente', 'paga', 'cancelada') NOT NULL DEFAULT 'pendente',
+    pago_em DATE NULL,
+    anexo_path VARCHAR(255) NULL,
+    recorrente TINYINT(1) NOT NULL DEFAULT 0,
+    parcela_atual SMALLINT UNSIGNED NULL,
+    parcela_total SMALLINT UNSIGNED NULL,
+    observacoes TEXT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY contas_a_pagar_restaurante_id_index (restaurante_id),
+    KEY contas_a_pagar_serie_id_index (serie_id),
+    KEY contas_a_pagar_vencimento_index (vencimento),
+    CONSTRAINT contas_a_pagar_restaurante_id_foreign
+        FOREIGN KEY (restaurante_id) REFERENCES restaurantes (id) ON DELETE CASCADE,
+    CONSTRAINT contas_a_pagar_centro_custo_id_foreign
+        FOREIGN KEY (centro_custo_id) REFERENCES centros_custo (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS contas_a_receber (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    restaurante_id INT UNSIGNED NOT NULL,
+    centro_custo_id INT UNSIGNED NULL,
+    cliente_id INT UNSIGNED NULL,
+    descricao VARCHAR(255) NOT NULL,
+    categoria VARCHAR(60) NULL,
+    valor DECIMAL(10, 2) NOT NULL,
+    vencimento DATE NOT NULL,
+    status ENUM('pendente', 'recebida', 'cancelada') NOT NULL DEFAULT 'pendente',
+    recebido_em DATE NULL,
+    observacoes TEXT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY contas_a_receber_restaurante_id_index (restaurante_id),
+    KEY contas_a_receber_vencimento_index (vencimento),
+    CONSTRAINT contas_a_receber_restaurante_id_foreign
+        FOREIGN KEY (restaurante_id) REFERENCES restaurantes (id) ON DELETE CASCADE,
+    CONSTRAINT contas_a_receber_centro_custo_id_foreign
+        FOREIGN KEY (centro_custo_id) REFERENCES centros_custo (id) ON DELETE SET NULL,
+    CONSTRAINT contas_a_receber_cliente_id_foreign
+        FOREIGN KEY (cliente_id) REFERENCES clientes (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
