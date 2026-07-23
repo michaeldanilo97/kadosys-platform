@@ -17,6 +17,45 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 165 - 2026-07-23
+
+**KADOSYS Food: Fase 8 - Dashboard rico + Gráficos + Relatórios/DRE**
+
+Oitava fase do app Food: painel principal com KPIs de verdade (não mais
+placeholders), gráfico de fluxo de caixa e uma tela de Relatórios com
+DRE do período e ranking de produtos.
+
+- **`Food\Models\Relatorio`**: motor único de agregação (mesma
+  filosofia do `Food\Core\Custeio`) usado tanto pelo Dashboard quanto
+  pela nova tela de Relatórios, pra nunca ter duas telas somando a
+  mesma coisa de formas ligeiramente diferentes. Toda query que cruza
+  `financeiro_lancamentos` com `pedido_itens`/`produtos` passa antes
+  por uma subquery `DISTINCT pedido_id`, porque uma venda com
+  pagamento dividido (Fase 6) gera várias linhas de lançamento pro
+  mesmo pedido - sem isso o custo/quantidade vendida seria multiplicado
+  pela quantidade de formas de pagamento usadas na venda.
+- **DRE do período**: receita → custo direto vendido (CMV, calculado a
+  partir do custo em cache de cada produto) → lucro bruto → despesas
+  (lançamentos manuais + contas a pagar marcadas como pagas dentro do
+  período) → lucro líquido.
+- **Comissão iFood estimada**: só o percentual (12%) sobre pedidos de
+  origem iFood no período - a taxa fixa de entrega por distância não
+  entra porque o pedido não guarda a distância percorrida (aproximação
+  avisada na própria tela).
+- **Gráfico de fluxo de caixa**: vendorizado o Chart.js (MIT, arquivo
+  único em `public/assets/js/vendor/`, sem CDN) - mesmo padrão já usado
+  pro `qrcode-generator.js`. O gráfico lê as cores do tema atual
+  (claro/escuro) direto do CSS, em vez de cor fixa.
+- **Nova tela `/dashboard/relatorios`**: seletor de mês/ano, DRE,
+  produtos mais vendidos (por quantidade) e mais lucrativos (por
+  margem), clientes ativos/novos e estoque baixo - reaproveita as
+  mesmas queries do `Relatorio`.
+- Testado localmente com uma venda real no PDV (3x Bolo de Chocolate +
+  5x Brigadeiro Gourmet = R$ 57,50) conferindo cada KPI contra o
+  cálculo manual, mais uma despesa paga e um pedido iFood extras pra
+  validar a despesa no DRE e a comissão estimada com valor diferente de
+  zero.
+
 ## Ajuste 164 - 2026-07-23
 
 **KADOSYS Food: Fase 7 - Financeiro completo + Precificação Inteligente**

@@ -21,7 +21,7 @@ namespace Food\Core;
  */
 final class IfoodTaxaEntrega
 {
-    private const COMISSAO_PERCENTUAL = 12.0;
+    public const COMISSAO_PERCENTUAL = 12.0;
 
     private const TAXA_ATE_3KM = 3.99;
     private const TAXA_ATE_5KM = 5.99;

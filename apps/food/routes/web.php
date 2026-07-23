@@ -24,6 +24,7 @@ use Food\Controllers\PedidoController;
 use Food\Controllers\PrecificacaoController;
 use Food\Controllers\ProducaoController;
 use Food\Controllers\ProdutoController;
+use Food\Controllers\RelatorioController;
 use Food\Controllers\WebhookController;
 use Food\Core\Middleware\AuthMiddleware;
 use Food\Core\Middleware\GuestMiddleware;
@@ -179,6 +180,9 @@ $router->get('/dashboard/precificacao', [PrecificacaoController::class, 'index']
 $router->post('/dashboard/precificacao/simular', [PrecificacaoController::class, 'simular'], [AuthMiddleware::class]);
 $router->post('/dashboard/precificacao/simular-ifood', [PrecificacaoController::class, 'simularIfood'], [AuthMiddleware::class]);
 $router->post('/dashboard/precificacao/config', [PrecificacaoController::class, 'configSalvar'], [AuthMiddleware::class]);
+
+// Relatorios (DRE, produtos, clientes, estoque, fluxo de caixa).
+$router->get('/dashboard/relatorios', [RelatorioController::class, 'index'], [AuthMiddleware::class]);
 
 // Faturas (historico de cobranca - sempre acessivel, mesmo bloqueado).
 $router->get('/dashboard/faturas', [FaturaController::class, 'index'], [AuthMiddleware::class]);

@@ -54,6 +54,7 @@ class ComposerStaticInit9c083a6e32d18b4ef38506ab0dd7b9d3
         'Food\\Controllers\\PrecificacaoController' => __DIR__ . '/../..' . '/src/Controllers/PrecificacaoController.php',
         'Food\\Controllers\\ProducaoController' => __DIR__ . '/../..' . '/src/Controllers/ProducaoController.php',
         'Food\\Controllers\\ProdutoController' => __DIR__ . '/../..' . '/src/Controllers/ProdutoController.php',
+        'Food\\Controllers\\RelatorioController' => __DIR__ . '/../..' . '/src/Controllers/RelatorioController.php',
         'Food\\Controllers\\WebhookController' => __DIR__ . '/../..' . '/src/Controllers/WebhookController.php',
         'Food\\Core\\Auth' => __DIR__ . '/../..' . '/src/Core/Auth.php',
         'Food\\Core\\Controller' => __DIR__ . '/../..' . '/src/Core/Controller.php',
@@ -92,6 +93,7 @@ class ComposerStaticInit9c083a6e32d18b4ef38506ab0dd7b9d3
         'Food\\Models\\PedidoPagamento' => __DIR__ . '/../..' . '/src/Models/PedidoPagamento.php',
         'Food\\Models\\Plano' => __DIR__ . '/../..' . '/src/Models/Plano.php',
         'Food\\Models\\Produto' => __DIR__ . '/../..' . '/src/Models/Produto.php',
+        'Food\\Models\\Relatorio' => __DIR__ . '/../..' . '/src/Models/Relatorio.php',
         'Food\\Models\\Restaurante' => __DIR__ . '/../..' . '/src/Models/Restaurante.php',
         'Food\\Models\\User' => __DIR__ . '/../..' . '/src/Models/User.php',
     );

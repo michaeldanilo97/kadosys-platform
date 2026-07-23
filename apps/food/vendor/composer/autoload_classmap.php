@@ -29,6 +29,7 @@ return array(
     'Food\\Controllers\\PrecificacaoController' => $baseDir . '/src/Controllers/PrecificacaoController.php',
     'Food\\Controllers\\ProducaoController' => $baseDir . '/src/Controllers/ProducaoController.php',
     'Food\\Controllers\\ProdutoController' => $baseDir . '/src/Controllers/ProdutoController.php',
+    'Food\\Controllers\\RelatorioController' => $baseDir . '/src/Controllers/RelatorioController.php',
     'Food\\Controllers\\WebhookController' => $baseDir . '/src/Controllers/WebhookController.php',
     'Food\\Core\\Auth' => $baseDir . '/src/Core/Auth.php',
     'Food\\Core\\Controller' => $baseDir . '/src/Core/Controller.php',
@@ -67,6 +68,7 @@ return array(
     'Food\\Models\\PedidoPagamento' => $baseDir . '/src/Models/PedidoPagamento.php',
     'Food\\Models\\Plano' => $baseDir . '/src/Models/Plano.php',
     'Food\\Models\\Produto' => $baseDir . '/src/Models/Produto.php',
+    'Food\\Models\\Relatorio' => $baseDir . '/src/Models/Relatorio.php',
     'Food\\Models\\Restaurante' => $baseDir . '/src/Models/Restaurante.php',
     'Food\\Models\\User' => $baseDir . '/src/Models/User.php',
 );
