@@ -40,6 +40,7 @@ class ComposerStaticInit9c083a6e32d18b4ef38506ab0dd7b9d3
         'Food\\Controllers\\CentroCustoController' => __DIR__ . '/../..' . '/src/Controllers/CentroCustoController.php',
         'Food\\Controllers\\ClienteController' => __DIR__ . '/../..' . '/src/Controllers/ClienteController.php',
         'Food\\Controllers\\CompraController' => __DIR__ . '/../..' . '/src/Controllers/CompraController.php',
+        'Food\\Controllers\\ConfiguracaoController' => __DIR__ . '/../..' . '/src/Controllers/ConfiguracaoController.php',
         'Food\\Controllers\\ContaPagarController' => __DIR__ . '/../..' . '/src/Controllers/ContaPagarController.php',
         'Food\\Controllers\\ContaReceberController' => __DIR__ . '/../..' . '/src/Controllers/ContaReceberController.php',
         'Food\\Controllers\\DashboardController' => __DIR__ . '/../..' . '/src/Controllers/DashboardController.php',
@@ -87,6 +88,7 @@ class ComposerStaticInit9c083a6e32d18b4ef38506ab0dd7b9d3
         'Food\\Models\\FichaTecnicaItem' => __DIR__ . '/../..' . '/src/Models/FichaTecnicaItem.php',
         'Food\\Models\\FinanceiroLancamento' => __DIR__ . '/../..' . '/src/Models/FinanceiroLancamento.php',
         'Food\\Models\\Fornecedor' => __DIR__ . '/../..' . '/src/Models/Fornecedor.php',
+        'Food\\Models\\Impressora' => __DIR__ . '/../..' . '/src/Models/Impressora.php',
         'Food\\Models\\Ingrediente' => __DIR__ . '/../..' . '/src/Models/Ingrediente.php',
         'Food\\Models\\Pedido' => __DIR__ . '/../..' . '/src/Models/Pedido.php',
         'Food\\Models\\PedidoItem' => __DIR__ . '/../..' . '/src/Models/PedidoItem.php',
@@ -95,6 +97,7 @@ class ComposerStaticInit9c083a6e32d18b4ef38506ab0dd7b9d3
         'Food\\Models\\Produto' => __DIR__ . '/../..' . '/src/Models/Produto.php',
         'Food\\Models\\Relatorio' => __DIR__ . '/../..' . '/src/Models/Relatorio.php',
         'Food\\Models\\Restaurante' => __DIR__ . '/../..' . '/src/Models/Restaurante.php',
+        'Food\\Models\\RestauranteAviso' => __DIR__ . '/../..' . '/src/Models/RestauranteAviso.php',
         'Food\\Models\\User' => __DIR__ . '/../..' . '/src/Models/User.php',
     );
 

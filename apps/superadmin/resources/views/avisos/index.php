@@ -4,8 +4,10 @@
  * @var array $config
  * @var \Superadmin\Models\AvisoIgreja|null $avisoIgreja
  * @var \Superadmin\Models\AvisoBarbearia|null $avisoBarbearia
+ * @var \Superadmin\Models\AvisoFood|null $avisoFood
  * @var array $historicoIgreja
  * @var array $historicoBarbearia
+ * @var array $historicoFood
  * @var string|null $sucesso
  * @var string|null $erro
  * @var string $csrf
@@ -16,7 +18,7 @@ $formatarData = static fn (string $data): string => (new DateTimeImmutable($data
 <div class="page-header">
     <div>
         <h1>Avisos</h1>
-        <p>Publique um aviso no sino de notificações de Igrejas, Barbearias ou ambos.</p>
+        <p>Publique um aviso no sino de notificações de Igrejas, Barbearias, Food ou todos.</p>
     </div>
 </div>
 
@@ -47,6 +49,9 @@ $formatarData = static fn (string $data): string => (new DateTimeImmutable($data
                 </label>
                 <label style="display:flex; align-items:center; gap:6px; font-size:0.9rem; color:var(--text); font-weight:400;">
                     <input type="radio" name="publico" value="barbearias"> Somente Barbearias
+                </label>
+                <label style="display:flex; align-items:center; gap:6px; font-size:0.9rem; color:var(--text); font-weight:400;">
+                    <input type="radio" name="publico" value="food"> Somente Food
                 </label>
             </div>
         </div>
@@ -82,9 +87,23 @@ $formatarData = static fn (string $data): string => (new DateTimeImmutable($data
             </form>
         <?php endif; ?>
     </div>
+
+    <div class="card">
+        <h2 style="font-size:1rem; margin:0 0 4px;"><span class="badge badge-produto-food">Food</span></h2>
+        <?php if ($avisoFood === null): ?>
+            <p class="empty-state" style="padding:20px 0;">Nenhum aviso ativo.</p>
+        <?php else: ?>
+            <p style="font-size:0.9rem; margin:12px 0 4px;"><?= htmlspecialchars($avisoFood->mensagem, ENT_QUOTES, 'UTF-8') ?></p>
+            <p style="font-size:0.78rem; color:var(--text-dim); margin:0 0 12px;">Publicado em <?= $formatarData($avisoFood->createdAt) ?></p>
+            <form method="POST" action="<?= $basePath ?>/avisos/food/<?= $avisoFood->id ?>/encerrar">
+                <?= $csrf ?>
+                <button type="submit" class="btn btn-sm">Encerrar</button>
+            </form>
+        <?php endif; ?>
+    </div>
 </div>
 
-<?php if ($historicoIgreja !== [] || $historicoBarbearia !== []): ?>
+<?php if ($historicoIgreja !== [] || $historicoBarbearia !== [] || $historicoFood !== []): ?>
     <div class="card" style="margin-top:20px;">
         <h2 style="font-size:1rem; margin:0 0 12px;">Histórico recente</h2>
         <div class="table-wrap">
@@ -109,6 +128,14 @@ $formatarData = static fn (string $data): string => (new DateTimeImmutable($data
                     <?php foreach ($historicoBarbearia as $item): ?>
                         <tr>
                             <td><span class="badge badge-produto-barbearias">Barbearias</span></td>
+                            <td style="white-space:normal; max-width:400px;"><?= htmlspecialchars($item->mensagem, ENT_QUOTES, 'UTF-8') ?></td>
+                            <td><?= $item->ativo ? '<span class="badge badge-status-ativo">Ativo</span>' : '<span class="badge badge-status-suspenso">Encerrado</span>' ?></td>
+                            <td><?= $formatarData($item->createdAt) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    <?php foreach ($historicoFood as $item): ?>
+                        <tr>
+                            <td><span class="badge badge-produto-food">Food</span></td>
                             <td style="white-space:normal; max-width:400px;"><?= htmlspecialchars($item->mensagem, ENT_QUOTES, 'UTF-8') ?></td>
                             <td><?= $item->ativo ? '<span class="badge badge-status-ativo">Ativo</span>' : '<span class="badge badge-status-suspenso">Encerrado</span>' ?></td>
                             <td><?= $formatarData($item->createdAt) ?></td>

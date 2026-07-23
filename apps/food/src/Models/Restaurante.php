@@ -164,6 +164,26 @@ final class Restaurante
         ]);
     }
 
+    /**
+     * Dados fiscais INFORMATIVOS (razao social/CPF-CNPJ) - so aparecem
+     * em comprovantes/relatorios internos, sem emissao de NF-e (isso
+     * exigiria certificado digital + integracao com a SEFAZ, fora de
+     * escopo desta entrega).
+     */
+    public static function atualizarDadosFiscais(int $id, string $documentoTipo, string $documento, ?string $razaoSocial): void
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE restaurantes SET documento_tipo = :documento_tipo, documento = :documento, razao_social = :razao_social
+             WHERE id = :id'
+        );
+        $stmt->execute([
+            'documento_tipo' => in_array($documentoTipo, ['cpf', 'cnpj'], true) ? $documentoTipo : 'cpf',
+            'documento' => preg_replace('/\D/', '', $documento) ?? '',
+            'razao_social' => $razaoSocial !== null && trim($razaoSocial) !== '' ? trim($razaoSocial) : null,
+            'id' => $id,
+        ]);
+    }
+
     /** NULL usa a cor padrao do app (laranja/vermelho, tema food). */
     public static function atualizarCorPrimaria(int $id, ?string $corPrimaria): void
     {

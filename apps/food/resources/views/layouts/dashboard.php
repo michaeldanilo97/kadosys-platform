@@ -2,6 +2,7 @@
 
 use Food\Core\Csrf;
 use Food\Core\View;
+use Food\Models\RestauranteAviso;
 
 /**
  * @var string $content
@@ -16,9 +17,14 @@ $menu = $activeMenu ?? '';
 $tituloTopbar = preg_replace('/\s*-\s*KADOSYS Food$/', '', $pageTitle ?? '') ?: 'Painel';
 $iniciais = $user?->name ? mb_strtoupper(mb_substr($user->name, 0, 1, 'UTF-8'), 'UTF-8') : 'U';
 
+// Aviso da plataforma (publicado pelo Super Admin) - mostrado no sino
+// de notificacoes do rodape da sidebar, mesmo padrao ja usado no
+// Barbearias (Food\Models\RestauranteAviso e so leitura).
+$avisoPlataforma = RestauranteAviso::ativo();
+
 // Menu cresce fase a fase - os itens so entram aqui junto com o
 // controller correspondente, pra nunca ter um link que ainda nao
-// existe (Configuracoes chega na proxima fase).
+// existe.
 $itensMenu = [
     ['slug' => 'painel', 'href' => '/dashboard', 'icone' => 'bi-house-door-fill', 'label' => 'Painel'],
     ['slug' => 'pdv', 'href' => '/dashboard/pdv', 'icone' => 'bi-cash-coin', 'label' => 'PDV'],
@@ -36,6 +42,7 @@ $itensMenu = [
     ['slug' => 'compras', 'href' => '/dashboard/compras', 'icone' => 'bi-cart-check-fill', 'label' => 'Compras'],
     ['slug' => 'fornecedores', 'href' => '/dashboard/fornecedores', 'icone' => 'bi-truck', 'label' => 'Fornecedores'],
     ['slug' => 'faturas', 'href' => '/dashboard/faturas', 'icone' => 'bi-receipt', 'label' => 'Faturas'],
+    ['slug' => 'configuracoes', 'href' => '/dashboard/configuracoes', 'icone' => 'bi-gear-fill', 'label' => 'Configurações'],
 ];
 ?>
 <!DOCTYPE html>
@@ -95,6 +102,28 @@ $itensMenu = [
             <p class="restaurante-nome"><?= htmlspecialchars($restaurante->nome ?? '', ENT_QUOTES, 'UTF-8') ?></p>
             <p class="usuario-nome"><?= htmlspecialchars($user->name ?? '', ENT_QUOTES, 'UTF-8') ?></p>
             <div class="dash-sidebar-footer-actions">
+                <div class="topbar-dropdown topbar-dropdown-up" data-topbar-dropdown>
+                    <button type="button" class="btn-theme-toggle" aria-label="Notificações" aria-expanded="false" data-dropdown-toggle>
+                        <i class="bi bi-bell-fill"></i> <span class="dash-sidebar-footer-label">Avisos</span>
+                        <?php if ($avisoPlataforma !== null): ?><span class="dot"></span><?php endif; ?>
+                    </button>
+
+                    <div class="topbar-dropdown-panel notif-panel" data-dropdown-panel hidden>
+                        <div class="topbar-dropdown-head">Avisos da plataforma</div>
+
+                        <?php if ($avisoPlataforma === null): ?>
+                            <div class="notif-empty">Nenhum aviso no momento.</div>
+                        <?php else: ?>
+                            <div class="notif-item">
+                                <span>
+                                    <?= htmlspecialchars($avisoPlataforma->mensagem, ENT_QUOTES, 'UTF-8') ?>
+                                    <span class="notif-data"><?= (new \DateTimeImmutable($avisoPlataforma->createdAt))->format('d/m/Y') ?></span>
+                                </span>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
                 <button type="button" class="btn-theme-toggle" data-theme-toggle aria-label="Alternar tema claro/escuro">
                     <i class="bi bi-moon-stars" data-theme-icon></i> <span class="dash-sidebar-footer-label">Tema</span>
                 </button>

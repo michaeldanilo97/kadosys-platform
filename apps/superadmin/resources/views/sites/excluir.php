@@ -6,7 +6,7 @@
  * @var string $csrf
  */
 $basePath = $config['base_path'] ?? '';
-$rotulosProduto = ['igrejas' => 'Igreja', 'barbearias' => 'Barbearia'];
+$rotulosProduto = ['igrejas' => 'Igreja', 'barbearias' => 'Barbearia', 'food' => 'Restaurante'];
 ?>
 <div class="page-header">
     <div>
@@ -26,9 +26,12 @@ $rotulosProduto = ['igrejas' => 'Igreja', 'barbearias' => 'Barbearia'];
             O banco de dados e o usuario MySQL dessa igreja no cPanel serao excluidos, junto com o registro
             central. O subdominio precisa ser removido manualmente depois (essa hospedagem nao permite excluir
             subdominio via API).
-        <?php else: ?>
+        <?php elseif ($site['produto'] === 'barbearias'): ?>
             Todos os dados dessa barbearia (agendamentos, clientes, financeiro, produtos etc.) serao excluidos
             em cascata, sem possibilidade de recuperacao.
+        <?php else: ?>
+            Todos os dados desse restaurante (pedidos, produtos, estoque, financeiro etc.) serao excluidos em
+            cascata, sem possibilidade de recuperacao.
         <?php endif; ?>
     </p>
 
