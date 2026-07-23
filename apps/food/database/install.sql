@@ -330,7 +330,7 @@ CREATE TABLE IF NOT EXISTS pedidos (
     restaurante_id INT UNSIGNED NOT NULL,
     cliente_id INT UNSIGNED NULL,
     origem ENUM('balcao', 'whatsapp', 'ifood_manual', 'delivery_proprio') NOT NULL,
-    status ENUM('recebido', 'em_preparo', 'finalizado', 'saiu_para_entrega', 'entregue', 'cancelado') NOT NULL DEFAULT 'recebido',
+    status ENUM('montagem', 'recebido', 'em_preparo', 'finalizado', 'saiu_para_entrega', 'entregue', 'cancelado') NOT NULL DEFAULT 'montagem',
     forma_pagamento ENUM('dinheiro', 'pix', 'cartao_credito', 'cartao_debito', 'outro') NOT NULL DEFAULT 'dinheiro',
     endereco_entrega TEXT NULL,
     cupom VARCHAR(60) NULL,
@@ -365,10 +365,33 @@ CREATE TABLE IF NOT EXISTS pedido_itens (
         FOREIGN KEY (produto_id) REFERENCES produtos (id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- KADOSYS Food - Fase 6 (Producao, Caixa, PDV)
+-- Ver database/migrations/005_producao_caixa_pdv.sql para
+-- detalhes/comentarios de cada coluna/decisao.
+
+CREATE TABLE IF NOT EXISTS caixas (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    restaurante_id INT UNSIGNED NOT NULL,
+    usuario_id INT UNSIGNED NULL,
+    status ENUM('aberto', 'fechado') NOT NULL DEFAULT 'aberto',
+    valor_abertura DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    valor_fechamento_informado DECIMAL(10, 2) NULL,
+    observacoes_abertura TEXT NULL,
+    observacoes_fechamento TEXT NULL,
+    aberto_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    fechado_em TIMESTAMP NULL,
+    KEY caixas_restaurante_id_index (restaurante_id),
+    CONSTRAINT caixas_restaurante_id_foreign
+        FOREIGN KEY (restaurante_id) REFERENCES restaurantes (id) ON DELETE CASCADE,
+    CONSTRAINT caixas_usuario_id_foreign
+        FOREIGN KEY (usuario_id) REFERENCES users (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS financeiro_lancamentos (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     restaurante_id INT UNSIGNED NOT NULL,
     pedido_id INT UNSIGNED NULL,
+    caixa_id INT UNSIGNED NULL,
     tipo ENUM('receita', 'despesa') NOT NULL,
     categoria VARCHAR(60) NULL,
     forma_pagamento VARCHAR(30) NOT NULL,
@@ -377,9 +400,24 @@ CREATE TABLE IF NOT EXISTS financeiro_lancamentos (
     data_lancamento DATE NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     KEY financeiro_lancamentos_restaurante_id_index (restaurante_id),
-    UNIQUE KEY financeiro_lancamentos_pedido_id_unique (pedido_id),
+    KEY financeiro_lancamentos_pedido_id_index (pedido_id),
     CONSTRAINT financeiro_lancamentos_restaurante_id_foreign
         FOREIGN KEY (restaurante_id) REFERENCES restaurantes (id) ON DELETE CASCADE,
     CONSTRAINT financeiro_lancamentos_pedido_id_foreign
+        FOREIGN KEY (pedido_id) REFERENCES pedidos (id) ON DELETE CASCADE,
+    CONSTRAINT financeiro_lancamentos_caixa_id_foreign
+        FOREIGN KEY (caixa_id) REFERENCES caixas (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS pedido_pagamentos (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    pedido_id INT UNSIGNED NOT NULL,
+    forma_pagamento ENUM('dinheiro', 'pix', 'cartao_credito', 'cartao_debito', 'outro') NOT NULL,
+    valor DECIMAL(10, 2) NOT NULL,
+    valor_recebido DECIMAL(10, 2) NULL,
+    troco DECIMAL(10, 2) NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY pedido_pagamentos_pedido_id_index (pedido_id),
+    CONSTRAINT pedido_pagamentos_pedido_id_foreign
         FOREIGN KEY (pedido_id) REFERENCES pedidos (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

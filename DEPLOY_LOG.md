@@ -17,6 +17,68 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 163 - 2026-07-23
+
+**KADOSYS Food: Fase 6 - Produção (cozinha/TV) + Caixa + PDV**
+
+Sexta fase do app Food: a tela de cozinha em tempo real, abertura/
+fechamento de caixa com sangria/suprimento e o PDV completo com venda
+touch, split payment e Pix dinâmico.
+
+- **Correção de semântica do status do pedido**: a Fase 5 usava
+  "recebido" pra dizer "ainda em montagem, sem estoque baixado" - mas o
+  spec original usa "Recebido" como a primeira coluna do kanban da
+  cozinha (pedido confirmado, cozinha recebeu). Entrou um novo valor
+  `montagem` pra fase de montagem (pré-confirmação), liberando
+  "recebido" pra voltar a significar "confirmado". Migration faz
+  `ALTER` acrescentando `montagem` ao ENUM antes de migrar as linhas
+  antigas com status `recebido` (que sob a semântica velha eram sempre
+  rascunhos) pra `montagem`.
+- **Produção**: `/dashboard/producao` (kanban Recebido → Em preparo →
+  Finalizado → Saiu para entrega → Entregue hoje), com timer de tempo
+  decorrido calculado no navegador e alerta sonoro de pedido novo via
+  polling (`/dashboard/producao/dados`) - o som é sintetizado no
+  próprio navegador (Web Audio API, 3 beeps ascendentes), sem precisar
+  de nenhum arquivo de áudio. Variante `/dashboard/producao/tv`, tela
+  cheia sem sidebar, com botão "Habilitar som" (desbloqueio de áudio
+  exige um gesto do usuário no navegador).
+- **`caixas`**: abertura/fechamento de turno, clone quase direto do
+  model já usado em Barbearias. Sangria/suprimento **não** viraram uma
+  tabela própria - são `financeiro_lancamentos` comuns (despesa/
+  categoria "Sangria" ou receita/categoria "Suprimento") vinculados via
+  `caixa_id`, mesmo padrão de Barbearias. O saldo esperado do caixa é
+  `valor_abertura` + soma dos lançamentos vinculados a ele.
+- **`pedido_pagamentos`**: permite mais de uma forma de pagamento por
+  venda (split) - se um pedido não tiver nenhuma linha aqui,
+  `Pedido::finalizar()` cai no comportamento antigo da Fase 5 (um único
+  lançamento com `pedidos.forma_pagamento` pro valor total), então
+  pedidos criados pela tela normal de Pedidos continuam intactos. Pra
+  isso, a `UNIQUE` em `financeiro_lancamentos.pedido_id` (Fase 5) virou
+  um índice comum.
+- **PDV** (`/dashboard/pdv`): o "carrinho" é sempre um Pedido de
+  verdade (origem balcão, status `montagem`), guardado na sessão -
+  reaproveita 100% a lógica de itens/estoque já existente, sem
+  duplicar regra de negócio. Grid de produtos tocável + campo de
+  código de barras (autofocado, sem SDK - qualquer leitor USB digita
+  como teclado); tela de pagamento aceita dinheiro/Pix/cartão/vale
+  combinados na mesma venda, calcula troco automaticamente (dinheiro:
+  aplica `min(recebido, restante)`, troco = `recebido - aplicado`) e
+  gera QR Pix dinâmico com o valor exato do restante (reaproveita
+  `Food\Core\PixEstatico`, confirmação ainda manual). Exige caixa
+  aberto pra vender. Recibo final é uma página simples pra impressão
+  pelo próprio navegador (`window.print()`, sem driver ESC-POS).
+- 3 novos itens no menu lateral: "PDV", "Produção", "Caixa".
+- Testado fim a fim localmente (MariaDB + `php -S` + curl): venda
+  completa no PDV com 2 produtos (R$37,00) split em dinheiro (R$20
+  recebidos, sem troco) + Pix (R$17,00), baixa de estoque conferida
+  (9,600kg restantes, exato), 2 lançamentos financeiros vinculados ao
+  caixa (saldo esperado R$100 abertura + R$37 vendas = R$137,00
+  confirmado na tela), sangria de R$50 e suprimento de R$30 (saldo
+  R$117,00 confirmado), fechamento de caixa, avanço completo do pedido
+  pelas 4 etapas do kanban de Produção, bloqueio de venda sem caixa
+  aberto, e rollback total ao tentar confirmar um pedido clássico sem
+  estoque suficiente (nada alterado, mensagem aponta o ingrediente).
+
 ## Ajuste 162 - 2026-07-23
 
 **KADOSYS Food: Fase 5 - Clientes + Pedidos + baixa automática de estoque**

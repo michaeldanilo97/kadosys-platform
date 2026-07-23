@@ -23,6 +23,7 @@ $labelOrigem = [
 ];
 
 $labelStatus = [
+    Pedido::STATUS_MONTAGEM => 'Montagem',
     Pedido::STATUS_RECEBIDO => 'Recebido',
     Pedido::STATUS_EM_PREPARO => 'Em preparo',
     Pedido::STATUS_FINALIZADO => 'Finalizado',
@@ -32,7 +33,8 @@ $labelStatus = [
 ];
 
 $badgeStatus = [
-    Pedido::STATUS_RECEBIDO => 'dim',
+    Pedido::STATUS_MONTAGEM => 'dim',
+    Pedido::STATUS_RECEBIDO => 'ok',
     Pedido::STATUS_EM_PREPARO => 'ok',
     Pedido::STATUS_FINALIZADO => 'ok',
     Pedido::STATUS_SAIU_PARA_ENTREGA => 'ok',

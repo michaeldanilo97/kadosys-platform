@@ -15,9 +15,10 @@ use Food\Core\Database;
  *
  * NESTA fase, o pedido e montado (itens adicionados um a um, sem
  * nenhum efeito real ainda - mesmo padrao de FichaTecnicaItem) enquanto
- * status = "recebido". `finalizar()` e o unico avanco de status
+ * status = "montagem". `finalizar()` e o unico avanco de status
  * disponivel aqui: confirma o pedido de vez, baixando o estoque de
- * verdade (recebido -> em_preparo). Os demais avancos (em_preparo ->
+ * verdade (montagem -> recebido - a cozinha passa a ver o pedido a
+ * partir daqui). Os demais avancos (recebido -> em_preparo ->
  * finalizado -> saiu_para_entrega -> entregue) sao expostos pela tela
  * de Producao da Fase 6, sem precisar tocar em estoque de novo.
  */
@@ -31,12 +32,27 @@ final class Pedido
     /** @var array<int, string> */
     public const ORIGENS_VALIDAS = [self::ORIGEM_BALCAO, self::ORIGEM_WHATSAPP, self::ORIGEM_IFOOD_MANUAL, self::ORIGEM_DELIVERY_PROPRIO];
 
+    public const STATUS_MONTAGEM = 'montagem';
     public const STATUS_RECEBIDO = 'recebido';
     public const STATUS_EM_PREPARO = 'em_preparo';
     public const STATUS_FINALIZADO = 'finalizado';
     public const STATUS_SAIU_PARA_ENTREGA = 'saiu_para_entrega';
     public const STATUS_ENTREGUE = 'entregue';
     public const STATUS_CANCELADO = 'cancelado';
+
+    /**
+     * Transicoes de status permitidas na tela de Producao (Fase 6) -
+     * "montagem" nao entra aqui porque so sai dela via finalizar()
+     * (que tambem baixa estoque), nunca por um avanco simples.
+     *
+     * @var array<string, string>
+     */
+    public const PROXIMO_STATUS_PRODUCAO = [
+        self::STATUS_RECEBIDO => self::STATUS_EM_PREPARO,
+        self::STATUS_EM_PREPARO => self::STATUS_FINALIZADO,
+        self::STATUS_FINALIZADO => self::STATUS_SAIU_PARA_ENTREGA,
+        self::STATUS_SAIU_PARA_ENTREGA => self::STATUS_ENTREGUE,
+    ];
 
     /** @var array<int, string> */
     public const FORMAS_PAGAMENTO = ['dinheiro', 'pix', 'cartao_credito', 'cartao_debito', 'outro'];
@@ -137,7 +153,7 @@ final class Pedido
             'restaurante_id' => $restauranteId,
             'cliente_id' => $clienteId,
             'origem' => $origem,
-            'status' => self::STATUS_RECEBIDO,
+            'status' => self::STATUS_MONTAGEM,
             'forma_pagamento' => $formaPagamento,
             'endereco_entrega' => $enderecoEntrega,
             'cupom' => $cupom,
@@ -171,14 +187,19 @@ final class Pedido
      * ficha tecnica do produto -> desconta o estoque de cada ingrediente
      * (mesmo UPDATE condicional atomico usado no resto da plataforma).
      * Se faltar estoque de QUALQUER ingrediente, a transacao inteira e
-     * revertida e o pedido continua "recebido" (nada e alterado) - erro
+     * revertida e o pedido continua "montagem" (nada e alterado) - erro
      * indica exatamente qual ingrediente faltou. Em caso de sucesso,
      * cria o lancamento financeiro de receita e avanca o status pra
-     * "em_preparo".
+     * "recebido" (cozinha recebeu, visivel na tela de Producao).
+     *
+     * "$caixaId" e usado pelo PDV (Fase 6) pra vincular o(s) lancamento(s)
+     * financeiro(s) ao caixa aberto no momento da venda - chamadas fora
+     * do PDV (tela normal de Pedidos) nao passam nada e continuam com
+     * caixa_id NULL, exatamente como na Fase 5.
      *
      * @return array{sucesso: bool, erro: ?string}
      */
-    public static function finalizar(int $id, int $restauranteId): array
+    public static function finalizar(int $id, int $restauranteId, ?int $caixaId = null): array
     {
         $pedido = self::find($id, $restauranteId);
 
@@ -186,7 +207,7 @@ final class Pedido
             return ['sucesso' => false, 'erro' => 'Pedido não encontrado.'];
         }
 
-        if ($pedido->status !== self::STATUS_RECEBIDO) {
+        if ($pedido->status !== self::STATUS_MONTAGEM) {
             return ['sucesso' => false, 'erro' => 'Esse pedido já foi confirmado ou cancelado.'];
         }
 
@@ -249,18 +270,40 @@ final class Pedido
             $stmtStatus = $pdo->prepare(
                 'UPDATE pedidos SET status = :status, updated_at = NOW() WHERE id = :id AND restaurante_id = :restaurante_id'
             );
-            $stmtStatus->execute(['status' => self::STATUS_EM_PREPARO, 'id' => $id, 'restaurante_id' => $restauranteId]);
+            $stmtStatus->execute(['status' => self::STATUS_RECEBIDO, 'id' => $id, 'restaurante_id' => $restauranteId]);
 
-            FinanceiroLancamento::create(
-                $restauranteId,
-                $id,
-                FinanceiroLancamento::TIPO_RECEITA,
-                'Vendas',
-                $pedido->formaPagamento,
-                $pedido->valorTotal,
-                'Pedido #' . $id,
-                (new \DateTimeImmutable())->format('Y-m-d'),
-            );
+            $pagamentos = PedidoPagamento::doPedido($id);
+            $dataLancamento = (new \DateTimeImmutable())->format('Y-m-d');
+
+            if ($pagamentos !== []) {
+                // Split payment (PDV): um lancamento por forma de pagamento.
+                foreach ($pagamentos as $pagamento) {
+                    FinanceiroLancamento::create(
+                        $restauranteId,
+                        $id,
+                        FinanceiroLancamento::TIPO_RECEITA,
+                        'Vendas',
+                        $pagamento->formaPagamento,
+                        $pagamento->valor,
+                        'Pedido #' . $id,
+                        $dataLancamento,
+                        $caixaId,
+                    );
+                }
+            } else {
+                // Comportamento da Fase 5: uma unica forma de pagamento pro valor_total inteiro.
+                FinanceiroLancamento::create(
+                    $restauranteId,
+                    $id,
+                    FinanceiroLancamento::TIPO_RECEITA,
+                    'Vendas',
+                    $pedido->formaPagamento,
+                    $pedido->valorTotal,
+                    'Pedido #' . $id,
+                    $dataLancamento,
+                    $caixaId,
+                );
+            }
 
             $pdo->commit();
 
@@ -275,7 +318,7 @@ final class Pedido
     }
 
     /**
-     * Cancela o pedido - so permitido enquanto ainda esta "recebido"
+     * Cancela o pedido - so permitido enquanto ainda esta "montagem"
      * (nenhum estoque foi baixado ainda). Cancelar um pedido ja
      * confirmado exigiria reverter a baixa de estoque com seguranca,
      * fora de escopo aqui (mesma logica conservadora ja aplicada as
@@ -285,11 +328,90 @@ final class Pedido
     {
         $stmt = Database::connection()->prepare(
             "UPDATE pedidos SET status = :status, updated_at = NOW()
-             WHERE id = :id AND restaurante_id = :restaurante_id AND status = 'recebido'"
+             WHERE id = :id AND restaurante_id = :restaurante_id AND status = 'montagem'"
         );
         $stmt->execute(['status' => self::STATUS_CANCELADO, 'id' => $id, 'restaurante_id' => $restauranteId]);
 
         return $stmt->rowCount() > 0;
+    }
+
+    /**
+     * Avanca o pedido pra proxima etapa da Producao (recebido ->
+     * em_preparo -> finalizado -> saiu_para_entrega -> entregue) - sem
+     * nenhum efeito colateral em estoque/financeiro, que ja aconteceram
+     * em finalizar(). So aceita o status atual exato como condicao no
+     * WHERE (idempotente/seguro contra clique duplo ou duas abas).
+     */
+    public static function avancarStatus(int $id, int $restauranteId): bool
+    {
+        $pedido = self::find($id, $restauranteId);
+
+        if ($pedido === null || !isset(self::PROXIMO_STATUS_PRODUCAO[$pedido->status])) {
+            return false;
+        }
+
+        $proximo = self::PROXIMO_STATUS_PRODUCAO[$pedido->status];
+
+        $stmt = Database::connection()->prepare(
+            'UPDATE pedidos SET status = :novo_status, updated_at = NOW()
+             WHERE id = :id AND restaurante_id = :restaurante_id AND status = :status_atual'
+        );
+        $stmt->execute([
+            'novo_status' => $proximo,
+            'id' => $id,
+            'restaurante_id' => $restauranteId,
+            'status_atual' => $pedido->status,
+        ]);
+
+        return $stmt->rowCount() > 0;
+    }
+
+    /**
+     * Pedidos "em producao" (ja confirmados, ainda nao entregues nem
+     * cancelados) pra tela de cozinha/TV - ordenados do mais antigo pro
+     * mais novo (FIFO), que e como uma cozinha real prioriza.
+     *
+     * @return array<int, self>
+     */
+    public static function emProducao(int $restauranteId): array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT ' . self::SELECT_COLUNAS . ' ' . self::JOINS . '
+             WHERE p.restaurante_id = :restaurante_id
+               AND p.status IN (:recebido, :em_preparo, :finalizado, :saiu_para_entrega)
+             ORDER BY p.created_at ASC, p.id ASC'
+        );
+        $stmt->execute([
+            'restaurante_id' => $restauranteId,
+            'recebido' => self::STATUS_RECEBIDO,
+            'em_preparo' => self::STATUS_EM_PREPARO,
+            'finalizado' => self::STATUS_FINALIZADO,
+            'saiu_para_entrega' => self::STATUS_SAIU_PARA_ENTREGA,
+        ]);
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /**
+     * Pedidos entregues HOJE - ultima coluna do kanban de Producao, so
+     * pra dar visibilidade do que acabou de sair sem o quadro crescer
+     * pra sempre (pedidos entregues em dias anteriores nao aparecem
+     * mais aqui, so no historico normal de Pedidos).
+     *
+     * @return array<int, self>
+     */
+    public static function entreguesHoje(int $restauranteId): array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT ' . self::SELECT_COLUNAS . ' ' . self::JOINS . '
+             WHERE p.restaurante_id = :restaurante_id
+               AND p.status = :entregue
+               AND DATE(p.updated_at) = CURDATE()
+             ORDER BY p.updated_at DESC'
+        );
+        $stmt->execute(['restaurante_id' => $restauranteId, 'entregue' => self::STATUS_ENTREGUE]);
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
     }
 
     private static function fromRow(array $row): self

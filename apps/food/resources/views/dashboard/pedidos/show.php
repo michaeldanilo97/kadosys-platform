@@ -15,7 +15,7 @@ use Food\Models\Produto;
  */
 $basePath = $config['base_path'] ?? '';
 $baseUrl = $basePath . '/dashboard/pedidos/' . $pedido->id;
-$editavel = $pedido->status === Pedido::STATUS_RECEBIDO;
+$editavel = $pedido->status === Pedido::STATUS_MONTAGEM;
 
 $labelOrigem = [
     Pedido::ORIGEM_BALCAO => 'Balcão',
@@ -25,6 +25,7 @@ $labelOrigem = [
 ];
 
 $labelStatus = [
+    Pedido::STATUS_MONTAGEM => 'Montagem',
     Pedido::STATUS_RECEBIDO => 'Recebido',
     Pedido::STATUS_EM_PREPARO => 'Em preparo',
     Pedido::STATUS_FINALIZADO => 'Finalizado',
@@ -34,7 +35,8 @@ $labelStatus = [
 ];
 
 $badgeStatus = [
-    Pedido::STATUS_RECEBIDO => 'dim',
+    Pedido::STATUS_MONTAGEM => 'dim',
+    Pedido::STATUS_RECEBIDO => 'ok',
     Pedido::STATUS_EM_PREPARO => 'ok',
     Pedido::STATUS_FINALIZADO => 'ok',
     Pedido::STATUS_SAIU_PARA_ENTREGA => 'ok',

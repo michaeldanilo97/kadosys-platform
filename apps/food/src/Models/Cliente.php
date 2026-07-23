@@ -150,8 +150,8 @@ final class Cliente
 
     /**
      * Metricas calculadas na hora sobre os pedidos do cliente - so
-     * conta pedidos ja confirmados (status diferente de "recebido" -
-     * ainda em montagem - e de "cancelado").
+     * conta pedidos ja confirmados (status diferente de "montagem" -
+     * ainda sendo montado - e de "cancelado").
      *
      * @return array{totalPedidos: int, totalGasto: float, ticketMedio: float, ultimoPedidoEm: ?string}
      */
@@ -161,7 +161,7 @@ final class Cliente
             "SELECT COUNT(*) AS total_pedidos, COALESCE(SUM(valor_total), 0) AS total_gasto,
                 COALESCE(AVG(valor_total), 0) AS ticket_medio, MAX(created_at) AS ultimo_pedido_em
              FROM pedidos
-             WHERE cliente_id = :id AND restaurante_id = :restaurante_id AND status NOT IN ('recebido', 'cancelado')"
+             WHERE cliente_id = :id AND restaurante_id = :restaurante_id AND status NOT IN ('montagem', 'cancelado')"
         );
         $stmt->execute(['id' => $id, 'restaurante_id' => $restauranteId]);
         $row = $stmt->fetch();
