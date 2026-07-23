@@ -1,0 +1,100 @@
+-- KADOSYS Food - Schema inicial (Fase 1)
+-- RODAR UMA UNICA VEZ no banco kadosys1_food (banco UNICO e
+-- compartilhado entre todos os restaurantes - diferente do KADOSYS
+-- Igrejas, aqui NAO ha um banco por cliente). Toda tabela de negocio
+-- (exceto a propria `restaurantes`) tem uma coluna restaurante_id que
+-- isola os dados de cada restaurante - todo Model PRECISA filtrar por
+-- ela em toda query, ja que o banco nao faz esse isolamento sozinho.
+--
+-- Esta Fase 1 traz so o esqueleto (tenant + billing + login). As
+-- tabelas de catalogo/estoque/pedidos/financeiro entram nas fases
+-- seguintes, cada uma com sua propria migration.
+
+-- "status" comeca 'pendente' pra quem escolhe Pix/cartao (so vira
+-- 'ativo' quando o webhook do Mercado Pago confirma o pagamento) e ja
+-- nasce 'ativo' pra quem escolhe trial (sem cobranca nenhuma nos
+-- primeiros dias, ver Food\Models\Plano::TRIAL_DIAS). Diferente do
+-- KADOSYS Igrejas, aqui NAO ha banco/subdominio pra provisionar -
+-- "ativar" e so um UPDATE nesta mesma linha, sem infraestrutura
+-- nenhuma de por meio.
+CREATE TABLE IF NOT EXISTS restaurantes (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    slug VARCHAR(60) NOT NULL,
+    telefone VARCHAR(20) NULL,
+    documento_tipo ENUM('cpf', 'cnpj') NOT NULL DEFAULT 'cpf',
+    documento VARCHAR(14) NOT NULL DEFAULT '',
+    razao_social VARCHAR(190) NULL,
+    logo_path VARCHAR(255) NULL,
+    cor_primaria VARCHAR(7) NULL,
+    plano ENUM('essencial', 'premium', 'enterprise') NOT NULL DEFAULT 'essencial',
+    metodo_pagamento ENUM('cartao', 'pix', 'trial') NOT NULL DEFAULT 'trial',
+    mp_preapproval_id VARCHAR(64) NULL,
+    trial_expira_em DATETIME NULL,
+    proximo_vencimento DATE NULL,
+    plano_agendado VARCHAR(20) NULL,
+    ultimo_acesso_em DATETIME NULL,
+    status ENUM('pendente', 'ativo', 'suspenso') NOT NULL DEFAULT 'pendente',
+    cancelado_em DATETIME NULL,
+    pix_chave VARCHAR(140) NULL,
+    pix_nome_beneficiario VARCHAR(25) NULL,
+    pix_cidade VARCHAR(15) NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY restaurantes_slug_unique (slug),
+    KEY restaurantes_documento_index (documento)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Cobranca Pix avulsa - cobre tanto o PRIMEIRO pagamento (cadastro
+-- novo) quanto cada renovacao mensal seguinte (gerada por
+-- cron/gerar_faturas_pix.php), sem distincao entre as duas. Cartao nao
+-- gera linha aqui: a cobranca recorrente e feita pelo proprio Mercado
+-- Pago via preapproval (ver restaurantes.mp_preapproval_id).
+CREATE TABLE IF NOT EXISTS restaurante_faturas (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    restaurante_id INT UNSIGNED NOT NULL,
+    plano ENUM('essencial', 'premium', 'enterprise') NOT NULL,
+    tipo ENUM('renovacao', 'upgrade_proporcional') NOT NULL DEFAULT 'renovacao',
+    valor DECIMAL(10, 2) NOT NULL,
+    mp_payment_id VARCHAR(64) NULL,
+    pix_qr_code TEXT NULL,
+    pix_qr_code_base64 MEDIUMTEXT NULL,
+    status ENUM('pendente', 'paga', 'expirada', 'cancelada') NOT NULL DEFAULT 'pendente',
+    vencimento DATETIME NOT NULL,
+    pago_em DATETIME NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY restaurante_faturas_mp_payment_id_unique (mp_payment_id),
+    KEY restaurante_faturas_restaurante_id_index (restaurante_id),
+    CONSTRAINT restaurante_faturas_restaurante_id_foreign
+        FOREIGN KEY (restaurante_id) REFERENCES restaurantes (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- users.email e unico GLOBALMENTE (nao por restaurante) - cada conta
+-- de acesso pertence a exatamente um restaurante, e o login resolve
+-- direto pra qual sem precisar de uma etapa de selecao.
+CREATE TABLE IF NOT EXISTS users (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    restaurante_id INT UNSIGNED NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    email VARCHAR(150) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'usuario') NOT NULL DEFAULT 'admin',
+    active TINYINT(1) NOT NULL DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY users_email_unique (email),
+    KEY users_restaurante_id_index (restaurante_id),
+    CONSTRAINT users_restaurante_id_foreign
+        FOREIGN KEY (restaurante_id) REFERENCES restaurantes (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Recuperacao de senha ("esqueci minha senha", ver Food\Controllers\AuthController).
+CREATE TABLE IF NOT EXISTS password_resets (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(150) NOT NULL,
+    token_hash CHAR(64) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY password_resets_email_index (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

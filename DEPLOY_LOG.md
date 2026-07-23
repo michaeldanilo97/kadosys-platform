@@ -17,6 +17,61 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 158 - 2026-07-23
+
+**KADOSYS Food: novo app (Fase 1 - esqueleto + billing + landing + dashboard base)**
+
+Início de um novo produto na plataforma, **Food** (`food.kadosys.com.br`),
+voltado a confeitarias/restaurantes/delivery, com o spec completo (ficha
+técnica com custeio automático, estoque de ingredientes, PDV, pedidos
+multi-canal, produção, financeiro completo, precificação inteligente
+com a fórmula do iFood Entrega II) planejado em 9 fases. Esta é a
+Fase 1, seguindo literalmente a mesma arquitetura de Igrejas/Barbearias/
+Academias: app autocontido `apps/food` (namespace `Food\`), banco único
+`kadosys1_food` (usuário `kadosys1_michael`) com isolamento lógico por
+`restaurante_id`.
+
+- **Core clonado do Barbearias** (Auth, Csrf, Database, Documento,
+  Mailer, MercadoPagoClient, Middleware, PixEstatico, Request, Router,
+  Session, View) - sem `ClienteAuth`/`Disponibilidade` (nenhum portal
+  público de autoatendimento nesta entrega).
+- **`install.sql`**: `restaurantes` (tenant + billing), `restaurante_faturas`
+  (cobrança Pix avulsa), `users`, `password_resets`.
+- **`Food\Models\Plano`**: 3 planos (Essencial R$49,90 / Plus R$74,90 /
+  Premium R$99,99, faixa combinada com o usuário), trial de 7 dias.
+- **Billing completo**: `CadastroController` (trial síncrono / Pix
+  avulso com QR / assinatura recorrente via Checkout Pro),
+  `WebhookController` (confirmação assíncrona Mercado Pago),
+  `AssinaturaController` (tela de bloqueio quando trial vence ou fatura
+  atrasa), `FaturaController` (histórico), crons
+  `gerar_faturas_pix.php` e `suspender_assinaturas_canceladas.php`.
+- **Landing pública rica** com copy específico do domínio (ficha
+  técnica automática, taxa do iFood embutida, PDV com Pix, produção em
+  tempo real) e os 3 planos.
+- **Dashboard já moderno desde o início** (diferente de Barbearias/
+  Academias, que ganharam isso depois em retrofit): Bootstrap Icons,
+  `kadosys-modal.js`, sidebar colapsável, tema claro/escuro, hover/
+  efeitos nos cards, PWA (manifest/service worker/ícones) - painel
+  ainda simples (boas-vindas), os módulos de verdade entram nas
+  próximas fases.
+- `seed_admin.php` pra popular um restaurante + admin de teste.
+
+Testado localmente (MariaDB + PHP embutido + Playwright/Chromium real):
+`composer dump-autoload`, landing completa (todas as seções, incluindo
+scroll-reveal), cadastro, login → painel → faturas, alternância de
+tema, logout - tudo funcionando, `php -l` limpo em todos os arquivos
+novos. Ícones aparecem em branco nos screenshots de teste porque o
+proxy do sandbox bloqueia o CDN do Bootstrap Icons; em produção
+carregam normalmente, do mesmo jeito que já funcionam hoje no Igrejas/
+Barbearias/Academias.
+
+As próximas fases (Categorias/Ingredientes/Fornecedores, Produtos+Ficha
+Técnica, Estoque+Compras, Clientes+Pedidos, Produção+PDV, Financeiro
+completo+Precificação, Dashboard rico+Relatórios, Configurações+
+Superadmin) seguem o plano já definido, cada uma virando um PR próprio.
+
+---
+
 ## Ajuste 157 - 2026-07-23
 
 **KADOSYS Academias: dashboard modernizado (icones, efeitos, painel rico)**
