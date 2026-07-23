@@ -6,6 +6,8 @@ use Academias\Controllers\AlunoAreaController;
 use Academias\Controllers\AlunoController;
 use Academias\Controllers\AssinaturaController;
 use Academias\Controllers\AuthController;
+use Academias\Controllers\AvaliacaoController;
+use Academias\Controllers\AvaliacaoFisicaController;
 use Academias\Controllers\CadastroController;
 use Academias\Controllers\CheckinController;
 use Academias\Controllers\ConfiguracaoController;
@@ -54,6 +56,9 @@ $router->get('/minha-conta/{slug}/treino', [TreinoController::class, 'index']);
 $router->get('/minha-conta/{slug}/treino/{fichaId}', [TreinoController::class, 'show']);
 $router->post('/minha-conta/{slug}/treino/{fichaId}/exercicios/{exercicioId}', [TreinoController::class, 'registrar']);
 
+// Minha avaliacao fisica (area do aluno - so leitura, quem registra e a equipe).
+$router->get('/minha-conta/{slug}/avaliacao', [AvaliacaoController::class, 'index']);
+
 // Autenticacao.
 $router->get('/login', [AuthController::class, 'showLogin'], [GuestMiddleware::class]);
 $router->post('/login', [AuthController::class, 'login'], [GuestMiddleware::class]);
@@ -100,6 +105,14 @@ $router->post('/dashboard/fichas-treino/{id}/excluir', [FichaTreinoController::c
 $router->post('/dashboard/fichas-treino/{id}/exercicios', [FichaTreinoController::class, 'storeExercicio'], [AuthMiddleware::class]);
 $router->post('/dashboard/fichas-treino/{id}/exercicios/{exercicioId}', [FichaTreinoController::class, 'updateExercicio'], [AuthMiddleware::class]);
 $router->post('/dashboard/fichas-treino/{id}/exercicios/{exercicioId}/excluir', [FichaTreinoController::class, 'destroyExercicio'], [AuthMiddleware::class]);
+
+// Avaliacao fisica (equipe/professor) - bioimpedancia simplificada.
+$router->get('/dashboard/avaliacoes-fisicas', [AvaliacaoFisicaController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/avaliacoes-fisicas/novo', [AvaliacaoFisicaController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/avaliacoes-fisicas', [AvaliacaoFisicaController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/avaliacoes-fisicas/{id}/editar', [AvaliacaoFisicaController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/dashboard/avaliacoes-fisicas/{id}', [AvaliacaoFisicaController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/avaliacoes-fisicas/{id}/excluir', [AvaliacaoFisicaController::class, 'destroy'], [AuthMiddleware::class]);
 
 // Professores.
 $router->get('/dashboard/professores', [ProfessorController::class, 'index'], [AuthMiddleware::class]);

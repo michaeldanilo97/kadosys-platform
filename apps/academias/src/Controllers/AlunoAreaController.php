@@ -11,6 +11,7 @@ use Academias\Core\Session;
 use Academias\Models\Academia;
 use Academias\Models\AcademiaCheckin;
 use Academias\Models\Aluno;
+use Academias\Models\AvaliacaoFisica;
 use Academias\Models\FichaTreino;
 
 /**
@@ -42,6 +43,7 @@ final class AlunoAreaController extends Controller
         $checkinAberto = AcademiaCheckin::emAberto($academia->id, $aluno->id);
         $historico = AcademiaCheckin::doAluno($academia->id, $aluno->id, 15);
         $totalFichasAtivas = count(FichaTreino::ativasDoAluno($academia->id, $aluno->id));
+        $totalAvaliacoes = AvaliacaoFisica::contarDoAluno($academia->id, $aluno->id);
 
         echo $this->view('public.minha-conta.painel', [
             'pageTitle' => 'Minha conta - ' . $academia->nome,
@@ -50,6 +52,7 @@ final class AlunoAreaController extends Controller
             'checkinAberto' => $checkinAberto,
             'historico' => $historico,
             'totalFichasAtivas' => $totalFichasAtivas,
+            'totalAvaliacoes' => $totalAvaliacoes,
             'csrf' => Csrf::field(),
         ], 'site');
     }

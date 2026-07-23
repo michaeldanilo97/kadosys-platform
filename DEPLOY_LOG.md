@@ -17,6 +17,43 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 154 - 2026-07-23
+
+**KADOSYS Academias (Fase 5 - Avaliação física + gráfico de evolução)**
+
+Quinta fase do novo produto Academias (ver Ajuste 152 pra Fase 4 -
+ficha de treino). Entra a avaliação física (bioimpedância
+simplificada), último diferencial inovador pedido pelo usuário:
+
+- **Avaliação física** (`/dashboard/avaliacoes-fisicas`): a
+  equipe/professor registra periodicamente o peso (obrigatório) e,
+  opcionalmente, o percentual de gordura e medidas (peito, cintura,
+  quadril, braço, coxa) de um aluno, com observação livre.
+- **Minha avaliação física** (`/minha-conta/{slug}/avaliacao`): o
+  aluno acompanha a própria evolução - gráficos de peso e percentual
+  de gordura em SVG simples (mesmo padrão da evolução de carga da
+  Fase 4, sem lib externa) mais o histórico completo em tabela. É só
+  leitura pro aluno - quem registra é sempre a equipe.
+- Painel do aluno ganhou um botão "Minha avaliação física" quando há
+  pelo menos uma avaliação registrada.
+- Nova migration (`004_avaliacao_fisica.sql`) + `install.sql`
+  atualizado com a tabela `avaliacoes_fisicas`.
+
+Com essa fase, os quatro diferenciais inovadores pedidos pelo usuário
+na entrega inicial (check-in por QR fixo, ficha de treino com
+evolução de carga, ranking/gamificação de frequência, avaliação
+física) já estão todos implementados.
+
+**Testado**: banco local MariaDB do zero (`install.sql`), fluxo
+completo via curl com sessões reais de equipe e aluno - registro de 3
+avaliações físicas em datas diferentes pra um aluno, edição e exclusão
+de uma delas, aluno reivindicando o próprio acesso e vendo os gráficos
+de evolução (peso caindo de 78,5kg pra 75,0kg renderizado como linha
+descendente correta, mesmo com uma avaliação excluída no meio) e o
+histórico em tabela, controle de acesso (rota da equipe exige login,
+rota do aluno com slug inválido retorna 404). Nenhum erro/warning no
+log do servidor PHP.
+
 ## Ajuste 153 - 2026-07-23
 
 **KADOSYS Kids: novo jogo "Caça-Nomes" (achar nomes bíblicos na grade de letras) + animações de celebração**
