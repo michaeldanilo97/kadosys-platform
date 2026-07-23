@@ -17,6 +17,52 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 161 - 2026-07-23
+
+**KADOSYS Food: Fase 4 - Estoque + Compras**
+
+Quarta fase do app Food: registro de compras de ingredientes com
+entrada automática no estoque, e um log auditável de toda
+movimentação (compra, ajuste manual, perda, inventário).
+
+- **`estoque_movimentos`**: log de toda entrada/saída/perda/ajuste de
+  inventário, com o ingrediente afetado e o motivo/referência. O cache
+  rápido (`ingrediente.estoque_atual`) continua sendo a fonte usada no
+  dia a dia - esta tabela é só o histórico.
+- **`compras` + `compra_itens`**: cabeçalho (fornecedor opcional, data,
+  frete, observação) + itens (ingrediente, quantidade, preço unitário,
+  validade opcional). Ao adicionar um item: soma o estoque do
+  ingrediente, atualiza `preco_atual` pro valor pago e recalcula
+  `preco_medio` (custo médio ponderado entre o estoque que já tinha e
+  a quantidade nova), loga a movimentação e recalcula o valor total da
+  compra. Uma compra é um registro **apêndice-só** nesta entrega -
+  editar/excluir um item já lançado exigiria reverter estoque e preço
+  com segurança mesmo que o estoque já tenha sido parcialmente
+  consumido por vendas (Fase 5), o que fica fora de escopo aqui (mesma
+  simplificação já assumida pra vencimento/FEFO no plano original).
+- **Recálculo de custo em cascata**: ao adicionar um item de compra, o
+  preço do ingrediente pode mudar - `CompraController::itemAdicionar()`
+  dispara `Produto::recalcularCustoDeProdutosComIngrediente()` logo em
+  seguida, mesmo padrão já usado em `IngredienteController::update()`.
+- **Tela de Estoque**: painel de estoque baixo (reaproveita a mesma
+  query de Ingredientes), painel de itens vencendo nos próximos 7 dias
+  (a partir de `compra_itens.validade` - alerta simples, sem
+  rastreamento de lote/FEFO), histórico de movimentações paginado, e
+  formulário de ajuste manual (entrada/saída/perda somam ou descontam
+  do estoque com o mesmo UPDATE condicional atômico já usado no
+  restante da plataforma pra nunca deixar o estoque negativo;
+  inventário define a contagem exata, não um delta).
+- Excluir um fornecedor que já tem compra registrada agora é bloqueado
+  (protegeria o histórico de custo de compra).
+- 2 novos itens no menu lateral: "Estoque" e "Compras".
+- Testado fim a fim localmente (MariaDB + `php -S` + curl + Playwright):
+  criação de compra + adição de itens conferindo manualmente a
+  matemática do preço médio ponderado e do valor total, os 4 tipos de
+  movimentação manual (entrada, saída, perda bloqueada por estoque
+  insuficiente, inventário), alerta de vencimento próximo aparecendo
+  só dentro da janela de 7 dias, e bloqueio de exclusão de fornecedor
+  com compra registrada.
+
 ## Ajuste 160 - 2026-07-23
 
 **KADOSYS Food: Fase 3 - Produtos + Ficha Técnica + motor de custeio automático**

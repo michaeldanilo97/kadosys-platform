@@ -8,6 +8,7 @@ use Food\Core\Auth;
 use Food\Core\Controller;
 use Food\Core\Csrf;
 use Food\Core\Session;
+use Food\Models\Compra;
 use Food\Models\Fornecedor;
 use Food\Models\Restaurante;
 use Food\Models\User;
@@ -146,8 +147,15 @@ final class FornecedorController extends Controller
 
     public function destroy(string $id): void
     {
+        $restauranteId = $this->restauranteId();
+
         if (Csrf::verify($this->request->input('_csrf_token'))) {
-            Fornecedor::delete((int) $id, $this->restauranteId());
+            if (Compra::existeComFornecedor((int) $id, $restauranteId)) {
+                Session::flash('fornecedor_errors', ['Esse fornecedor tem compras registradas e não pode ser excluído.']);
+                $this->redirect('/dashboard/fornecedores');
+            }
+
+            Fornecedor::delete((int) $id, $restauranteId);
             Session::flash('fornecedor_success', 'Fornecedor removido.');
         }
 

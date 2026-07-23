@@ -245,3 +245,61 @@ CREATE TABLE IF NOT EXISTS custeio_config (
     CONSTRAINT custeio_config_restaurante_id_foreign
         FOREIGN KEY (restaurante_id) REFERENCES restaurantes (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- KADOSYS Food - Fase 4 (Estoque, Compras)
+-- Ver database/migrations/003_estoque_compras.sql para detalhes/comentarios
+-- de cada coluna.
+
+CREATE TABLE IF NOT EXISTS estoque_movimentos (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    restaurante_id INT UNSIGNED NOT NULL,
+    ingrediente_id INT UNSIGNED NOT NULL,
+    tipo ENUM('entrada', 'saida', 'inventario', 'perda') NOT NULL,
+    quantidade DECIMAL(10, 3) NOT NULL,
+    motivo VARCHAR(255) NULL,
+    referencia_tipo VARCHAR(30) NULL,
+    referencia_id INT UNSIGNED NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY estoque_movimentos_restaurante_id_index (restaurante_id),
+    KEY estoque_movimentos_ingrediente_id_index (ingrediente_id),
+    CONSTRAINT estoque_movimentos_restaurante_id_foreign
+        FOREIGN KEY (restaurante_id) REFERENCES restaurantes (id) ON DELETE CASCADE,
+    CONSTRAINT estoque_movimentos_ingrediente_id_foreign
+        FOREIGN KEY (ingrediente_id) REFERENCES ingredientes (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS compras (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    restaurante_id INT UNSIGNED NOT NULL,
+    fornecedor_id INT UNSIGNED NULL,
+    data_compra DATE NOT NULL,
+    frete DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    observacao TEXT NULL,
+    valor_total DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY compras_restaurante_id_index (restaurante_id),
+    KEY compras_fornecedor_id_index (fornecedor_id),
+    CONSTRAINT compras_restaurante_id_foreign
+        FOREIGN KEY (restaurante_id) REFERENCES restaurantes (id) ON DELETE CASCADE,
+    CONSTRAINT compras_fornecedor_id_foreign
+        FOREIGN KEY (fornecedor_id) REFERENCES fornecedores (id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS compra_itens (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    compra_id INT UNSIGNED NOT NULL,
+    ingrediente_id INT UNSIGNED NOT NULL,
+    quantidade DECIMAL(10, 3) NOT NULL,
+    unidade VARCHAR(20) NOT NULL,
+    preco_unitario DECIMAL(10, 4) NOT NULL,
+    subtotal DECIMAL(10, 2) NOT NULL,
+    validade DATE NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY compra_itens_compra_id_index (compra_id),
+    KEY compra_itens_ingrediente_id_index (ingrediente_id),
+    CONSTRAINT compra_itens_compra_id_foreign
+        FOREIGN KEY (compra_id) REFERENCES compras (id) ON DELETE CASCADE,
+    CONSTRAINT compra_itens_ingrediente_id_foreign
+        FOREIGN KEY (ingrediente_id) REFERENCES ingredientes (id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

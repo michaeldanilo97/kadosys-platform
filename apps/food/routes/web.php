@@ -6,7 +6,9 @@ use Food\Controllers\AssinaturaController;
 use Food\Controllers\AuthController;
 use Food\Controllers\CadastroController;
 use Food\Controllers\CategoriaController;
+use Food\Controllers\CompraController;
 use Food\Controllers\DashboardController;
+use Food\Controllers\EstoqueController;
 use Food\Controllers\FaturaController;
 use Food\Controllers\FornecedorController;
 use Food\Controllers\IngredienteController;
@@ -83,6 +85,18 @@ $router->post('/dashboard/produtos/{id}/excluir', [ProdutoController::class, 'de
 $router->get('/dashboard/produtos/{id}/ficha-tecnica', [ProdutoController::class, 'fichaTecnica'], [AuthMiddleware::class]);
 $router->post('/dashboard/produtos/{id}/ficha-tecnica', [ProdutoController::class, 'fichaTecnicaAdicionar'], [AuthMiddleware::class]);
 $router->post('/dashboard/produtos/{id}/ficha-tecnica/{itemId}/excluir', [ProdutoController::class, 'fichaTecnicaRemover'], [AuthMiddleware::class]);
+
+// Estoque (log de movimentacoes + ajuste manual entrada/saida/inventario/perda).
+$router->get('/dashboard/estoque', [EstoqueController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/estoque/movimentar', [EstoqueController::class, 'movimentarForm'], [AuthMiddleware::class]);
+$router->post('/dashboard/estoque/movimentar', [EstoqueController::class, 'movimentar'], [AuthMiddleware::class]);
+
+// Compras (entrada automatica no estoque + atualizacao de preco do ingrediente).
+$router->get('/dashboard/compras', [CompraController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/compras/nova', [CompraController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/compras', [CompraController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/compras/{id}', [CompraController::class, 'show'], [AuthMiddleware::class]);
+$router->post('/dashboard/compras/{id}/itens', [CompraController::class, 'itemAdicionar'], [AuthMiddleware::class]);
 
 // Faturas (historico de cobranca - sempre acessivel, mesmo bloqueado).
 $router->get('/dashboard/faturas', [FaturaController::class, 'index'], [AuthMiddleware::class]);

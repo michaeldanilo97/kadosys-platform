@@ -197,6 +197,45 @@ final class Ingrediente
         $stmt->execute(['foto_path' => $fotoPath, 'id' => $id, 'restaurante_id' => $restauranteId]);
     }
 
+    /**
+     * Registra a entrada de uma Compra: soma a quantidade no estoque,
+     * atualiza o preco_atual pro valor pago desta vez, recalcula o
+     * preco_medio (custo medio ponderado - media entre o estoque que
+     * já tinha ao preco medio anterior e a quantidade nova ao preco
+     * desta compra) e marca a data da ultima compra. Quem dispara o
+     * recalculo de custo dos produtos afetados é o chamador (ver
+     * CompraItem::create()), depois que o preco muda de verdade.
+     */
+    public static function registrarEntradaCompra(int $id, int $restauranteId, float $quantidade, float $precoUnitario, string $dataCompra): void
+    {
+        $ingrediente = self::find($id, $restauranteId);
+
+        if ($ingrediente === null) {
+            return;
+        }
+
+        $estoqueAntes = $ingrediente->estoqueAtual;
+        $precoBaseParaMedia = $ingrediente->precoMedio ?? $ingrediente->precoAtual;
+        $novoEstoque = $estoqueAntes + $quantidade;
+        $novoPrecoMedio = $novoEstoque > 0
+            ? (($estoqueAntes * $precoBaseParaMedia) + ($quantidade * $precoUnitario)) / $novoEstoque
+            : $precoUnitario;
+
+        $stmt = Database::connection()->prepare(
+            'UPDATE ingredientes SET estoque_atual = estoque_atual + :quantidade, preco_atual = :preco_atual,
+                preco_medio = :preco_medio, ultima_compra_em = :ultima_compra_em, updated_at = NOW()
+             WHERE id = :id AND restaurante_id = :restaurante_id'
+        );
+        $stmt->execute([
+            'quantidade' => $quantidade,
+            'preco_atual' => $precoUnitario,
+            'preco_medio' => $novoPrecoMedio,
+            'ultima_compra_em' => $dataCompra,
+            'id' => $id,
+            'restaurante_id' => $restauranteId,
+        ]);
+    }
+
     public static function delete(int $id, int $restauranteId): void
     {
         $stmt = Database::connection()->prepare('DELETE FROM ingredientes WHERE id = :id AND restaurante_id = :restaurante_id');

@@ -18,14 +18,15 @@ $iniciais = $user?->name ? mb_strtoupper(mb_substr($user->name, 0, 1, 'UTF-8'), 
 
 // Menu cresce fase a fase - os itens so entram aqui junto com o
 // controller correspondente, pra nunca ter um link que ainda nao
-// existe (Estoque, Compras, Caixa/PDV, Pedidos, Producao, Clientes,
-// Financeiro, Precificacao, Relatorios e Configuracoes chegam nas
-// proximas fases).
+// existe (Caixa/PDV, Pedidos, Producao, Clientes, Financeiro,
+// Precificacao, Relatorios e Configuracoes chegam nas proximas fases).
 $itensMenu = [
     ['slug' => 'painel', 'href' => '/dashboard', 'icone' => 'bi-house-door-fill', 'label' => 'Painel'],
     ['slug' => 'produtos', 'href' => '/dashboard/produtos', 'icone' => 'bi-cake2-fill', 'label' => 'Produtos'],
     ['slug' => 'categorias', 'href' => '/dashboard/categorias', 'icone' => 'bi-tags-fill', 'label' => 'Categorias'],
     ['slug' => 'ingredientes', 'href' => '/dashboard/ingredientes', 'icone' => 'bi-egg-fried', 'label' => 'Ingredientes'],
+    ['slug' => 'estoque', 'href' => '/dashboard/estoque', 'icone' => 'bi-box-seam-fill', 'label' => 'Estoque'],
+    ['slug' => 'compras', 'href' => '/dashboard/compras', 'icone' => 'bi-cart-check-fill', 'label' => 'Compras'],
     ['slug' => 'fornecedores', 'href' => '/dashboard/fornecedores', 'icone' => 'bi-truck', 'label' => 'Fornecedores'],
     ['slug' => 'faturas', 'href' => '/dashboard/faturas', 'icone' => 'bi-receipt', 'label' => 'Faturas'],
 ];
