@@ -23,6 +23,31 @@ $iniciais = $user?->name ? mb_strtoupper(mb_substr($user->name, 0, 1, 'UTF-8'), 
 // pro mesmo padrao no outro app).
 $avisoPlataforma = BarbeariaAviso::ativo();
 
+// Aviso de teste gratis (contagem regressiva) - so aparece pra quem
+// ainda esta em trial e nao vencido (depois de vencer, o
+// AuthMiddleware ja bloqueia o resto do painel e manda pra
+// /dashboard/assinatura - por isso nao repete o aviso nessa mesma
+// tela). Mesmo padrao ja usado no Igrejas.
+$avisoTrialTexto = '';
+if ($menu !== 'assinatura' && $barbearia?->metodoPagamento === 'trial' && $barbearia->trialExpiraEm !== null) {
+    $expiraEm = new \DateTimeImmutable($barbearia->trialExpiraEm);
+    $agora = new \DateTimeImmutable();
+
+    if ($agora <= $expiraEm) {
+        // Diferenca por DATA de calendario (sem a hora do dia) - com
+        // timestamp bruto + ceil(), 1 dia e poucas horas de sobra
+        // arredondava pra "2 dias", mesmo a data de vencimento sendo
+        // literalmente amanha.
+        $diasRestantes = (int) $agora->setTime(0, 0, 0)->diff($expiraEm->setTime(0, 0, 0))->days;
+        $avisoTrialTexto = sprintf(
+            'Seu teste grátis termina em %d dia%s (%s). Clique aqui para escolher um plano.',
+            $diasRestantes,
+            $diasRestantes === 1 ? '' : 's',
+            $expiraEm->format('d/m/Y')
+        );
+    }
+}
+
 $itensMenu = [
     ['slug' => 'painel', 'href' => '/dashboard', 'icone' => '🏠', 'label' => 'Painel'],
 ];
@@ -162,6 +187,14 @@ array_push(
                 </div>
             </div>
         </header>
+
+        <?php if ($avisoTrialTexto !== ''): ?>
+            <a href="<?= $basePath ?>/dashboard/assinatura" class="dash-pix-aviso">
+                <span>⏳</span>
+                <span><?= htmlspecialchars($avisoTrialTexto, ENT_QUOTES, 'UTF-8') ?></span>
+                <span>→</span>
+            </a>
+        <?php endif; ?>
 
         <?= $content ?>
     </div>

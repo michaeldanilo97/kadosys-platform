@@ -17,6 +17,27 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 167 - 2026-07-23
+
+**Barbearias e Food: aviso de contagem regressiva do teste grátis**
+
+Até agora, só o Igrejas mostrava um aviso proativo de quando o teste
+grátis termina - no Barbearias e no Food, quem estava em trial só
+descobria que o prazo tinha acabado quando já era bloqueado e
+redirecionado pra tela de assinatura, sem nenhum aviso antes disso.
+
+- Adicionado o mesmo banner do Igrejas ("Seu teste grátis termina em X
+  dia(s) (DD/MM/AAAA). Clique aqui para escolher um plano.") no topo do
+  painel dos dois apps - só aparece pra quem ainda está em trial e não
+  venceu, e não aparece na própria tela de assinatura (senão ficaria
+  redundante).
+- Estilo novo `.dash-pix-aviso` (mesma paleta âmbar do aviso
+  equivalente no Igrejas) adicionado no `app.css` dos dois apps - link
+  clicável que leva direto pra `/dashboard/assinatura`.
+- Testado localmente nos dois apps: banner aparece com a contagem
+  certa, some quando a pessoa já está na tela de assinatura, e o link
+  funciona.
+
 ## Ajuste 166 - 2026-07-23
 
 **KADOSYS Food: Fase 9 (final) - Configurações + integração com o Super Admin**
