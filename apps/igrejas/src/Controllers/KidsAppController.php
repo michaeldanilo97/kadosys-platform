@@ -9,6 +9,7 @@ use Igrejas\Core\Csrf;
 use Igrejas\Core\Middleware\KidsSessaoMiddleware;
 use Igrejas\Core\Session;
 use Igrejas\Models\KidsAvatar;
+use Igrejas\Models\KidsAvatarCompra;
 use Igrejas\Models\KidsConteudo;
 use Igrejas\Models\KidsCrianca;
 
@@ -171,9 +172,54 @@ final class KidsAppController extends Controller
             'catalogoFundos' => KidsAvatar::catalogoFundos(),
             'catalogoTitulos' => KidsAvatar::catalogoTitulos(),
             'nivel' => $nivel,
+            'comprados' => KidsAvatarCompra::compradosPor($crianca->id),
             'csrfToken' => Csrf::token(),
             'salvo' => Session::flash('kids_avatar_salvo'),
+            'compraErro' => Session::flash('kids_avatar_compra_erro'),
+            'compraOk' => Session::flash('kids_avatar_compra_ok'),
         ], 'kids-app');
+    }
+
+    /**
+     * Compra de item exclusivo da loja do Avatar (ver
+     * KidsAvatarCompra::comprar()) - so os itens com "custoMoedas"
+     * preenchido no catalogo (KidsAvatar) podem ser comprados; os demais
+     * (desbloqueio por nivel) ignoram esta rota mesmo que alguem tente
+     * forcar o POST.
+     */
+    public function avatarComprar(): void
+    {
+        $crianca = $this->criancaLogada();
+
+        if (!Csrf::verify($this->request->input('_csrf_token'))) {
+            $this->redirect('/kids/avatar');
+        }
+
+        $categoria = (string) $this->request->input('categoria', '');
+        $slug = (string) $this->request->input('slug', '');
+
+        $catalogos = [
+            'chapeu' => KidsAvatar::catalogoChapeus(),
+            'acessorio' => KidsAvatar::catalogoAcessorios(),
+            'fundo' => KidsAvatar::catalogoFundos(),
+            'titulo' => KidsAvatar::catalogoTitulos(),
+        ];
+
+        $item = KidsAvatar::encontrar($catalogos[$categoria] ?? [], $slug);
+
+        if ($item === null || empty($item['custoMoedas'])) {
+            $this->redirect('/kids/avatar');
+        }
+
+        $resultado = KidsAvatarCompra::comprar($crianca->id, $categoria, $slug, (int) $item['custoMoedas']);
+
+        if ($resultado === KidsAvatarCompra::RESULTADO_OK) {
+            Session::flash('kids_avatar_compra_ok', $item['nome']);
+        } elseif ($resultado === KidsAvatarCompra::RESULTADO_SEM_MOEDAS) {
+            Session::flash('kids_avatar_compra_erro', 'Moedas insuficientes pra comprar "' . $item['nome'] . '".');
+        }
+
+        $this->redirect('/kids/avatar');
     }
 
     public function avatarSalvar(): void

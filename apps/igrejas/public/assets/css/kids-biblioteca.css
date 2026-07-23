@@ -1087,8 +1087,54 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
   border-radius: 999px;
 }
 
+.kids-item-selo-loja {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #7A5A00;
+  background: rgba(255, 217, 61, 0.35);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+.kids-item-card-loja {
+  cursor: default;
+  border-style: dashed;
+  border-color: rgba(58, 46, 92, 0.18);
+}
+
+.kids-item-form-comprar {
+  margin: 0;
+}
+
+.kids-item-btn-comprar {
+  border: none;
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #7A5A00;
+  background: var(--kids-amarelo);
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.kids-item-btn-comprar:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.kids-item-btn-comprar:disabled {
+  opacity: 0.5;
+  cursor: default;
+  background: #E4E1F2;
+  color: #8A7FB0;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .kids-item-card:hover {
+    transform: none;
+  }
+
+  .kids-item-btn-comprar:hover:not(:disabled) {
     transform: none;
   }
 }
@@ -1476,5 +1522,139 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
   .kids-hq-painel {
     flex-direction: column;
     text-align: center;
+  }
+}
+
+/* ---- Complete o Versiculo (preencher lacuna) ---------------------- */
+
+.kids-completar-item {
+  background: #F7F5FF;
+  border-radius: 18px;
+  padding: 1.1rem 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.kids-completar-frase {
+  font-weight: 700;
+  margin: 0 0 0.4rem;
+  line-height: 1.6;
+}
+
+.kids-completar-input {
+  border: 2px solid rgba(58, 46, 92, 0.15);
+  border-radius: 10px;
+  padding: 0.25rem 0.6rem;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--kids-roxo);
+  width: 9rem;
+  max-width: 40vw;
+}
+
+.kids-completar-input:focus {
+  outline: none;
+  border-color: var(--kids-roxo);
+}
+
+.kids-completar-input:disabled {
+  background: rgba(107, 203, 119, 0.16);
+  border-color: var(--kids-verde);
+  color: var(--kids-texto);
+}
+
+.kids-completar-ref {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--kids-texto-suave);
+  margin: 0 0 0.7rem;
+}
+
+/* ---- Ligue o Personagem a sua Historia (jogo de ligar pares) ------ */
+
+.kids-ligar-colunas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem 1.2rem;
+}
+
+.kids-ligar-coluna {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.kids-ligar-item {
+  border: 2px solid rgba(58, 46, 92, 0.12);
+  background: #FFFFFF;
+  border-radius: 14px;
+  padding: 0.6rem 0.8rem;
+  font-weight: 700;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: var(--kids-texto);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.12s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.kids-ligar-item:hover {
+  border-color: var(--kids-roxo);
+}
+
+.kids-ligar-item.selecionado {
+  border-color: var(--kids-roxo);
+  background: #F1EFFA;
+}
+
+.kids-ligar-item.par-certo {
+  border-color: var(--kids-verde);
+  background: rgba(107, 203, 119, 0.16);
+  cursor: default;
+  animation: kids-pop 0.35s ease;
+}
+
+.kids-ligar-item.par-errado {
+  border-color: var(--kids-vermelho);
+  background: rgba(255, 107, 107, 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kids-ligar-item.par-certo {
+    animation: none;
+  }
+}
+
+/* ---- Desenhe a sua Oracao (canvas livre) --------------------------- */
+
+.kids-desenho {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.kids-desenho-prompt {
+  text-align: center;
+  font-weight: 600;
+  color: var(--kids-texto-suave);
+  margin: 0;
+}
+
+.kids-desenho-canvas {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  aspect-ratio: 360 / 280;
+  background: #FFFFFF;
+  border-radius: 20px;
+  box-shadow: 0 6px 0 rgba(58, 46, 92, 0.08);
+  touch-action: none;
+  cursor: crosshair;
+}
+
+@media (max-width: 640px) {
+  .kids-ligar-colunas {
+    grid-template-columns: 1fr;
   }
 }

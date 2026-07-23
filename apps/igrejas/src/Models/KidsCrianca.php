@@ -433,11 +433,12 @@ final class KidsCrianca
         }
 
         $nivel = $crianca->nivel();
+        $comprados = KidsAvatarCompra::compradosPor($id);
 
-        $chapeu = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoChapeus(), $chapeu, $nivel) ? $chapeu : null;
-        $acessorio = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoAcessorios(), $acessorio, $nivel) ? $acessorio : null;
-        $fundo = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoFundos(), $fundo, $nivel) ? $fundo : null;
-        $titulo = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoTitulos(), $titulo, $nivel) ? $titulo : null;
+        $chapeu = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoChapeus(), $chapeu, $nivel, $comprados['chapeu']) ? $chapeu : null;
+        $acessorio = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoAcessorios(), $acessorio, $nivel, $comprados['acessorio']) ? $acessorio : null;
+        $fundo = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoFundos(), $fundo, $nivel, $comprados['fundo']) ? $fundo : null;
+        $titulo = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoTitulos(), $titulo, $nivel, $comprados['titulo']) ? $titulo : null;
 
         $stmt = Database::connection()->prepare(
             'UPDATE kids_criancas
