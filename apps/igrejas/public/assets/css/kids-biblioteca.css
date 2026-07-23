@@ -457,6 +457,16 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
   margin: 1rem 0;
 }
 
+.kids-quiz-progresso {
+  font-weight: 700;
+  color: var(--kids-roxo);
+  background: #F1EFFA;
+  display: inline-block;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  margin: 0 0 1rem;
+}
+
 .kids-quiz-pergunta {
   background: #F7F5FF;
   border-radius: 18px;
@@ -538,8 +548,64 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
   content: "❌";
 }
 
+.kids-quiz-alternativa-escondida {
+  display: none;
+}
+
+.kids-quiz-explicacao {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0.7rem 0 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: #EFEBFF;
+  color: var(--kids-texto);
+  animation: kids-pop 0.3s ease;
+}
+
+.kids-quiz-explicacao.correta {
+  background: rgba(107, 203, 119, 0.16);
+}
+
+.kids-quiz-explicacao.errada {
+  background: rgba(255, 107, 107, 0.12);
+}
+
+.kids-quiz-ajuda-btn {
+  margin-top: 0.7rem;
+  border: 2px solid var(--kids-amarelo);
+  background: #FFFBEA;
+  color: #7A5A00;
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.kids-quiz-ajuda-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.kids-quiz-ajuda-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .kids-quiz-alternativa:hover:not(:disabled) {
+    transform: none;
+  }
+
+  .kids-quiz-explicacao {
+    animation: none;
+  }
+
+  .kids-quiz-ajuda-btn:hover:not(:disabled) {
     transform: none;
   }
 }
@@ -1201,6 +1267,9 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
   font-size: 0.85rem;
   font-family: var(--font-body);
   cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
   transition: background 0.12s ease, transform 0.12s ease;
 }
 
@@ -1217,6 +1286,11 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
   color: #FFFFFF;
   cursor: default;
   animation: kids-pop 0.35s ease;
+}
+
+.kids-cp-celula.errada-tmp {
+  background: var(--kids-vermelho);
+  color: #FFFFFF;
 }
 
 .kids-cp-lista {

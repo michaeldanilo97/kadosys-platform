@@ -274,6 +274,23 @@ final class KidsCrianca
     }
 
     /**
+     * Desconta moedas da crianca, usado no botao "Pedir ajuda" do quiz
+     * (ver KidsAppController::quizAjuda()) - condicional no proprio
+     * UPDATE (moedas >= :custo) pra nunca deixar o saldo negativo,
+     * mesmo em cliques duplicados/concorrentes. Retorna false (sem
+     * gastar nada) se o saldo for insuficiente.
+     */
+    public static function gastarMoedas(int $id, int $custo): bool
+    {
+        $stmt = Database::connection()->prepare(
+            'UPDATE kids_criancas SET moedas = moedas - :custo WHERE id = :id AND moedas >= :custo_minimo'
+        );
+        $stmt->execute(['custo' => $custo, 'id' => $id, 'custo_minimo' => $custo]);
+
+        return $stmt->rowCount() > 0;
+    }
+
+    /**
      * Gera um PIN novo de 4 digitos pra crianca fazer login sozinha na
      * Biblioteca (ver KidsLoginController) - so permitido se ja existir
      * um responsavel vinculado (responsavel_membro_id), que funciona

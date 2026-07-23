@@ -17,6 +17,61 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 155 - 2026-07-23
+
+**KADOSYS Kids: caça-palavras por arraste, quiz com explicação bíblica + tentativas ilimitadas, e moedas gastas pra pedir ajuda**
+
+Três correções/melhorias pedidas juntas para o módulo Kids, todas no
+mecanismo compartilhado de jogos/quiz (afeta os 3 puzzles de
+caça-palavras e os 11 quizzes oficiais de uma vez só):
+
+- **Caça-palavras: seleção por arraste.** O mecanismo antigo (clicar
+  na primeira letra, depois na última) reancorava em silêncio sempre
+  que o segundo clique não formava uma linha reta válida - o que
+  parecia "apagar" a letra já escolhida. Agora dá pra arrastar o
+  dedo/mouse letra por letra (pointer events), com destaque ao vivo
+  do caminho percorrido; e pra quem prefere tocar em vez de arrastar,
+  um toque fora da linha simplesmente é ignorado (a âncora continua
+  destacada, sem sumir) - tocar na própria letra âncora de novo
+  cancela a seleção. Nova migration `061_kids_caca_palavras_arraste.sql`
+  substitui o script de interação dos 3 puzzles existentes.
+- **Quiz: retry + explicação bíblica + conclusão só com tudo certo.**
+  Antes, a primeira resposta (certa ou errada) travava a pergunta
+  para sempre. Agora, errar só mostra feedback e uma explicação
+  bíblica curta - a criança pode tentar de novo até acertar. O botão
+  "Concluir e ganhar XP" fica escondido até todas as perguntas do
+  quiz serem respondidas certas (com uma barra de progresso "X de Y
+  respondidas certas"). Nova migration `060_kids_quiz_explicacoes.sql`
+  acrescenta o campo `explicacao` em cada uma das perguntas dos 11
+  quizzes oficiais.
+- **Moedas: pedir ajuda no quiz.** Novo botão "🪙 Pedir ajuda" em cada
+  pergunta, que desconta 5 moedas da criança (saldo visível no topo
+  da tela) e esconde 2 alternativas erradas (efeito "cartas na
+  manga"), via novo endpoint `POST /kids/conteudo/{id}/quiz-ajuda`
+  (AJAX, sem recarregar a página). Bloqueia se o saldo for
+  insuficiente. Novo método `KidsCrianca::gastarMoedas()` (UPDATE
+  condicional, nunca deixa o saldo negativo mesmo em cliques
+  concorrentes).
+
+**Testado**: banco local MariaDB do zero (`install.sql`, carregado com
+`--default-character-set=utf8mb4` - confirmado que os JSONs dos 11
+quizzes com `explicacao` são válidos e sem corrupção de acentuação) +
+`php -S` com uma criança de teste (PIN); fluxo completo via curl
+(login, endpoint de ajuda descontando moedas corretamente e recusando
+quando o saldo acaba) e via Playwright com Chromium real: no quiz,
+clicar errado mostra explicação e permite tentar de novo sem travar,
+acertar as 4 perguntas revela o botão de concluir (antes escondido) e
+concluir avança pro próximo quiz não feito; no caça-palavras, um toque
+fora da linha não apaga mais a âncora selecionada, e um arraste
+completo pela palavra "PEDRO" marca a palavra como encontrada
+corretamente. Um bug real foi encontrado e corrigido durante o teste
+(o script do quiz lia o formulário de "Concluir" antes dele existir no
+DOM, por vir depois no HTML - corrigido rodando a lógica só após
+`DOMContentLoaded`) e outro no `KidsCrianca::gastarMoedas()` (mesmo
+parâmetro nomeado `:custo` usado duas vezes na mesma query, inválido
+com prepared statements nativos - corrigido com dois parâmetros
+distintos). Nenhum erro/warning no log do servidor PHP.
+
 ## Ajuste 154 - 2026-07-23
 
 **KADOSYS Academias (Fase 5 - Avaliação física + gráfico de evolução)**
