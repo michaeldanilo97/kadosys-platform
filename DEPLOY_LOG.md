@@ -17,6 +17,57 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 160 - 2026-07-23
+
+**KADOSYS Food: Fase 3 - Produtos + Ficha Técnica + motor de custeio automático**
+
+Terceira fase do app Food, com a parte mais nova da plataforma: o
+motor de custeio que calcula automaticamente o custo/margem/preço
+ideal de cada produto a partir da própria receita.
+
+- **`Food\Core\Custeio`**: classe estática, sem dependência de banco,
+  única com a fórmula de markup/margem/lucro/preço ideal - recebe o
+  custo de ingredientes já somado + os 8 valores de overhead (energia,
+  gás, água, embalagem, etiqueta, mão de obra, taxa operacional,
+  desperdício) + margem desejada, e devolve custo total, markup,
+  margem, lucro e o preço ideal para balcão/WhatsApp/iFood/delivery
+  próprio (os dois últimos "engordados" pela comissão/taxa configurada,
+  pra sobrar a mesma margem líquida depois do desconto da plataforma).
+- **`custeio_config`**: 1 linha por restaurante com os valores padrão
+  de overhead + margem desejada (30% de fábrica) + comissão iFood
+  (12%, a mesma da Entrega II) + taxa de pagamento online (3,49%) -
+  criada automaticamente na primeira vez que a Fase 3 precisar dela
+  (`CusteioConfig::obterOuCriar()`). A tela de edição desses valores
+  fica pra Fase 7 (Precificação Inteligente).
+- **`produtos`**: cadastro completo (categoria, código/SKU, código de
+  barras, descrição, tags, foto, tempo de preparo, peso, rendimento da
+  receita, status ativo/pausado/inativo) + preços por canal (balcão,
+  WhatsApp, iFood, promoção, delivery próprio) + override opcional de
+  cada um dos 8 valores de overhead (sobrescreve o padrão da loja só
+  pra aquele produto) + os campos de cache calculados automaticamente.
+- **`ficha_tecnica_itens`**: a receita de cada produto - ingrediente +
+  quantidade (no rendimento total da receita, não por unidade) + perda
+  percentual daquele item no preparo. Tela dedicada
+  (`/dashboard/produtos/{id}/ficha-tecnica`) pra adicionar/remover
+  ingredientes, com o custeio recalculado e exibido na hora.
+- **Recálculo automático em cascata**: `Produto::recalcularCusto()`
+  roda sempre que a ficha técnica muda ou o produto é salvo;
+  `Produto::recalcularCustoDeProdutosComIngrediente()` roda dentro do
+  mesmo request que atualiza o preço de um ingrediente (já ligado em
+  `IngredienteController::update()`) - qualquer produto que usa aquele
+  ingrediente tem o custo/preço ideal atualizado na hora, sem fila.
+- Excluir um ingrediente que está em uso em alguma ficha técnica agora
+  é bloqueado com uma mensagem clara (antes seria um erro de FK cru).
+- Item no menu lateral "Produtos".
+- Testado fim a fim localmente (MariaDB + `php -S` + curl + Playwright):
+  cadastro de produto, montagem de ficha técnica com 3 ingredientes,
+  conferência manual da matemática do custeio (custo, markup, margem,
+  preço ideal por canal todos batendo com o cálculo esperado),
+  recálculo automático do custo do produto ao editar o preço de um
+  ingrediente usado nele, edição de rendimento recalculando o custo por
+  unidade, bloqueio de exclusão de ingrediente em uso, exclusão de
+  produto removendo a ficha técnica em cascata.
+
 ## Ajuste 159 - 2026-07-23
 
 **KADOSYS Food: Fase 2 - Categorias, Ingredientes, Fornecedores**
