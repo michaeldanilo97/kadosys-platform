@@ -58,10 +58,10 @@ $basePath = $config['base_path'] ?? '';
                                 <td class="text-dim"><?= htmlspecialchars($professor->telefone ?? $professor->email ?? '-', ENT_QUOTES, 'UTF-8') ?></td>
                                 <td><span class="status-badge <?= $professor->ativo ? 'ok' : 'dim' ?>"><?= $professor->ativo ? 'Ativo' : 'Inativo' ?></span></td>
                                 <td class="actions-col">
-                                    <a href="<?= $basePath ?>/dashboard/professores/<?= $professor->id ?>/editar" class="crud-icon-btn" title="Editar">✏️</a>
-                                    <form method="POST" action="<?= $basePath ?>/dashboard/professores/<?= $professor->id ?>/excluir" onsubmit="return confirm('Excluir este professor?');">
+                                    <a href="<?= $basePath ?>/dashboard/professores/<?= $professor->id ?>/editar" class="crud-icon-btn" title="Editar"><i class="bi bi-pencil-fill"></i></a>
+                                    <form method="POST" action="<?= $basePath ?>/dashboard/professores/<?= $professor->id ?>/excluir" data-confirm="Excluir este professor?">
                                         <?= Csrf::field() ?>
-                                        <button type="submit" class="crud-icon-btn danger" title="Excluir">🗑️</button>
+                                        <button type="submit" class="crud-icon-btn danger" title="Excluir"><i class="bi bi-trash-fill"></i></button>
                                     </form>
                                 </td>
                             </tr>

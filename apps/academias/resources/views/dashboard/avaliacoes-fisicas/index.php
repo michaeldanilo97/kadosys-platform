@@ -53,10 +53,10 @@ $basePath = $config['base_path'] ?? '';
                                 <td class="text-dim"><?= number_format($item['avaliacao']->pesoKg, 1, ',', '.') ?> kg</td>
                                 <td class="text-dim"><?= $item['avaliacao']->percentualGordura !== null ? number_format($item['avaliacao']->percentualGordura, 1, ',', '.') . '%' : '-' ?></td>
                                 <td class="actions-col">
-                                    <a href="<?= $basePath ?>/dashboard/avaliacoes-fisicas/<?= $item['avaliacao']->id ?>/editar" class="crud-icon-btn" title="Editar">✏️</a>
-                                    <form method="POST" action="<?= $basePath ?>/dashboard/avaliacoes-fisicas/<?= $item['avaliacao']->id ?>/excluir" onsubmit="return confirm('Excluir esta avaliação?');">
+                                    <a href="<?= $basePath ?>/dashboard/avaliacoes-fisicas/<?= $item['avaliacao']->id ?>/editar" class="crud-icon-btn" title="Editar"><i class="bi bi-pencil-fill"></i></a>
+                                    <form method="POST" action="<?= $basePath ?>/dashboard/avaliacoes-fisicas/<?= $item['avaliacao']->id ?>/excluir" data-confirm="Excluir esta avaliação?">
                                         <?= Csrf::field() ?>
-                                        <button type="submit" class="crud-icon-btn danger" title="Excluir">🗑️</button>
+                                        <button type="submit" class="crud-icon-btn danger" title="Excluir"><i class="bi bi-trash-fill"></i></button>
                                     </form>
                                 </td>
                             </tr>

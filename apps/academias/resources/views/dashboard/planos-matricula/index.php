@@ -58,10 +58,10 @@ $basePath = $config['base_path'] ?? '';
                                 <td class="text-dim"><?= $plano->duracaoDias ?> dias</td>
                                 <td><span class="status-badge <?= $plano->ativo ? 'ok' : 'dim' ?>"><?= $plano->ativo ? 'Ativo' : 'Inativo' ?></span></td>
                                 <td class="actions-col">
-                                    <a href="<?= $basePath ?>/dashboard/planos-matricula/<?= $plano->id ?>/editar" class="crud-icon-btn" title="Editar">✏️</a>
-                                    <form method="POST" action="<?= $basePath ?>/dashboard/planos-matricula/<?= $plano->id ?>/excluir" onsubmit="return confirm('Excluir este plano de matrícula?');">
+                                    <a href="<?= $basePath ?>/dashboard/planos-matricula/<?= $plano->id ?>/editar" class="crud-icon-btn" title="Editar"><i class="bi bi-pencil-fill"></i></a>
+                                    <form method="POST" action="<?= $basePath ?>/dashboard/planos-matricula/<?= $plano->id ?>/excluir" data-confirm="Excluir este plano de matrícula?">
                                         <?= Csrf::field() ?>
-                                        <button type="submit" class="crud-icon-btn danger" title="Excluir">🗑️</button>
+                                        <button type="submit" class="crud-icon-btn danger" title="Excluir"><i class="bi bi-trash-fill"></i></button>
                                     </form>
                                 </td>
                             </tr>

@@ -8,6 +8,7 @@
         initTheme();
         initSidebar();
         initTopbarDropdowns();
+        initConfirmForms();
     });
 
     function initTheme() {
@@ -47,7 +48,7 @@
         var icone = document.querySelector('[data-theme-icon]');
 
         if (icone) {
-            icone.textContent = tema === 'light' ? '🌙' : '☀️';
+            icone.className = tema === 'light' ? 'bi bi-moon-stars' : 'bi bi-sun';
         }
     }
 
@@ -158,6 +159,29 @@
             if (event.key === 'Escape') {
                 fecharTodos(null);
             }
+        });
+    }
+
+    // Popup proprio (kadosys-modal.js) no lugar do window.confirm() nativo
+    // em toda form marcada com data-confirm="mensagem" - form.submit()
+    // programatico nao dispara "submit" de novo, entao nao entra em loop.
+    function initConfirmForms() {
+        document.querySelectorAll('form[data-confirm]').forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                if (!window.KadosysModal) {
+                    form.submit();
+
+                    return;
+                }
+
+                window.KadosysModal.confirmar(form.getAttribute('data-confirm'), { perigo: true }).then(function (ok) {
+                    if (ok) {
+                        form.submit();
+                    }
+                });
+            });
         });
     }
 
