@@ -26,10 +26,12 @@ $avisoPlataforma = AcademiaAviso::ativo();
 
 // Menu cresce fase a fase - os itens so entram aqui junto com o
 // controller correspondente, pra nunca ter um link que ainda nao
-// existe (Check-in, Ficha de Treino, Avaliação Física e Relatórios
-// chegam nas proximas fases).
+// existe (Ficha de Treino, Avaliação Física e Relatórios chegam nas
+// proximas fases).
 $itensMenu = [
     ['slug' => 'painel', 'href' => '/dashboard', 'icone' => '🏠', 'label' => 'Painel'],
+    ['slug' => 'checkin', 'href' => '/dashboard/checkin', 'icone' => '📲', 'label' => 'Check-in'],
+    ['slug' => 'ranking', 'href' => '/dashboard/ranking', 'icone' => '🏆', 'label' => 'Ranking'],
     ['slug' => 'alunos', 'href' => '/dashboard/alunos', 'icone' => '🏋️', 'label' => 'Alunos'],
     ['slug' => 'professores', 'href' => '/dashboard/professores', 'icone' => '🧑‍🏫', 'label' => 'Professores'],
     ['slug' => 'planos-matricula', 'href' => '/dashboard/planos-matricula', 'icone' => '📦', 'label' => 'Planos de Matrícula'],

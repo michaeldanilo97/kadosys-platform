@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
+use Academias\Controllers\AlunoAreaController;
 use Academias\Controllers\AlunoController;
 use Academias\Controllers\AssinaturaController;
 use Academias\Controllers\AuthController;
 use Academias\Controllers\CadastroController;
+use Academias\Controllers\CheckinController;
 use Academias\Controllers\ConfiguracaoController;
 use Academias\Controllers\DashboardController;
 use Academias\Controllers\FaturaController;
@@ -32,6 +34,18 @@ $router->get('/cadastro/retorno', [CadastroController::class, 'retorno']);
 // Notificacoes assincronas do Mercado Pago (confirmacao de pagamento).
 $router->post('/webhooks/mercadopago', [WebhookController::class, 'mercadoPago']);
 
+// Check-in publico via QR fixo (exige aluno logado - ver CheckinController::processar,
+// que redireciona pro login da area do aluno com "next" de volta pra essa URL).
+$router->get('/checkin/{slug}/{token}', [CheckinController::class, 'processar']);
+
+// Area do aluno (login proprio, separado da equipe - ver Academias\Core\AlunoAuth).
+$router->get('/minha-conta/{slug}', [AlunoAreaController::class, 'painel']);
+$router->get('/minha-conta/{slug}/entrar', [AlunoAreaController::class, 'showEntrar']);
+$router->post('/minha-conta/{slug}/entrar', [AlunoAreaController::class, 'entrar']);
+$router->get('/minha-conta/{slug}/cadastro', [AlunoAreaController::class, 'showCadastro']);
+$router->post('/minha-conta/{slug}/cadastro', [AlunoAreaController::class, 'cadastro']);
+$router->post('/minha-conta/{slug}/sair', [AlunoAreaController::class, 'sair']);
+
 // Autenticacao.
 $router->get('/login', [AuthController::class, 'showLogin'], [GuestMiddleware::class]);
 $router->post('/login', [AuthController::class, 'login'], [GuestMiddleware::class]);
@@ -52,6 +66,13 @@ $router->post('/dashboard/assinatura/cartao', [AssinaturaController::class, 'ass
 
 // Faturas (historico de cobranca - sempre acessivel, mesmo bloqueado).
 $router->get('/dashboard/faturas', [FaturaController::class, 'index'], [AuthMiddleware::class]);
+
+// Check-in (equipe, dashboard) - quem esta dentro agora, QR, historico, ranking.
+$router->get('/dashboard/checkin', [CheckinController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/checkin/qr', [CheckinController::class, 'qr'], [AuthMiddleware::class]);
+$router->post('/dashboard/checkin/qr/regenerar', [CheckinController::class, 'regenerarToken'], [AuthMiddleware::class]);
+$router->get('/dashboard/checkin/historico', [CheckinController::class, 'historico'], [AuthMiddleware::class]);
+$router->get('/dashboard/ranking', [CheckinController::class, 'ranking'], [AuthMiddleware::class]);
 
 // Alunos.
 $router->get('/dashboard/alunos', [AlunoController::class, 'index'], [AuthMiddleware::class]);
