@@ -11,6 +11,7 @@ use Food\Controllers\FaturaController;
 use Food\Controllers\FornecedorController;
 use Food\Controllers\IngredienteController;
 use Food\Controllers\LandingController;
+use Food\Controllers\ProdutoController;
 use Food\Controllers\WebhookController;
 use Food\Core\Middleware\AuthMiddleware;
 use Food\Core\Middleware\GuestMiddleware;
@@ -56,7 +57,7 @@ $router->get('/dashboard/categorias/{id}/editar', [CategoriaController::class, '
 $router->post('/dashboard/categorias/{id}', [CategoriaController::class, 'update'], [AuthMiddleware::class]);
 $router->post('/dashboard/categorias/{id}/excluir', [CategoriaController::class, 'destroy'], [AuthMiddleware::class]);
 
-// Ingredientes (base da futura Ficha Tecnica).
+// Ingredientes (base da Ficha Tecnica).
 $router->get('/dashboard/ingredientes', [IngredienteController::class, 'index'], [AuthMiddleware::class]);
 $router->get('/dashboard/ingredientes/novo', [IngredienteController::class, 'create'], [AuthMiddleware::class]);
 $router->post('/dashboard/ingredientes', [IngredienteController::class, 'store'], [AuthMiddleware::class]);
@@ -71,6 +72,17 @@ $router->post('/dashboard/fornecedores', [FornecedorController::class, 'store'],
 $router->get('/dashboard/fornecedores/{id}/editar', [FornecedorController::class, 'edit'], [AuthMiddleware::class]);
 $router->post('/dashboard/fornecedores/{id}', [FornecedorController::class, 'update'], [AuthMiddleware::class]);
 $router->post('/dashboard/fornecedores/{id}/excluir', [FornecedorController::class, 'destroy'], [AuthMiddleware::class]);
+
+// Produtos + Ficha Tecnica (custeio automatico via Food\Core\Custeio).
+$router->get('/dashboard/produtos', [ProdutoController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/produtos/novo', [ProdutoController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/produtos', [ProdutoController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/produtos/{id}/editar', [ProdutoController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/dashboard/produtos/{id}', [ProdutoController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/produtos/{id}/excluir', [ProdutoController::class, 'destroy'], [AuthMiddleware::class]);
+$router->get('/dashboard/produtos/{id}/ficha-tecnica', [ProdutoController::class, 'fichaTecnica'], [AuthMiddleware::class]);
+$router->post('/dashboard/produtos/{id}/ficha-tecnica', [ProdutoController::class, 'fichaTecnicaAdicionar'], [AuthMiddleware::class]);
+$router->post('/dashboard/produtos/{id}/ficha-tecnica/{itemId}/excluir', [ProdutoController::class, 'fichaTecnicaRemover'], [AuthMiddleware::class]);
 
 // Faturas (historico de cobranca - sempre acessivel, mesmo bloqueado).
 $router->get('/dashboard/faturas', [FaturaController::class, 'index'], [AuthMiddleware::class]);

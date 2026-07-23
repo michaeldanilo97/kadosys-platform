@@ -8,8 +8,10 @@ use Food\Core\Auth;
 use Food\Core\Controller;
 use Food\Core\Csrf;
 use Food\Core\Session;
+use Food\Models\FichaTecnicaItem;
 use Food\Models\Fornecedor;
 use Food\Models\Ingrediente;
+use Food\Models\Produto;
 use Food\Models\Restaurante;
 use Food\Models\User;
 
@@ -180,6 +182,11 @@ final class IngredienteController extends Controller
 
         $this->processarUploadFoto((int) $id, $restauranteId);
 
+        // Preco pode ter mudado - recalcula em cascata o custo/preco
+        // ideal de todo produto cuja ficha tecnica usa esse ingrediente,
+        // no mesmo request (sincrono, sem fila).
+        Produto::recalcularCustoDeProdutosComIngrediente((int) $id, $restauranteId);
+
         Session::flash('ingrediente_success', 'Ingrediente atualizado com sucesso.');
         $this->redirect('/dashboard/ingredientes');
     }
@@ -189,6 +196,11 @@ final class IngredienteController extends Controller
         $restauranteId = $this->restauranteId();
 
         if (Csrf::verify($this->request->input('_csrf_token'))) {
+            if (FichaTecnicaItem::produtoIdsComIngrediente((int) $id, $restauranteId) !== []) {
+                Session::flash('ingrediente_errors', ['Esse ingrediente está em uso na ficha técnica de um ou mais produtos e não pode ser excluído.']);
+                $this->redirect('/dashboard/ingredientes');
+            }
+
             $ingrediente = Ingrediente::find((int) $id, $restauranteId);
 
             if ($ingrediente !== null) {
