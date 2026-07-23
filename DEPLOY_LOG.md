@@ -17,6 +17,46 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 159 - 2026-07-23
+
+**KADOSYS Food: Fase 2 - Categorias, Ingredientes, Fornecedores**
+
+Segunda fase do novo app Food, com os 3 primeiros módulos de catálogo
+(CRUD completo, seguindo o mesmo padrão de `Barbearias\Controllers\
+ProdutoController`, mas já com ícones Bootstrap Icons e `data-confirm`
+em vez do emoji/`confirm()` nativo usado originalmente em Barbearias -
+Food nasceu moderno na Fase 1 e continua assim em cada módulo novo).
+
+- **`categorias`**: nome + ativo/inativo. Toda loja nova recebe
+  automaticamente as 8 categorias padrão (Doces, Bolos, Salgados,
+  Bebidas, Combos, Tortas, Cafés, Outros) via `Categoria::seedPadrao()`,
+  chamado por `CadastroController::enviar()` logo após criar o usuário
+  admin - a lista fica livremente editável dali em diante, não é um
+  ENUM fixo. Vai ser usada em `produtos.categoria_id` na Fase 3.
+- **`fornecedores`**: nome, contato, telefone/WhatsApp, e-mail, prazo de
+  entrega (dias) e forma de pagamento combinada (texto livre, já que
+  prazos variam demais pra travar num conjunto fixo de opções).
+- **`ingredientes`**: nome, categoria (texto livre do próprio usuário,
+  ex. "Laticínios" - diferente da tabela `categorias`, que categoriza o
+  produto vendido, não o ingrediente), fornecedor (opcional), código/SKU,
+  unidade de medida, preço atual, estoque atual/mínimo (em `DECIMAL`,
+  já que ingrediente se compra e usa fracionado, ex. 2,5kg), localização
+  no estoque, observação e foto (upload PNG/JPG/WEBP até 5MB, mesmo
+  padrão de `ProfissionalController::processarUploadFoto()` do
+  Barbearias). Tela de listagem mostra um painel de "Estoque baixo"
+  (ingredientes com estoque no ou abaixo do mínimo cadastrado), igual ao
+  já usado em Produtos/Barbearias.
+- Migration `001_categorias_ingredientes_fornecedores.sql` +
+  `install.sql` atualizado (dual-write, mesmo padrão já usado em
+  Academias) para que instalações novas recebam tudo de uma vez.
+- 3 novos itens no menu lateral do dashboard (Categorias, Ingredientes,
+  Fornecedores), entre "Painel" e "Faturas".
+- Testado fim a fim localmente (MariaDB + `php -S` + seed + curl +
+  Playwright): login, CRUD completo (criar/editar/excluir) dos 3
+  módulos, seed automático das 8 categorias no cadastro, alerta de
+  estoque baixo, busca com paginação e vínculo ingrediente→fornecedor
+  exibido corretamente na listagem.
+
 ## Ajuste 158 - 2026-07-23
 
 **KADOSYS Food: novo app (Fase 1 - esqueleto + billing + landing + dashboard base)**

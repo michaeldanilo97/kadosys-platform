@@ -5,8 +5,11 @@ declare(strict_types=1);
 use Food\Controllers\AssinaturaController;
 use Food\Controllers\AuthController;
 use Food\Controllers\CadastroController;
+use Food\Controllers\CategoriaController;
 use Food\Controllers\DashboardController;
 use Food\Controllers\FaturaController;
+use Food\Controllers\FornecedorController;
+use Food\Controllers\IngredienteController;
 use Food\Controllers\LandingController;
 use Food\Controllers\WebhookController;
 use Food\Core\Middleware\AuthMiddleware;
@@ -44,6 +47,30 @@ $router->get('/dashboard/assinatura', [AssinaturaController::class, 'index'], [A
 $router->get('/dashboard/assinatura/status', [AssinaturaController::class, 'status'], [AuthMiddleware::class]);
 $router->post('/dashboard/assinatura/pix', [AssinaturaController::class, 'gerarPix'], [AuthMiddleware::class]);
 $router->post('/dashboard/assinatura/cartao', [AssinaturaController::class, 'assinarCartao'], [AuthMiddleware::class]);
+
+// Categorias de produto (Doces, Bolos, Salgados, etc).
+$router->get('/dashboard/categorias', [CategoriaController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/categorias/nova', [CategoriaController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/categorias', [CategoriaController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/categorias/{id}/editar', [CategoriaController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/dashboard/categorias/{id}', [CategoriaController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/categorias/{id}/excluir', [CategoriaController::class, 'destroy'], [AuthMiddleware::class]);
+
+// Ingredientes (base da futura Ficha Tecnica).
+$router->get('/dashboard/ingredientes', [IngredienteController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/ingredientes/novo', [IngredienteController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/ingredientes', [IngredienteController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/ingredientes/{id}/editar', [IngredienteController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/dashboard/ingredientes/{id}', [IngredienteController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/ingredientes/{id}/excluir', [IngredienteController::class, 'destroy'], [AuthMiddleware::class]);
+
+// Fornecedores.
+$router->get('/dashboard/fornecedores', [FornecedorController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/fornecedores/novo', [FornecedorController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/fornecedores', [FornecedorController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/fornecedores/{id}/editar', [FornecedorController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/dashboard/fornecedores/{id}', [FornecedorController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/fornecedores/{id}/excluir', [FornecedorController::class, 'destroy'], [AuthMiddleware::class]);
 
 // Faturas (historico de cobranca - sempre acessivel, mesmo bloqueado).
 $router->get('/dashboard/faturas', [FaturaController::class, 'index'], [AuthMiddleware::class]);

@@ -10,6 +10,7 @@ use Food\Core\Csrf;
 use Food\Core\Documento;
 use Food\Core\MercadoPagoClient;
 use Food\Core\Session;
+use Food\Models\Categoria;
 use Food\Models\Restaurante;
 use Food\Models\FaturaRestaurante;
 use Food\Models\Plano;
@@ -137,6 +138,7 @@ final class CadastroController extends Controller
         );
 
         User::create($restauranteId, $adminNome, $adminEmail, $senha);
+        Categoria::seedPadrao($restauranteId);
 
         if ($metodoPagamento === 'trial') {
             // Sem pagamento nenhum pra esperar - loga direto e manda pro

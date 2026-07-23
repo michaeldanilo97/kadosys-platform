@@ -98,3 +98,63 @@ CREATE TABLE IF NOT EXISTS password_resets (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     KEY password_resets_email_index (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- KADOSYS Food - Fase 2 (Categorias, Ingredientes, Fornecedores)
+-- Ver database/migrations/001_categorias_ingredientes_fornecedores.sql
+-- para detalhes/comentarios de cada coluna.
+
+CREATE TABLE IF NOT EXISTS categorias (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    restaurante_id INT UNSIGNED NOT NULL,
+    nome VARCHAR(60) NOT NULL,
+    ativo TINYINT(1) NOT NULL DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY categorias_restaurante_id_index (restaurante_id),
+    CONSTRAINT categorias_restaurante_id_foreign
+        FOREIGN KEY (restaurante_id) REFERENCES restaurantes (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS fornecedores (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    restaurante_id INT UNSIGNED NOT NULL,
+    nome VARCHAR(150) NOT NULL,
+    telefone VARCHAR(20) NULL,
+    whatsapp VARCHAR(20) NULL,
+    email VARCHAR(150) NULL,
+    contato VARCHAR(150) NULL,
+    prazo_dias INT UNSIGNED NULL,
+    forma_pagamento VARCHAR(60) NULL,
+    observacoes TEXT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY fornecedores_restaurante_id_index (restaurante_id),
+    CONSTRAINT fornecedores_restaurante_id_foreign
+        FOREIGN KEY (restaurante_id) REFERENCES restaurantes (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS ingredientes (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    restaurante_id INT UNSIGNED NOT NULL,
+    nome VARCHAR(150) NOT NULL,
+    categoria VARCHAR(60) NULL,
+    fornecedor_id INT UNSIGNED NULL,
+    codigo VARCHAR(60) NULL,
+    unidade VARCHAR(20) NOT NULL DEFAULT 'un',
+    preco_atual DECIMAL(10, 4) NOT NULL DEFAULT 0.0000,
+    preco_medio DECIMAL(10, 4) NULL,
+    ultima_compra_em DATE NULL,
+    estoque_atual DECIMAL(10, 3) NOT NULL DEFAULT 0.000,
+    estoque_minimo DECIMAL(10, 3) NOT NULL DEFAULT 0.000,
+    localizacao VARCHAR(100) NULL,
+    observacao TEXT NULL,
+    foto_path VARCHAR(255) NULL,
+    ativo TINYINT(1) NOT NULL DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY ingredientes_restaurante_id_index (restaurante_id),
+    KEY ingredientes_fornecedor_id_index (fornecedor_id),
+    CONSTRAINT ingredientes_restaurante_id_foreign
+        FOREIGN KEY (restaurante_id) REFERENCES restaurantes (id) ON DELETE CASCADE,
+    CONSTRAINT ingredientes_fornecedor_id_foreign
+        FOREIGN KEY (fornecedor_id) REFERENCES fornecedores (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
