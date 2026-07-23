@@ -64,6 +64,55 @@ final class CusteioConfig
             ?? throw new \RuntimeException('Falha ao criar configuracao de custeio.');
     }
 
+    /**
+     * Atualiza os valores padrao de overhead/margem/taxas - usado pela
+     * tela de Precificacao Inteligente (Fase 7). Nao recalcula custo de
+     * produto nenhum sozinho: quem usa override (valor proprio no
+     * produto) nao e afetado; quem usa o padrao passa a ver o novo
+     * valor so na proxima vez que o custo for recalculado (ex.: ao
+     * salvar o produto de novo ou registrar uma compra).
+     */
+    public static function atualizar(
+        int $restauranteId,
+        float $valorEnergiaPadrao,
+        float $valorGasPadrao,
+        float $valorAguaPadrao,
+        float $valorEmbalagemPadrao,
+        float $valorEtiquetaPadrao,
+        float $valorMaoObraPadrao,
+        float $valorTaxaOperacionalPadrao,
+        float $valorDesperdicioPadrao,
+        float $margemDesejadaPadrao,
+        float $comissaoIfoodPadrao,
+        float $taxaPagamentoOnlinePadrao,
+    ): void {
+        self::obterOuCriar($restauranteId);
+
+        $stmt = Database::connection()->prepare(
+            'UPDATE custeio_config SET valor_energia_padrao = :energia, valor_gas_padrao = :gas,
+                valor_agua_padrao = :agua, valor_embalagem_padrao = :embalagem, valor_etiqueta_padrao = :etiqueta,
+                valor_mao_obra_padrao = :mao_obra, valor_taxa_operacional_padrao = :taxa_operacional,
+                valor_desperdicio_padrao = :desperdicio, margem_desejada_padrao = :margem,
+                comissao_ifood_padrao = :comissao_ifood, taxa_pagamento_online_padrao = :taxa_pagamento_online,
+                updated_at = NOW()
+             WHERE restaurante_id = :restaurante_id'
+        );
+        $stmt->execute([
+            'energia' => max(0, $valorEnergiaPadrao),
+            'gas' => max(0, $valorGasPadrao),
+            'agua' => max(0, $valorAguaPadrao),
+            'embalagem' => max(0, $valorEmbalagemPadrao),
+            'etiqueta' => max(0, $valorEtiquetaPadrao),
+            'mao_obra' => max(0, $valorMaoObraPadrao),
+            'taxa_operacional' => max(0, $valorTaxaOperacionalPadrao),
+            'desperdicio' => max(0, $valorDesperdicioPadrao),
+            'margem' => min(95.0, max(0, $margemDesejadaPadrao)),
+            'comissao_ifood' => min(95.0, max(0, $comissaoIfoodPadrao)),
+            'taxa_pagamento_online' => min(95.0, max(0, $taxaPagamentoOnlinePadrao)),
+            'restaurante_id' => $restauranteId,
+        ]);
+    }
+
     private static function buscar(int $restauranteId): ?self
     {
         $stmt = Database::connection()->prepare(
