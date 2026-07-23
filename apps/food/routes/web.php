@@ -6,6 +6,7 @@ use Food\Controllers\AssinaturaController;
 use Food\Controllers\AuthController;
 use Food\Controllers\CadastroController;
 use Food\Controllers\CategoriaController;
+use Food\Controllers\ClienteController;
 use Food\Controllers\CompraController;
 use Food\Controllers\DashboardController;
 use Food\Controllers\EstoqueController;
@@ -13,6 +14,7 @@ use Food\Controllers\FaturaController;
 use Food\Controllers\FornecedorController;
 use Food\Controllers\IngredienteController;
 use Food\Controllers\LandingController;
+use Food\Controllers\PedidoController;
 use Food\Controllers\ProdutoController;
 use Food\Controllers\WebhookController;
 use Food\Core\Middleware\AuthMiddleware;
@@ -97,6 +99,25 @@ $router->get('/dashboard/compras/nova', [CompraController::class, 'create'], [Au
 $router->post('/dashboard/compras', [CompraController::class, 'store'], [AuthMiddleware::class]);
 $router->get('/dashboard/compras/{id}', [CompraController::class, 'show'], [AuthMiddleware::class]);
 $router->post('/dashboard/compras/{id}/itens', [CompraController::class, 'itemAdicionar'], [AuthMiddleware::class]);
+
+// Clientes.
+$router->get('/dashboard/clientes', [ClienteController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/clientes/novo', [ClienteController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/clientes', [ClienteController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/clientes/{id}', [ClienteController::class, 'show'], [AuthMiddleware::class]);
+$router->get('/dashboard/clientes/{id}/editar', [ClienteController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/dashboard/clientes/{id}', [ClienteController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/dashboard/clientes/{id}/excluir', [ClienteController::class, 'destroy'], [AuthMiddleware::class]);
+
+// Pedidos (Balcao/WhatsApp/iFood manual/Delivery proprio) + baixa automatica de estoque ao confirmar.
+$router->get('/dashboard/pedidos', [PedidoController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/pedidos/novo', [PedidoController::class, 'create'], [AuthMiddleware::class]);
+$router->post('/dashboard/pedidos', [PedidoController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/dashboard/pedidos/{id}', [PedidoController::class, 'show'], [AuthMiddleware::class]);
+$router->post('/dashboard/pedidos/{id}/itens', [PedidoController::class, 'itemAdicionar'], [AuthMiddleware::class]);
+$router->post('/dashboard/pedidos/{id}/itens/{itemId}/excluir', [PedidoController::class, 'itemRemover'], [AuthMiddleware::class]);
+$router->post('/dashboard/pedidos/{id}/confirmar', [PedidoController::class, 'confirmar'], [AuthMiddleware::class]);
+$router->post('/dashboard/pedidos/{id}/cancelar', [PedidoController::class, 'cancelar'], [AuthMiddleware::class]);
 
 // Faturas (historico de cobranca - sempre acessivel, mesmo bloqueado).
 $router->get('/dashboard/faturas', [FaturaController::class, 'index'], [AuthMiddleware::class]);
