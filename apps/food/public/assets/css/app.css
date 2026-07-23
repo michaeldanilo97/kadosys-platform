@@ -1495,3 +1495,252 @@ a.user-panel-item:hover,
     background: rgba(59, 130, 246, 0.1);
     color: #1D4ED8;
 }
+
+/* Producao (kanban cozinha/TV) - Fase 6 */
+.producao-board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.producao-coluna-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.producao-coluna-head h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-dim);
+}
+
+.producao-coluna-contagem {
+    background: var(--surface-strong);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.producao-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.producao-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    transition: var(--transition);
+}
+
+.producao-card.producao-atrasado {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.25);
+}
+
+.producao-card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.4rem;
+}
+
+.producao-card-head strong {
+    font-size: 1.05rem;
+}
+
+.producao-timer {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--primary-soft);
+}
+
+.producao-atrasado .producao-timer {
+    color: var(--danger);
+}
+
+.producao-card-cliente {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    margin: 0 0 0.5rem;
+}
+
+.producao-card-itens {
+    list-style: none;
+    margin: 0 0 0.75rem;
+    padding: 0;
+    font-size: 0.9rem;
+}
+
+.producao-card-itens li {
+    padding: 0.15rem 0;
+    border-bottom: 1px dashed var(--glass-border);
+}
+
+.producao-card-itens li:last-child {
+    border-bottom: none;
+}
+
+.producao-card form {
+    margin: 0;
+}
+
+.producao-vazio {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    padding: 1rem;
+    text-align: center;
+    border: 1px dashed var(--glass-border);
+    border-radius: var(--radius);
+}
+
+/* Variante TV (tela cheia, sem sidebar) */
+.producao-tv-body {
+    margin: 0;
+    background: var(--bg-dark);
+    min-height: 100vh;
+}
+
+.producao-tv-shell {
+    padding: 1.5rem 2rem 2.5rem;
+}
+
+.producao-tv-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.producao-tv-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+.producao-tv-relogio {
+    font-size: 1.6rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-dim);
+}
+
+.producao-tv-shell .producao-board {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.producao-tv-shell .producao-card {
+    font-size: 1.05rem;
+}
+
+.btn-habilitar-som {
+    background: var(--accent);
+    color: var(--white);
+    border: none;
+    border-radius: 999px;
+    padding: 0.6rem 1.4rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* PDV (venda touch) - Fase 6 */
+.form-field-hint {
+    color: var(--danger);
+    font-size: 0.8rem;
+    margin: 0.35rem 0 0;
+}
+
+.pdv-grid-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.25rem;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .pdv-grid-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.pdv-produtos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.85rem;
+}
+
+.pdv-tile {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 1.1rem 0.6rem;
+    min-height: 90px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: inherit;
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: center;
+}
+
+.pdv-tile:hover,
+.pdv-tile:active {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.pdv-tile-nome {
+    font-weight: 600;
+    font-size: 0.92rem;
+}
+
+.pdv-tile-preco {
+    color: var(--primary-soft);
+    font-variant-numeric: tabular-nums;
+}
+
+.pdv-carrinho {
+    position: sticky;
+    top: 1rem;
+}
+
+.pdv-carrinho-itens {
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: 0;
+}
+
+.pdv-carrinho-itens li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed var(--glass-border);
+}
+
+.pdv-carrinho-itens li:last-child {
+    border-bottom: none;
+}
+
+.pdv-carrinho-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1.15rem;
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--glass-border);
+    margin-bottom: 1rem;
+}

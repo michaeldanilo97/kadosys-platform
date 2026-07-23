@@ -8,7 +8,7 @@ use Food\Core\Database;
 
 /**
  * Item de pedido. So pode ser criado/removido enquanto o pedido ainda
- * esta em "recebido" (ainda sendo montado, sem baixa de estoque feita) -
+ * esta em "montagem" (ainda sendo montado, sem baixa de estoque feita) -
  * essa checagem fica no controller, igual ao padrao ja usado em
  * FichaTecnicaItem (compor agora, efeito real so na confirmacao).
  */

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Food\Controllers\AssinaturaController;
 use Food\Controllers\AuthController;
 use Food\Controllers\CadastroController;
+use Food\Controllers\CaixaController;
 use Food\Controllers\CategoriaController;
 use Food\Controllers\ClienteController;
 use Food\Controllers\CompraController;
@@ -14,7 +15,9 @@ use Food\Controllers\FaturaController;
 use Food\Controllers\FornecedorController;
 use Food\Controllers\IngredienteController;
 use Food\Controllers\LandingController;
+use Food\Controllers\PdvController;
 use Food\Controllers\PedidoController;
+use Food\Controllers\ProducaoController;
 use Food\Controllers\ProdutoController;
 use Food\Controllers\WebhookController;
 use Food\Core\Middleware\AuthMiddleware;
@@ -118,6 +121,30 @@ $router->post('/dashboard/pedidos/{id}/itens', [PedidoController::class, 'itemAd
 $router->post('/dashboard/pedidos/{id}/itens/{itemId}/excluir', [PedidoController::class, 'itemRemover'], [AuthMiddleware::class]);
 $router->post('/dashboard/pedidos/{id}/confirmar', [PedidoController::class, 'confirmar'], [AuthMiddleware::class]);
 $router->post('/dashboard/pedidos/{id}/cancelar', [PedidoController::class, 'cancelar'], [AuthMiddleware::class]);
+
+// Producao (tela cozinha/TV) - pedidos confirmados ate a entrega.
+$router->get('/dashboard/producao', [ProducaoController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/producao/tv', [ProducaoController::class, 'tv'], [AuthMiddleware::class]);
+$router->get('/dashboard/producao/dados', [ProducaoController::class, 'dados'], [AuthMiddleware::class]);
+$router->post('/dashboard/producao/{id}/avancar', [ProducaoController::class, 'avancar'], [AuthMiddleware::class]);
+
+// Caixa (abertura/fechamento de turno + sangria/suprimento).
+$router->get('/dashboard/caixa', [CaixaController::class, 'index'], [AuthMiddleware::class]);
+$router->post('/dashboard/caixa/abrir', [CaixaController::class, 'abrir'], [AuthMiddleware::class]);
+$router->post('/dashboard/caixa/fechar', [CaixaController::class, 'fechar'], [AuthMiddleware::class]);
+$router->post('/dashboard/caixa/sangria', [CaixaController::class, 'sangria'], [AuthMiddleware::class]);
+$router->post('/dashboard/caixa/suprimento', [CaixaController::class, 'suprimento'], [AuthMiddleware::class]);
+
+// PDV (venda touch com busca rapida/codigo de barras, split payment, troco, Pix dinamico).
+$router->get('/dashboard/pdv', [PdvController::class, 'index'], [AuthMiddleware::class]);
+$router->post('/dashboard/pdv/itens', [PdvController::class, 'itemAdicionar'], [AuthMiddleware::class]);
+$router->post('/dashboard/pdv/itens/{itemId}/excluir', [PdvController::class, 'itemRemover'], [AuthMiddleware::class]);
+$router->get('/dashboard/pdv/pagamento', [PdvController::class, 'pagamentoForm'], [AuthMiddleware::class]);
+$router->post('/dashboard/pdv/pagamento', [PdvController::class, 'pagamentoAdicionar'], [AuthMiddleware::class]);
+$router->post('/dashboard/pdv/pagamento/{pagamentoId}/excluir', [PdvController::class, 'pagamentoRemover'], [AuthMiddleware::class]);
+$router->post('/dashboard/pdv/finalizar', [PdvController::class, 'finalizar'], [AuthMiddleware::class]);
+$router->get('/dashboard/pdv/{id}/recibo', [PdvController::class, 'recibo'], [AuthMiddleware::class]);
+$router->post('/dashboard/pdv/cancelar', [PdvController::class, 'cancelar'], [AuthMiddleware::class]);
 
 // Faturas (historico de cobranca - sempre acessivel, mesmo bloqueado).
 $router->get('/dashboard/faturas', [FaturaController::class, 'index'], [AuthMiddleware::class]);

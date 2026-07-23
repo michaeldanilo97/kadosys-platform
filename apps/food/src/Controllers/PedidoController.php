@@ -157,7 +157,7 @@ final class PedidoController extends Controller
             $this->redirect('/dashboard/pedidos/' . $id);
         }
 
-        if ($pedido->status !== Pedido::STATUS_RECEBIDO) {
+        if ($pedido->status !== Pedido::STATUS_MONTAGEM) {
             Session::flash('pedido_item_errors', ['Esse pedido já foi confirmado ou cancelado - não é mais possível alterar os itens.']);
             $this->redirect('/dashboard/pedidos/' . $id);
         }
@@ -205,7 +205,7 @@ final class PedidoController extends Controller
         }
 
         if (Csrf::verify($this->request->input('_csrf_token'))) {
-            if ($pedido->status !== Pedido::STATUS_RECEBIDO) {
+            if ($pedido->status !== Pedido::STATUS_MONTAGEM) {
                 Session::flash('pedido_item_errors', ['Esse pedido já foi confirmado ou cancelado - não é mais possível alterar os itens.']);
                 $this->redirect('/dashboard/pedidos/' . $id);
             }
@@ -263,6 +263,7 @@ final class PedidoController extends Controller
     private function statusValidos(): array
     {
         return [
+            Pedido::STATUS_MONTAGEM,
             Pedido::STATUS_RECEBIDO,
             Pedido::STATUS_EM_PREPARO,
             Pedido::STATUS_FINALIZADO,
