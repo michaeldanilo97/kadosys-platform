@@ -2475,3 +2475,116 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
     transform: none;
   }
 }
+
+/* ---- Biblia Interativa (kids/biblia/*.php) ---------------------------- */
+
+.kids-livro-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.8rem;
+  margin-bottom: 0.6rem;
+}
+
+.kids-livro-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 1rem 0.6rem;
+  border-radius: 18px;
+  background: #FFFFFF;
+  box-shadow: 0 5px 0 rgba(58, 46, 92, 0.08);
+  text-align: center;
+  text-decoration: none;
+  transition: transform 0.15s ease;
+}
+
+.kids-livro-card:hover {
+  transform: translateY(-3px);
+}
+
+.kids-livro-card.completo {
+  background: linear-gradient(135deg, rgba(107, 203, 119, 0.18), rgba(76, 201, 240, 0.18));
+}
+
+.kids-livro-abreviacao {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: var(--kids-roxo);
+}
+
+.kids-livro-nome {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--kids-texto);
+  line-height: 1.25;
+}
+
+.kids-livro-progresso {
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--kids-texto-suave);
+}
+
+.kids-capitulo-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  gap: 0.6rem;
+}
+
+.kids-capitulo-numero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border-radius: 14px;
+  background: #FFFFFF;
+  box-shadow: 0 4px 0 rgba(58, 46, 92, 0.08);
+  color: var(--kids-texto);
+  font-weight: 800;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: transform 0.15s ease;
+}
+
+.kids-capitulo-numero:hover {
+  transform: translateY(-2px);
+}
+
+.kids-capitulo-numero.lido {
+  background: linear-gradient(135deg, var(--kids-verde), var(--kids-azul));
+  color: #FFFFFF;
+}
+
+.kids-biblia-texto p {
+  margin: 0 0 0.9rem;
+  line-height: 1.7;
+  font-size: 1rem;
+  color: var(--kids-texto);
+}
+
+.kids-biblia-versiculo-numero {
+  color: var(--kids-roxo);
+  font-weight: 800;
+  margin-right: 0.15rem;
+}
+
+.kids-biblia-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-top: 1.6rem;
+}
+
+.kids-biblia-nav .kids-btn-concluir {
+  flex: 1;
+  max-width: 48%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kids-livro-card:hover,
+  .kids-capitulo-numero:hover {
+    transform: none;
+  }
+}
