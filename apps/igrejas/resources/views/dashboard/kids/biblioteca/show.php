@@ -61,7 +61,7 @@ $tipoInfo = $conteudo->tipoInfo();
         <?php endif; ?>
 
         <?php if ($conteudo->textoConteudo): ?>
-            <?php if ($conteudo->origem === 'kadosys' && in_array($conteudo->tipo, ['colorir', 'jogo', 'slide', 'hq', 'atividade'], true)): ?>
+            <?php if ($conteudo->origem === 'kadosys' && in_array($conteudo->tipo, ['colorir', 'jogo', 'slide', 'hq', 'atividade', 'estudo'], true)): ?>
                 <?= $conteudo->textoConteudo ?>
             <?php else: ?>
                 <div class="texto"><?= htmlspecialchars($conteudo->textoConteudo, ENT_QUOTES, 'UTF-8') ?></div>
