@@ -17,6 +17,47 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 173 - 2026-07-24
+
+**Igrejas Kids: missão do dia, sequência de acesso e ranking (igreja + entre igrejas)**
+
+Segunda e terceira parte do pedido do usuário (a primeira, o boneco do
+avatar, já tinha saído no Ajuste 172): "faz algo bacana envolvente" pra
+fazer a criança querer voltar todo dia + "ranking geral das crianças e
+igrejas na tela".
+
+- **Missão do dia**: 2 conteúdos sorteados por criança, todo dia
+  (prioriza o que ela ainda não concluiu), com bônus de +15 XP e +8
+  moedas só nesse dia - aparece na home da Biblioteca com um selo
+  "Feito!" pra cada uma já concluída.
+- **Sequência de acesso à Biblioteca**: separada da sequência de
+  presença física na igreja (que só conta em check-in) - conta dias
+  seguidos abrindo o app em casa, com bônus de marco em 3/7/14/30 dias
+  (+15 a +100 XP, +10 a +70 moedas).
+- **Ranking dentro da igreja**: top 10 crianças por XP, com a posição
+  da própria criança sempre visível mesmo fora do top 10.
+- **Ranking entre igrejas KADOSYS**: top 10 igrejas pelo XP total das
+  crianças (só o nome da igreja aparece, nenhuma criança de uma igreja
+  é exposta pra outra) - alimentado por uma tabela nova no banco
+  central (`plataforma_kids_ranking`), atualizada automaticamente toda
+  vez que uma criança ganha XP em qualquer igreja provisionada. Só
+  aparece em instalações que fazem parte da frota multi-tenant (uma
+  instalação avulsa/de desenvolvimento simplesmente não mostra essa
+  seção, sem erro).
+- Migração 068 (por igreja): `kids_criancas.sequencia_app_dias`/
+  `ultima_visita_app_em` + tabela `kids_missoes_diarias`.
+- Migração 069 (só banco central, fora do `install.sql` - mesmo padrão
+  de `plataforma_tenants`/`plataforma_avisos`): tabela
+  `plataforma_kids_ranking`.
+- Testado via Playwright: missão do dia sorteada e persistente no
+  mesmo dia, bônus concedido só na primeira conclusão de cada missão,
+  sequência de acesso incrementando corretamente (inclusive marco de 3
+  dias simulado) e sem duplicar bônus numa segunda visita no mesmo dia,
+  ranking da igreja mostrando a criança de teste, ranking entre
+  igrejas corretamente ausente numa instalação sem tenant resolvido.
+
+---
+
 ## Ajuste 172 - 2026-07-24
 
 **Igrejas Kids: avatar vira um "boneco" de verdade (corpo + roupas em camadas)**

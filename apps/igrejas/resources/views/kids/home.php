@@ -7,6 +7,8 @@ use Igrejas\Models\KidsConteudo;
  * @var \Igrejas\Models\KidsCrianca $crianca
  * @var array<string, int> $contagens
  * @var array<int, KidsConteudo> $recentes
+ * @var array<int, array{conteudoId: int, titulo: string, tipo: string, emoji: string, concluida: bool}> $missoes
+ * @var array{sequencia: int, xp: int, moedas: int}|null $acessoApp
  * @var string $csrfToken
  */
 $basePath = $config['base_path'] ?? '';
@@ -28,11 +30,15 @@ $primeiroNome = explode(' ', $crianca->nome)[0];
                 <span class="kids-stats-mini" style="margin-top: 0.2rem;">
                     <span>⭐ <?= $crianca->xp ?></span>
                     <span>🪙 <?= $crianca->moedas ?></span>
-                    <span>🔥 <?= $crianca->sequenciaDias ?></span>
+                    <span title="Sequência na igreja">🔥 <?= $crianca->sequenciaDias ?></span>
+                    <span title="Sequência acessando a Biblioteca">🗓️ <?= $crianca->sequenciaAppDias ?></span>
                 </span>
             </span>
         </div>
         <div style="display: flex; gap: 0.6rem;">
+            <a href="<?= $basePath ?>/kids/ranking" class="kids-app-sair" style="background: linear-gradient(135deg, var(--kids-amarelo), var(--kids-laranja));">
+                <i class="bi bi-trophy-fill"></i> Ranking
+            </a>
             <a href="<?= $basePath ?>/kids/avatar" class="kids-app-sair" style="background: linear-gradient(135deg, var(--kids-roxo), var(--kids-rosa)); color: #FFFFFF;">
                 <i class="bi bi-person-video3"></i> Meu Avatar
             </a>
@@ -42,6 +48,30 @@ $primeiroNome = explode(' ', $crianca->nome)[0];
             </form>
         </div>
     </div>
+
+    <?php if ($acessoApp !== null && ($acessoApp['xp'] > 0 || $acessoApp['moedas'] > 0)): ?>
+        <div class="kids-premio-banner">
+            <span class="emoji">🔥</span>
+            <span>Sequência de <?= $acessoApp['sequencia'] ?> dias na Biblioteca! Bônus de +<?= $acessoApp['xp'] ?> XP e +<?= $acessoApp['moedas'] ?> moedas!</span>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($missoes !== []): ?>
+        <h2 class="kids-secao-titulo">🎯 Missão do dia</h2>
+        <div class="kids-missao-lista">
+            <?php foreach ($missoes as $missao): ?>
+                <a href="<?= $basePath ?>/kids/conteudo/<?= $missao['conteudoId'] ?>" class="kids-missao-card<?= $missao['concluida'] ? ' concluida' : '' ?>">
+                    <span class="emoji"><?= $missao['emoji'] ?></span>
+                    <span class="titulo"><?= htmlspecialchars($missao['titulo'], ENT_QUOTES, 'UTF-8') ?></span>
+                    <?php if ($missao['concluida']): ?>
+                        <span class="kids-missao-selo"><i class="bi bi-check-circle-fill"></i> Feito!</span>
+                    <?php else: ?>
+                        <span class="kids-missao-selo pendente">+8 🪙 de bônus</span>
+                    <?php endif; ?>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
 
     <p class="kids-login-subtitulo" style="text-align: left; margin-bottom: 1.5rem;">Escolha uma aventura para começar hoje.</p>
 

@@ -44,6 +44,8 @@ final class KidsCrianca
         public readonly int $xp,
         public readonly int $moedas,
         public readonly int $sequenciaDias,
+        public readonly int $sequenciaAppDias,
+        public readonly ?string $ultimaVisitaAppEm,
         public readonly ?string $pinHash,
         public readonly ?string $pinDefinidoEm,
         public readonly int $pinTentativasInvalidas,
@@ -259,6 +261,8 @@ final class KidsCrianca
              WHERE id = :id'
         );
         $stmt->execute(['xp' => $xp, 'moedas' => $moedas, 'sequencia_dias' => $sequenciaDias, 'id' => $id]);
+
+        KidsRankingIgreja::somarXp($xp);
     }
 
     /**
@@ -273,6 +277,8 @@ final class KidsCrianca
             'UPDATE kids_criancas SET xp = xp + :xp, moedas = moedas + :moedas WHERE id = :id'
         );
         $stmt->execute(['xp' => $xp, 'moedas' => $moedas, 'id' => $id]);
+
+        KidsRankingIgreja::somarXp($xp);
     }
 
     /**
@@ -464,6 +470,124 @@ final class KidsCrianca
     }
 
     /**
+     * Bonus de XP/moedas por marco de sequencia de dias acessando a
+     * Biblioteca (ver registrarAcessoApp()) - separado da recompensa de
+     * cada conteudo concluido, e concedido so uma vez por marco
+     * atingido (a sequencia so bate 3, 7, 14 ou 30 exatamente uma vez
+     * antes de virar 4, 8, 15, 31...).
+     *
+     * @var array<int, array{xp: int, moedas: int}>
+     */
+    private const MARCOS_SEQUENCIA_APP = [
+        3 => ['xp' => 15, 'moedas' => 10],
+        7 => ['xp' => 30, 'moedas' => 20],
+        14 => ['xp' => 50, 'moedas' => 35],
+        30 => ['xp' => 100, 'moedas' => 70],
+    ];
+
+    /**
+     * Registra que a crianca abriu a Biblioteca hoje e atualiza a
+     * sequencia de dias seguidos (separada da sequencia de presenca
+     * fisica na igreja - ver concederPontos()) - chamado uma vez por
+     * dia, na home do modo crianca (KidsAppController::index()).
+     * Retorna null se a visita de hoje ja tinha sido contabilizada
+     * (evita inflar a sequencia com varios acessos no mesmo dia), ou os
+     * dados pra mostrar um banner (sequencia atual + bonus, se bateu um
+     * marco).
+     *
+     * @return array{sequencia: int, xp: int, moedas: int}|null
+     */
+    public static function registrarAcessoApp(int $id): ?array
+    {
+        $crianca = self::find($id);
+
+        if ($crianca === null) {
+            return null;
+        }
+
+        $hoje = date('Y-m-d');
+
+        if ($crianca->ultimaVisitaAppEm === $hoje) {
+            return null;
+        }
+
+        $ontem = date('Y-m-d', strtotime('-1 day'));
+        $novaSequencia = $crianca->ultimaVisitaAppEm === $ontem ? $crianca->sequenciaAppDias + 1 : 1;
+
+        $stmt = Database::connection()->prepare(
+            'UPDATE kids_criancas SET sequencia_app_dias = :sequencia, ultima_visita_app_em = :hoje WHERE id = :id'
+        );
+        $stmt->execute(['sequencia' => $novaSequencia, 'hoje' => $hoje, 'id' => $id]);
+
+        $marco = self::MARCOS_SEQUENCIA_APP[$novaSequencia] ?? null;
+
+        if ($marco !== null) {
+            self::adicionarPontos($id, $marco['xp'], $marco['moedas']);
+        }
+
+        return ['sequencia' => $novaSequencia, 'xp' => $marco['xp'] ?? 0, 'moedas' => $marco['moedas'] ?? 0];
+    }
+
+    /**
+     * Ranking das criancas da propria igreja por XP total - so entre
+     * criancas ativas, sempre com a posicao da propria crianca (mesmo
+     * fora do top informado) pra ela se ver no ranking mesmo quando nao
+     * esta entre as primeiras.
+     *
+     * @return array{top: array<int, array{id: int, nome: string, xp: int, nivel: int, souEu: bool}>, minhaPosicao: int, totalCriancas: int}
+     */
+    public static function rankingDaIgreja(int $criancaId, int $limite = 10): array
+    {
+        $pdo = Database::connection();
+
+        $topStmt = $pdo->prepare(
+            'SELECT id, nome, xp FROM kids_criancas WHERE status = "ativo" ORDER BY xp DESC, id ASC LIMIT :limite'
+        );
+        $topStmt->bindValue('limite', $limite, PDO::PARAM_INT);
+        $topStmt->execute();
+
+        $top = array_map(
+            static fn (array $row) => [
+                'id' => (int) $row['id'],
+                'nome' => (string) $row['nome'],
+                'xp' => (int) $row['xp'],
+                'nivel' => KidsAvatar::nivel((int) $row['xp']),
+                'souEu' => (int) $row['id'] === $criancaId,
+            ],
+            $topStmt->fetchAll()
+        );
+
+        $totalStmt = $pdo->prepare('SELECT COUNT(*) FROM kids_criancas WHERE status = "ativo"');
+        $totalStmt->execute();
+        $totalCriancas = (int) $totalStmt->fetchColumn();
+
+        $minhaXp = 0;
+        foreach ($top as $item) {
+            if ($item['souEu']) {
+                $minhaXp = $item['xp'];
+                break;
+            }
+        }
+
+        if ($minhaXp === 0) {
+            $minhaXpStmt = $pdo->prepare('SELECT xp FROM kids_criancas WHERE id = :id');
+            $minhaXpStmt->execute(['id' => $criancaId]);
+            $minhaXp = (int) $minhaXpStmt->fetchColumn();
+        }
+
+        $posicaoStmt = $pdo->prepare(
+            'SELECT COUNT(*) + 1 FROM kids_criancas WHERE status = "ativo" AND xp > :minha_xp'
+        );
+        $posicaoStmt->execute(['minha_xp' => $minhaXp]);
+
+        return [
+            'top' => $top,
+            'minhaPosicao' => (int) $posicaoStmt->fetchColumn(),
+            'totalCriancas' => $totalCriancas,
+        ];
+    }
+
+    /**
      * @param array<string, mixed> $data
      * @return array<string, mixed>
      */
@@ -518,6 +642,8 @@ final class KidsCrianca
             xp: (int) $row['xp'],
             moedas: (int) $row['moedas'],
             sequenciaDias: (int) $row['sequencia_dias'],
+            sequenciaAppDias: (int) ($row['sequencia_app_dias'] ?? 0),
+            ultimaVisitaAppEm: $row['ultima_visita_app_em'] ?? null,
             pinHash: $row['pin_hash'] ?? null,
             pinDefinidoEm: $row['pin_definido_em'] ?? null,
             pinTentativasInvalidas: (int) ($row['pin_tentativas_invalidas'] ?? 0),

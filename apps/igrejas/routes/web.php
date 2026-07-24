@@ -435,6 +435,7 @@ $router->get('/kids/conteudo/{id}', [KidsAppController::class, 'show'], [KidsSes
 $router->post('/kids/conteudo/{id}/concluir', [KidsAppController::class, 'concluir'], [KidsSessaoMiddleware::class]);
 $router->post('/kids/conteudo/{id}/concluir-desafio', [KidsAppController::class, 'concluirDesafio'], [KidsSessaoMiddleware::class]);
 $router->post('/kids/conteudo/{id}/quiz-ajuda', [KidsAppController::class, 'quizAjuda'], [KidsSessaoMiddleware::class]);
+$router->get('/kids/ranking', [KidsAppController::class, 'ranking'], [KidsSessaoMiddleware::class]);
 $router->get('/kids/avatar', [KidsAppController::class, 'avatar'], [KidsSessaoMiddleware::class]);
 $router->post('/kids/avatar', [KidsAppController::class, 'avatarSalvar'], [KidsSessaoMiddleware::class]);
 $router->post('/kids/avatar/comprar', [KidsAppController::class, 'avatarComprar'], [KidsSessaoMiddleware::class]);
