@@ -451,6 +451,7 @@ $router->post('/kids/duelos/{id}/reagir', [KidsDuelosController::class, 'reagir'
 $router->get('/kids/avatar', [KidsAppController::class, 'avatar'], [KidsSessaoMiddleware::class]);
 $router->post('/kids/avatar', [KidsAppController::class, 'avatarSalvar'], [KidsSessaoMiddleware::class]);
 $router->post('/kids/avatar/comprar', [KidsAppController::class, 'avatarComprar'], [KidsSessaoMiddleware::class]);
+$router->get('/kids/emblemas', [KidsAppController::class, 'emblemas'], [KidsSessaoMiddleware::class]);
 
 // Estado da projecao (JSON): leitura/escrita autorizadas pelo token da
 // sessao, usadas via polling pelas 3 telas (operador, telao, preletor).

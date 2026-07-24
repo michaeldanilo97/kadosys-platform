@@ -13,6 +13,7 @@ use Igrejas\Models\KidsAvatar;
 use Igrejas\Models\KidsAvatarCompra;
 use Igrejas\Models\KidsConteudo;
 use Igrejas\Models\KidsCrianca;
+use Igrejas\Models\KidsEmblema;
 use Igrejas\Models\KidsMissaoDiaria;
 use Igrejas\Models\KidsRankingIgreja;
 
@@ -51,6 +52,16 @@ final class KidsAppController extends Controller
             $crianca = $this->criancaLogada();
         }
 
+        // Verifica aqui (alem do momento de concluir um conteudo) pra
+        // pegar emblemas que so fazem sentido fora desse fluxo - vencer
+        // um duelo (sem recarregar pagina) ou bater a sequencia de
+        // acesso, que acabou de ser atualizada acima.
+        $novosEmblemas = KidsEmblema::verificarNovos($crianca);
+
+        if ($novosEmblemas !== []) {
+            $crianca = $this->criancaLogada();
+        }
+
         echo $this->view('kids.home', [
             'pageTitle' => 'KADOSYS Kids',
             'crianca' => $crianca,
@@ -58,7 +69,23 @@ final class KidsAppController extends Controller
             'recentes' => KidsConteudo::recentesPublicados(6),
             'missoes' => KidsMissaoDiaria::deHoje($crianca->id),
             'acessoApp' => $acessoApp,
+            'novosEmblemas' => $novosEmblemas,
             'csrfToken' => Csrf::token(),
+        ], 'kids-app');
+    }
+
+    /**
+     * Galeria de emblemas: catalogo completo, com os ja conquistados
+     * destacados (ver KidsEmblema::catalogoComStatus()).
+     */
+    public function emblemas(): void
+    {
+        $crianca = $this->criancaLogada();
+
+        echo $this->view('kids.emblemas', [
+            'pageTitle' => 'Meus Emblemas - KADOSYS Kids',
+            'crianca' => $crianca,
+            'emblemas' => KidsEmblema::catalogoComStatus($crianca->id),
         ], 'kids-app');
     }
 
@@ -118,6 +145,7 @@ final class KidsAppController extends Controller
             'pontosGanhos' => Session::flash('kids_app_pontos'),
             'desafioErro' => Session::flash('kids_desafio_erro'),
             'missaoConcluida' => Session::flash('kids_missao_concluida'),
+            'novosEmblemas' => Session::flash('kids_novos_emblemas') ?? [],
         ], 'kids-app');
     }
 
@@ -221,6 +249,12 @@ final class KidsAppController extends Controller
 
         if ($bonusMissao !== null) {
             Session::flash('kids_missao_concluida', true);
+        }
+
+        $novosEmblemas = KidsEmblema::verificarNovos(KidsCrianca::find($criancaId));
+
+        if ($novosEmblemas !== []) {
+            Session::flash('kids_novos_emblemas', $novosEmblemas);
         }
     }
 

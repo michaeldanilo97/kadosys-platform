@@ -9,6 +9,7 @@
  * @var array{xp: int, moedas: int}|null $pontosGanhos
  * @var string|null $desafioErro
  * @var bool|null $missaoConcluida
+ * @var array<int, array{slug: string, nome: string, emoji: string}> $novosEmblemas
  */
 $basePath = $config['base_path'] ?? '';
 $tipoInfo = $conteudo->tipoInfo();
@@ -72,6 +73,13 @@ $temGateProgresso = $isQuiz
                 </span>
             </div>
         <?php endif; ?>
+
+        <?php foreach ($novosEmblemas as $novoEmblema): ?>
+            <div class="kids-premio-banner">
+                <span class="emoji"><?= $novoEmblema['emoji'] ?></span>
+                <span>Novo emblema: <strong><?= htmlspecialchars($novoEmblema['nome'], ENT_QUOTES, 'UTF-8') ?></strong>! Veja em Emblemas 🏅</span>
+            </div>
+        <?php endforeach; ?>
 
         <div class="capa-grande">
             <?php if ($conteudo->capaPath !== null): ?>
