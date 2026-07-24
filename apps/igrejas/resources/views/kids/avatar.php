@@ -12,6 +12,7 @@ use Igrejas\Models\KidsAvatar;
  * @var array<int, array{slug: string, nome: string, nivel: ?int, custoMoedas: ?int}> $catalogoTitulos
  * @var array<int, array{slug: string, nome: string, nivel: ?int, custoMoedas: ?int, cor: string}> $catalogoPeles
  * @var array<int, array{slug: string, emoji: string, nome: string, nivel: ?int, custoMoedas: ?int, estilo: string, cor: string}> $catalogoRoupas
+ * @var array<int, array{slug: string, emoji: string, nome: string, nivel: ?int, custoMoedas: ?int}> $catalogoMascotes
  * @var int $nivel
  * @var array<string, array<int, string>> $comprados
  * @var string $csrfToken
@@ -261,6 +262,10 @@ $itensDaLojaNaoComprados = static function () use ($catalogoChapeus, $catalogoAc
 
         <h2 class="kids-secao-titulo">🌈 Fundo</h2>
         <?php $renderGrade($catalogoFundos, 'avatar_fundo', $fundoEquipado['slug'], $nivel, $comprados['fundo'], null); ?>
+
+        <h2 class="kids-secao-titulo">🦁 Mascote</h2>
+        <p class="kids-login-subtitulo" style="text-align: left; margin-top: -0.6rem;">Seu bichinho de estimação, que te acompanha na Biblioteca inteira!</p>
+        <?php $renderGrade($catalogoMascotes, 'avatar_mascote', $crianca->avatarMascote, $nivel, [], null); ?>
 
         <div style="margin-top: 1.6rem;">
             <button type="submit" class="kids-btn-concluir"><i class="bi bi-check-circle-fill"></i> Salvar visual</button>

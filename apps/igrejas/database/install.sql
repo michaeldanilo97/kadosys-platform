@@ -817,6 +817,7 @@ CREATE TABLE IF NOT EXISTS kids_criancas (
     avatar_titulo VARCHAR(40) NULL,
     avatar_pele VARCHAR(40) NULL,
     avatar_roupa VARCHAR(40) NULL,
+    avatar_mascote VARCHAR(20) NOT NULL DEFAULT 'leao',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     KEY kids_criancas_status_index (status),
