@@ -56,6 +56,7 @@ final class KidsCrianca
         public readonly ?string $avatarTitulo,
         public readonly ?string $avatarPele,
         public readonly ?string $avatarRoupa,
+        public readonly string $avatarMascote,
         public readonly string $createdAt,
     ) {
     }
@@ -435,6 +436,7 @@ final class KidsCrianca
         ?string $titulo,
         ?string $pele,
         ?string $roupa,
+        ?string $mascote,
     ): void {
         $crianca = self::find($id);
 
@@ -451,11 +453,12 @@ final class KidsCrianca
         $titulo = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoTitulos(), $titulo, $nivel, $comprados['titulo']) ? $titulo : null;
         $pele = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoPeles(), $pele, $nivel, []) ? $pele : null;
         $roupa = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoRoupas(), $roupa, $nivel, $comprados['roupa']) ? $roupa : null;
+        $mascote = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoMascotes(), $mascote, $nivel, []) ? $mascote : 'leao';
 
         $stmt = Database::connection()->prepare(
             'UPDATE kids_criancas
              SET avatar_chapeu = :chapeu, avatar_acessorio = :acessorio, avatar_fundo = :fundo, avatar_titulo = :titulo,
-                 avatar_pele = :pele, avatar_roupa = :roupa
+                 avatar_pele = :pele, avatar_roupa = :roupa, avatar_mascote = :mascote
              WHERE id = :id'
         );
         $stmt->execute([
@@ -465,6 +468,7 @@ final class KidsCrianca
             'titulo' => $titulo,
             'pele' => $pele,
             'roupa' => $roupa,
+            'mascote' => $mascote,
             'id' => $id,
         ]);
     }
@@ -654,6 +658,7 @@ final class KidsCrianca
             avatarTitulo: $row['avatar_titulo'] ?? null,
             avatarPele: $row['avatar_pele'] ?? null,
             avatarRoupa: $row['avatar_roupa'] ?? null,
+            avatarMascote: (string) ($row['avatar_mascote'] ?? 'leao'),
             createdAt: (string) $row['created_at'],
         );
     }

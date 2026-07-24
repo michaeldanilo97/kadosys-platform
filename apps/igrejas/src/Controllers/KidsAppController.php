@@ -43,6 +43,7 @@ final class KidsAppController extends Controller
     public function index(): void
     {
         $crianca = $this->criancaLogada();
+        $nivelAntes = $crianca->nivel();
         $acessoApp = KidsCrianca::registrarAcessoApp($crianca->id);
 
         // registrarAcessoApp() pode ter concedido XP/moedas de marco de
@@ -70,6 +71,8 @@ final class KidsAppController extends Controller
             'missoes' => KidsMissaoDiaria::deHoje($crianca->id),
             'acessoApp' => $acessoApp,
             'novosEmblemas' => $novosEmblemas,
+            'subiuNivel' => $crianca->nivel() > $nivelAntes ? $crianca->nivel() : null,
+            'mascoteSaudacao' => true,
             'csrfToken' => Csrf::token(),
         ], 'kids-app');
     }
@@ -146,6 +149,7 @@ final class KidsAppController extends Controller
             'desafioErro' => Session::flash('kids_desafio_erro'),
             'missaoConcluida' => Session::flash('kids_missao_concluida'),
             'novosEmblemas' => Session::flash('kids_novos_emblemas') ?? [],
+            'subiuNivel' => Session::flash('kids_subiu_nivel'),
         ], 'kids-app');
     }
 
@@ -156,7 +160,7 @@ final class KidsAppController extends Controller
 
         if ($conteudo !== null && Csrf::verify($this->request->input('_csrf_token'))) {
             $ganhouAgora = $conteudo->registrarConclusaoPor($crianca->id);
-            $this->flashPontosComMissao($crianca->id, $conteudo->id, $ganhouAgora ? $conteudo->xpRecompensa : 0, $ganhouAgora ? $conteudo->moedasRecompensa : 0);
+            $this->flashPontosComMissao($crianca->id, $conteudo->id, $ganhouAgora ? $conteudo->xpRecompensa : 0, $ganhouAgora ? $conteudo->moedasRecompensa : 0, $crianca->nivel());
 
             // No quiz, terminar um leva direto pro proximo ainda nao
             // feito - sem esse pulo automatico a crianca precisava
@@ -224,7 +228,7 @@ final class KidsAppController extends Controller
 
         $caminhoRelativo = self::UPLOAD_DIR_FOTOS_DESAFIO . '/' . $this->tenantSlugOuCentral() . '/' . $nomeArquivo;
         $ganhouAgora = $conteudo->registrarConclusaoPor($crianca->id, $caminhoRelativo);
-        $this->flashPontosComMissao($crianca->id, $conteudo->id, $ganhouAgora ? $conteudo->xpRecompensa : 0, $ganhouAgora ? $conteudo->moedasRecompensa : 0);
+        $this->flashPontosComMissao($crianca->id, $conteudo->id, $ganhouAgora ? $conteudo->xpRecompensa : 0, $ganhouAgora ? $conteudo->moedasRecompensa : 0, $crianca->nivel());
 
         $this->redirect("/kids/conteudo/{$id}");
     }
@@ -236,7 +240,7 @@ final class KidsAppController extends Controller
      * de pontos, e marca um segundo flash separado so pra mostrar a
      * mensagem de "missão do dia concluída" na tela.
      */
-    private function flashPontosComMissao(int $criancaId, int $conteudoId, int $xpBase, int $moedasBase): void
+    private function flashPontosComMissao(int $criancaId, int $conteudoId, int $xpBase, int $moedasBase, int $nivelAntes): void
     {
         $bonusMissao = KidsMissaoDiaria::marcarConcluidaSeForMissao($criancaId, $conteudoId);
 
@@ -251,10 +255,18 @@ final class KidsAppController extends Controller
             Session::flash('kids_missao_concluida', true);
         }
 
-        $novosEmblemas = KidsEmblema::verificarNovos(KidsCrianca::find($criancaId));
+        $crianca = KidsCrianca::find($criancaId);
+        $novosEmblemas = KidsEmblema::verificarNovos($crianca);
 
         if ($novosEmblemas !== []) {
             Session::flash('kids_novos_emblemas', $novosEmblemas);
+            // verificarNovos() pode ter dado bonus de XP - releitura pra
+            // o calculo de nivel abaixo considerar o nivel mais atual.
+            $crianca = KidsCrianca::find($criancaId);
+        }
+
+        if ($crianca->nivel() > $nivelAntes) {
+            Session::flash('kids_subiu_nivel', $crianca->nivel());
         }
     }
 
@@ -335,6 +347,7 @@ final class KidsAppController extends Controller
             'catalogoTitulos' => KidsAvatar::catalogoTitulos(),
             'catalogoPeles' => KidsAvatar::catalogoPeles(),
             'catalogoRoupas' => KidsAvatar::catalogoRoupas(),
+            'catalogoMascotes' => KidsAvatar::catalogoMascotes(),
             'nivel' => $nivel,
             'comprados' => KidsAvatarCompra::compradosPor($crianca->id),
             'csrfToken' => Csrf::token(),
@@ -400,6 +413,7 @@ final class KidsAppController extends Controller
                 $this->nullableInput('avatar_titulo'),
                 $this->nullableInput('avatar_pele'),
                 $this->nullableInput('avatar_roupa'),
+                $this->nullableInput('avatar_mascote'),
             );
 
             Session::flash('kids_avatar_salvo', true);

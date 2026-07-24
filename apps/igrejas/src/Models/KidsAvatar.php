@@ -160,6 +160,23 @@ final class KidsAvatar
     }
 
     /**
+     * Mascote nao-IA da Biblioteca (widget flutuante com frases prontas
+     * - ver public/assets/js/kids-mascote.js): so 3 opcoes, escolha
+     * livre desde o nivel 1, igual aos tons de pele - representa o
+     * "bichinho de estimacao" da crianca, nao e recompensa.
+     *
+     * @return array<int, array{slug: string, emoji: string, nome: string, nivel: ?int, custoMoedas: ?int}>
+     */
+    public static function catalogoMascotes(): array
+    {
+        return [
+            ['slug' => 'leao', 'emoji' => '🦁', 'nome' => 'Leão Valente', 'nivel' => 1, 'custoMoedas' => null],
+            ['slug' => 'ovelha', 'emoji' => '🐑', 'nome' => 'Ovelha Fiel', 'nivel' => 1, 'custoMoedas' => null],
+            ['slug' => 'pomba', 'emoji' => '🕊️', 'nome' => 'Pomba da Paz', 'nivel' => 1, 'custoMoedas' => null],
+        ];
+    }
+
+    /**
      * Nivel atual a partir do xp acumulado - o maior nivel cujo limiar
      * de xp ja foi atingido, sem passar do NIVEL_MAXIMO.
      */

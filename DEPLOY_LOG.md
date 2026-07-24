@@ -17,6 +17,33 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 179 - 2026-07-24
+
+**Kids: mascote não-IA (Leão/Ovelha/Pomba) com frases prontas**
+
+- Prioridade 6 da lista colada pelo usuário: um mascote fixo em toda
+  tela do modo criança, que reage com frases prontas em PT-BR - **sem
+  nenhuma chamada de IA/rede**, só um sorteio dentro de listas fixas em
+  `public/assets/js/kids-mascote.js`.
+- Nova coluna `avatar_mascote` (migração 074, espelhada em
+  `install.sql`, default `'leao'` - já preenche as crianças
+  existentes). A criança escolhe entre Leão Valente 🦁, Ovelha Fiel 🐑
+  ou Pomba da Paz 🕊️ na tela `/kids/avatar` (mesmo padrão de escolha
+  livre já usado nos tons de pele - `Igrejas\Models\KidsAvatar::
+  catalogoMascotes()`).
+- Widget flutuante (canto inferior esquerdo, sem conflitar com o botão
+  de mudo que já ficava no canto direito) presente em toda página do
+  modo Kids: mostra saudação ao abrir a Biblioteca, comemora quando a
+  criança ganha pontos/emblema/sequência, e tem uma frase especial só
+  pra quando ela **sobe de nível de verdade** (novo: comparei o nível
+  antes/depois de cada conclusão de conteúdo e do acesso diário, algo
+  que a plataforma não expunha até agora). Tocar no mascote a qualquer
+  momento sorteia uma frase de incentivo ("Vamos aprender mais?").
+- Testado fim a fim localmente (banco do zero via `install.sql`):
+  saudação ao entrar, clique trocando de frase, escolha de mascote na
+  tela de Avatar persistindo e refletindo no widget, e detecção de
+  subida de nível funcionando ao completar conteúdos reais.
+
 ## Ajuste 178 - 2026-07-24
 
 **Kids: emblemas/conquistas por marcos especiais**
