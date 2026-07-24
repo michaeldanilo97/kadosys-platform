@@ -17,7 +17,36 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
-## Ajuste 173 - 2026-07-24
+## Ajuste 174 - 2026-07-24
+
+**Igrejas Kids: "Jogar com amigo" - duelo de quiz online 1x1 entre crianças da mesma igreja**
+
+Resposta a "e possível permitir que as crianças jogem jogos juntos
+online?" - duelo turn-based, sem WebSocket (a hospedagem não tem
+processo persistente), atualizado por polling a cada 1,5s, igual ao
+padrão já usado no Food (tela da cozinha).
+
+- Uma criança desafia outra da mesma igreja pra um quiz publicado; a
+  convidada recebe o convite na tela "Jogar com amigo" e pode
+  aceitar/recusar.
+- Sala do duelo: cada criança responde no seu próprio ritmo, vendo o
+  placar (acertos/total) do adversário se atualizar ao vivo por
+  polling - sem chat de texto livre, só 6 reações de emoji
+  pré-definidas (👍😂🎉😮❤️💪), decisão deliberada pra não abrir
+  nenhuma superfície de mensagem entre crianças.
+- Quem termina primeiro (todas as perguntas certas) vence: +20 XP e
+  +12 moedas pro vencedor, +5 XP e +3 moedas de participação pro
+  outro - concedido uma única vez, protegido contra requisições
+  concorrentes.
+- Isolamento entre igrejas é automático (cada banco é de uma igreja
+  só, nunca cruza).
+- Corrigido de quebra: banners com `hidden` que usavam a classe
+  `.kids-premio-banner` continuavam visíveis, porque essa classe já
+  define `display: flex` e vence o atributo `hidden` no CSS de origem
+  do autor (mesmo bug de especificidade do Ajuste 249, agora com um
+  seletor `[hidden]` dedicado pra essa classe).
+
+
 
 **Igrejas Kids: missão do dia, sequência de acesso e ranking (igreja + entre igrejas)**
 

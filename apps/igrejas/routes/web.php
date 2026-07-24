@@ -22,6 +22,7 @@ use Igrejas\Controllers\KidsCheckinController;
 use Igrejas\Controllers\KidsController;
 use Igrejas\Controllers\KidsConteudoController;
 use Igrejas\Controllers\KidsCriancaController;
+use Igrejas\Controllers\KidsDuelosController;
 use Igrejas\Controllers\KidsLoginController;
 use Igrejas\Controllers\KidsResponsavelController;
 use Igrejas\Controllers\KidsTurmaController;
@@ -436,6 +437,17 @@ $router->post('/kids/conteudo/{id}/concluir', [KidsAppController::class, 'conclu
 $router->post('/kids/conteudo/{id}/concluir-desafio', [KidsAppController::class, 'concluirDesafio'], [KidsSessaoMiddleware::class]);
 $router->post('/kids/conteudo/{id}/quiz-ajuda', [KidsAppController::class, 'quizAjuda'], [KidsSessaoMiddleware::class]);
 $router->get('/kids/ranking', [KidsAppController::class, 'ranking'], [KidsSessaoMiddleware::class]);
+$router->get('/kids/duelos', [KidsDuelosController::class, 'index'], [KidsSessaoMiddleware::class]);
+$router->post('/kids/duelos', [KidsDuelosController::class, 'criar'], [KidsSessaoMiddleware::class]);
+// Precisa vir antes de /kids/duelos/{id} (mesmo padrao usado em outras
+// rotas com prefixo compartilhado nesse arquivo).
+$router->get('/kids/duelos/pendentes', [KidsDuelosController::class, 'pendentesJson'], [KidsSessaoMiddleware::class]);
+$router->get('/kids/duelos/{id}', [KidsDuelosController::class, 'sala'], [KidsSessaoMiddleware::class]);
+$router->post('/kids/duelos/{id}/aceitar', [KidsDuelosController::class, 'aceitar'], [KidsSessaoMiddleware::class]);
+$router->post('/kids/duelos/{id}/recusar', [KidsDuelosController::class, 'recusar'], [KidsSessaoMiddleware::class]);
+$router->post('/kids/duelos/{id}/progresso', [KidsDuelosController::class, 'progresso'], [KidsSessaoMiddleware::class]);
+$router->get('/kids/duelos/{id}/estado', [KidsDuelosController::class, 'estado'], [KidsSessaoMiddleware::class]);
+$router->post('/kids/duelos/{id}/reagir', [KidsDuelosController::class, 'reagir'], [KidsSessaoMiddleware::class]);
 $router->get('/kids/avatar', [KidsAppController::class, 'avatar'], [KidsSessaoMiddleware::class]);
 $router->post('/kids/avatar', [KidsAppController::class, 'avatarSalvar'], [KidsSessaoMiddleware::class]);
 $router->post('/kids/avatar/comprar', [KidsAppController::class, 'avatarComprar'], [KidsSessaoMiddleware::class]);
