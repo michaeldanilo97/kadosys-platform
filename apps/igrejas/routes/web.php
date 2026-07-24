@@ -25,6 +25,7 @@ use Igrejas\Controllers\KidsConteudoController;
 use Igrejas\Controllers\KidsCriancaController;
 use Igrejas\Controllers\KidsDuelosController;
 use Igrejas\Controllers\KidsLoginController;
+use Igrejas\Controllers\KidsMapaController;
 use Igrejas\Controllers\KidsResponsavelController;
 use Igrejas\Controllers\KidsTurmaController;
 use Igrejas\Controllers\LandingController;
@@ -456,6 +457,8 @@ $router->get('/kids/emblemas', [KidsAppController::class, 'emblemas'], [KidsSess
 $router->get('/kids/biblia', [KidsBibliaController::class, 'index'], [KidsSessaoMiddleware::class]);
 $router->get('/kids/biblia/{livroId}', [KidsBibliaController::class, 'livro'], [KidsSessaoMiddleware::class]);
 $router->get('/kids/biblia/{livroId}/{capitulo}', [KidsBibliaController::class, 'capitulo'], [KidsSessaoMiddleware::class]);
+$router->get('/kids/mapa', [KidsMapaController::class, 'index'], [KidsSessaoMiddleware::class]);
+$router->get('/kids/mapa/{slug}', [KidsMapaController::class, 'local'], [KidsSessaoMiddleware::class]);
 
 // Estado da projecao (JSON): leitura/escrita autorizadas pelo token da
 // sessao, usadas via polling pelas 3 telas (operador, telao, preletor).
