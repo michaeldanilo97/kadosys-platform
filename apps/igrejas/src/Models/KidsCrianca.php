@@ -52,6 +52,8 @@ final class KidsCrianca
         public readonly ?string $avatarAcessorio,
         public readonly ?string $avatarFundo,
         public readonly ?string $avatarTitulo,
+        public readonly ?string $avatarPele,
+        public readonly ?string $avatarRoupa,
         public readonly string $createdAt,
     ) {
     }
@@ -425,6 +427,8 @@ final class KidsCrianca
         ?string $acessorio,
         ?string $fundo,
         ?string $titulo,
+        ?string $pele,
+        ?string $roupa,
     ): void {
         $crianca = self::find($id);
 
@@ -439,10 +443,13 @@ final class KidsCrianca
         $acessorio = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoAcessorios(), $acessorio, $nivel, $comprados['acessorio']) ? $acessorio : null;
         $fundo = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoFundos(), $fundo, $nivel, $comprados['fundo']) ? $fundo : null;
         $titulo = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoTitulos(), $titulo, $nivel, $comprados['titulo']) ? $titulo : null;
+        $pele = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoPeles(), $pele, $nivel, []) ? $pele : null;
+        $roupa = KidsAvatar::itemDesbloqueado(KidsAvatar::catalogoRoupas(), $roupa, $nivel, $comprados['roupa']) ? $roupa : null;
 
         $stmt = Database::connection()->prepare(
             'UPDATE kids_criancas
-             SET avatar_chapeu = :chapeu, avatar_acessorio = :acessorio, avatar_fundo = :fundo, avatar_titulo = :titulo
+             SET avatar_chapeu = :chapeu, avatar_acessorio = :acessorio, avatar_fundo = :fundo, avatar_titulo = :titulo,
+                 avatar_pele = :pele, avatar_roupa = :roupa
              WHERE id = :id'
         );
         $stmt->execute([
@@ -450,6 +457,8 @@ final class KidsCrianca
             'acessorio' => $acessorio,
             'fundo' => $fundo,
             'titulo' => $titulo,
+            'pele' => $pele,
+            'roupa' => $roupa,
             'id' => $id,
         ]);
     }
@@ -517,6 +526,8 @@ final class KidsCrianca
             avatarAcessorio: $row['avatar_acessorio'] ?? null,
             avatarFundo: $row['avatar_fundo'] ?? null,
             avatarTitulo: $row['avatar_titulo'] ?? null,
+            avatarPele: $row['avatar_pele'] ?? null,
+            avatarRoupa: $row['avatar_roupa'] ?? null,
             createdAt: (string) $row['created_at'],
         );
     }

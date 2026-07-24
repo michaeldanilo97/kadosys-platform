@@ -256,6 +256,8 @@ final class KidsAppController extends Controller
             'catalogoAcessorios' => KidsAvatar::catalogoAcessorios(),
             'catalogoFundos' => KidsAvatar::catalogoFundos(),
             'catalogoTitulos' => KidsAvatar::catalogoTitulos(),
+            'catalogoPeles' => KidsAvatar::catalogoPeles(),
+            'catalogoRoupas' => KidsAvatar::catalogoRoupas(),
             'nivel' => $nivel,
             'comprados' => KidsAvatarCompra::compradosPor($crianca->id),
             'csrfToken' => Csrf::token(),
@@ -288,6 +290,7 @@ final class KidsAppController extends Controller
             'acessorio' => KidsAvatar::catalogoAcessorios(),
             'fundo' => KidsAvatar::catalogoFundos(),
             'titulo' => KidsAvatar::catalogoTitulos(),
+            'roupa' => KidsAvatar::catalogoRoupas(),
         ];
 
         $item = KidsAvatar::encontrar($catalogos[$categoria] ?? [], $slug);
@@ -318,6 +321,8 @@ final class KidsAppController extends Controller
                 $this->nullableInput('avatar_acessorio'),
                 $this->nullableInput('avatar_fundo'),
                 $this->nullableInput('avatar_titulo'),
+                $this->nullableInput('avatar_pele'),
+                $this->nullableInput('avatar_roupa'),
             );
 
             Session::flash('kids_avatar_salvo', true);

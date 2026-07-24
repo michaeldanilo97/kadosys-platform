@@ -898,11 +898,16 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
 .kids-avatar-figura {
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  width: 128px;
-  height: 128px;
+  width: 148px;
+  height: 176px;
   margin-bottom: 0.4rem;
+}
+
+.kids-avatar-figura:has(.kids-avatar-boneco-foto) {
+  align-items: center;
+  height: 128px;
 }
 
 .kids-avatar-boneco {
@@ -927,23 +932,105 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
   object-fit: cover;
 }
 
+.kids-boneco-svg {
+  width: 132px;
+  height: 158px;
+  overflow: visible;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.18));
+}
+
+.kids-boneco-pele {
+  fill: var(--boneco-pele, #F1C27D);
+}
+
+.kids-boneco-roupa-grupo {
+  display: none;
+}
+
+.kids-boneco-roupa-grupo.ativo {
+  display: block;
+}
+
+.kids-boneco-roupa {
+  fill: var(--boneco-roupa-cor, #4CC9F0);
+}
+
+.kids-boneco-capa {
+  opacity: 0.85;
+}
+
+/* ---- Tom de pele (swatches) -------------------------------------- */
+
+.kids-pele-grade {
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+}
+
+.kids-pele-swatch {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.8rem 0.4rem;
+  border-radius: 20px;
+  background: #FFFFFF;
+  border: 3px solid transparent;
+  cursor: pointer;
+  box-shadow: 0 5px 0 rgba(58, 46, 92, 0.08);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+  text-align: center;
+}
+
+.kids-pele-swatch:hover {
+  transform: translateY(-3px);
+}
+
+.kids-pele-swatch.selecionado,
+.kids-pele-swatch:has(input:checked) {
+  border-color: var(--kids-roxo);
+}
+
+.kids-pele-swatch input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.kids-pele-circulo {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(58, 46, 92, 0.12);
+}
+
 .kids-avatar-chapeu {
   position: absolute;
-  top: -1.6rem;
+  top: -0.5rem;
   left: 50%;
   transform: translateX(-50%) rotate(-8deg);
   font-size: 2.8rem;
   line-height: 1;
   filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.2));
+  z-index: 2;
+}
+
+.kids-avatar-figura:has(.kids-avatar-boneco-foto) .kids-avatar-chapeu {
+  top: -1.6rem;
 }
 
 .kids-avatar-acessorio {
   position: absolute;
-  bottom: -0.3rem;
-  right: -0.6rem;
+  bottom: 2.4rem;
+  right: -0.9rem;
   font-size: 2.1rem;
   line-height: 1;
   filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.2));
+  z-index: 2;
+}
+
+.kids-avatar-figura:has(.kids-avatar-boneco-foto) .kids-avatar-acessorio {
+  bottom: -0.3rem;
+  right: -0.6rem;
 }
 
 .kids-avatar-nome {
