@@ -17,6 +17,30 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 177 - 2026-07-24
+
+**Kids: migração de correção pra 7 itens do catálogo que nunca chegaram nas igrejas antigas**
+
+Achado durante suporte: uma igreja reportou ter 84 (depois 96, após tirar
+duplicados de jogo) conteúdos, enquanto uma instalação nova tem 99.
+Investigando, descobri que **7 itens do catálogo oficial existem no
+`database/install.sql` desde o início do módulo Kids, mas nunca tiveram
+uma migração numerada própria** - qualquer igreja provisionada antes
+desse ponto fica pra sempre sem eles, mesmo rodando todas as
+migrações seguintes (confirmado replicando as 71 migrações numeradas
+do zero: o máximo que se chega é 92, nunca 99).
+
+- Nova migração `072_kids_backfill_conteudos_originais.sql`: insere os
+  7 itens faltantes (A Arca de Noé, Deus cuida de mim, Os frutos do
+  Espírito, Quiz: Personagens da Bíblia, Jonas e a Baleia, João 3:16,
+  Desafio da Semana: Ore por alguém) - **idempotente**
+  (`INSERT ... SELECT ... WHERE NOT EXISTS` por título), segura de
+  rodar em qualquer igreja quantas vezes for, e é um no-op numa
+  instalação já completa (não mexe em `install.sql`, já que igrejas
+  novas já recebem os 7 de qualquer forma).
+
+---
+
 ## Ajuste 176 - 2026-07-24
 
 **Menu do dashboard: item "Kids" com visual lúdico pra chamar atenção**
