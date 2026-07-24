@@ -283,9 +283,12 @@ $avisosSidebar = ($comunicacaoDisponivel && $user !== null)
                 $bloqueadoPelaPermissao = !$bloqueadoPeloPlano && !User::podeAcessarModulo($user, $slug);
                 $bloqueado = $bloqueadoPeloPlano || $bloqueadoPelaPermissao;
                 ?>
-                <a href="<?= $basePath ?>/dashboard/<?= $slug ?>" class="dash-nav-link <?= $activeMenu === $slug ? 'active' : '' ?><?= $bloqueado ? ' dash-nav-link-locked' : '' ?>">
+                <a href="<?= $basePath ?>/dashboard/<?= $slug ?>" class="dash-nav-link <?= $slug === 'kids' ? 'dash-nav-link-kids' : '' ?> <?= $activeMenu === $slug ? 'active' : '' ?><?= $bloqueado ? ' dash-nav-link-locked' : '' ?>">
                     <i class="bi <?= htmlspecialchars($module['icon'], ENT_QUOTES, 'UTF-8') ?>"></i>
                     <span class="dash-nav-link-label"><?= htmlspecialchars($module['title'], ENT_QUOTES, 'UTF-8') ?></span>
+                    <?php if ($slug === 'kids' && !$bloqueado): ?>
+                        <span class="dash-nav-kids-confete" aria-hidden="true">🎈</span>
+                    <?php endif; ?>
                     <?php if ($bloqueadoPeloPlano): ?>
                         <i class="bi bi-lock-fill dash-nav-lock-icon" title="Disponível no plano <?= htmlspecialchars(Plano::label($module['planoMinimo']), ENT_QUOTES, 'UTF-8') ?>"></i>
                     <?php elseif ($bloqueadoPelaPermissao): ?>

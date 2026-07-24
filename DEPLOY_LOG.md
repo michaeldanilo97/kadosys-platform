@@ -17,6 +17,19 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 176 - 2026-07-24
+
+**Menu do dashboard: item "Kids" com visual lúdico pra chamar atenção**
+
+- O item "Kids" no menu lateral do dashboard agora tem um fundo em
+  degradê arco-íris suave, ícone balançando (bounce) e um balãozinho
+  🎈 flutuando ao lado do nome - se destaca visualmente dos demais
+  módulos administrativos, mais sóbrios.
+- Respeita `prefers-reduced-motion` (desliga as animações) e some
+  automaticamente com o menu recolhido.
+
+---
+
 ## Ajuste 175 - 2026-07-24
 
 **Igrejas Kids: mais 6 jogos no catálogo (memória, trivia e caça-palavras)**
