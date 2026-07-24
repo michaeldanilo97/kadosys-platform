@@ -566,6 +566,13 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
   animation: kids-pop 0.3s ease;
 }
 
+/* O atributo HTML `hidden` precisa vencer o `display: flex` acima -
+   sem isso a explicacao/resposta fica visivel antes da crianca
+   responder, entregando a resposta de graca. */
+.kids-quiz-explicacao[hidden] {
+  display: none;
+}
+
 .kids-quiz-explicacao.correta {
   background: rgba(107, 203, 119, 0.16);
 }

@@ -17,6 +17,51 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 169 - 2026-07-24
+
+**Igrejas Kids: correções de qualidade encontradas depois do Ajuste 168**
+
+Revisão de conteúdo por conteúdo depois do ar do modo Kids com sons/
+níveis (Ajuste 168) encontrou vários problemas reais, alguns bugs de
+verdade e alguns conteúdos que nunca tinham virado widget de fato:
+
+- **Quiz entregando a resposta de graça**: a explicação de cada
+  pergunta (`.kids-quiz-explicacao`) tinha `hidden` no HTML, mas o CSS
+  (`display: flex`) sobrescrevia esse atributo - a explicação (que cita
+  a resposta certa) ficava visível pra TODAS as perguntas antes mesmo
+  de responder. Corrigido com `.kids-quiz-explicacao[hidden] { display:
+  none; }`.
+- **Caça-Nomes: Personagens do Novo Testamento** (4º caça-palavras) tinha
+  ficado de fora da consolidação do Ajuste 168 - ainda carregava o
+  algoritmo antigo embutido, rodando em paralelo com o motor global e
+  duplicando o processamento de cada seleção. Consolidado.
+- **"Slides" com conteúdo que nunca virou slideshow**: "Como a Bíblia
+  chegou até nós" era `tipo=slide` mas o texto nunca tinha sido
+  convertido pro widget `kids-slides` - aparecia como um parágrafo cru
+  sem nenhum estilo (era exatamente o "slides não tem nada" reportado).
+  Convertido em 4 slides de verdade. Aproveitado pra também consolidar a
+  navegação (‹ ›) dos 3 slideshows no `kids-interacoes.js` global, em vez
+  de duplicar o script de novo, e a mesma passada adicionou a trava de
+  conclusão nos slides: só libera o Concluir ao chegar no último.
+- **"Verdadeiro ou Falso" e "Adivinhe o Personagem"**: dois "jogos" que
+  eram só texto puro com a resposta escrita entre parênteses (nem
+  interativo, nem escondia a resposta). Convertidos pro motor de trivia
+  em rodadas.
+- **"Bingo dos Frutos do Espírito" e "Caça ao Tesouro Bíblico em Casa"**:
+  reclassificados de `jogo` pra `desafio` - são atividades pra fazer em
+  casa/offline, não jogos digitais, e o tipo errado criava expectativa
+  de widget que nunca existiu.
+- **Tipo "estudo"**: não exigia nenhuma ação da criança (só ler texto).
+  Adicionado ao allowlist de HTML confiável e incluída 1 pergunta rápida
+  de fixação (motor de trivia) no fim de cada um dos 5 itens, com a
+  mesma trava de conclusão dos outros widgets.
+- Testado tudo de novo com Playwright (login de criança via PIN):
+  explicação do quiz escondida até responder, caça-palavras 97 sem
+  duplicação, os 2 jogos novos com o Concluir liberado só no fim, os 3
+  slideshows com navegação e trava funcionando, e as 5 telas de estudo
+  com a pergunta de fixação. Instalação limpa do `install.sql` (com a
+  migração 065 já mesclada) testada do zero, sem erros.
+
 ## Ajuste 168 - 2026-07-23
 
 **Igrejas: modo Kids com sons, níveis e conclusão forçada nos jogos**

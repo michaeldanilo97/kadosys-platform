@@ -11,17 +11,19 @@
 $basePath = $config['base_path'] ?? '';
 $tipoInfo = $conteudo->tipoInfo();
 $isQuiz = $conteudo->tipo === 'quiz' && $conteudo->quizPerguntas !== null;
-// "Complete o Versiculo", "Ligue o Personagem" (tipo atividade) e os
-// jogos com niveis/gate proprio (memoria, trivia, caca-palavras - ver
-// kids-jogo-*.js) tem o mesmo mecanismo de progresso do quiz, embutido no
-// proprio HTML confiavel - reconhecido pelos data-attributes do widget,
-// sem precisar de uma coluna nova so pra isso.
+// "Complete o Versiculo", "Ligue o Personagem" (tipo atividade), os
+// jogos com niveis/gate proprio (memoria, trivia, caca-palavras) e o
+// slideshow (so libera ao chegar no ultimo slide - ver
+// kids-interacoes.js) tem o mesmo mecanismo de progresso do quiz,
+// embutido no proprio HTML confiavel - reconhecido pelos data-attributes
+// do widget, sem precisar de uma coluna nova so pra isso.
 $temGateProgresso = $isQuiz || ($conteudo->textoConteudo !== null
     && (str_contains($conteudo->textoConteudo, 'data-completar')
         || str_contains($conteudo->textoConteudo, 'data-ligar')
         || str_contains($conteudo->textoConteudo, 'data-jogo-memoria')
         || str_contains($conteudo->textoConteudo, 'data-jogo-trivia')
-        || str_contains($conteudo->textoConteudo, 'data-cacapalavras')));
+        || str_contains($conteudo->textoConteudo, 'data-cacapalavras')
+        || str_contains($conteudo->textoConteudo, 'data-slides')));
 ?>
 <div class="kids-mundo">
     <div class="kids-topo">
@@ -76,7 +78,7 @@ $temGateProgresso = $isQuiz || ($conteudo->textoConteudo !== null
         <?php endif; ?>
 
         <?php if ($conteudo->textoConteudo): ?>
-            <?php if ($conteudo->origem === 'kadosys' && in_array($conteudo->tipo, ['colorir', 'jogo', 'slide', 'hq', 'atividade'], true)): ?>
+            <?php if ($conteudo->origem === 'kadosys' && in_array($conteudo->tipo, ['colorir', 'jogo', 'slide', 'hq', 'atividade', 'estudo'], true)): ?>
                 <?= $conteudo->textoConteudo ?>
             <?php else: ?>
                 <div class="texto"><?= htmlspecialchars($conteudo->textoConteudo, ENT_QUOTES, 'UTF-8') ?></div>
@@ -259,7 +261,10 @@ $temGateProgresso = $isQuiz || ($conteudo->textoConteudo !== null
                     </button>
                 </form>
                 <?php if ($temGateProgresso): ?>
-                    <p class="form-field-hint" data-quiz-aviso-pendente>Responda/ligue tudo certinho pra liberar o botão de concluir. Errou? Sem problema, é só tentar de novo! 💪</p>
+                    <?php $ehSlideshow = $conteudo->textoConteudo !== null && str_contains($conteudo->textoConteudo, 'data-slides'); ?>
+                    <p class="form-field-hint" data-quiz-aviso-pendente><?= $ehSlideshow
+                        ? 'Passe por todos os slides pra liberar o botão de concluir. Use as setinhas ‹ › pra navegar! ✨'
+                        : 'Responda/ligue tudo certinho pra liberar o botão de concluir. Errou? Sem problema, é só tentar de novo! 💪' ?></p>
                 <?php endif; ?>
             <?php endif; ?>
         </div>
