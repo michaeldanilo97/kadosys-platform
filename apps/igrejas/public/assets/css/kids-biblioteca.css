@@ -1520,6 +1520,134 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
   line-height: 1.55;
 }
 
+.kids-hq-painel {
+  cursor: pointer;
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+
+.kids-hq-painel:hover {
+  transform: translateX(3px);
+}
+
+.kids-hq-painel.lido {
+  opacity: 0.6;
+}
+
+/* ---- Plano de leitura (checklist) -------------------------------------- */
+
+.kids-plano {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.kids-plano-instrucao {
+  margin: 0 0 0.3rem;
+  color: var(--kids-texto-suave);
+  font-weight: 600;
+}
+
+.kids-plano-dia {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 0.9rem 1.1rem;
+  box-shadow: 0 4px 0 rgba(58, 46, 92, 0.06);
+  cursor: pointer;
+}
+
+.kids-plano-dia input[type="checkbox"] {
+  flex-shrink: 0;
+  width: 1.4rem;
+  height: 1.4rem;
+  accent-color: var(--kids-verde);
+  cursor: pointer;
+}
+
+.kids-plano-dia span {
+  color: var(--kids-texto);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.kids-plano-dia:has(input:checked) {
+  background: rgba(107, 203, 119, 0.14);
+}
+
+.kids-plano-dia:has(input:checked) span {
+  text-decoration: line-through;
+  color: var(--kids-texto-suave);
+}
+
+/* ---- Reacao (historia/devocional/versiculo ilustrado) ------------------ */
+
+.kids-reacao {
+  margin-top: 1.2rem;
+  text-align: center;
+}
+
+.kids-reacao-pergunta {
+  font-weight: 700;
+  color: var(--kids-texto);
+  margin: 0 0 0.7rem;
+}
+
+.kids-reacao-opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.kids-reacao-opcao {
+  border: none;
+  background: #FFFFFF;
+  font-size: 1.8rem;
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgba(58, 46, 92, 0.1);
+  transition: transform 0.12s ease;
+}
+
+.kids-reacao-opcao:hover {
+  transform: translateY(-2px) scale(1.06);
+}
+
+.kids-reacao-opcao.selecionada {
+  box-shadow: 0 0 0 3px var(--kids-verde);
+  transform: scale(1.1);
+}
+
+/* ---- Desafio (foto da boa acao) ---------------------------------------- */
+
+.kids-desafio-upload {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: #FFFFFF;
+  border: 2px dashed var(--kids-roxo);
+  border-radius: 18px;
+  padding: 1.1rem;
+  font-weight: 700;
+  color: var(--kids-roxo);
+  cursor: pointer;
+  text-align: center;
+}
+
+.kids-desafio-preview {
+  display: block;
+  max-width: 100%;
+  max-height: 260px;
+  border-radius: 16px;
+  margin: 0.9rem auto;
+  box-shadow: 0 6px 0 rgba(58, 46, 92, 0.1);
+}
+
 @media (max-width: 640px) {
   .kids-memoria-grade {
     grid-template-columns: repeat(4, 1fr);

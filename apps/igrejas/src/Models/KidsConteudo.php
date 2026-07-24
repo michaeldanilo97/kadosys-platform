@@ -318,14 +318,17 @@ final class KidsConteudo
      * XP/moedas - so na primeira vez (UNIQUE em kids_conteudo_conclusoes
      * impede conceder pontos de novo se a crianca repetir o conteudo).
      * Retorna true se os pontos foram concedidos agora.
+     *
+     * $fotoPath guarda a evidencia da boa acao no caso de um desafio
+     * (ver KidsAppController::concluirDesafio) - null pros demais tipos.
      */
-    public function registrarConclusaoPor(int $criancaId): bool
+    public function registrarConclusaoPor(int $criancaId, ?string $fotoPath = null): bool
     {
         $stmt = Database::connection()->prepare(
-            'INSERT IGNORE INTO kids_conteudo_conclusoes (crianca_id, conteudo_id, created_at)
-             VALUES (:crianca_id, :conteudo_id, NOW())'
+            'INSERT IGNORE INTO kids_conteudo_conclusoes (crianca_id, conteudo_id, foto_path, created_at)
+             VALUES (:crianca_id, :conteudo_id, :foto_path, NOW())'
         );
-        $stmt->execute(['crianca_id' => $criancaId, 'conteudo_id' => $this->id]);
+        $stmt->execute(['crianca_id' => $criancaId, 'conteudo_id' => $this->id, 'foto_path' => $fotoPath]);
 
         if ($stmt->rowCount() === 0) {
             return false;

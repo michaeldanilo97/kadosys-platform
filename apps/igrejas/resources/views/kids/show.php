@@ -7,23 +7,42 @@
  * @var string $csrfToken
  * @var int $custoAjudaQuiz
  * @var array{xp: int, moedas: int}|null $pontosGanhos
+ * @var string|null $desafioErro
  */
 $basePath = $config['base_path'] ?? '';
 $tipoInfo = $conteudo->tipoInfo();
 $isQuiz = $conteudo->tipo === 'quiz' && $conteudo->quizPerguntas !== null;
-// "Complete o Versiculo", "Ligue o Personagem" (tipo atividade), os
-// jogos com niveis/gate proprio (memoria, trivia, caca-palavras) e o
-// slideshow (so libera ao chegar no ultimo slide - ver
-// kids-interacoes.js) tem o mesmo mecanismo de progresso do quiz,
-// embutido no proprio HTML confiavel - reconhecido pelos data-attributes
-// do widget, sem precisar de uma coluna nova so pra isso.
-$temGateProgresso = $isQuiz || ($conteudo->textoConteudo !== null
-    && (str_contains($conteudo->textoConteudo, 'data-completar')
-        || str_contains($conteudo->textoConteudo, 'data-ligar')
-        || str_contains($conteudo->textoConteudo, 'data-jogo-memoria')
-        || str_contains($conteudo->textoConteudo, 'data-jogo-trivia')
-        || str_contains($conteudo->textoConteudo, 'data-cacapalavras')
-        || str_contains($conteudo->textoConteudo, 'data-slides')));
+$isDesafio = $conteudo->tipo === 'desafio';
+$isReacao = in_array($conteudo->tipo, ['historia', 'devocional', 'versiculo_ilustrado'], true);
+$temMidiaParaTerminar = in_array($conteudo->tipo, ['video', 'audio'], true)
+    && ($conteudo->midiaPath !== null || $conteudo->midiaUrl !== null);
+$temArquivoParaAbrir = $conteudo->tipo === 'pdf' && $conteudo->midiaPath !== null;
+// "Complete o Versiculo", "Ligue o Personagem"/"Desenhe a sua Oração"
+// (tipo atividade), colorir, plano de leitura e os jogos com
+// niveis/gate proprio (memoria, trivia, caca-palavras) e o slideshow (so
+// libera ao chegar no ultimo slide - ver kids-interacoes.js) tem o mesmo
+// mecanismo de progresso do quiz, embutido no proprio HTML confiavel -
+// reconhecido pelos data-attributes do widget, sem precisar de uma
+// coluna nova so pra isso. Historia/devocional/versiculo ilustrado (via
+// reacao), HQ (tocar em cada quadrinho), PDF (abrir o arquivo) e
+// video/audio (terminar de assistir/ouvir) sao gates de template, sem
+// marcador no proprio conteudo. Desafio tem fluxo proprio (foto).
+$temGateProgresso = $isQuiz
+    || $isDesafio
+    || $isReacao
+    || $conteudo->tipo === 'hq'
+    || $temMidiaParaTerminar
+    || $temArquivoParaAbrir
+    || ($conteudo->textoConteudo !== null
+        && (str_contains($conteudo->textoConteudo, 'data-completar')
+            || str_contains($conteudo->textoConteudo, 'data-ligar')
+            || str_contains($conteudo->textoConteudo, 'data-jogo-memoria')
+            || str_contains($conteudo->textoConteudo, 'data-jogo-trivia')
+            || str_contains($conteudo->textoConteudo, 'data-cacapalavras')
+            || str_contains($conteudo->textoConteudo, 'data-slides')
+            || str_contains($conteudo->textoConteudo, 'data-colorir')
+            || str_contains($conteudo->textoConteudo, 'data-desenho')
+            || str_contains($conteudo->textoConteudo, 'data-plano-leitura')));
 ?>
 <div class="kids-mundo">
     <div class="kids-topo">
@@ -63,26 +82,49 @@ $temGateProgresso = $isQuiz || ($conteudo->textoConteudo !== null
 
         <?php if ($conteudo->midiaPath !== null): ?>
             <?php if ($conteudo->tipo === 'audio'): ?>
-                <audio controls src="<?= $basePath ?>/<?= htmlspecialchars($conteudo->midiaPath, ENT_QUOTES, 'UTF-8') ?>"></audio>
+                <audio controls data-midia-progresso src="<?= $basePath ?>/<?= htmlspecialchars($conteudo->midiaPath, ENT_QUOTES, 'UTF-8') ?>"></audio>
             <?php elseif ($conteudo->tipo === 'video'): ?>
-                <video controls src="<?= $basePath ?>/<?= htmlspecialchars($conteudo->midiaPath, ENT_QUOTES, 'UTF-8') ?>"></video>
+                <video controls data-midia-progresso src="<?= $basePath ?>/<?= htmlspecialchars($conteudo->midiaPath, ENT_QUOTES, 'UTF-8') ?>"></video>
             <?php else: ?>
-                <p><a href="<?= $basePath ?>/<?= htmlspecialchars($conteudo->midiaPath, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener" class="kids-btn-concluir" style="background: linear-gradient(135deg, var(--kids-azul), #2E9FC7); box-shadow: 0 5px 0 #1E7A9C;">
+                <p><a href="<?= $basePath ?>/<?= htmlspecialchars($conteudo->midiaPath, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener" data-pdf-abrir class="kids-btn-concluir" style="background: linear-gradient(135deg, var(--kids-azul), #2E9FC7); box-shadow: 0 5px 0 #1E7A9C;">
                     <i class="bi bi-download"></i> Abrir arquivo
                 </a></p>
             <?php endif; ?>
         <?php elseif ($conteudo->midiaUrl !== null): ?>
-            <p><a href="<?= htmlspecialchars($conteudo->midiaUrl, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener" class="kids-btn-concluir" style="background: linear-gradient(135deg, var(--kids-azul), #2E9FC7); box-shadow: 0 5px 0 #1E7A9C;">
-                <i class="bi bi-play-circle"></i> Assistir/ouvir
-            </a></p>
+            <?php if (in_array($conteudo->tipo, ['video', 'audio'], true)): ?>
+                <p><a href="<?= htmlspecialchars($conteudo->midiaUrl, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener" data-pdf-abrir class="kids-btn-concluir" style="background: linear-gradient(135deg, var(--kids-azul), #2E9FC7); box-shadow: 0 5px 0 #1E7A9C;">
+                    <i class="bi bi-play-circle"></i> Assistir/ouvir
+                </a></p>
+            <?php else: ?>
+                <p><a href="<?= htmlspecialchars($conteudo->midiaUrl, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener" data-pdf-abrir class="kids-btn-concluir" style="background: linear-gradient(135deg, var(--kids-azul), #2E9FC7); box-shadow: 0 5px 0 #1E7A9C;">
+                    <i class="bi bi-play-circle"></i> Assistir/ouvir
+                </a></p>
+            <?php endif; ?>
+        <?php endif; ?>
+
+        <?php if ($conteudo->tipo === 'hq'): ?>
+            <p class="form-field-hint" style="text-align:center;">Toque em cada quadrinho pra virar a página! 👆</p>
         <?php endif; ?>
 
         <?php if ($conteudo->textoConteudo): ?>
-            <?php if ($conteudo->origem === 'kadosys' && in_array($conteudo->tipo, ['colorir', 'jogo', 'slide', 'hq', 'atividade', 'estudo'], true)): ?>
+            <?php if ($conteudo->origem === 'kadosys' && in_array($conteudo->tipo, ['colorir', 'jogo', 'slide', 'hq', 'atividade', 'estudo', 'plano_leitura'], true)): ?>
                 <?= $conteudo->textoConteudo ?>
             <?php else: ?>
                 <div class="texto"><?= htmlspecialchars($conteudo->textoConteudo, ENT_QUOTES, 'UTF-8') ?></div>
             <?php endif; ?>
+        <?php endif; ?>
+
+        <?php if ($isReacao): ?>
+            <div class="kids-reacao" data-reacao>
+                <p class="kids-reacao-pergunta">Como isso te fez sentir?</p>
+                <div class="kids-reacao-opcoes">
+                    <button type="button" class="kids-reacao-opcao" data-reacao-opcao aria-label="Feliz">😊</button>
+                    <button type="button" class="kids-reacao-opcao" data-reacao-opcao aria-label="Grato">🙏</button>
+                    <button type="button" class="kids-reacao-opcao" data-reacao-opcao aria-label="Animado">💪</button>
+                    <button type="button" class="kids-reacao-opcao" data-reacao-opcao aria-label="Amado">❤️</button>
+                    <button type="button" class="kids-reacao-opcao" data-reacao-opcao aria-label="Pensativo">🤔</button>
+                </div>
+            </div>
         <?php endif; ?>
 
         <?php if ($isQuiz): ?>
@@ -253,6 +295,22 @@ $temGateProgresso = $isQuiz || ($conteudo->textoConteudo !== null
         <div style="margin-top: 1.6rem;">
             <?php if ($jaConcluido): ?>
                 <button type="button" class="kids-btn-concluir" disabled><i class="bi bi-check-circle-fill"></i> Já concluído</button>
+            <?php elseif ($isDesafio): ?>
+                <form method="POST" action="<?= $basePath ?>/kids/conteudo/<?= $conteudo->id ?>/concluir-desafio" enctype="multipart/form-data" data-desafio-form>
+                    <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+                    <label class="kids-desafio-upload">
+                        <input type="file" name="foto" accept="image/*" capture="environment" data-desafio-input hidden>
+                        <i class="bi bi-camera-fill"></i> Tirar/escolher foto da boa ação
+                    </label>
+                    <img data-desafio-preview alt="Prévia da foto enviada" class="kids-desafio-preview" hidden>
+                    <?php if ($desafioErro): ?>
+                        <p class="form-field-hint" style="color: var(--kids-vermelho);"><?= htmlspecialchars($desafioErro, ENT_QUOTES, 'UTF-8') ?></p>
+                    <?php endif; ?>
+                    <button type="submit" class="kids-btn-concluir" data-desafio-enviar disabled style="margin-top: 0.9rem;">
+                        <i class="bi bi-star-fill"></i> Enviar foto e ganhar +<?= $conteudo->xpRecompensa ?> XP
+                    </button>
+                </form>
+                <p class="form-field-hint">Mostre você fazendo a boa ação numa foto, depois toque em enviar! 📸</p>
             <?php else: ?>
                 <form method="POST" action="<?= $basePath ?>/kids/conteudo/<?= $conteudo->id ?>/concluir" data-quiz-form-concluir <?= $temGateProgresso ? 'hidden' : '' ?>>
                     <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
@@ -261,10 +319,25 @@ $temGateProgresso = $isQuiz || ($conteudo->textoConteudo !== null
                     </button>
                 </form>
                 <?php if ($temGateProgresso): ?>
-                    <?php $ehSlideshow = $conteudo->textoConteudo !== null && str_contains($conteudo->textoConteudo, 'data-slides'); ?>
-                    <p class="form-field-hint" data-quiz-aviso-pendente><?= $ehSlideshow
-                        ? 'Passe por todos os slides pra liberar o botão de concluir. Use as setinhas ‹ › pra navegar! ✨'
-                        : 'Responda/ligue tudo certinho pra liberar o botão de concluir. Errou? Sem problema, é só tentar de novo! 💪' ?></p>
+                    <?php
+                    $ehSlideshow = $conteudo->textoConteudo !== null && str_contains($conteudo->textoConteudo, 'data-slides');
+                    $ehColorir = $conteudo->textoConteudo !== null && str_contains($conteudo->textoConteudo, 'data-colorir');
+                    $ehDesenho = $conteudo->textoConteudo !== null && str_contains($conteudo->textoConteudo, 'data-desenho');
+                    $ehPlano = $conteudo->textoConteudo !== null && str_contains($conteudo->textoConteudo, 'data-plano-leitura');
+
+                    $avisoPendente = match (true) {
+                        $ehSlideshow => 'Passe por todos os slides pra liberar o botão de concluir. Use as setinhas ‹ › pra navegar! ✨',
+                        $ehColorir => 'Pinte pelo menos um pouquinho de cada parte do desenho pra liberar o botão de concluir! 🎨',
+                        $ehDesenho => 'Desenhe alguma coisa no quadro pra liberar o botão de concluir! ✏️',
+                        $ehPlano => 'Marque todos os dias depois de ler cada versículo pra liberar o botão de concluir! 🗓️',
+                        $conteudo->tipo === 'hq' => 'Toque em cada quadrinho da história pra liberar o botão de concluir! 👆',
+                        $isReacao => 'Escolha como você se sentiu pra liberar o botão de concluir! 🙂',
+                        $temArquivoParaAbrir => 'Abra o arquivo pra liberar o botão de concluir! 📄',
+                        $temMidiaParaTerminar => 'Assista/ouça até o final pra liberar o botão de concluir! ▶️',
+                        default => 'Responda/ligue tudo certinho pra liberar o botão de concluir. Errou? Sem problema, é só tentar de novo! 💪',
+                    };
+                    ?>
+                    <p class="form-field-hint" data-quiz-aviso-pendente><?= $avisoPendente ?></p>
                 <?php endif; ?>
             <?php endif; ?>
         </div>
