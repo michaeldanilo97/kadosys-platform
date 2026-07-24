@@ -17,6 +17,27 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 175 - 2026-07-24
+
+**Igrejas Kids: mais 6 jogos no catálogo (memória, trivia e caça-palavras)**
+
+Resposta a "pode acrescentar mais jogos" - conteúdo novo reaproveitando
+os 3 motores genéricos já existentes (kids-jogo-memoria.js,
+kids-jogo-trivia.js, kids-jogo-cacapalavras.js), sem precisar escrever
+nenhum motor novo:
+
+- **Memória** (3 fases cada): "A Criação do Mundo" e "Parábolas de
+  Jesus".
+- **Trivia/corrida** (2 rodadas cada, só avança acertando tudo):
+  "Desafio dos Profetas" e "Trivia dos Números da Bíblia".
+- **Caça-palavras** (grade 10x10, 8 palavras cada): "Livros da Bíblia"
+  e "Lugares da Bíblia" - grade gerada por script auxiliar que coloca
+  cada palavra em uma direção aleatória sem sobrepor letras
+  conflitantes, mesmo algoritmo já usado nos caça-palavras anteriores.
+- Catálogo de jogos passa de 12 para 18 itens.
+
+---
+
 ## Ajuste 174 - 2026-07-24
 
 **Igrejas Kids: "Jogar com amigo" - duelo de quiz online 1x1 entre crianças da mesma igreja**
