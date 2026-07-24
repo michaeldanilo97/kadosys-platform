@@ -49,6 +49,9 @@ $primeiroNome = explode(' ', $crianca->nome)[0];
             <a href="<?= $basePath ?>/kids/emblemas" class="kids-app-sair" style="background: linear-gradient(135deg, var(--kids-verde), var(--kids-azul)); color: #FFFFFF;">
                 <i class="bi bi-award-fill"></i> Emblemas
             </a>
+            <a href="<?= $basePath ?>/kids/biblia" class="kids-app-sair" style="background: linear-gradient(135deg, #4A6FA5, var(--kids-azul)); color: #FFFFFF;">
+                <i class="bi bi-book-fill"></i> Bíblia
+            </a>
             <form method="POST" action="<?= $basePath ?>/kids/sair">
                 <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
                 <button type="submit" class="kids-app-sair"><i class="bi bi-box-arrow-right"></i> Sair</button>

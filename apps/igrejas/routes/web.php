@@ -17,6 +17,7 @@ use Igrejas\Controllers\FaturaController;
 use Igrejas\Controllers\FinanceiroController;
 use Igrejas\Controllers\GrupoController;
 use Igrejas\Controllers\KidsAppController;
+use Igrejas\Controllers\KidsBibliaController;
 use Igrejas\Controllers\KidsBibliotecaController;
 use Igrejas\Controllers\KidsCheckinController;
 use Igrejas\Controllers\KidsController;
@@ -452,6 +453,9 @@ $router->get('/kids/avatar', [KidsAppController::class, 'avatar'], [KidsSessaoMi
 $router->post('/kids/avatar', [KidsAppController::class, 'avatarSalvar'], [KidsSessaoMiddleware::class]);
 $router->post('/kids/avatar/comprar', [KidsAppController::class, 'avatarComprar'], [KidsSessaoMiddleware::class]);
 $router->get('/kids/emblemas', [KidsAppController::class, 'emblemas'], [KidsSessaoMiddleware::class]);
+$router->get('/kids/biblia', [KidsBibliaController::class, 'index'], [KidsSessaoMiddleware::class]);
+$router->get('/kids/biblia/{livroId}', [KidsBibliaController::class, 'livro'], [KidsSessaoMiddleware::class]);
+$router->get('/kids/biblia/{livroId}/{capitulo}', [KidsBibliaController::class, 'capitulo'], [KidsSessaoMiddleware::class]);
 
 // Estado da projecao (JSON): leitura/escrita autorizadas pelo token da
 // sessao, usadas via polling pelas 3 telas (operador, telao, preletor).

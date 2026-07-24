@@ -17,6 +17,52 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 181 - 2026-07-24
+
+**Kids: Bíblia Interativa (navegação pelos 66 livros + leitura por capítulo)**
+
+- Prioridade 7 da lista colada pelo usuário: nova área `/kids/biblia`
+  no modo criança pra navegar pelos 66 livros (Antigo/Novo Testamento)
+  e ler capítulo por capítulo, na mesma casca visual colorida da
+  Biblioteca. Reaproveita dados de referência já existentes na
+  plataforma (`BibliaLivro`/`BibliaVersiculo`/`BibliaVersao`, os mesmos
+  usados no Preletor/Telão) em vez de reinventar o texto bíblico.
+- Nova tabela `kids_biblia_leituras` (migração 075, espelhada em
+  `install.sql`) guarda só quais capítulos cada criança já leu -
+  ler um capítulo novo concede +3 XP uma única vez
+  (`Igrejas\Models\KidsBibliaLeitura`), mesmo padrão idempotente já
+  usado nos emblemas.
+- Como o texto da Bíblia é importado à parte pela equipe
+  (`database/seed_biblia.php`, opcional - não vem em toda instalação),
+  a tela mostra um aviso amigável em vez de ficar vazia/quebrada
+  quando o texto ainda não foi importado (`BibliaVersiculo::
+  textoImportado()`).
+- Fluxo: lista de livros com progresso ("X/Y capítulos") → grade de
+  capítulos → leitura do capítulo com navegação anterior/próximo
+  (cruza capítulos/livros automaticamente). Novo botão "Bíblia" na
+  home da Biblioteca.
+- Testado fim a fim localmente (banco do zero via `install.sql`,
+  incluindo o caso "texto não importado" e depois com versículos reais
+  inseridos manualmente): navegação completa, bônus de XP concedido
+  só na primeira leitura de cada capítulo (confirmado com uma segunda
+  criança visitando pela primeira vez).
+
+## Ajuste 180 - 2026-07-24
+
+**Kids: corrigir texto ilegível no balão do mascote**
+
+- Bug reportado pelo usuário logo após o Ajuste 179 ir ao ar: o texto
+  do balão de fala do mascote (`.kids-mascote-balao`) ficava
+  invisível (branco sobre fundo branco).
+- Causa raiz: o widget do mascote é renderizado no layout
+  (`layouts/kids-app.php`), fora da `<div class="kids-mundo">` de cada
+  página - e `--kids-texto` é uma custom property que só existe
+  dentro dela. Fora da `.kids-mundo`, `var(--kids-texto)` não resolve
+  e o elemento herda a cor de texto clara do tema escuro do
+  dashboard.
+- Corrigido usando o valor literal (`#3A2E5C`) nesse elemento
+  específico, já que ele sempre fica fora de `.kids-mundo`.
+
 ## Ajuste 179 - 2026-07-24
 
 **Kids: mascote não-IA (Leão/Ovelha/Pomba) com frases prontas**
