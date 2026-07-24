@@ -17,6 +17,41 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 172 - 2026-07-24
+
+**Igrejas Kids: avatar vira um "boneco" de verdade (corpo + roupas em camadas)**
+
+Pedido do usuário: "coloca tambem um ranking geral das crianças e
+igrejas na tela... crie novas funções e etc para uso de moedas e quanto
+maior nivel mais coisas, ainda aquele avatar esta feio, tente criar um
+boneco, com roupas e etc tipo um roblox sabe?". Esta entrega cobre a
+parte do boneco/roupas + mais itens pra gastar moeda e subir de nível
+(o ranking entre crianças/igrejas fica pra uma próxima entrega, já que
+depende de agregar dado entre os bancos separados de cada igreja).
+
+- O avatar deixou de ser um círculo com a inicial do nome + emojis
+  soltos (chapéu/acessório flutuando) e virou um boneco de verdade,
+  desenhado em SVG por camadas: corpo (com tom de pele escolhível) +
+  roupa (silhueta própria por cima) + chapéu/acessório (iguais a antes).
+- **Tom de pele**: 6 opções, todas liberadas desde o nível 1 - é
+  representação/escolha, não recompensa.
+- **Roupa**: categoria nova com 12 itens (10 por nível + 2 na loja de
+  moedas), cada uma com uma cor própria sobre um dos 5 "moldes" de
+  roupa (camiseta e bermuda, vestido, moletom com capuz, uniforme com
+  capa/emblema, manto longo) - dá pra reconhecer o visual de longe sem
+  precisar desenhar uma peça nova do zero pra cada item.
+- Loja de moedas ganhou 2 roupas exclusivas (Roupa Arco-íris e Traje
+  Espacial), junto com os itens que já existiam de chapéu/acessório/
+  fundo/título - mais opções de "quanto maior o nível (ou mais moedas),
+  mais coisas pra desbloquear".
+- Migração 067: colunas `avatar_pele`/`avatar_roupa` em `kids_criancas`.
+- Testado via Playwright: boneco renderiza com a roupa/pele padrão,
+  troca de roupa/pele/chapéu/acessório atualiza a prévia na hora sem
+  recarregar, item bloqueado por nível continua impedindo a troca (fica
+  cinza com o cadeado, exatamente como as demais categorias).
+
+---
+
 ## Ajuste 171 - 2026-07-24
 
 **Igrejas Kids: exigir ação real da criança em TODO conteúdo pra concluir + foto do desafio**

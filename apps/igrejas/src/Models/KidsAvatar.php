@@ -79,6 +79,51 @@ final class KidsAvatar
     }
 
     /**
+     * Tons de pele do boneco - diferente dos outros catalogos, TODOS
+     * comecam desbloqueados desde o nivel 1 (representacao nao e
+     * recompensa, e escolha livre desde o primeiro dia).
+     *
+     * @return array<int, array{slug: string, nome: string, nivel: ?int, custoMoedas: ?int, cor: string}>
+     */
+    public static function catalogoPeles(): array
+    {
+        return [
+            ['slug' => 'clara', 'nome' => 'Clara', 'nivel' => 1, 'custoMoedas' => null, 'cor' => '#FFE0BD'],
+            ['slug' => 'clara-dourada', 'nome' => 'Clara Dourada', 'nivel' => 1, 'custoMoedas' => null, 'cor' => '#F1C27D'],
+            ['slug' => 'media-clara', 'nome' => 'Média Clara', 'nivel' => 1, 'custoMoedas' => null, 'cor' => '#E0AC69'],
+            ['slug' => 'media', 'nome' => 'Média', 'nivel' => 1, 'custoMoedas' => null, 'cor' => '#C68642'],
+            ['slug' => 'escura', 'nome' => 'Escura', 'nivel' => 1, 'custoMoedas' => null, 'cor' => '#8D5524'],
+            ['slug' => 'bem-escura', 'nome' => 'Bem Escura', 'nivel' => 1, 'custoMoedas' => null, 'cor' => '#5C3A21'],
+        ];
+    }
+
+    /**
+     * Roupas do boneco: cada item tem um "estilo" (um dos 5 moldes
+     * desenhados uma unica vez no SVG - ver kids-boneco-* no CSS e o
+     * script de preview em avatar.php) + uma cor propria, pra dar
+     * variedade sem precisar desenhar uma roupa inteira nova por item.
+     *
+     * @return array<int, array{slug: string, emoji: string, nome: string, nivel: ?int, custoMoedas: ?int, estilo: string, cor: string}>
+     */
+    public static function catalogoRoupas(): array
+    {
+        return [
+            ['slug' => 'camiseta-bermuda', 'emoji' => '👕', 'nome' => 'Camiseta e Bermuda', 'nivel' => 1, 'custoMoedas' => null, 'estilo' => 'camiseta_shorts', 'cor' => '#4CC9F0'],
+            ['slug' => 'vestido-flores', 'emoji' => '👗', 'nome' => 'Vestido de Flores', 'nivel' => 3, 'custoMoedas' => null, 'estilo' => 'vestido', 'cor' => '#FF6FA5'],
+            ['slug' => 'moletom-capuz', 'emoji' => '🧥', 'nome' => 'Moletom com Capuz', 'nivel' => 5, 'custoMoedas' => null, 'estilo' => 'moletom_capuz', 'cor' => '#9B5DE5'],
+            ['slug' => 'uniforme-heroi', 'emoji' => '🦸', 'nome' => 'Uniforme de Herói', 'nivel' => 7, 'custoMoedas' => null, 'estilo' => 'uniforme_capa', 'cor' => '#FF6B6B'],
+            ['slug' => 'vestido-festa', 'emoji' => '✨', 'nome' => 'Vestido de Festa', 'nivel' => 9, 'custoMoedas' => null, 'estilo' => 'vestido', 'cor' => '#FFD93D'],
+            ['slug' => 'uniforme-esportivo', 'emoji' => '⚽', 'nome' => 'Uniforme Esportivo', 'nivel' => 11, 'custoMoedas' => null, 'estilo' => 'camiseta_shorts', 'cor' => '#6BCB77'],
+            ['slug' => 'capa-explorador', 'emoji' => '🧭', 'nome' => 'Capa do Explorador', 'nivel' => 13, 'custoMoedas' => null, 'estilo' => 'uniforme_capa', 'cor' => '#FF9F1C'],
+            ['slug' => 'manto-sabio', 'emoji' => '📜', 'nome' => 'Manto do Sábio', 'nivel' => 15, 'custoMoedas' => null, 'estilo' => 'manto_longo', 'cor' => '#3A2E5C'],
+            ['slug' => 'toga-formatura', 'emoji' => '🎓', 'nome' => 'Toga de Formatura', 'nivel' => 17, 'custoMoedas' => null, 'estilo' => 'manto_longo', 'cor' => '#1B3A6B'],
+            ['slug' => 'manto-realeza', 'emoji' => '👑', 'nome' => 'Manto da Realeza', 'nivel' => 19, 'custoMoedas' => null, 'estilo' => 'manto_longo', 'cor' => '#D4A017'],
+            ['slug' => 'roupa-arco-iris', 'emoji' => '🌈', 'nome' => 'Roupa Arco-íris', 'nivel' => null, 'custoMoedas' => 30, 'estilo' => 'camiseta_shorts', 'cor' => 'url(#kids-boneco-grad-arcoiris)'],
+            ['slug' => 'traje-espacial', 'emoji' => '🚀', 'nome' => 'Traje Espacial', 'nivel' => null, 'custoMoedas' => 50, 'estilo' => 'uniforme_capa', 'cor' => '#F0F0F5'],
+        ];
+    }
+
+    /**
      * @return array<int, array{slug: string, emoji: string, nome: string, nivel: ?int, custoMoedas: ?int, gradiente: string}>
      */
     public static function catalogoFundos(): array

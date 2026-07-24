@@ -10,6 +10,8 @@ use Igrejas\Models\KidsAvatar;
  * @var array<int, array{slug: string, emoji: string, nome: string, nivel: ?int, custoMoedas: ?int}> $catalogoAcessorios
  * @var array<int, array{slug: string, emoji: string, nome: string, nivel: ?int, custoMoedas: ?int, gradiente: string}> $catalogoFundos
  * @var array<int, array{slug: string, nome: string, nivel: ?int, custoMoedas: ?int}> $catalogoTitulos
+ * @var array<int, array{slug: string, nome: string, nivel: ?int, custoMoedas: ?int, cor: string}> $catalogoPeles
+ * @var array<int, array{slug: string, emoji: string, nome: string, nivel: ?int, custoMoedas: ?int, estilo: string, cor: string}> $catalogoRoupas
  * @var int $nivel
  * @var array<string, array<int, string>> $comprados
  * @var string $csrfToken
@@ -23,6 +25,9 @@ $fundoEquipado = KidsAvatar::encontrar($catalogoFundos, $crianca->avatarFundo) ?
 $tituloEquipado = KidsAvatar::encontrar($catalogoTitulos, $crianca->avatarTitulo);
 $chapeuEquipado = KidsAvatar::encontrar($catalogoChapeus, $crianca->avatarChapeu);
 $acessorioEquipado = KidsAvatar::encontrar($catalogoAcessorios, $crianca->avatarAcessorio);
+$peleEquipada = KidsAvatar::encontrar($catalogoPeles, $crianca->avatarPele) ?? $catalogoPeles[0];
+$roupaEquipada = KidsAvatar::encontrar($catalogoRoupas, $crianca->avatarRoupa) ?? $catalogoRoupas[0];
+$estiloAtivo = static fn (string $estilo): string => $estilo === $roupaEquipada['estilo'] ? ' ativo' : '';
 
 /**
  * Grade de escolha (radios) dentro do form principal de "Salvar
@@ -84,12 +89,14 @@ $renderGrade = static function (array $catalogo, string $campo, ?string $equipad
  * Itens da loja (custoMoedas preenchido) ainda nao comprados, de todas
  * as categorias juntas - cada um ganha seu proprio <form> independente
  * (irmao do form principal, nunca aninhado - ver comprar() no
- * controller).
+ * controller). Pele fica de fora: todos os tons ja vem desbloqueados,
+ * nunca entram na loja.
  *
  * @return array<int, array{categoria: string, rotulo: string, item: array<string, mixed>}>
  */
-$itensDaLojaNaoComprados = static function () use ($catalogoChapeus, $catalogoAcessorios, $catalogoFundos, $catalogoTitulos, $comprados): array {
+$itensDaLojaNaoComprados = static function () use ($catalogoChapeus, $catalogoAcessorios, $catalogoFundos, $catalogoTitulos, $catalogoRoupas, $comprados): array {
     $porCategoria = [
+        'roupa' => ['rotulo' => '👕 Roupa', 'catalogo' => $catalogoRoupas],
         'chapeu' => ['rotulo' => '🎩 Chapéu', 'catalogo' => $catalogoChapeus],
         'acessorio' => ['rotulo' => '🎒 Acessório', 'catalogo' => $catalogoAcessorios],
         'fundo' => ['rotulo' => '🌈 Fundo', 'catalogo' => $catalogoFundos],
@@ -140,17 +147,65 @@ $itensDaLojaNaoComprados = static function () use ($catalogoChapeus, $catalogoAc
     <?php endif; ?>
 
     <div class="kids-avatar-stage" style="background: <?= $fundoEquipado['gradiente'] ?>;">
-        <div class="kids-avatar-figura">
+        <div class="kids-avatar-figura" style="--boneco-pele: <?= htmlspecialchars($peleEquipada['cor'], ENT_QUOTES, 'UTF-8') ?>; --boneco-roupa-cor: <?= htmlspecialchars($roupaEquipada['cor'], ENT_QUOTES, 'UTF-8') ?>;">
             <?php if ($chapeuEquipado !== null): ?>
                 <span class="kids-avatar-chapeu"><?= $chapeuEquipado['emoji'] ?></span>
             <?php endif; ?>
-            <span class="kids-avatar-boneco">
-                <?php if ($crianca->fotoPath !== null): ?>
+
+            <?php if ($crianca->fotoPath !== null): ?>
+                <span class="kids-avatar-boneco kids-avatar-boneco-foto">
                     <img src="<?= $basePath ?>/<?= htmlspecialchars($crianca->fotoPath, ENT_QUOTES, 'UTF-8') ?>" alt="">
-                <?php else: ?>
-                    <?= htmlspecialchars(mb_strtoupper(mb_substr($crianca->nome, 0, 1)), ENT_QUOTES, 'UTF-8') ?>
-                <?php endif; ?>
-            </span>
+                </span>
+            <?php else: ?>
+                <svg class="kids-boneco-svg" data-boneco-svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <defs>
+                        <linearGradient id="kids-boneco-grad-arcoiris" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#FF6B6B"/>
+                            <stop offset="25%" stop-color="#FFD93D"/>
+                            <stop offset="50%" stop-color="#6BCB77"/>
+                            <stop offset="75%" stop-color="#4CC9F0"/>
+                            <stop offset="100%" stop-color="#9B5DE5"/>
+                        </linearGradient>
+                    </defs>
+
+                    <rect x="72" y="163" width="22" height="55" rx="11" class="kids-boneco-pele"/>
+                    <rect x="106" y="163" width="22" height="55" rx="11" class="kids-boneco-pele"/>
+                    <rect x="38" y="96" width="20" height="62" rx="10" class="kids-boneco-pele"/>
+                    <rect x="142" y="96" width="20" height="62" rx="10" class="kids-boneco-pele"/>
+                    <rect x="60" y="83" width="80" height="85" rx="24" class="kids-boneco-pele"/>
+
+                    <g class="kids-boneco-roupa-grupo<?= $estiloAtivo('camiseta_shorts') ?>" data-estilo="camiseta_shorts">
+                        <rect x="55" y="86" width="90" height="55" rx="20" class="kids-boneco-roupa"/>
+                        <rect x="68" y="158" width="30" height="30" rx="10" class="kids-boneco-roupa"/>
+                        <rect x="102" y="158" width="30" height="30" rx="10" class="kids-boneco-roupa"/>
+                    </g>
+                    <g class="kids-boneco-roupa-grupo<?= $estiloAtivo('vestido') ?>" data-estilo="vestido">
+                        <path d="M62,88 Q100,78 138,88 L150,213 Q100,228 50,213 Z" class="kids-boneco-roupa"/>
+                    </g>
+                    <g class="kids-boneco-roupa-grupo<?= $estiloAtivo('moletom_capuz') ?>" data-estilo="moletom_capuz">
+                        <ellipse cx="100" cy="42" rx="53" ry="49" class="kids-boneco-roupa"/>
+                        <rect x="52" y="86" width="96" height="90" rx="22" class="kids-boneco-roupa"/>
+                    </g>
+                    <g class="kids-boneco-roupa-grupo<?= $estiloAtivo('uniforme_capa') ?>" data-estilo="uniforme_capa">
+                        <path d="M50,88 L45,188 L70,178 L75,93 Z" class="kids-boneco-roupa kids-boneco-capa"/>
+                        <rect x="55" y="86" width="90" height="55" rx="20" class="kids-boneco-roupa"/>
+                        <rect x="68" y="158" width="30" height="30" rx="10" class="kids-boneco-roupa"/>
+                        <rect x="102" y="158" width="30" height="30" rx="10" class="kids-boneco-roupa"/>
+                        <circle cx="100" cy="110" r="10" fill="#FFFFFF" opacity="0.85"/>
+                    </g>
+                    <g class="kids-boneco-roupa-grupo<?= $estiloAtivo('manto_longo') ?>" data-estilo="manto_longo">
+                        <path d="M58,86 Q100,73 142,86 L150,213 Q100,230 50,213 Z" class="kids-boneco-roupa"/>
+                        <rect x="55" y="138" width="90" height="12" fill="rgba(0,0,0,0.15)"/>
+                    </g>
+
+                    <circle cx="100" cy="50" r="40" class="kids-boneco-pele"/>
+                    <path d="M62,36 Q100,8 138,36 L138,46 Q100,24 62,46 Z" fill="#4A3222"/>
+                    <circle cx="85" cy="48" r="4" fill="#3A2E5C"/>
+                    <circle cx="115" cy="48" r="4" fill="#3A2E5C"/>
+                    <path d="M83,62 Q100,74 117,62" stroke="#3A2E5C" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                </svg>
+            <?php endif; ?>
+
             <?php if ($acessorioEquipado !== null): ?>
                 <span class="kids-avatar-acessorio"><?= $acessorioEquipado['emoji'] ?></span>
             <?php endif; ?>
@@ -180,6 +235,20 @@ $itensDaLojaNaoComprados = static function () use ($catalogoChapeus, $catalogoAc
 
     <form method="POST" action="<?= $basePath ?>/kids/avatar">
         <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+
+        <h2 class="kids-secao-titulo">🎨 Tom de pele</h2>
+        <div class="kids-item-grade kids-pele-grade">
+            <?php foreach ($catalogoPeles as $item): ?>
+                <label class="kids-pele-swatch<?= $peleEquipada['slug'] === $item['slug'] ? ' selecionado' : '' ?>">
+                    <input type="radio" name="avatar_pele" value="<?= htmlspecialchars($item['slug'], ENT_QUOTES, 'UTF-8') ?>" <?= $peleEquipada['slug'] === $item['slug'] ? 'checked' : '' ?>>
+                    <span class="kids-pele-circulo" style="background-color: <?= htmlspecialchars($item['cor'], ENT_QUOTES, 'UTF-8') ?>;"></span>
+                    <span class="kids-item-nome"><?= htmlspecialchars($item['nome'], ENT_QUOTES, 'UTF-8') ?></span>
+                </label>
+            <?php endforeach; ?>
+        </div>
+
+        <h2 class="kids-secao-titulo">👕 Roupa</h2>
+        <?php $renderGrade($catalogoRoupas, 'avatar_roupa', $roupaEquipada['slug'], $nivel, $comprados['roupa'], null); ?>
 
         <h2 class="kids-secao-titulo">🏅 Título</h2>
         <?php $renderGrade($catalogoTitulos, 'avatar_titulo', $crianca->avatarTitulo, $nivel, $comprados['titulo'], 'Sem título'); ?>
@@ -224,19 +293,22 @@ $itensDaLojaNaoComprados = static function () use ($catalogoChapeus, $catalogoAc
 
 <script>
     (function () {
-        // Preve visualiza o boné/acessório/fundo/título assim que a
-        // criança clica numa opção, sem esperar salvar+recarregar - o
-        // formulário continua so gravando no banco quando "Salvar
+        // Preve visualiza o boné/acessório/fundo/título/pele/roupa assim
+        // que a criança clica numa opção, sem esperar salvar+recarregar -
+        // o formulário continua so gravando no banco quando "Salvar
         // visual" e enviado.
         var catalogos = {
             avatar_chapeu: <?= json_encode($catalogoChapeus, JSON_UNESCAPED_UNICODE) ?>,
             avatar_acessorio: <?= json_encode($catalogoAcessorios, JSON_UNESCAPED_UNICODE) ?>,
             avatar_fundo: <?= json_encode($catalogoFundos, JSON_UNESCAPED_UNICODE) ?>,
-            avatar_titulo: <?= json_encode($catalogoTitulos, JSON_UNESCAPED_UNICODE) ?>
+            avatar_titulo: <?= json_encode($catalogoTitulos, JSON_UNESCAPED_UNICODE) ?>,
+            avatar_pele: <?= json_encode($catalogoPeles, JSON_UNESCAPED_UNICODE) ?>,
+            avatar_roupa: <?= json_encode($catalogoRoupas, JSON_UNESCAPED_UNICODE) ?>
         };
 
         var estagio = document.querySelector('.kids-avatar-stage');
         var figura = document.querySelector('.kids-avatar-figura');
+        var svg = figura.querySelector('[data-boneco-svg]');
 
         function itemDoCatalogo(campo, slug) {
             if (!slug) {
@@ -300,6 +372,28 @@ $itensDaLojaNaoComprados = static function () use ($catalogoChapeus, $catalogoAc
                     estagio.appendChild(chip);
                 }
                 chip.textContent = escolhido.nome;
+            });
+        });
+
+        document.querySelectorAll('input[name="avatar_pele"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var escolhido = itemDoCatalogo('avatar_pele', input.value);
+                if (escolhido) {
+                    figura.style.setProperty('--boneco-pele', escolhido.cor);
+                }
+            });
+        });
+
+        document.querySelectorAll('input[name="avatar_roupa"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var escolhido = itemDoCatalogo('avatar_roupa', input.value);
+                if (!escolhido || !svg) {
+                    return;
+                }
+                figura.style.setProperty('--boneco-roupa-cor', escolhido.cor);
+                svg.querySelectorAll('.kids-boneco-roupa-grupo').forEach(function (grupo) {
+                    grupo.classList.toggle('ativo', grupo.dataset.estilo === escolhido.estilo);
+                });
             });
         });
     })();

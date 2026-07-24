@@ -32,7 +32,7 @@ final class KidsAvatarCompra
         );
         $stmt->execute(['crianca_id' => $criancaId]);
 
-        $agrupado = ['chapeu' => [], 'acessorio' => [], 'fundo' => [], 'titulo' => []];
+        $agrupado = ['chapeu' => [], 'acessorio' => [], 'fundo' => [], 'titulo' => [], 'roupa' => []];
 
         foreach ($stmt->fetchAll() as $row) {
             $agrupado[$row['categoria']][] = $row['slug'];

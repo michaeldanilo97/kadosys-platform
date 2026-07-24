@@ -813,6 +813,8 @@ CREATE TABLE IF NOT EXISTS kids_criancas (
     avatar_acessorio VARCHAR(40) NULL,
     avatar_fundo VARCHAR(40) NULL,
     avatar_titulo VARCHAR(40) NULL,
+    avatar_pele VARCHAR(40) NULL,
+    avatar_roupa VARCHAR(40) NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     KEY kids_criancas_status_index (status),
