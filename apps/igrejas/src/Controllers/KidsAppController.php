@@ -13,6 +13,8 @@ use Igrejas\Models\KidsAvatar;
 use Igrejas\Models\KidsAvatarCompra;
 use Igrejas\Models\KidsConteudo;
 use Igrejas\Models\KidsCrianca;
+use Igrejas\Models\KidsMissaoDiaria;
+use Igrejas\Models\KidsRankingIgreja;
 
 /**
  * "Modo criança" de verdade: a mesma Biblioteca de conteúdo (ver
@@ -40,13 +42,42 @@ final class KidsAppController extends Controller
     public function index(): void
     {
         $crianca = $this->criancaLogada();
+        $acessoApp = KidsCrianca::registrarAcessoApp($crianca->id);
+
+        // registrarAcessoApp() pode ter concedido XP/moedas de marco de
+        // sequencia - releitura pra a tela (contador de moedas etc)
+        // refletir o saldo atualizado, nao o de antes do bonus.
+        if ($acessoApp !== null && ($acessoApp['xp'] > 0 || $acessoApp['moedas'] > 0)) {
+            $crianca = $this->criancaLogada();
+        }
 
         echo $this->view('kids.home', [
             'pageTitle' => 'KADOSYS Kids',
             'crianca' => $crianca,
             'contagens' => KidsConteudo::contagemPublicadaPorTipo(),
             'recentes' => KidsConteudo::recentesPublicados(6),
+            'missoes' => KidsMissaoDiaria::deHoje($crianca->id),
+            'acessoApp' => $acessoApp,
             'csrfToken' => Csrf::token(),
+        ], 'kids-app');
+    }
+
+    /**
+     * Ranking da Biblioteca Kids: top criancas da propria igreja (por
+     * XP) + top igrejas entre todo o KADOSYS (por XP total das
+     * criancas) - o segundo so aparece pra igrejas provisionadas
+     * automaticamente (ver KidsRankingIgreja::topIgrejas()), sem expor
+     * nenhuma crianca de uma igreja pra outra, so o nome da igreja.
+     */
+    public function ranking(): void
+    {
+        $crianca = $this->criancaLogada();
+
+        echo $this->view('kids.ranking', [
+            'pageTitle' => 'Ranking - KADOSYS Kids',
+            'crianca' => $crianca,
+            'rankingIgreja' => KidsCrianca::rankingDaIgreja($crianca->id),
+            'rankingEntreIgrejas' => KidsRankingIgreja::topIgrejas(),
         ], 'kids-app');
     }
 
@@ -86,6 +117,7 @@ final class KidsAppController extends Controller
             'custoAjudaQuiz' => self::CUSTO_AJUDA_QUIZ,
             'pontosGanhos' => Session::flash('kids_app_pontos'),
             'desafioErro' => Session::flash('kids_desafio_erro'),
+            'missaoConcluida' => Session::flash('kids_missao_concluida'),
         ], 'kids-app');
     }
 
@@ -96,13 +128,7 @@ final class KidsAppController extends Controller
 
         if ($conteudo !== null && Csrf::verify($this->request->input('_csrf_token'))) {
             $ganhouAgora = $conteudo->registrarConclusaoPor($crianca->id);
-
-            if ($ganhouAgora) {
-                Session::flash('kids_app_pontos', [
-                    'xp' => $conteudo->xpRecompensa,
-                    'moedas' => $conteudo->moedasRecompensa,
-                ]);
-            }
+            $this->flashPontosComMissao($crianca->id, $conteudo->id, $ganhouAgora ? $conteudo->xpRecompensa : 0, $ganhouAgora ? $conteudo->moedasRecompensa : 0);
 
             // No quiz, terminar um leva direto pro proximo ainda nao
             // feito - sem esse pulo automatico a crianca precisava
@@ -170,15 +196,32 @@ final class KidsAppController extends Controller
 
         $caminhoRelativo = self::UPLOAD_DIR_FOTOS_DESAFIO . '/' . $this->tenantSlugOuCentral() . '/' . $nomeArquivo;
         $ganhouAgora = $conteudo->registrarConclusaoPor($crianca->id, $caminhoRelativo);
-
-        if ($ganhouAgora) {
-            Session::flash('kids_app_pontos', [
-                'xp' => $conteudo->xpRecompensa,
-                'moedas' => $conteudo->moedasRecompensa,
-            ]);
-        }
+        $this->flashPontosComMissao($crianca->id, $conteudo->id, $ganhouAgora ? $conteudo->xpRecompensa : 0, $ganhouAgora ? $conteudo->moedasRecompensa : 0);
 
         $this->redirect("/kids/conteudo/{$id}");
+    }
+
+    /**
+     * Junta a recompensa normal da conclusao com o bonus da missao do
+     * dia (se o conteudo concluido agora fizer parte dela - ver
+     * KidsMissaoDiaria::marcarConcluidaSeForMissao()) num unico flash
+     * de pontos, e marca um segundo flash separado so pra mostrar a
+     * mensagem de "missão do dia concluída" na tela.
+     */
+    private function flashPontosComMissao(int $criancaId, int $conteudoId, int $xpBase, int $moedasBase): void
+    {
+        $bonusMissao = KidsMissaoDiaria::marcarConcluidaSeForMissao($criancaId, $conteudoId);
+
+        $xpTotal = $xpBase + ($bonusMissao['xp'] ?? 0);
+        $moedasTotal = $moedasBase + ($bonusMissao['moedas'] ?? 0);
+
+        if ($xpTotal > 0 || $moedasTotal > 0) {
+            Session::flash('kids_app_pontos', ['xp' => $xpTotal, 'moedas' => $moedasTotal]);
+        }
+
+        if ($bonusMissao !== null) {
+            Session::flash('kids_missao_concluida', true);
+        }
     }
 
     private function tenantSlugOuCentral(): string

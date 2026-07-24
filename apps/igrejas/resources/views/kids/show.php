@@ -8,6 +8,7 @@
  * @var int $custoAjudaQuiz
  * @var array{xp: int, moedas: int}|null $pontosGanhos
  * @var string|null $desafioErro
+ * @var bool|null $missaoConcluida
  */
 $basePath = $config['base_path'] ?? '';
 $tipoInfo = $conteudo->tipoInfo();
@@ -63,7 +64,12 @@ $temGateProgresso = $isQuiz
                     <span class="kids-premio-confete" style="left: <?= 8 + $i * 20 ?>%; animation-delay: <?= $i * 0.08 ?>s;"><?= $confete ?></span>
                 <?php endforeach; ?>
                 <span class="emoji">🎉</span>
-                <span>Você ganhou +<?= $pontosGanhos['xp'] ?> XP e +<?= $pontosGanhos['moedas'] ?> moedas!</span>
+                <span>
+                    Você ganhou +<?= $pontosGanhos['xp'] ?> XP e +<?= $pontosGanhos['moedas'] ?> moedas!
+                    <?php if (!empty($missaoConcluida)): ?>
+                        <br>🎯 Isso também era a missão do dia!
+                    <?php endif; ?>
+                </span>
             </div>
         <?php endif; ?>
 

@@ -1975,3 +1975,105 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
     animation: none;
   }
 }
+
+/* ---- Missao do dia ------------------------------------------------ */
+
+.kids-missao-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-bottom: 1.6rem;
+}
+
+.kids-missao-card {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: #FFFFFF;
+  border-radius: 18px;
+  padding: 0.9rem 1.1rem;
+  box-shadow: 0 5px 0 rgba(58, 46, 92, 0.08);
+  text-decoration: none;
+  transition: transform 0.15s ease;
+}
+
+.kids-missao-card:hover {
+  transform: translateY(-2px);
+}
+
+.kids-missao-card .emoji {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.kids-missao-card .titulo {
+  flex: 1;
+  font-weight: 700;
+  color: var(--kids-texto);
+}
+
+.kids-missao-selo {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #2E7D38;
+  background: rgba(107, 203, 119, 0.2);
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.kids-missao-selo.pendente {
+  color: #7A5A00;
+  background: rgba(255, 217, 61, 0.3);
+}
+
+.kids-missao-card.concluida {
+  opacity: 0.7;
+}
+
+/* ---- Ranking ------------------------------------------------------- */
+
+.kids-ranking-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.kids-ranking-linha {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 0.8rem 1.1rem;
+  box-shadow: 0 4px 0 rgba(58, 46, 92, 0.06);
+}
+
+.kids-ranking-linha.sou-eu {
+  box-shadow: 0 0 0 3px var(--kids-roxo);
+}
+
+.kids-ranking-linha .posicao {
+  font-weight: 800;
+  min-width: 2.2rem;
+  text-align: center;
+  color: var(--kids-texto-suave);
+}
+
+.kids-ranking-linha .nome {
+  flex: 1;
+  font-weight: 700;
+  color: var(--kids-texto);
+}
+
+.kids-ranking-linha .nivel {
+  font-size: 0.78rem;
+  color: var(--kids-texto-suave);
+  font-weight: 600;
+}
+
+.kids-ranking-linha .xp {
+  font-weight: 800;
+  color: var(--kids-roxo);
+}

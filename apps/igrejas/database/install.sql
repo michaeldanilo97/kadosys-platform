@@ -805,6 +805,8 @@ CREATE TABLE IF NOT EXISTS kids_criancas (
     xp INT UNSIGNED NOT NULL DEFAULT 0,
     moedas INT UNSIGNED NOT NULL DEFAULT 0,
     sequencia_dias INT UNSIGNED NOT NULL DEFAULT 0,
+    sequencia_app_dias INT UNSIGNED NOT NULL DEFAULT 0,
+    ultima_visita_app_em DATE NULL,
     pin_hash VARCHAR(255) NULL,
     pin_definido_em TIMESTAMP NULL,
     pin_tentativas_invalidas TINYINT UNSIGNED NOT NULL DEFAULT 0,
@@ -904,6 +906,20 @@ CREATE TABLE IF NOT EXISTS kids_conteudo_conclusoes (
     CONSTRAINT kids_conteudo_conclusoes_crianca_id_foreign
         FOREIGN KEY (crianca_id) REFERENCES kids_criancas (id) ON DELETE CASCADE,
     CONSTRAINT kids_conteudo_conclusoes_conteudo_id_foreign
+        FOREIGN KEY (conteudo_id) REFERENCES kids_conteudos (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS kids_missoes_diarias (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    crianca_id INT UNSIGNED NOT NULL,
+    data DATE NOT NULL,
+    conteudo_id INT UNSIGNED NOT NULL,
+    concluida_em TIMESTAMP NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_kids_missoes_diarias (crianca_id, data, conteudo_id),
+    CONSTRAINT fk_kids_missoes_diarias_crianca
+        FOREIGN KEY (crianca_id) REFERENCES kids_criancas (id) ON DELETE CASCADE,
+    CONSTRAINT fk_kids_missoes_diarias_conteudo
         FOREIGN KEY (conteudo_id) REFERENCES kids_conteudos (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
