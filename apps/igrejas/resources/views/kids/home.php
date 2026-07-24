@@ -9,6 +9,7 @@ use Igrejas\Models\KidsConteudo;
  * @var array<int, KidsConteudo> $recentes
  * @var array<int, array{conteudoId: int, titulo: string, tipo: string, emoji: string, concluida: bool}> $missoes
  * @var array{sequencia: int, xp: int, moedas: int}|null $acessoApp
+ * @var array<int, array{slug: string, nome: string, emoji: string}> $novosEmblemas
  * @var string $csrfToken
  */
 $basePath = $config['base_path'] ?? '';
@@ -45,6 +46,9 @@ $primeiroNome = explode(' ', $crianca->nome)[0];
             <a href="<?= $basePath ?>/kids/avatar" class="kids-app-sair" style="background: linear-gradient(135deg, var(--kids-roxo), var(--kids-rosa)); color: #FFFFFF;">
                 <i class="bi bi-person-video3"></i> Meu Avatar
             </a>
+            <a href="<?= $basePath ?>/kids/emblemas" class="kids-app-sair" style="background: linear-gradient(135deg, var(--kids-verde), var(--kids-azul)); color: #FFFFFF;">
+                <i class="bi bi-award-fill"></i> Emblemas
+            </a>
             <form method="POST" action="<?= $basePath ?>/kids/sair">
                 <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
                 <button type="submit" class="kids-app-sair"><i class="bi bi-box-arrow-right"></i> Sair</button>
@@ -58,6 +62,13 @@ $primeiroNome = explode(' ', $crianca->nome)[0];
             <span>Sequência de <?= $acessoApp['sequencia'] ?> dias na Biblioteca! Bônus de +<?= $acessoApp['xp'] ?> XP e +<?= $acessoApp['moedas'] ?> moedas!</span>
         </div>
     <?php endif; ?>
+
+    <?php foreach ($novosEmblemas as $novoEmblema): ?>
+        <div class="kids-premio-banner">
+            <span class="emoji"><?= $novoEmblema['emoji'] ?></span>
+            <span>Novo emblema: <strong><?= htmlspecialchars($novoEmblema['nome'], ENT_QUOTES, 'UTF-8') ?></strong>! Veja em Emblemas 🏅</span>
+        </div>
+    <?php endforeach; ?>
 
     <?php if ($missoes !== []): ?>
         <h2 class="kids-secao-titulo">🎯 Missão do dia</h2>

@@ -17,6 +17,34 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 178 - 2026-07-24
+
+**Kids: emblemas/conquistas por marcos especiais**
+
+- Nova tabela `kids_emblemas_conquistados` (migração 073, espelhada em
+  `install.sql`) guarda só quais emblemas cada criança já ganhou; o
+  catálogo (nome, emoji, descrição, critério) é estático em PHP
+  (`Igrejas\Models\KidsEmblema::CATALOGO`), mesmo padrão já usado no
+  catálogo do avatar.
+- 10 emblemas: Primeiro Passo, Leitor Dedicado, Explorador da Fé e
+  Centurião (1/10/50/100 conteúdos concluídos), Primeira Vitória e
+  Campeão dos Duelos (1/5 duelos vencidos), Sequência de Fogo e Fiel
+  Todo Mês (7/30 dias seguidos acessando a Biblioteca), Mestre dos
+  Jogos (10 jogos diferentes) e Lenda Kids (nível máximo).
+- Critérios são conferidos contra o estado atual da criança (sem
+  contador incremental) em dois pontos: ao concluir qualquer conteúdo
+  ou desafio (mostra banner comemorativo na própria tela) e ao abrir a
+  Biblioteca (`/kids`, pega duelos vencidos e sequência sem precisar de
+  recarregar em outra tela). Cada emblema novo dá um bônus de +10 XP e
+  +5 moedas, concedido uma única vez (`INSERT IGNORE` + `UNIQUE KEY`).
+- Nova galeria `/kids/emblemas` mostra o catálogo completo com os já
+  conquistados destacados (data de conquista) e os demais
+  esmaecidos/bloqueados; novo botão "Emblemas" na home da Biblioteca.
+- Testado fim a fim localmente (banco criado do zero via `install.sql`):
+  completar o primeiro conteúdo concede "Primeiro Passo" com banner +
+  bônus, a galeria reflete o estado corretamente, e recarregar a
+  página não concede o bônus de novo.
+
 ## Ajuste 177 - 2026-07-24
 
 **Kids: migração de correção pra 7 itens do catálogo que nunca chegaram nas igrejas antigas**
