@@ -2423,7 +2423,11 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
 .kids-mascote-balao {
   max-width: 13rem;
   background: #FFFFFF;
-  color: var(--kids-texto);
+  /* O widget do mascote fica FORA de .kids-mundo (ver layouts/
+     kids-app.php) - var(--kids-texto) so existe dentro dela, entao
+     aqui precisa do valor literal (senao herda a cor clara do tema
+     escuro do dashboard e o texto fica ilegivel). */
+  color: #3A2E5C;
   border-radius: 16px;
   border-bottom-left-radius: 4px;
   padding: 0.6rem 0.85rem;
