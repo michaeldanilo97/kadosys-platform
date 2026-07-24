@@ -433,6 +433,7 @@ $router->get('/kids', [KidsAppController::class, 'index'], [KidsSessaoMiddleware
 $router->get('/kids/tipo/{tipo}', [KidsAppController::class, 'porTipo'], [KidsSessaoMiddleware::class]);
 $router->get('/kids/conteudo/{id}', [KidsAppController::class, 'show'], [KidsSessaoMiddleware::class]);
 $router->post('/kids/conteudo/{id}/concluir', [KidsAppController::class, 'concluir'], [KidsSessaoMiddleware::class]);
+$router->post('/kids/conteudo/{id}/concluir-desafio', [KidsAppController::class, 'concluirDesafio'], [KidsSessaoMiddleware::class]);
 $router->post('/kids/conteudo/{id}/quiz-ajuda', [KidsAppController::class, 'quizAjuda'], [KidsSessaoMiddleware::class]);
 $router->get('/kids/avatar', [KidsAppController::class, 'avatar'], [KidsSessaoMiddleware::class]);
 $router->post('/kids/avatar', [KidsAppController::class, 'avatarSalvar'], [KidsSessaoMiddleware::class]);

@@ -8,6 +8,7 @@ use Igrejas\Core\Controller;
 use Igrejas\Core\Csrf;
 use Igrejas\Core\Middleware\KidsSessaoMiddleware;
 use Igrejas\Core\Session;
+use Igrejas\Core\TenantResolver;
 use Igrejas\Models\KidsAvatar;
 use Igrejas\Models\KidsAvatarCompra;
 use Igrejas\Models\KidsConteudo;
@@ -24,6 +25,17 @@ final class KidsAppController extends Controller
 {
     /** Custo em moedas de cada pedido de ajuda no quiz. */
     private const CUSTO_AJUDA_QUIZ = 5;
+
+    private const UPLOAD_DIR_FOTOS_DESAFIO = 'uploads/kids-desafios';
+
+    private const TAMANHO_MAXIMO_FOTO = 8 * 1024 * 1024;
+
+    /** @var array<string, string> */
+    private const MIME_PARA_EXTENSAO_FOTO = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+    ];
 
     public function index(): void
     {
@@ -73,6 +85,7 @@ final class KidsAppController extends Controller
             'csrfToken' => Csrf::token(),
             'custoAjudaQuiz' => self::CUSTO_AJUDA_QUIZ,
             'pontosGanhos' => Session::flash('kids_app_pontos'),
+            'desafioErro' => Session::flash('kids_desafio_erro'),
         ], 'kids-app');
     }
 
@@ -104,6 +117,78 @@ final class KidsAppController extends Controller
         }
 
         $this->redirect("/kids/conteudo/{$id}");
+    }
+
+    /**
+     * Concluir um desafio exige uma foto de verdade da boa acao feita -
+     * diferente do concluir() padrao (que so registra), aqui o upload
+     * em si e a acao que libera XP/moedas (ver
+     * kids-interacoes.js [data-desafio-form] pro preview no navegador).
+     */
+    public function concluirDesafio(string $id): void
+    {
+        $conteudo = KidsConteudo::find((int) $id);
+        $crianca = $this->criancaLogada();
+
+        if ($conteudo === null || $conteudo->tipo !== 'desafio' || !Csrf::verify($this->request->input('_csrf_token'))) {
+            $this->redirect("/kids/conteudo/{$id}");
+        }
+
+        $foto = $this->request->file('foto');
+
+        if ($foto === null || $foto['error'] !== UPLOAD_ERR_OK) {
+            Session::flash('kids_desafio_erro', 'Escolha uma foto da boa ação pra enviar.');
+            $this->redirect("/kids/conteudo/{$id}");
+        }
+
+        if ($foto['size'] > self::TAMANHO_MAXIMO_FOTO) {
+            Session::flash('kids_desafio_erro', 'A foto deve ter no máximo 8MB.');
+            $this->redirect("/kids/conteudo/{$id}");
+        }
+
+        $mime = mime_content_type($foto['tmp_name']) ?: '';
+        $extensao = self::MIME_PARA_EXTENSAO_FOTO[$mime] ?? null;
+
+        if ($extensao === null) {
+            Session::flash('kids_desafio_erro', 'Formato de foto não suportado. Envie JPG, PNG ou WEBP.');
+            $this->redirect("/kids/conteudo/{$id}");
+        }
+
+        $destinoDir = $this->diretorioFotosDesafio();
+
+        if (!is_dir($destinoDir) && !mkdir($destinoDir, 0755, true) && !is_dir($destinoDir)) {
+            Session::flash('kids_desafio_erro', 'Não foi possível salvar a foto. Tente novamente.');
+            $this->redirect("/kids/conteudo/{$id}");
+        }
+
+        $nomeArquivo = bin2hex(random_bytes(16)) . '.' . $extensao;
+
+        if (!move_uploaded_file($foto['tmp_name'], $destinoDir . '/' . $nomeArquivo)) {
+            Session::flash('kids_desafio_erro', 'Não foi possível salvar a foto. Tente novamente.');
+            $this->redirect("/kids/conteudo/{$id}");
+        }
+
+        $caminhoRelativo = self::UPLOAD_DIR_FOTOS_DESAFIO . '/' . $this->tenantSlugOuCentral() . '/' . $nomeArquivo;
+        $ganhouAgora = $conteudo->registrarConclusaoPor($crianca->id, $caminhoRelativo);
+
+        if ($ganhouAgora) {
+            Session::flash('kids_app_pontos', [
+                'xp' => $conteudo->xpRecompensa,
+                'moedas' => $conteudo->moedasRecompensa,
+            ]);
+        }
+
+        $this->redirect("/kids/conteudo/{$id}");
+    }
+
+    private function tenantSlugOuCentral(): string
+    {
+        return TenantResolver::atual()?->slug ?? 'central';
+    }
+
+    private function diretorioFotosDesafio(): string
+    {
+        return dirname(__DIR__, 2) . '/public/' . self::UPLOAD_DIR_FOTOS_DESAFIO . '/' . $this->tenantSlugOuCentral();
     }
 
     /**

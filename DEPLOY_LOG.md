@@ -17,6 +17,52 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 171 - 2026-07-24
+
+**Igrejas Kids: exigir ação real da criança em TODO conteúdo pra concluir + foto do desafio**
+
+Pedido do usuário: "os desafios kids, permita tirar foto da boa ação e
+fazer upload para poder concluir a tarefa. em tudo que tem no kids,
+preciso que exija uma ação da criança no sistema para concluir e ganhar
+xp". Antes deste ajuste só quiz, jogos com fases, slideshow e estudo
+tinham gate de verdade - colorir, desenho, HQ, história/devocional/
+versículo ilustrado, plano de leitura, PDF e desafio liberavam o botão
+"Concluir" direto, sem exigir nenhuma interação real.
+
+- **Desafio**: novo fluxo de upload de foto da boa ação
+  (`KidsAppController::concluirDesafio`, rota
+  `POST /kids/conteudo/{id}/concluir-desafio`) - a criança tira/escolhe
+  uma foto (com preview instantâneo), e o próprio envio da foto (validada
+  como imagem JPG/PNG/WEBP, até 8MB, salva em
+  `uploads/kids-desafios/{tenant}/`) é a ação que libera XP/moedas via
+  `KidsConteudo::registrarConclusaoPor`, que agora também guarda
+  `foto_path` (nova coluna em `kids_conteudo_conclusoes`) como evidência.
+- **Colorir**: só libera o Concluir depois que a criança pinta (clica)
+  cada região pintável do desenho pelo menos uma vez.
+- **Desenho livre** (ex: "Desenhe a sua Oração"): exige um traço de
+  verdade no canvas (contagem mínima de movimento com o dedo/mouse
+  pressionado), não só um toque.
+- **HQ**: a criança precisa tocar em cada quadrinho pra "virar a página"
+  antes de poder concluir.
+- **Plano de leitura**: convertido de texto corrido pra um checklist real
+  (um checkbox por dia) - só libera com todos os dias marcados.
+- **História/devocional/versículo ilustrado**: novo widget de reação
+  (escolher um emoji de como o conteúdo fez a criança se sentir) antes de
+  concluir.
+- **PDF**: só libera depois de realmente abrir o arquivo.
+- **Vídeo/áudio**: preparado pra só liberar quando a mídia terminar de
+  tocar (evento `ended`) - proativo, já que hoje não há nenhum conteúdo
+  desses tipos no catálogo oficial.
+- Migração 066: nova coluna `kids_conteudo_conclusoes.foto_path` e
+  conversão dos 3 planos de leitura existentes em checklist.
+- Testado fim a fim via Playwright: colorir, plano de leitura, HQ,
+  história (reação), PDF e desafio (upload de foto real, com preview e
+  concessão de XP) - todos bloqueando o Concluir até a ação certa e
+  liberando depois. Reconfirmado que quiz, slide e jogo (memória)
+  continuam funcionando normalmente (sem regressão).
+
+---
+
 ## Ajuste 170 - 2026-07-24
 
 **Igrejas Kids: jogo da memória deixava concluir sem terminar de verdade**
