@@ -17,6 +17,35 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 170 - 2026-07-24
+
+**Igrejas Kids: jogo da memória deixava concluir sem terminar de verdade**
+
+Bug real no motor genérico do jogo da memória (`kids-jogo-memoria.js`,
+usado por Monte a Arca de Noé, Memória Bíblica e Memória: Milagres de
+Jesus): a trava de "não deixa clicar de novo numa carta já virada"
+checava só a classe `virada`, mas essa classe só é adicionada 150ms
+depois do clique (tempo da animação de virar). Clicando duas vezes bem
+rápido na mesma carta (comum numa criança impaciente batendo na tela),
+a segunda batida passava pela trava, a carta entrava duas vezes na
+comparação de par - e como é a mesma carta, ela "combinava com ela
+mesma" e contava como par encontrado sem a criança ter achado par
+nenhum. Repetindo isso dava pra terminar a fase (e o jogo inteiro) sem
+jogar de verdade.
+
+- Corrigido bloqueando também a classe `virando` (que é adicionada na
+  hora, sem atraso) na trava de clique - agora uma segunda batida na
+  mesma carta, por mais rápida que seja, não passa.
+- Testado simulando o exploit (dois cliques seguidos na mesma carta):
+  antes marcava como encontrada sozinha, agora não marca mais. Testado
+  de novo o fluxo legítimo completo (3 fases, pares de verdade) pra
+  garantir que continua funcionando normalmente.
+- Revisados os motores de trivia e caça-palavras em busca do mesmo tipo
+  de brecha (clique duplo/rápido registrando progresso indevido) - não
+  encontrado nenhum problema equivalente neles (o clique de resposta
+  certa já desabilita os botões na hora, e a seleção do caça-palavras é
+  sempre um gesto síncrono).
+
 ## Ajuste 169 - 2026-07-24
 
 **Igrejas Kids: correções de qualidade encontradas depois do Ajuste 168**

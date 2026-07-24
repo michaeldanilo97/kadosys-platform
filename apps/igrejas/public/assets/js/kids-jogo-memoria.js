@@ -68,7 +68,7 @@
                 carta.textContent = '❓';
 
                 carta.addEventListener('click', function () {
-                    if (travado || carta.classList.contains('virada') || carta.classList.contains('encontrada')) {
+                    if (travado || carta.classList.contains('virando') || carta.classList.contains('virada') || carta.classList.contains('encontrada')) {
                         return;
                     }
 
