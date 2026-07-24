@@ -659,6 +659,10 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
   animation: kids-premio-entrada 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
+.kids-premio-banner[hidden] {
+  display: none;
+}
+
 .kids-premio-banner .emoji {
   font-size: 2.2rem;
   display: inline-block;
@@ -2076,4 +2080,221 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
 .kids-ranking-linha .xp {
   font-weight: 800;
   color: var(--kids-roxo);
+}
+
+/* ---- Duelo (jogar com amigo) --------------------------------------- */
+
+.kids-duelo-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-bottom: 1.6rem;
+}
+
+.kids-duelo-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  background: #FFFFFF;
+  border-radius: 18px;
+  padding: 0.9rem 1.1rem;
+  box-shadow: 0 5px 0 rgba(58, 46, 92, 0.08);
+}
+
+.kids-duelo-card-link {
+  text-decoration: none;
+  transition: transform 0.15s ease;
+}
+
+.kids-duelo-card-link:hover {
+  transform: translateY(-2px);
+}
+
+.kids-duelo-texto {
+  flex: 1;
+  color: var(--kids-texto);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.kids-duelo-acoes {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.kids-duelo-acoes form {
+  margin: 0;
+}
+
+.kids-duelo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: #FFFFFF;
+  border-radius: 18px;
+  padding: 1.1rem 1.2rem;
+  box-shadow: 0 5px 0 rgba(58, 46, 92, 0.08);
+  margin-bottom: 1.6rem;
+  max-width: 26rem;
+}
+
+.kids-duelo-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-weight: 700;
+  color: var(--kids-texto);
+  font-size: 0.9rem;
+}
+
+.kids-duelo-label select {
+  border: 2px solid rgba(155, 93, 229, 0.25);
+  border-radius: 12px;
+  padding: 0.6rem 0.7rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--kids-texto);
+  background: #FBF9FF;
+}
+
+.kids-duelo-placar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #FFFFFF;
+  border-radius: 18px;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 5px 0 rgba(58, 46, 92, 0.08);
+  margin-bottom: 1.2rem;
+}
+
+.kids-duelo-jogador {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.kids-duelo-jogador .nome {
+  font-weight: 800;
+  color: var(--kids-texto);
+  font-size: 0.9rem;
+}
+
+.kids-duelo-jogador .contagem {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--kids-texto-suave);
+  align-self: flex-end;
+}
+
+.kids-duelo-vs {
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--kids-laranja);
+  flex-shrink: 0;
+}
+
+.kids-duelo-barra {
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(155, 93, 229, 0.15);
+  overflow: hidden;
+}
+
+.kids-duelo-barra-preenchida {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--kids-roxo);
+  transition: width 0.4s ease;
+}
+
+.kids-duelo-barra-preenchida.oponente {
+  background: var(--kids-laranja);
+}
+
+.kids-duelo-reacoes {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1.2rem;
+}
+
+.kids-duelo-reacao-btn {
+  border: none;
+  background: #FFFFFF;
+  box-shadow: 0 4px 0 rgba(58, 46, 92, 0.08);
+  border-radius: 999px;
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.kids-duelo-reacao-btn:hover {
+  transform: translateY(-2px) scale(1.08);
+}
+
+.kids-duelo-reacao-btn:active {
+  transform: translateY(1px) scale(0.96);
+}
+
+.kids-duelo-flutuante {
+  position: fixed;
+  left: 50%;
+  bottom: 18%;
+  font-size: 3rem;
+  transform: translate(-50%, 0);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 999;
+}
+
+.kids-duelo-flutuante.anima {
+  animation: kids-duelo-flutuar 1.4s ease-out forwards;
+}
+
+@keyframes kids-duelo-flutuar {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 0) scale(0.6);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -20px) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -120px) scale(1);
+  }
+}
+
+.kids-duelo-nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.3rem;
+  height: 1.3rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--kids-vermelho);
+  color: #FFFFFF;
+  font-size: 0.7rem;
+  font-weight: 800;
+  margin-left: 0.35rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kids-duelo-flutuante.anima {
+    animation: none;
+    opacity: 1;
+  }
+
+  .kids-duelo-card-link:hover,
+  .kids-duelo-reacao-btn:hover {
+    transform: none;
+  }
 }

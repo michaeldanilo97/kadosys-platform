@@ -36,6 +36,9 @@ $primeiroNome = explode(' ', $crianca->nome)[0];
             </span>
         </div>
         <div style="display: flex; gap: 0.6rem;">
+            <a href="<?= $basePath ?>/kids/duelos" class="kids-app-sair" style="background: linear-gradient(135deg, var(--kids-azul), var(--kids-roxo)); color: #FFFFFF;">
+                <i class="bi bi-controller"></i> Jogar com amigo<span class="kids-duelo-nav-badge" data-duelo-badge hidden>0</span>
+            </a>
             <a href="<?= $basePath ?>/kids/ranking" class="kids-app-sair" style="background: linear-gradient(135deg, var(--kids-amarelo), var(--kids-laranja));">
                 <i class="bi bi-trophy-fill"></i> Ranking
             </a>
@@ -122,3 +125,31 @@ $primeiroNome = explode(' ', $crianca->nome)[0];
         </div>
     <?php endif; ?>
 </div>
+
+<script>
+    (function () {
+        var basePath = <?= json_encode($basePath, JSON_UNESCAPED_SLASHES) ?>;
+        var badge = document.querySelector('[data-duelo-badge]');
+
+        if (!badge) {
+            return;
+        }
+
+        function consultarPendentes() {
+            fetch(basePath + '/kids/duelos/pendentes')
+                .then(function (resposta) { return resposta.json(); })
+                .then(function (dados) {
+                    if (dados && dados.total > 0) {
+                        badge.textContent = String(dados.total);
+                        badge.hidden = false;
+                    } else {
+                        badge.hidden = true;
+                    }
+                })
+                .catch(function () {});
+        }
+
+        consultarPendentes();
+        setInterval(consultarPendentes, 8000);
+    })();
+</script>
