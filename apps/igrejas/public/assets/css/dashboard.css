@@ -301,6 +301,64 @@ body.dashboard-body[data-theme="light"] {
   color: var(--text-dim);
 }
 
+/* Modulo Kids: visual lúdico e chamativo no menu (fundo em degradê
+   arco-íris suave, ícone balançando, balãozinho flutuante) pra chamar
+   atenção da equipe entre os módulos administrativos mais sóbrios. */
+.dash-nav-link-kids {
+  position: relative;
+  background: linear-gradient(90deg, rgba(255, 107, 165, 0.14), rgba(255, 217, 61, 0.14), rgba(76, 201, 240, 0.14));
+  border-color: rgba(255, 107, 165, 0.3);
+}
+
+.dash-nav-link-kids:hover {
+  background: linear-gradient(90deg, rgba(255, 107, 165, 0.24), rgba(255, 217, 61, 0.24), rgba(76, 201, 240, 0.24));
+}
+
+.dash-nav-link-kids.active {
+  background: linear-gradient(90deg, rgba(255, 107, 165, 0.32), rgba(255, 217, 61, 0.26), rgba(76, 201, 240, 0.32));
+  border-color: rgba(255, 107, 165, 0.5);
+  box-shadow: 0 0 16px rgba(255, 107, 165, 0.2);
+}
+
+.dash-nav-link-kids i {
+  color: #FF6BA5;
+  animation: dash-nav-kids-bounce 1.8s ease-in-out infinite;
+}
+
+[data-theme="light"] .dash-nav-link-kids i {
+  color: #E0447E;
+}
+
+.dash-nav-kids-confete {
+  margin-left: auto;
+  font-size: 0.95rem;
+  line-height: 1;
+  animation: dash-nav-kids-float 2.4s ease-in-out infinite;
+}
+
+@keyframes dash-nav-kids-bounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-2px) rotate(-8deg); }
+  50% { transform: translateY(0) rotate(0deg); }
+  75% { transform: translateY(-2px) rotate(8deg); }
+}
+
+@keyframes dash-nav-kids-float {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-3px) rotate(4deg); }
+}
+
+.dash-sidebar.is-collapsed .dash-nav-kids-confete {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-nav-link-kids i,
+  .dash-nav-kids-confete {
+    animation: none;
+  }
+}
+
 .dash-sidebar-footer {
   padding: 1rem 1.1rem 1.3rem;
   border-top: 1px solid var(--glass-border);
