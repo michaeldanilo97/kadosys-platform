@@ -15,6 +15,7 @@ use Igrejas\Controllers\DoacaoController;
 use Igrejas\Controllers\EquipeController;
 use Igrejas\Controllers\FaturaController;
 use Igrejas\Controllers\FinanceiroController;
+use Igrejas\Controllers\GaleriaController;
 use Igrejas\Controllers\GrupoController;
 use Igrejas\Controllers\KidsAppController;
 use Igrejas\Controllers\KidsBibliaController;
@@ -391,6 +392,13 @@ $router->post('/dashboard/comunicacao/{id}/excluir', [ComunicacaoController::cla
 // exige o plano Premium (topo, ver Igrejas\Models\Plano).
 $router->get('/dashboard/relatorios', [RelatorioController::class, 'index'], [AuthMiddleware::class, PlanoMiddleware::class]);
 
+// Modulo Galeria de Memorias. Mesmo motivo: precisa vir antes do
+// catch-all. Sem PlanoMiddleware: liberado em todos os planos, como o
+// modulo Playbacks.
+$router->get('/dashboard/galeria', [GaleriaController::class, 'index'], [AuthMiddleware::class]);
+$router->post('/dashboard/galeria', [GaleriaController::class, 'store'], [AuthMiddleware::class]);
+$router->post('/dashboard/galeria/{id}/excluir', [GaleriaController::class, 'destroy'], [AuthMiddleware::class]);
+
 // Catch-all dos demais slugs do menu que ainda nao tem controller
 // proprio. PlanoMiddleware aqui cobre todos eles de uma vez so, com
 // base no slug da propria URI.
@@ -407,6 +415,10 @@ $router->get('/telao/{token}', [TelaoController::class, 'show']);
 // com a congregacao (grupo do WhatsApp, QR code no templo, etc.). Mostra
 // so os avisos de Comunicacao publicados com publico "todos".
 $router->get('/avisos', [AvisoPublicoController::class, 'index']);
+
+// Mural publico da Galeria de Memorias (sem login) - mesmo espirito do
+// quadro de avisos acima.
+$router->get('/galeria', [GaleriaController::class, 'publica']);
 
 // Doacao publica via Pix estatico (chave da propria igreja, sem login)
 // - link pra compartilhar com a congregacao, mesmo padrao do quadro de

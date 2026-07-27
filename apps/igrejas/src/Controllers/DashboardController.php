@@ -103,6 +103,11 @@ final class DashboardController extends Controller
                 'icon' => 'bi-megaphone',
                 'description' => 'Avisos, mensagens e comunicados para membros e liderança.',
             ],
+            'galeria' => [
+                'title' => 'Galeria de Memórias',
+                'icon' => 'bi-images',
+                'description' => 'Fotos dos momentos marcantes da igreja, com mural público para compartilhar com a congregação.',
+            ],
             'relatorios' => [
                 'title' => 'Relatórios',
                 'icon' => 'bi-bar-chart-line',

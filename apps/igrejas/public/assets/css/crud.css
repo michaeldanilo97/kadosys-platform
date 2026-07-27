@@ -1069,6 +1069,34 @@ textarea.crud-field-mono {
   box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
 }
 
+/* ---- Galeria de Memorias (mural de fotos) ------------------------------------------ */
+
+.galeria-memoria-card {
+  aspect-ratio: 4 / 3;
+}
+
+.galeria-memoria-legenda {
+  position: absolute;
+  inset: 0 0 auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.5rem 0.6rem;
+  background: linear-gradient(to bottom, rgba(5, 8, 20, 0.8), transparent);
+  color: var(--white);
+  font-size: 0.8rem;
+  pointer-events: none;
+}
+
+.galeria-memoria-legenda strong {
+  font-size: 0.85rem;
+}
+
+.galeria-memoria-legenda span {
+  opacity: 0.8;
+  font-size: 0.72rem;
+}
+
 /* ---- Preview de logo (Configuracoes) ---------------------------------------------- */
 
 .logo-preview {
