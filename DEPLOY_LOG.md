@@ -17,6 +17,25 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 187 - 2026-07-27
+
+**Kids: Biblioteca de Oração (novo tipo de conteúdo)**
+
+- Novo item do backlog do modo Kids: uma "Biblioteca de Oração" com 8
+  orações prontas, curtas e simples pro dia a dia da criança - Manhã,
+  Antes de Dormir, Antes de Comer, Gratidão, Família, Quando Tenho Medo
+  (baseada em Josué 1:9), Escola e Perdão.
+- Implementado como um novo tipo de conteúdo (`oracao`, emoji 🕊️) no
+  ENUM de `kids_conteudos`, em vez de uma feature separada - assim
+  reaproveita de graça 100% da infraestrutura já existente: listagem
+  por tipo na Biblioteca, tela de conteúdo, leitura em voz alta
+  ("Ouvir"), XP/moedas e progresso.
+- Orações entram no mesmo gate de conclusão de história/devocional/
+  versículo ilustrado: a criança só libera o botão "Concluir" depois de
+  escolher como a oração fez ela se sentir (🙂🙏💪❤️🤔).
+- Sem custo de IA/API - conteúdo 100% pré-escrito, igual a todo o resto
+  do modo Kids.
+
 ## Ajuste 186 - 2026-07-27
 
 **Kids: mais conteúdos reforçando os tipos com menos itens**

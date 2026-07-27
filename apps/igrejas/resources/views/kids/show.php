@@ -15,7 +15,7 @@ $basePath = $config['base_path'] ?? '';
 $tipoInfo = $conteudo->tipoInfo();
 $isQuiz = $conteudo->tipo === 'quiz' && $conteudo->quizPerguntas !== null;
 $isDesafio = $conteudo->tipo === 'desafio';
-$isReacao = in_array($conteudo->tipo, ['historia', 'devocional', 'versiculo_ilustrado'], true);
+$isReacao = in_array($conteudo->tipo, ['historia', 'devocional', 'versiculo_ilustrado', 'oracao'], true);
 $temMidiaParaTerminar = in_array($conteudo->tipo, ['video', 'audio'], true)
     && ($conteudo->midiaPath !== null || $conteudo->midiaUrl !== null);
 $temArquivoParaAbrir = $conteudo->tipo === 'pdf' && $conteudo->midiaPath !== null;
@@ -25,8 +25,8 @@ $temArquivoParaAbrir = $conteudo->tipo === 'pdf' && $conteudo->midiaPath !== nul
 // libera ao chegar no ultimo slide - ver kids-interacoes.js) tem o mesmo
 // mecanismo de progresso do quiz, embutido no proprio HTML confiavel -
 // reconhecido pelos data-attributes do widget, sem precisar de uma
-// coluna nova so pra isso. Historia/devocional/versiculo ilustrado (via
-// reacao), HQ (tocar em cada quadrinho), PDF (abrir o arquivo) e
+// coluna nova so pra isso. Historia/devocional/versiculo ilustrado/oracao
+// (via reacao), HQ (tocar em cada quadrinho), PDF (abrir o arquivo) e
 // video/audio (terminar de assistir/ouvir) sao gates de template, sem
 // marcador no proprio conteudo. Desafio tem fluxo proprio (foto).
 $temGateProgresso = $isQuiz
