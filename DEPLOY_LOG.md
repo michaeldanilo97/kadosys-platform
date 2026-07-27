@@ -17,6 +17,36 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 185 - 2026-07-27
+
+**Kids: mais jogos com mecânicas novas (Classifique + Sequência Mágica)**
+
+- Pedido do usuário: "pode por mais jogos, com funcionalidades
+  diferentes, mais animações e etc". Até aqui os 20 jogos do catálogo
+  reaproveitavam só 3 motores (memória, trivia, caça-palavras) - agora
+  são 5, com 2 mecânicas totalmente novas:
+  - **Classifique** (`kids-jogo-arrastar.js`): a criança toca num item
+    e depois na cesta certa - equivalente a arrastar e soltar, mas com
+    toque simples (mais confiável em celular/tablet do que
+    drag-and-drop de verdade). 2 conteúdos novos: "Frutos do Espírito
+    ou Obras da Carne?" e "Antigo Testamento ou Novo Testamento?".
+  - **Sequência Mágica** (`kids-jogo-sequencia.js`, estilo Genius/
+    Simon): o jogo sorteia e mostra uma sequência de símbolos piscando
+    (com uma nota musical diferente por símbolo), e a criança repete
+    tocando na mesma ordem - errar não trava, a demonstração toca de
+    novo automaticamente. 2 conteúdos novos: "Sequência Mágica:
+    Símbolos da Fé" e "Sequência Mágica: Milagres de Jesus".
+  - Ambos os motores reaproveitam a infraestrutura já existente
+    (`window.KidsProgresso.bannerFase`/`liberarConclusao`, sons de
+    acerto/erro já mapeados via `kids-interacoes.js`) - nenhuma
+    mudança precisou ser feita no hook universal de som.
+- Nova animação genérica `kids-shake` (chacoalhar) pra feedback de erro
+  nos dois jogos novos, e novo efeito sonoro `KidsSons.notaSequencia()`
+  (uma nota musical por posição da sequência, pentatônica).
+- Migração 077 (espelhada em `install.sql`) com os 4 conteúdos novos.
+- `kids/show.php`: gate de progresso (libera o "Concluir" só ao
+  terminar) e mensagem de aviso reconhecendo os 2 novos tipos de jogo.
+
 ## Ajuste 184 - 2026-07-27
 
 **Kids: leitura em voz alta do conteúdo (pra criança que ainda não sabe ler)**
