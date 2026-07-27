@@ -59,6 +59,8 @@ if (!empty($subiuNivel ?? null)) {
 <script src="<?= $basePath ?>/assets/js/kids-jogo-memoria.js?v=<?= View::assetVersion('assets/js/kids-jogo-memoria.js') ?>"></script>
 <script src="<?= $basePath ?>/assets/js/kids-jogo-trivia.js?v=<?= View::assetVersion('assets/js/kids-jogo-trivia.js') ?>"></script>
 <script src="<?= $basePath ?>/assets/js/kids-jogo-cacapalavras.js?v=<?= View::assetVersion('assets/js/kids-jogo-cacapalavras.js') ?>"></script>
+<script src="<?= $basePath ?>/assets/js/kids-jogo-arrastar.js?v=<?= View::assetVersion('assets/js/kids-jogo-arrastar.js') ?>"></script>
+<script src="<?= $basePath ?>/assets/js/kids-jogo-sequencia.js?v=<?= View::assetVersion('assets/js/kids-jogo-sequencia.js') ?>"></script>
 <script src="<?= $basePath ?>/assets/js/kids-mascote.js?v=<?= View::assetVersion('assets/js/kids-mascote.js') ?>"></script>
 </body>
 </html>

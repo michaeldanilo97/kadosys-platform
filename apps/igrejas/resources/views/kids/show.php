@@ -41,6 +41,8 @@ $temGateProgresso = $isQuiz
             || str_contains($conteudo->textoConteudo, 'data-jogo-memoria')
             || str_contains($conteudo->textoConteudo, 'data-jogo-trivia')
             || str_contains($conteudo->textoConteudo, 'data-cacapalavras')
+            || str_contains($conteudo->textoConteudo, 'data-jogo-arrastar')
+            || str_contains($conteudo->textoConteudo, 'data-jogo-sequencia')
             || str_contains($conteudo->textoConteudo, 'data-slides')
             || str_contains($conteudo->textoConteudo, 'data-colorir')
             || str_contains($conteudo->textoConteudo, 'data-desenho')
@@ -344,12 +346,16 @@ $temGateProgresso = $isQuiz
                     $ehColorir = $conteudo->textoConteudo !== null && str_contains($conteudo->textoConteudo, 'data-colorir');
                     $ehDesenho = $conteudo->textoConteudo !== null && str_contains($conteudo->textoConteudo, 'data-desenho');
                     $ehPlano = $conteudo->textoConteudo !== null && str_contains($conteudo->textoConteudo, 'data-plano-leitura');
+                    $ehArrastar = $conteudo->textoConteudo !== null && str_contains($conteudo->textoConteudo, 'data-jogo-arrastar');
+                    $ehSequencia = $conteudo->textoConteudo !== null && str_contains($conteudo->textoConteudo, 'data-jogo-sequencia');
 
                     $avisoPendente = match (true) {
                         $ehSlideshow => 'Passe por todos os slides pra liberar o botão de concluir. Use as setinhas ‹ › pra navegar! ✨',
                         $ehColorir => 'Pinte pelo menos um pouquinho de cada parte do desenho pra liberar o botão de concluir! 🎨',
                         $ehDesenho => 'Desenhe alguma coisa no quadro pra liberar o botão de concluir! ✏️',
                         $ehPlano => 'Marque todos os dias depois de ler cada versículo pra liberar o botão de concluir! 🗓️',
+                        $ehArrastar => 'Toque em cada item e depois na cesta certa pra liberar o botão de concluir! 🧺',
+                        $ehSequencia => 'Observe a sequência e repita tocando na mesma ordem pra liberar o botão de concluir! 🔮',
                         $conteudo->tipo === 'hq' => 'Toque em cada quadrinho da história pra liberar o botão de concluir! 👆',
                         $isReacao => 'Escolha como você se sentiu pra liberar o botão de concluir! 🙂',
                         $temArquivoParaAbrir => 'Abra o arquivo pra liberar o botão de concluir! 📄',

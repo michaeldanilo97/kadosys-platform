@@ -127,6 +127,11 @@
             ]);
         },
 
+        notaSequencia: function (indice) {
+            var notas = [523.25, 587.33, 659.25, 783.99, 880.0, 987.77];
+            tocarNotas([{ freq: notas[indice % notas.length], duracao: 0.22, tipo: 'sine', volume: 0.09 }]);
+        },
+
         ouvir: function () {
             tocarNotas([
                 { freq: 440, duracao: 0.09, atraso: 0, tipo: 'sine', volume: 0.07 },
