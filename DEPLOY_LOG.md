@@ -17,6 +17,29 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 184 - 2026-07-27
+
+**Kids: leitura em voz alta do conteúdo (pra criança que ainda não sabe ler)**
+
+- Novo botão "🔊 Ouvir" em toda página de conteúdo do app Kids
+  (`/kids/conteudo/{id}`), acima do texto - lê em voz alta o título, a
+  descrição e o texto principal do conteúdo, usando o sintetizador de
+  voz nativo do navegador (Web Speech API), sem custo e sem depender de
+  nenhum serviço externo. Reaproveita a mesma heurística de escolha de
+  voz em português já usada no telão de projeção (`telao.js`), num
+  script novo e dedicado, `public/assets/js/kids-leitura.js`.
+- O botão funciona como play/parar: um clique começa a leitura (o
+  ícone/texto muda pra "Parar" com uma pulsação suave), outro clique
+  interrompe.
+- Enquanto está lendo, o mascote (leão/ovelha/pomba) "fala" junto -
+  reaproveita a mesma animação que ele já usa ao mostrar uma frase - e
+  toca um novo efeito sonoro suave (`KidsSons.ouvir()`), adicionado ao
+  `kids-sons.js` só pra esse gatilho.
+- Em navegadores sem suporte a síntese de voz (raro), o botão fica
+  escondido em vez de aparecer sem efeito.
+- `resources/views/layouts/kids-app.php` passa a carregar o novo script
+  globalmente, junto dos demais scripts do modo criança.
+
 ## Ajuste 183 - 2026-07-27
 
 **Página inicial da Kadosys: adiciona Academias e Food, remove o card do CRM**

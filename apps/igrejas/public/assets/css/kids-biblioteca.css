@@ -618,6 +618,50 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
   }
 }
 
+.kids-btn-ouvir {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 999px;
+  padding: 0.65rem 1.3rem;
+  margin: 0.6rem 0 1rem;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #FFFFFF;
+  background: linear-gradient(135deg, var(--kids-roxo), var(--kids-azul));
+  cursor: pointer;
+  box-shadow: 0 4px 0 #6B3FB8;
+  transition: transform 0.15s ease;
+}
+
+.kids-btn-ouvir:hover {
+  transform: translateY(-2px);
+}
+
+.kids-btn-ouvir.lendo {
+  background: linear-gradient(135deg, var(--kids-rosa), var(--kids-vermelho));
+  box-shadow: 0 4px 0 #C24B7C;
+  animation: kids-ouvir-pulso 1s ease-in-out infinite;
+}
+
+@keyframes kids-ouvir-pulso {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kids-btn-ouvir,
+  .kids-btn-ouvir.lendo {
+    animation: none;
+    transition: none;
+  }
+}
+
 .kids-btn-concluir {
   display: inline-flex;
   align-items: center;

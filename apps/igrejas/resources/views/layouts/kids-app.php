@@ -55,6 +55,7 @@ if (!empty($subiuNivel ?? null)) {
 <?php endif; ?>
 <script src="<?= $basePath ?>/assets/js/kids-sons.js?v=<?= View::assetVersion('assets/js/kids-sons.js') ?>"></script>
 <script src="<?= $basePath ?>/assets/js/kids-interacoes.js?v=<?= View::assetVersion('assets/js/kids-interacoes.js') ?>"></script>
+<script src="<?= $basePath ?>/assets/js/kids-leitura.js?v=<?= View::assetVersion('assets/js/kids-leitura.js') ?>"></script>
 <script src="<?= $basePath ?>/assets/js/kids-jogo-memoria.js?v=<?= View::assetVersion('assets/js/kids-jogo-memoria.js') ?>"></script>
 <script src="<?= $basePath ?>/assets/js/kids-jogo-trivia.js?v=<?= View::assetVersion('assets/js/kids-jogo-trivia.js') ?>"></script>
 <script src="<?= $basePath ?>/assets/js/kids-jogo-cacapalavras.js?v=<?= View::assetVersion('assets/js/kids-jogo-cacapalavras.js') ?>"></script>
