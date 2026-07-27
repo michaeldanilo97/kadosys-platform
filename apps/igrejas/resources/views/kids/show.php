@@ -89,10 +89,14 @@ $temGateProgresso = $isQuiz
             <?php endif; ?>
         </div>
 
-        <h1><?= htmlspecialchars($conteudo->titulo, ENT_QUOTES, 'UTF-8') ?></h1>
+        <h1 data-kids-ouvir-titulo><?= htmlspecialchars($conteudo->titulo, ENT_QUOTES, 'UTF-8') ?></h1>
         <?php if ($conteudo->descricao): ?>
-            <p style="color: var(--kids-texto-suave); font-weight: 600;"><?= htmlspecialchars($conteudo->descricao, ENT_QUOTES, 'UTF-8') ?></p>
+            <p data-kids-ouvir-descricao style="color: var(--kids-texto-suave); font-weight: 600;"><?= htmlspecialchars($conteudo->descricao, ENT_QUOTES, 'UTF-8') ?></p>
         <?php endif; ?>
+
+        <button type="button" class="kids-btn-ouvir" data-kids-ouvir="#kids-texto-conteudo">
+            <i class="bi bi-volume-up-fill"></i> Ouvir
+        </button>
 
         <?php if ($conteudo->midiaPath !== null): ?>
             <?php if ($conteudo->tipo === 'audio'): ?>
@@ -120,13 +124,15 @@ $temGateProgresso = $isQuiz
             <p class="form-field-hint" style="text-align:center;">Toque em cada quadrinho pra virar a página! 👆</p>
         <?php endif; ?>
 
-        <?php if ($conteudo->textoConteudo): ?>
-            <?php if ($conteudo->origem === 'kadosys' && in_array($conteudo->tipo, ['colorir', 'jogo', 'slide', 'hq', 'atividade', 'estudo', 'plano_leitura'], true)): ?>
-                <?= $conteudo->textoConteudo ?>
-            <?php else: ?>
-                <div class="texto"><?= htmlspecialchars($conteudo->textoConteudo, ENT_QUOTES, 'UTF-8') ?></div>
+        <div id="kids-texto-conteudo">
+            <?php if ($conteudo->textoConteudo): ?>
+                <?php if ($conteudo->origem === 'kadosys' && in_array($conteudo->tipo, ['colorir', 'jogo', 'slide', 'hq', 'atividade', 'estudo', 'plano_leitura'], true)): ?>
+                    <?= $conteudo->textoConteudo ?>
+                <?php else: ?>
+                    <div class="texto"><?= htmlspecialchars($conteudo->textoConteudo, ENT_QUOTES, 'UTF-8') ?></div>
+                <?php endif; ?>
             <?php endif; ?>
-        <?php endif; ?>
+        </div>
 
         <?php if ($isReacao): ?>
             <div class="kids-reacao" data-reacao>

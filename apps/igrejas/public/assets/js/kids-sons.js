@@ -127,6 +127,13 @@
             ]);
         },
 
+        ouvir: function () {
+            tocarNotas([
+                { freq: 440, duracao: 0.09, atraso: 0, tipo: 'sine', volume: 0.07 },
+                { freq: 587.33, duracao: 0.14, atraso: 0.08, tipo: 'sine', volume: 0.07 },
+            ]);
+        },
+
         vitoria: function () {
             tocarNotas([
                 { freq: 523.25, duracao: 0.12, atraso: 0, tipo: 'sine' },
