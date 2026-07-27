@@ -44,6 +44,7 @@ final class KidsConteudo
         'jogo' => ['label' => 'Jogos', 'emoji' => '🎮'],
         'desafio' => ['label' => 'Desafios', 'emoji' => '🏆'],
         'versiculo_ilustrado' => ['label' => 'Versículos ilustrados', 'emoji' => '⭐'],
+        'oracao' => ['label' => 'Orações', 'emoji' => '🕊️'],
     ];
 
     public function __construct(
