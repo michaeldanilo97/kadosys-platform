@@ -17,6 +17,22 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 183 - 2026-07-27
+
+**Página inicial da Kadosys: adiciona Academias e Food, remove o card do CRM**
+
+- `index.php` (landing pública da Kadosys, raiz do repositório): a
+  seção "Nossos Sistemas", o modal de acesso rápido e o rodapé listavam
+  só Igrejas e Barbearias como "Disponível" - Academias e Food, apesar
+  de já estarem 100% construídos e em produção (billing, dashboard,
+  todos os módulos), nunca tinham sido adicionados na home pública.
+  Adicionados os dois como "Disponível", com link direto pro respectivo
+  subdomínio (`academias.kadosys.com.br` e `food.kadosys.com.br`) e
+  destaques reais de cada sistema.
+- Removido por completo o card "Kadosys CRM" (estava como "Em breve",
+  sem sistema correspondente construído) da grade de sistemas, do
+  modal de acesso rápido e do rodapé.
+
 ## Ajuste 182 - 2026-07-24
 
 **Kids: Mapa Bíblico (mapa ilustrado e clicável com os lugares da Bíblia)**

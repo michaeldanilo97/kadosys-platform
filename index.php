@@ -183,8 +183,48 @@
                             <a href="https://barbearias.kadosys.com.br" class="btn btn-link text-primary p-0 text-decoration-none fw-semibold mt-3">Acessar <i class="fas fa-arrow-right ms-2"></i></a>
                         </div>
                     </div>
-                    <!-- Sistema 3: Creches (em desenvolvimento) -->
+                    <!-- Sistema: Academias (disponivel) -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="150">
+                        <div class="glass-card h-100 p-4 card-hover">
+                            <div class="d-flex justify-content-between align-items-start mb-4">
+                                <div class="icon-box">
+                                    <i class="fas fa-dumbbell fs-2 text-primary"></i>
+                                </div>
+                                <span class="system-status status-live"><i class="fas fa-circle"></i> Disponível</span>
+                            </div>
+                            <h3 class="h4 fw-bold mb-2">Kadosys<sup class="brand-tm">TM</sup> Academias</h3>
+                            <p class="text-gray-400 mb-3">Gestão completa para academias: alunos, treinos e evolução física.</p>
+                            <ul class="system-preview">
+                                <li><i class="fas fa-check"></i> Check-in por QR Code e gamificação</li>
+                                <li><i class="fas fa-check"></i> Ficha de treino e evolução de carga</li>
+                                <li><i class="fas fa-check"></i> Avaliação física com gráfico de evolução</li>
+                                <li><i class="fas fa-check"></i> Matrículas, planos e financeiro</li>
+                            </ul>
+                            <a href="https://academias.kadosys.com.br" class="btn btn-link text-primary p-0 text-decoration-none fw-semibold mt-3">Acessar <i class="fas fa-arrow-right ms-2"></i></a>
+                        </div>
+                    </div>
+                    <!-- Sistema: Food (disponivel) -->
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                        <div class="glass-card h-100 p-4 card-hover">
+                            <div class="d-flex justify-content-between align-items-start mb-4">
+                                <div class="icon-box">
+                                    <i class="fas fa-utensils fs-2 text-primary"></i>
+                                </div>
+                                <span class="system-status status-live"><i class="fas fa-circle"></i> Disponível</span>
+                            </div>
+                            <h3 class="h4 fw-bold mb-2">Kadosys<sup class="brand-tm">TM</sup> Food</h3>
+                            <p class="text-gray-400 mb-3">Gestão para confeitarias, restaurantes e delivery, da ficha técnica ao PDV.</p>
+                            <ul class="system-preview">
+                                <li><i class="fas fa-check"></i> Ficha técnica com custeio automático</li>
+                                <li><i class="fas fa-check"></i> Estoque, compras e produção em tempo real</li>
+                                <li><i class="fas fa-check"></i> PDV com Pix, cartão e múltiplas formas</li>
+                                <li><i class="fas fa-check"></i> Financeiro completo e DRE</li>
+                            </ul>
+                            <a href="https://food.kadosys.com.br" class="btn btn-link text-primary p-0 text-decoration-none fw-semibold mt-3">Acessar <i class="fas fa-arrow-right ms-2"></i></a>
+                        </div>
+                    </div>
+                    <!-- Sistema: Creches (em desenvolvimento) -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="250">
                         <div class="glass-card h-100 p-4 card-hover">
                             <div class="d-flex justify-content-between align-items-start mb-4">
                                 <div class="icon-box">
@@ -203,7 +243,7 @@
                             <span class="system-cta-soon mt-3">Em desenvolvimento <i class="fas fa-clock ms-2"></i></span>
                         </div>
                     </div>
-                    <!-- Sistema 4: Condominios (em desenvolvimento) -->
+                    <!-- Sistema: Condominios (em desenvolvimento) -->
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
                         <div class="glass-card h-100 p-4 card-hover">
                             <div class="d-flex justify-content-between align-items-start mb-4">
@@ -223,8 +263,8 @@
                             <span class="system-cta-soon mt-3">Em desenvolvimento <i class="fas fa-clock ms-2"></i></span>
                         </div>
                     </div>
-                    <!-- Sistema 5: Sites (em desenvolvimento) -->
-                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                    <!-- Sistema: Sites (em desenvolvimento) -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="350">
                         <div class="glass-card h-100 p-4 card-hover">
                             <div class="d-flex justify-content-between align-items-start mb-4">
                                 <div class="icon-box">
@@ -241,20 +281,6 @@
                                 <li><i class="fas fa-check"></i> Publicação em poucos cliques</li>
                             </ul>
                             <span class="system-cta-soon mt-3">Em desenvolvimento <i class="fas fa-clock ms-2"></i></span>
-                        </div>
-                    </div>
-                    <!-- Sistema 6: CRM (em breve) -->
-                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
-                        <div class="glass-card h-100 p-4 card-hover">
-                            <div class="d-flex justify-content-between align-items-start mb-4">
-                                <div class="icon-box">
-                                    <i class="fas fa-users-cog fs-2 text-primary"></i>
-                                </div>
-                                <span class="system-status status-soon"><i class="fas fa-circle"></i> Em breve</span>
-                            </div>
-                            <h3 class="h4 fw-bold mb-2">Kadosys<sup class="brand-tm">TM</sup> CRM</h3>
-                            <p class="text-gray-400 mb-3">Controle comercial avançado e relacionamento inteligente com clientes.</p>
-                            <span class="system-cta-soon mt-3">Em breve <i class="fas fa-clock ms-2"></i></span>
                         </div>
                     </div>
                 </div>
@@ -499,6 +525,20 @@
                             </div>
                             <small class="text-green fw-semibold">Acessar</small>
                         </a>
+                        <a href="https://academias.kadosys.com.br" class="list-group-item list-group-item-action bg-transparent text-white border-secondary border-opacity-25 py-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-dumbbell text-primary me-3"></i>
+                                <span>Kadosys<sup class="brand-tm">TM</sup> Academias</span>
+                            </div>
+                            <small class="text-green fw-semibold">Acessar</small>
+                        </a>
+                        <a href="https://food.kadosys.com.br" class="list-group-item list-group-item-action bg-transparent text-white border-secondary border-opacity-25 py-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-utensils text-primary me-3"></i>
+                                <span>Kadosys<sup class="brand-tm">TM</sup> Food</span>
+                            </div>
+                            <small class="text-green fw-semibold">Acessar</small>
+                        </a>
                         <div class="list-group-item bg-transparent text-white border-secondary border-opacity-25 py-3 d-flex justify-content-between align-items-center system-item-soon">
                             <div>
                                 <i class="fas fa-baby text-primary me-3"></i>
@@ -513,19 +553,12 @@
                             </div>
                             <small class="text-gray-500">Em desenvolvimento</small>
                         </div>
-                        <div class="list-group-item bg-transparent text-white border-secondary border-opacity-25 py-3 d-flex justify-content-between align-items-center system-item-soon">
+                        <div class="list-group-item bg-transparent text-white border-0 py-3 d-flex justify-content-between align-items-center system-item-soon">
                             <div>
                                 <i class="fas fa-paintbrush text-primary me-3"></i>
                                 <span>Kadosys<sup class="brand-tm">TM</sup> Sites</span>
                             </div>
                             <small class="text-gray-500">Em desenvolvimento</small>
-                        </div>
-                        <div class="list-group-item bg-transparent text-white border-0 py-3 d-flex justify-content-between align-items-center system-item-soon">
-                            <div>
-                                <i class="fas fa-users-cog text-primary me-3"></i>
-                                <span>Kadosys<sup class="brand-tm">TM</sup> CRM</span>
-                            </div>
-                            <small class="text-gray-500">Em breve</small>
                         </div>
                     </div>
                 </div>
@@ -563,10 +596,11 @@
                     <ul class="list-unstyled footer-links">
                         <li><a href="https://igrejas.kadosys.com.br">Kadosys<sup class="brand-tm">TM</sup> Igrejas</a></li>
                         <li><a href="https://barbearias.kadosys.com.br">Kadosys<sup class="brand-tm">TM</sup> Barbearias</a></li>
+                        <li><a href="https://academias.kadosys.com.br">Kadosys<sup class="brand-tm">TM</sup> Academias</a></li>
+                        <li><a href="https://food.kadosys.com.br">Kadosys<sup class="brand-tm">TM</sup> Food</a></li>
                         <li><a href="#sistemas">Kadosys<sup class="brand-tm">TM</sup> Creches</a></li>
                         <li><a href="#sistemas">Kadosys<sup class="brand-tm">TM</sup> Condomínios</a></li>
                         <li><a href="#sistemas">Kadosys<sup class="brand-tm">TM</sup> Sites</a></li>
-                        <li><a href="#sistemas">Kadosys<sup class="brand-tm">TM</sup> CRM</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-3 col-md-4">
