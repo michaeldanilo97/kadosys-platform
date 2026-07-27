@@ -17,6 +17,35 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 182 - 2026-07-24
+
+**Kids: Mapa Bíblico (mapa ilustrado e clicável com os lugares da Bíblia)**
+
+- Prioridade 8 da lista colada pelo usuário: um mapa ilustrado da Terra
+  Santa na Biblioteca Kids, com 12 pins clicáveis (Jerusalém, Belém,
+  Nazaré, Mar da Galileia, Rio Jordão, Cafarnaum, Jericó, Monte Sinai,
+  Mar Vermelho, Egito, Babilônia, Monte Ararate) - tocar num pin leva
+  pra uma tela contando em linguagem simples o que aconteceu ali.
+  Catálogo estático em PHP (`Igrejas\Models\KidsMapaLocal`, mesmo
+  padrão dos emblemas), sem depender de nenhum dado externo.
+- Nova tabela `kids_mapa_explorados` (migração 076, espelhada em
+  `install.sql`) guarda só quais lugares cada criança já visitou -
+  visitar um lugar novo concede +4 XP uma única vez.
+- **Corrigido de quebra um bug antigo encontrado durante o teste**: o
+  título (`<h1>`) dentro do painel de conteúdo (`.kids-conteudo-painel
+  h1`) nunca tinha uma cor própria definida no CSS da Biblioteca Kids -
+  então herdava o branco do tema escuro do dashboard (`app.css`) e
+  ficava **invisível** sobre o fundo claro. Isso não afetava só o mapa
+  novo: o título de qualquer conteúdo em `/kids/conteudo/{id}`
+  (histórias, devocionais, quiz etc) também tinha esse problema,
+  só que ninguém tinha reparado ainda porque o resto da tela (foto,
+  descrição, botões) continuava normal.
+- Testado fim a fim localmente (banco do zero via `install.sql`):
+  navegação pelo mapa, tela de detalhe de um lugar, bônus de XP
+  concedido só na primeira visita (confirmado no banco), e o título
+  agora visível tanto no mapa quanto nos conteúdos normais da
+  Biblioteca.
+
 ## Ajuste 181 - 2026-07-24
 
 **Kids: Bíblia Interativa (navegação pelos 66 livros + leitura por capítulo)**
