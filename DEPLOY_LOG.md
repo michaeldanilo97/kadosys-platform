@@ -17,6 +17,29 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 186 - 2026-07-27
+
+**Kids: mais conteúdos reforçando os tipos com menos itens**
+
+- Última parte do pedido "mais jogos, mais animações, mais sons, mais
+  conteúdos": 8 conteúdos novos reforçando os tipos que tinham menos
+  itens no catálogo (HQ, slide, plano de leitura e atividade tinham só
+  3-4 itens cada, contra 15-20 dos tipos mais populares).
+  - **2 HQs**: "Sansão, o Homem Forte" e "A Coragem da Rainha Ester"
+    (nome escolhido pra não repetir o título de uma história já
+    existente sobre a mesma personagem).
+  - **2 slides**: "Os Milagres de Jesus" e "Os Frutos do Espírito".
+  - **2 planos de leitura**: "7 dias com os Evangelhos" e "5 dias de
+    Gratidão".
+  - **2 atividades**, reaproveitando os padrões "Complete o Versículo"
+    e "Ligue X à sua Y" já existentes: "Complete o Versículo 2" e
+    "Ligue o Profeta à sua Missão".
+- Nenhum motor/JS/CSS novo precisou ser criado - todos os 4 tipos já
+  eram reconhecidos genericamente pelo `kids-interacoes.js` (HQ, slide
+  e plano de leitura) ou reaproveitam um dos 2 widgets de atividade já
+  existentes (completar/ligar), copiados com conteúdo novo.
+- Migração 078 (espelhada em `install.sql`).
+
 ## Ajuste 185 - 2026-07-27
 
 **Kids: mais jogos com mecânicas novas (Classifique + Sequência Mágica)**
