@@ -17,6 +17,22 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 188 - 2026-07-27
+
+**Novo módulo: Galeria de Memórias**
+
+- Novo módulo do menu lateral (liberado em todos os planos, como
+  Playbacks): mural de fotos dos momentos marcantes da igreja - cultos
+  especiais, batismos, eventos, confraternizações - com título, legenda
+  e data opcionais.
+- Painel: upload de foto (PNG/JPG/WEBP/GIF, até 8MB) com título/legenda/
+  data, grade de fotos com exclusão, mesmo padrão visual da galeria de
+  imagens da Projeção.
+- Mural público em `/galeria` (sem login, mesmo espírito do quadro de
+  avisos em `/avisos`), com link pra copiar e compartilhar direto do
+  painel.
+- Migração 080: tabela `galeria_memorias`.
+
 ## Ajuste 187 - 2026-07-27
 
 **Kids: Biblioteca de Oração (novo tipo de conteúdo)**
