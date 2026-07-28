@@ -17,6 +17,31 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 189 - 2026-07-28
+
+**Check-in geral por QR fixo (cultos)**
+
+- Complementa o check-in do Kids (operado pela equipe) com um QR fixo
+  na entrada da igreja - qualquer membro escaneia com o próprio
+  celular e confirma presença no culto do dia sozinho, sem precisar de
+  login (a congregação não tem conta/senha, só a equipe).
+- O QR é fixo: não muda a cada culto, sempre resolve pro(s) culto(s)
+  agendado(s) para o dia em que for escaneado.
+- Identificação por busca do próprio nome (poucos resultados por vez,
+  exige 2+ letras) em vez de uma lista/grade com todos os membros -
+  evita de propósito o mesmo problema que a tela "Quem é você?" do
+  Kids tem hoje com igrejas grandes (grade enorme de fotos pra
+  procurar a própria criança).
+- Tela do QR em `/dashboard/cultos/checkin-qr` (com botão de renovar,
+  invalidando o QR anterior). Mural público em `/checkin/{token}`.
+- Migração 081: coluna `checkin_qr_token` em `configuracoes_igreja`.
+
+**Observação (não implementado ainda):** a tela "Quem é você?" do
+login do Kids (`/kids/entrar`) tem o mesmo problema de escala - com
+muitas crianças cadastradas, vira uma grade longa pra rolar. Ainda não
+mexemos nela; um caminho natural seria agrupar por turma antes de
+mostrar as fotos, mas fica pra um próximo ajuste.
+
 ## Ajuste 188 - 2026-07-27
 
 **Novo módulo: Galeria de Memórias**

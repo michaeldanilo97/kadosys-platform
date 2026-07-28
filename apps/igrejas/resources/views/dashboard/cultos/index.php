@@ -22,6 +22,9 @@ $statusLabels = ['agendado' => 'Agendado', 'realizado' => 'Realizado', 'cancelad
         </p>
     </div>
     <div class="dash-page-actions">
+        <a href="<?= $basePath ?>/dashboard/cultos/checkin-qr" class="btn-k btn-k-ghost">
+            <i class="bi bi-qr-code"></i> QR de check-in
+        </a>
         <a href="<?= $basePath ?>/dashboard/cultos/novo" class="btn-k btn-k-grad">
             <i class="bi bi-calendar-plus"></i> Novo culto
         </a>

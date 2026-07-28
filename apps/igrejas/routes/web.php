@@ -7,6 +7,7 @@ use Igrejas\Controllers\AssinaturaController;
 use Igrejas\Controllers\AuthController;
 use Igrejas\Controllers\AvisoPublicoController;
 use Igrejas\Controllers\CadastroController;
+use Igrejas\Controllers\CheckinController;
 use Igrejas\Controllers\ComunicacaoController;
 use Igrejas\Controllers\ConfiguracaoController;
 use Igrejas\Controllers\CultoController;
@@ -203,6 +204,12 @@ $router->post('/dashboard/cultos/{id}', [CultoController::class, 'update'], [Aut
 $router->post('/dashboard/cultos/{id}/excluir', [CultoController::class, 'destroy'], [AuthMiddleware::class]);
 $router->post('/dashboard/cultos/{id}/presencas', [CultoController::class, 'addPresenca'], [AuthMiddleware::class]);
 $router->post('/dashboard/cultos/{id}/presencas/{membroId}/remover', [CultoController::class, 'removePresenca'], [AuthMiddleware::class]);
+
+// Tela do QR fixo de check-in geral (ver Igrejas\Controllers\CheckinController).
+// Precisa vir registrada aqui, e nao depois do catch-all de modulo, pelo
+// mesmo motivo dos demais controllers de modulo especifico acima.
+$router->get('/dashboard/cultos/checkin-qr', [CheckinController::class, 'qr'], [AuthMiddleware::class]);
+$router->post('/dashboard/cultos/checkin-qr/regenerar', [CheckinController::class, 'regenerarToken'], [AuthMiddleware::class]);
 
 // Modulo Playbacks. Mesmo motivo: precisa vir antes do catch-all. Sem
 // PlanoMiddleware - Playbacks (biblioteca de audios) esta liberado em
@@ -419,6 +426,11 @@ $router->get('/avisos', [AvisoPublicoController::class, 'index']);
 // Mural publico da Galeria de Memorias (sem login) - mesmo espirito do
 // quadro de avisos acima.
 $router->get('/galeria', [GaleriaController::class, 'publica']);
+
+// Check-in geral por QR fixo (sem login) - ver Igrejas\Controllers\CheckinController.
+$router->get('/checkin/{token}', [CheckinController::class, 'entrar']);
+$router->get('/checkin/{token}/buscar', [CheckinController::class, 'buscar']);
+$router->post('/checkin/{token}', [CheckinController::class, 'confirmar']);
 
 // Doacao publica via Pix estatico (chave da propria igreja, sem login)
 // - link pra compartilhar com a congregacao, mesmo padrao do quadro de

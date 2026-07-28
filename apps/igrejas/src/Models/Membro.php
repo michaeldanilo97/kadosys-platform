@@ -152,6 +152,35 @@ final class Membro
     }
 
     /**
+     * Busca por nome usada no check-in geral por QR fixo (ver
+     * Igrejas\Controllers\CheckinController) - endpoint publico sem
+     * login, entao devolve so id/nome (nunca email, telefone ou
+     * endereco) e limita a poucos resultados, exigindo um termo minimo
+     * pra nao listar a igreja inteira de uma vez (o mesmo problema de
+     * "30 criancas pra procurar" do login do Kids, evitado aqui de
+     * proposito com busca em vez de grade/lista completa).
+     *
+     * @return array<int, array{id: int, nome: string}>
+     */
+    public static function buscarAtivosPorNome(string $termo, int $limite = 8): array
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT id, nome FROM membros
+             WHERE status = 'ativo' AND nome LIKE :termo
+             ORDER BY nome ASC
+             LIMIT :limite"
+        );
+        $stmt->bindValue('termo', '%' . $termo . '%');
+        $stmt->bindValue('limite', $limite, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return array_map(
+            static fn (array $row): array => ['id' => (int) $row['id'], 'nome' => (string) $row['nome']],
+            $stmt->fetchAll()
+        );
+    }
+
+    /**
      * @param array<string, mixed> $data
      */
     public static function create(array $data): int
