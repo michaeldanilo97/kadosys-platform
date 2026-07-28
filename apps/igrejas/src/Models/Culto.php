@@ -116,6 +116,28 @@ final class Culto
     }
 
     /**
+     * Cultos agendados para hoje (nao cancelados), ordenados por hora -
+     * usado no check-in geral por QR fixo (ver Igrejas\Controllers\
+     * CheckinController): o membro que escaneia o QR confirma presenca
+     * num desses cultos, sem precisar saber o id/link de cada um.
+     *
+     * @return array<int, self>
+     */
+    public static function deHoje(): array
+    {
+        $stmt = Database::connection()->prepare(
+            "SELECT c.*,
+                    (SELECT COUNT(*) FROM culto_frequencias cf WHERE cf.culto_id = c.id) AS total_presentes
+             FROM cultos c
+             WHERE c.data = CURDATE() AND c.status != 'cancelado'
+             ORDER BY c.hora ASC"
+        );
+        $stmt->execute();
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /**
      * Cultos realizados/agendados num mes (YYYY-MM), usado no modulo
      * Relatorios.
      *
@@ -235,6 +257,22 @@ final class Culto
              VALUES (:culto_id, :membro_id, NOW())'
         );
         $stmt->execute(['culto_id' => $cultoId, 'membro_id' => $membroId]);
+    }
+
+    /**
+     * Usado no check-in geral por QR fixo pra distinguir "primeira
+     * confirmacao" de "ja tinha confirmado" (INSERT IGNORE por si so
+     * nao diferencia os dois casos, e a mensagem de sucesso muda
+     * conforme o caso).
+     */
+    public static function jaConfirmouPresenca(int $cultoId, int $membroId): bool
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT 1 FROM culto_frequencias WHERE culto_id = :culto_id AND membro_id = :membro_id LIMIT 1'
+        );
+        $stmt->execute(['culto_id' => $cultoId, 'membro_id' => $membroId]);
+
+        return $stmt->fetchColumn() !== false;
     }
 
     public static function removePresenca(int $cultoId, int $membroId): void

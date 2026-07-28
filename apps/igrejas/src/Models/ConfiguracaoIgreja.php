@@ -18,6 +18,7 @@ final class ConfiguracaoIgreja
         public readonly ?string $logoPath,
         public readonly string $plano = Plano::ESSENCIAL,
         public readonly bool $cadastroMembrosHabilitado = false,
+        public readonly ?string $checkinQrToken = null,
         public readonly ?string $cep = null,
         public readonly ?string $endereco = null,
         public readonly ?string $numero = null,
@@ -48,7 +49,7 @@ final class ConfiguracaoIgreja
     public static function atual(): self
     {
         $stmt = Database::connection()->prepare(
-            'SELECT nome_igreja, logo_path, plano, cadastro_membros_habilitado, cep, endereco, numero, cidade, estado,
+            'SELECT nome_igreja, logo_path, plano, cadastro_membros_habilitado, checkin_qr_token, cep, endereco, numero, cidade, estado,
                     pix_chave, pix_nome_beneficiario, pix_mensagem_tipo, pix_mensagem_texto, pix_mensagem_biblia_versao,
                     pix_mensagem_livro_id, pix_mensagem_capitulo, pix_mensagem_versiculo_inicio, pix_mensagem_versiculo_fim,
                     mensagem_aniversario
@@ -62,6 +63,7 @@ final class ConfiguracaoIgreja
             logoPath: $row['logo_path'] ?? null,
             plano: $row['plano'] ?? Plano::ESSENCIAL,
             cadastroMembrosHabilitado: (bool) ($row['cadastro_membros_habilitado'] ?? false),
+            checkinQrToken: $row['checkin_qr_token'] ?? null,
             cep: $row['cep'] ?? null,
             endereco: $row['endereco'] ?? null,
             numero: $row['numero'] ?? null,
@@ -117,6 +119,50 @@ final class ConfiguracaoIgreja
             'UPDATE configuracoes_igreja SET pix_chave = NULL, pix_nome_beneficiario = NULL WHERE id = 1'
         );
         $stmt->execute();
+    }
+
+    /**
+     * Token fixo do QR de check-in geral (ver Igrejas\Controllers\
+     * CheckinController) - gerado na primeira vez que a tela do QR e
+     * aberta, e mantido o mesmo dali pra frente (por isso "fixo": o
+     * mesmo QR impresso/exibido na entrada continua valendo pra
+     * qualquer culto, sem precisar trocar a cada culto).
+     */
+    public static function garantirCheckinQrToken(): string
+    {
+        $atual = self::atual()->checkinQrToken;
+
+        if ($atual !== null && $atual !== '') {
+            return $atual;
+        }
+
+        return self::regenerarCheckinQrToken();
+    }
+
+    /**
+     * Gera um novo token, invalidando o QR anterior - usado quando a
+     * igreja perde o controle do QR impresso/exibido (extravio,
+     * suspeita de uso indevido etc.).
+     */
+    public static function regenerarCheckinQrToken(): string
+    {
+        $token = bin2hex(random_bytes(20));
+
+        $stmt = Database::connection()->prepare(
+            'UPDATE configuracoes_igreja SET checkin_qr_token = :token WHERE id = 1'
+        );
+        $stmt->execute(['token' => $token]);
+
+        return $token;
+    }
+
+    public static function findByCheckinQrToken(string $token): ?self
+    {
+        $configuracao = self::atual();
+
+        return $configuracao->checkinQrToken !== null && hash_equals($configuracao->checkinQrToken, $token)
+            ? $configuracao
+            : null;
     }
 
     /**

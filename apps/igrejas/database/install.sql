@@ -220,6 +220,7 @@ CREATE TABLE IF NOT EXISTS configuracoes_igreja (
     pix_mensagem_versiculo_inicio SMALLINT UNSIGNED NULL,
     pix_mensagem_versiculo_fim SMALLINT UNSIGNED NULL,
     cadastro_membros_habilitado TINYINT(1) NOT NULL DEFAULT 0,
+    checkin_qr_token VARCHAR(40) NULL,
     mensagem_aniversario TEXT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

@@ -145,3 +145,114 @@
   font-size: 0.88rem;
   line-height: 1.5;
 }
+
+/* ---- Check-in geral por QR fixo ----------------------------------------- */
+
+.checkin-shell {
+  max-width: 420px;
+}
+
+.checkin-culto-atual {
+  text-align: center;
+  margin: 0 0 1.2rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.checkin-cultos-opcoes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.checkin-culto-opcao {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-strong);
+  cursor: pointer;
+}
+
+.checkin-culto-opcao small {
+  display: block;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+}
+
+.checkin-busca {
+  position: relative;
+}
+
+.checkin-busca label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.checkin-busca input[type="text"] {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: var(--surface-strong);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.checkin-busca-resultados {
+  margin-top: 0.5rem;
+  background: var(--surface-strong);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.checkin-busca-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.7rem 1rem;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--glass-border);
+  color: var(--text);
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+
+.checkin-busca-item:last-child {
+  border-bottom: none;
+}
+
+.checkin-busca-item:hover,
+.checkin-busca-item:focus {
+  background: var(--primary-soft, rgba(59, 130, 246, 0.15));
+}
+
+.checkin-confirmar-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.checkin-confirmado {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.checkin-confirmado-icone {
+  font-size: 3rem;
+  color: var(--success, #34d399);
+  margin-bottom: 1rem;
+}
+
+.checkin-confirmado p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
