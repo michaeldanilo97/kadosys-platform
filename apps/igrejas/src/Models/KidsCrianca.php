@@ -171,6 +171,81 @@ final class KidsCrianca
     }
 
     /**
+     * Como ativasComPin(), mas filtrada por turma - usado no login
+     * publico infantil quando a igreja tem mais de uma turma (ver
+     * KidsLoginController::turmasComPinParaLogin()): a criança escolhe
+     * a turma primeiro, pra não precisar procurar a própria foto numa
+     * grade enorme com todo mundo. $turmaId null busca as sem turma
+     * atribuída.
+     *
+     * @return array<int, self>
+     */
+    public static function ativasComPinDaTurma(?int $turmaId): array
+    {
+        $condicaoTurma = $turmaId === null ? 'c.turma_id IS NULL' : 'c.turma_id = :turma_id';
+
+        $stmt = Database::connection()->prepare(
+            "SELECT c.*, t.nome AS turma_nome, me.nome AS responsavel_membro_nome
+             FROM kids_criancas c
+             LEFT JOIN kids_turmas t ON t.id = c.turma_id
+             LEFT JOIN membros me ON me.id = c.responsavel_membro_id
+             WHERE c.status = 'ativo' AND c.pin_hash IS NOT NULL AND {$condicaoTurma}
+             ORDER BY c.nome ASC"
+        );
+
+        if ($turmaId !== null) {
+            $stmt->bindValue('turma_id', $turmaId, PDO::PARAM_INT);
+        }
+
+        $stmt->execute();
+
+        return array_map(self::fromRow(...), $stmt->fetchAll());
+    }
+
+    /**
+     * Turmas com pelo menos uma criança ativa e com PIN configurado,
+     * pro passo de escolha de turma no login público (só é exibido se
+     * houver mais de uma - com uma turma só, ou nenhuma, o login pula
+     * direto pra grade de fotos, igual ao comportamento anterior). Um
+     * grupo "Sem turma" (turma_id nulo) entra por último quando existe
+     * alguma criança nessa condição.
+     *
+     * @return array<int, array{id: int|null, nome: string, total: int}>
+     */
+    public static function turmasComPinParaLogin(): array
+    {
+        $stmt = Database::connection()->query(
+            "SELECT t.id, t.nome, COUNT(*) AS total
+             FROM kids_criancas c
+             INNER JOIN kids_turmas t ON t.id = c.turma_id
+             WHERE c.status = 'ativo' AND c.pin_hash IS NOT NULL
+             GROUP BY t.id, t.nome
+             ORDER BY t.nome ASC"
+        );
+
+        $turmas = array_map(
+            static fn (array $row): array => [
+                'id' => (int) $row['id'],
+                'nome' => (string) $row['nome'],
+                'total' => (int) $row['total'],
+            ],
+            $stmt->fetchAll()
+        );
+
+        $semTurmaStmt = Database::connection()->query(
+            "SELECT COUNT(*) FROM kids_criancas c
+             WHERE c.status = 'ativo' AND c.pin_hash IS NOT NULL AND c.turma_id IS NULL"
+        );
+        $totalSemTurma = (int) $semTurmaStmt->fetchColumn();
+
+        if ($totalSemTurma > 0) {
+            $turmas[] = ['id' => null, 'nome' => 'Sem turma', 'total' => $totalSemTurma];
+        }
+
+        return $turmas;
+    }
+
+    /**
      * Filhos vinculados a um responsavel (Membro) especifico - usado
      * na area de autoatendimento "Meus filhos" (ver
      * KidsResponsavelController), onde o proprio responsavel gerencia
