@@ -17,6 +17,25 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 190 - 2026-07-28
+
+**Kids: login por turma antes da foto (igrejas grandes)**
+
+- A tela "Quem é você?" do login infantil (`/kids/entrar`) listava
+  todas as crianças ativas com PIN numa grade só - numa igreja com
+  dezenas de crianças cadastradas, virava uma grade enorme pra rolar
+  até achar a própria foto.
+- Agora, quando existe mais de uma turma com criança ativa+PIN, entra
+  um passo antes: a criança escolhe a turma (poucas opções, com
+  contagem de crianças em cada uma) e só depois vê a grade de fotos,
+  bem menor, só da turma escolhida. Crianças sem turma atribuída
+  aparecem agrupadas em "Sem turma".
+- Igrejas com uma turma só (ou nenhuma configurada) continuam com o
+  comportamento de sempre - vai direto pra grade completa, sem esse
+  passo extra.
+- Erro de PIN e o link "Não sou eu" preservam a turma escolhida, sem
+  precisar escolher tudo de novo.
+
 ## Ajuste 189 - 2026-07-28
 
 **Check-in geral por QR fixo (cultos)**

@@ -834,6 +834,12 @@ body.kids-standalone .kids-mundo:has(.kids-login) .kids-login {
   object-fit: cover;
 }
 
+.kids-login-turma small {
+  font-weight: 600;
+  color: var(--kids-texto-suave);
+  font-size: 0.78rem;
+}
+
 .kids-login-vazio {
   background: #FFFFFF;
   border-radius: 24px;
