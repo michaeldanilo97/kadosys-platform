@@ -37,6 +37,7 @@ final class DashboardController extends Controller
             'checkinsAgora' => count(AcademiaCheckin::presentesAgora($academiaId)),
             'receitaHoje' => $resumoHoje['receitas'],
             'rankingMes' => array_slice(AcademiaCheckin::rankingDoMes($academiaId, 5), 0, 5),
+            'totalAlunosRisco' => count(Aluno::emRiscoDeEvasao($academiaId)),
             'avisoPlataforma' => AcademiaAviso::ativo(),
         ], 'dashboard');
     }

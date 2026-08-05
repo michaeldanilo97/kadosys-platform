@@ -17,6 +17,37 @@ https://SEUDOMINIO/DEPLOY_LOG.md
 
 ---
 
+## Ajuste 191 - 2026-08-05
+
+**KADOSYS Academias: alerta de risco de evasão**
+
+Primeira de uma leva de novas funcionalidades pedidas pelo usuário pra
+Academias (retenção de aluno é a prioridade nº 1 - ver plano acordado
+no chat). Painel novo "Risco de Evasão" (`/dashboard/alunos/risco-evasao`,
+item novo no menu lateral) lista os alunos ativos que não fazem
+check-in há 7 dias ou mais, ordenados do mais sumido pro mais recente,
+com a data do último check-in (ou "Nunca fez check-in") e um link
+direto pro WhatsApp do aluno pra equipe já poder chamar de volta.
+
+- `Aluno::emRiscoDeEvasao()` usa o último check-in de cada aluno
+  (`AcademiaCheckin::ultimosCheckinsPorAluno()`, nova) como referência;
+  quando o aluno nunca fez check-in, usa a data de início da matrícula
+  - assim um aluno recém-matriculado não é marcado como risco antes de
+  ter tido a chance de aparecer. Só considera alunos com status ativo.
+- Card novo no painel principal mostrando a contagem em tempo real
+  (vermelho quando há alunos em risco, verde quando não há nenhum).
+- Nenhuma tabela/migração nova - reaproveita 100% os dados que já
+  existiam (`alunos` + `academia_checkins`).
+
+**Testado**: banco MariaDB local do zero (`install.sql` + migrations),
+6 alunos semeados cobrindo todos os casos de borda (frequente, sumido
+há 10 dias, sumido há exatamente 7 dias - limite, nunca fez check-in
+com matrícula antiga, nunca fez check-in mas matriculado há 2 dias,
+inativo sumido há 100 dias) - via Playwright (Chromium real) e curl,
+confirmado que só os 3 casos corretos aparecem na lista e na contagem
+do painel, na ordem certa, e que os links de WhatsApp geram o número
+com DDI 55 corretamente.
+
 ## Ajuste 190 - 2026-07-28
 
 **Kids: login por turma antes da foto (igrejas grandes)**

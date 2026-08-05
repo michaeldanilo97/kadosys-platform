@@ -158,6 +158,30 @@ final class AcademiaCheckin
         return $resultado;
     }
 
+    /**
+     * Data/hora do check-in mais recente de cada aluno (aluno_id =>
+     * entrada_em), usada por Aluno::emRiscoDeEvasao pra achar quem nao
+     * aparece a mais de X dias sem precisar de uma query por aluno.
+     *
+     * @return array<int, string>
+     */
+    public static function ultimosCheckinsPorAluno(int $academiaId): array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT aluno_id, MAX(entrada_em) AS ultimo FROM academia_checkins
+             WHERE academia_id = :academia_id GROUP BY aluno_id'
+        );
+        $stmt->execute(['academia_id' => $academiaId]);
+
+        $resultado = [];
+
+        foreach ($stmt->fetchAll() as $row) {
+            $resultado[(int) $row['aluno_id']] = (string) $row['ultimo'];
+        }
+
+        return $resultado;
+    }
+
     /** @return array<int, self> */
     public static function doAluno(int $academiaId, int $alunoId, int $limite = 30): array
     {

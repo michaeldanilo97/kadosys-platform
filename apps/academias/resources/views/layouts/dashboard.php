@@ -32,6 +32,7 @@ $itensMenu = [
     ['slug' => 'checkin', 'href' => '/dashboard/checkin', 'icone' => 'bi-qr-code-scan', 'label' => 'Check-in'],
     ['slug' => 'ranking', 'href' => '/dashboard/ranking', 'icone' => 'bi-trophy-fill', 'label' => 'Ranking'],
     ['slug' => 'alunos', 'href' => '/dashboard/alunos', 'icone' => 'bi-people-fill', 'label' => 'Alunos'],
+    ['slug' => 'risco-evasao', 'href' => '/dashboard/alunos/risco-evasao', 'icone' => 'bi-exclamation-triangle-fill', 'label' => 'Risco de Evasão'],
     ['slug' => 'fichas-treino', 'href' => '/dashboard/fichas-treino', 'icone' => 'bi-clipboard2-pulse-fill', 'label' => 'Fichas de Treino'],
     ['slug' => 'avaliacoes-fisicas', 'href' => '/dashboard/avaliacoes-fisicas', 'icone' => 'bi-rulers', 'label' => 'Avaliação Física'],
     ['slug' => 'professores', 'href' => '/dashboard/professores', 'icone' => 'bi-person-badge-fill', 'label' => 'Professores'],
