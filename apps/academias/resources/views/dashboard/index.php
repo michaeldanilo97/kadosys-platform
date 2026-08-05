@@ -13,6 +13,7 @@ use Academias\Models\User;
  * @var int $checkinsAgora
  * @var float $receitaHoje
  * @var array<int, array{aluno: \Academias\Models\Aluno, checkinsNoMes: int}> $rankingMes
+ * @var int $totalAlunosRisco
  * @var \Academias\Models\AcademiaAviso|null $avisoPlataforma
  */
 $basePath = $config['base_path'] ?? '';
@@ -67,6 +68,14 @@ $modulos = [
             <p class="kpi-label">Professores ativos</p>
             <p class="kpi-valor"><?= $totalProfessores ?></p>
             <span class="kpi-link">Ver equipe <i class="bi bi-arrow-right"></i></span>
+        </a>
+        <a href="<?= $basePath ?>/dashboard/alunos/risco-evasao" class="glass-card kpi-card">
+            <div class="kpi-top">
+                <span class="kpi-icon <?= $totalAlunosRisco > 0 ? 'red' : 'green' ?>"><i class="bi bi-exclamation-triangle-fill"></i></span>
+            </div>
+            <p class="kpi-label">Risco de evasão</p>
+            <p class="kpi-valor"><?= $totalAlunosRisco ?></p>
+            <span class="kpi-link">Ver alunos sumidos <i class="bi bi-arrow-right"></i></span>
         </a>
     </div>
 

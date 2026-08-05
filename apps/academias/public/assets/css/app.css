@@ -1024,9 +1024,16 @@ a.user-panel-item:hover,
     color: var(--success);
 }
 
+.kpi-icon.red {
+    background: rgba(248, 113, 113, 0.14);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+    color: #F87171;
+}
+
 :root[data-theme="light"] .kpi-icon.cyan { color: #0E7490; }
 :root[data-theme="light"] .kpi-icon.blue { color: #1D4ED8; }
 :root[data-theme="light"] .kpi-icon.violet { color: #6D28D9; }
+:root[data-theme="light"] .kpi-icon.red { color: #B91C1C; }
 :root[data-theme="light"] .kpi-icon.green { color: #047857; }
 
 .kpi-trend {

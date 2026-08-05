@@ -147,6 +147,47 @@ final class Aluno
         return array_map(self::fromRow(...), $stmt->fetchAll());
     }
 
+    /**
+     * Alunos ativos que nao aparecem ha $diasLimite dias ou mais - a
+     * referencia e o ultimo check-in registrado (AcademiaCheckin) ou,
+     * na falta de qualquer check-in, o inicio da matricula (pra nao
+     * marcar como risco um aluno recem-matriculado que ainda nem teve
+     * tempo de vir). Ordenado do mais tempo sumido pro mais recente.
+     *
+     * @return array<int, array{aluno: self, ultimoCheckin: ?string, diasSemVir: int}>
+     */
+    public static function emRiscoDeEvasao(int $academiaId, int $diasLimite = 7): array
+    {
+        $ativos = self::ativos($academiaId);
+
+        if ($ativos === []) {
+            return [];
+        }
+
+        $ultimosCheckins = AcademiaCheckin::ultimosCheckinsPorAluno($academiaId);
+        $hoje = new \DateTimeImmutable('today');
+        $resultado = [];
+
+        foreach ($ativos as $aluno) {
+            $ultimoCheckin = $ultimosCheckins[$aluno->id] ?? null;
+            $referencia = $ultimoCheckin ?? $aluno->matriculaInicio ?? $aluno->createdAt;
+
+            if ($referencia === null) {
+                continue;
+            }
+
+            $diasSemVir = $hoje->diff(new \DateTimeImmutable(substr($referencia, 0, 10)))->days;
+
+            if ($diasSemVir >= $diasLimite) {
+                $resultado[] = ['aluno' => $aluno, 'ultimoCheckin' => $ultimoCheckin, 'diasSemVir' => $diasSemVir];
+            }
+        }
+
+        usort($resultado, static fn (array $a, array $b): int => $b['diasSemVir'] <=> $a['diasSemVir']);
+
+        return $resultado;
+    }
+
     public static function create(
         int $academiaId,
         string $nome,

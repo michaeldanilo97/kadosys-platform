@@ -40,6 +40,17 @@ final class AlunoController extends Controller
         ], 'dashboard');
     }
 
+    public function riscoEvasao(): void
+    {
+        echo $this->view('dashboard.alunos.risco-evasao', [
+            'pageTitle' => 'Risco de evasão - KADOSYS Academias',
+            'activeMenu' => 'risco-evasao',
+            'user' => $this->usuario(),
+            'academia' => Academia::find($this->academiaId()),
+            'alunosRisco' => Aluno::emRiscoDeEvasao($this->academiaId()),
+        ], 'dashboard');
+    }
+
     public function create(): void
     {
         echo $this->view('dashboard.alunos.form', [

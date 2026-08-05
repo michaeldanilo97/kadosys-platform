@@ -89,6 +89,7 @@ $router->get('/dashboard/ranking', [CheckinController::class, 'ranking'], [AuthM
 
 // Alunos.
 $router->get('/dashboard/alunos', [AlunoController::class, 'index'], [AuthMiddleware::class]);
+$router->get('/dashboard/alunos/risco-evasao', [AlunoController::class, 'riscoEvasao'], [AuthMiddleware::class]);
 $router->get('/dashboard/alunos/novo', [AlunoController::class, 'create'], [AuthMiddleware::class]);
 $router->post('/dashboard/alunos', [AlunoController::class, 'store'], [AuthMiddleware::class]);
 $router->get('/dashboard/alunos/{id}/editar', [AlunoController::class, 'edit'], [AuthMiddleware::class]);
